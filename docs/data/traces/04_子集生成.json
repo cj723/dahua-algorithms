@@ -1,0 +1,592 @@
+{
+  "meta": {
+    "algo": "04_子集生成",
+    "source_lines": [
+      "#include <stdio.h>",
+      "#define MAX_N 10",
+      "int n;",
+      "int nums[MAX_N];",
+      "int subset[MAX_N];   /* 当前子集里选了哪些元素 */",
+      "int size = 0;        /* 当前子集大小 */",
+      "void print_subset(void) {",
+      "    printf(\"{\");",
+      "    for (int i = 0; i < size; i++) {",
+      "        if (i > 0) printf(\", \");",
+      "        printf(\"%d\", subset[i]);",
+      "    }",
+      "    printf(\"}\\n\");",
+      "}",
+      "void backtrack(int index) {",
+      "    if (index == n) {",
+      "        print_subset();",
+      "        return;",
+      "    }",
+      "    /* 分支1：不选 nums[index] */",
+      "    backtrack(index + 1);",
+      "    /* 分支2：选 nums[index] */",
+      "    subset[size++] = nums[index];",
+      "    backtrack(index + 1);",
+      "    size--;   /* 撤销选择 */",
+      "}",
+      "int main(void) {",
+      "    int data[] = {1, 2, 3};",
+      "    n = 3;",
+      "    for (int i = 0; i < n; i++) {",
+      "        nums[i] = data[i];",
+      "    }",
+      "    backtrack(0);",
+      "    return 0;",
+      "}"
+    ],
+    "track_vars": {
+      "primary": [
+        "i",
+        "index",
+        "n",
+        "size"
+      ],
+      "secondary": [
+        "_return"
+      ]
+    },
+    "var_classes": {
+      "_return": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "i": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "index": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "n": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "size": {
+        "category": "primary",
+        "type": "scalar"
+      }
+    },
+    "viz_type": "array",
+    "initial_data": {
+      "data": [
+        1,
+        2,
+        3
+      ]
+    },
+    "program_output": [
+      {
+        "after_step": 13,
+        "text": "3}"
+      },
+      {
+        "after_step": 18,
+        "text": "2}"
+      },
+      {
+        "after_step": 21,
+        "text": "2 , 3}"
+      },
+      {
+        "after_step": 30,
+        "text": "1}"
+      },
+      {
+        "after_step": 33,
+        "text": "1 , 3}"
+      },
+      {
+        "after_step": 40,
+        "text": "1 , 2}"
+      },
+      {
+        "after_step": 45,
+        "text": "1 , 2 , 3}"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step": 0,
+      "line": 27,
+      "type": "enter",
+      "func": "main",
+      "vars": {}
+    },
+    {
+      "step": 1,
+      "line": 29,
+      "type": "exec",
+      "vars": {
+        "n": 3
+      }
+    },
+    {
+      "step": 2,
+      "line": 30,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0,
+        "n": 3
+      }
+    },
+    {
+      "step": 3,
+      "line": 30,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "n": 3
+      }
+    },
+    {
+      "step": 4,
+      "line": 30,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "n": 3
+      }
+    },
+    {
+      "step": 5,
+      "line": 33,
+      "type": "enter",
+      "func": "backtrack",
+      "vars": {
+        "index": 0
+      }
+    },
+    {
+      "step": 6,
+      "line": 21,
+      "type": "enter",
+      "func": "backtrack",
+      "vars": {
+        "index": 1
+      }
+    },
+    {
+      "step": 7,
+      "line": 21,
+      "type": "enter",
+      "func": "backtrack",
+      "vars": {
+        "index": 2
+      }
+    },
+    {
+      "step": 8,
+      "line": 21,
+      "type": "enter",
+      "func": "backtrack",
+      "vars": {
+        "index": 3
+      }
+    },
+    {
+      "step": 9,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "index": 3
+      }
+    },
+    {
+      "step": 10,
+      "line": 24,
+      "type": "enter",
+      "func": "backtrack",
+      "vars": {
+        "index": 3
+      }
+    },
+    {
+      "step": 11,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "index": 3
+      }
+    },
+    {
+      "step": 12,
+      "line": 10,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "i": 0
+      }
+    },
+    {
+      "step": 13,
+      "line": 25,
+      "type": "exec",
+      "vars": {
+        "size": 0
+      }
+    },
+    {
+      "step": 14,
+      "line": 24,
+      "type": "enter",
+      "func": "backtrack",
+      "vars": {
+        "index": 2
+      }
+    },
+    {
+      "step": 15,
+      "line": 21,
+      "type": "enter",
+      "func": "backtrack",
+      "vars": {
+        "index": 3
+      }
+    },
+    {
+      "step": 16,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "index": 3
+      }
+    },
+    {
+      "step": 17,
+      "line": 10,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "i": 0
+      }
+    },
+    {
+      "step": 18,
+      "line": 24,
+      "type": "enter",
+      "func": "backtrack",
+      "vars": {
+        "index": 3
+      }
+    },
+    {
+      "step": 19,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "index": 3
+      }
+    },
+    {
+      "step": 20,
+      "line": 10,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "i": 0
+      }
+    },
+    {
+      "step": 21,
+      "line": 9,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1
+      }
+    },
+    {
+      "step": 22,
+      "line": 10,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1
+      }
+    },
+    {
+      "step": 23,
+      "line": 25,
+      "type": "exec",
+      "vars": {
+        "size": 1
+      }
+    },
+    {
+      "step": 24,
+      "line": 25,
+      "type": "exec",
+      "vars": {
+        "size": 0
+      }
+    },
+    {
+      "step": 25,
+      "line": 24,
+      "type": "enter",
+      "func": "backtrack",
+      "vars": {
+        "index": 1
+      }
+    },
+    {
+      "step": 26,
+      "line": 21,
+      "type": "enter",
+      "func": "backtrack",
+      "vars": {
+        "index": 2
+      }
+    },
+    {
+      "step": 27,
+      "line": 21,
+      "type": "enter",
+      "func": "backtrack",
+      "vars": {
+        "index": 3
+      }
+    },
+    {
+      "step": 28,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "index": 3
+      }
+    },
+    {
+      "step": 29,
+      "line": 10,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "i": 0
+      }
+    },
+    {
+      "step": 30,
+      "line": 24,
+      "type": "enter",
+      "func": "backtrack",
+      "vars": {
+        "index": 3
+      }
+    },
+    {
+      "step": 31,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "index": 3
+      }
+    },
+    {
+      "step": 32,
+      "line": 10,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "i": 0
+      }
+    },
+    {
+      "step": 33,
+      "line": 9,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1
+      }
+    },
+    {
+      "step": 34,
+      "line": 10,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1
+      }
+    },
+    {
+      "step": 35,
+      "line": 25,
+      "type": "exec",
+      "vars": {
+        "size": 1
+      }
+    },
+    {
+      "step": 36,
+      "line": 24,
+      "type": "enter",
+      "func": "backtrack",
+      "vars": {
+        "index": 2
+      }
+    },
+    {
+      "step": 37,
+      "line": 21,
+      "type": "enter",
+      "func": "backtrack",
+      "vars": {
+        "index": 3
+      }
+    },
+    {
+      "step": 38,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "index": 3
+      }
+    },
+    {
+      "step": 39,
+      "line": 10,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "i": 0
+      }
+    },
+    {
+      "step": 40,
+      "line": 9,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1
+      }
+    },
+    {
+      "step": 41,
+      "line": 10,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1
+      }
+    },
+    {
+      "step": 42,
+      "line": 24,
+      "type": "enter",
+      "func": "backtrack",
+      "vars": {
+        "index": 3
+      }
+    },
+    {
+      "step": 43,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "index": 3
+      }
+    },
+    {
+      "step": 44,
+      "line": 10,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "i": 0
+      }
+    },
+    {
+      "step": 45,
+      "line": 9,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1
+      }
+    },
+    {
+      "step": 46,
+      "line": 10,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1
+      }
+    },
+    {
+      "step": 47,
+      "line": 9,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2
+      }
+    },
+    {
+      "step": 48,
+      "line": 10,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2
+      }
+    },
+    {
+      "step": 49,
+      "line": 25,
+      "type": "exec",
+      "vars": {
+        "size": 2
+      }
+    },
+    {
+      "step": 50,
+      "line": 25,
+      "type": "exec",
+      "vars": {
+        "size": 1
+      }
+    },
+    {
+      "step": 51,
+      "line": 25,
+      "type": "exec",
+      "vars": {
+        "size": 0
+      }
+    },
+    {
+      "step": 52,
+      "line": 34,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 53,
+      "line": 34,
+      "type": "exit",
+      "func": "main",
+      "vars": {}
+    }
+  ],
+  "total_steps": 54
+}

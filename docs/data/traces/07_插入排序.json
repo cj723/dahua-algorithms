@@ -1,0 +1,1902 @@
+{
+  "meta": {
+    "algo": "07_插入排序",
+    "source_lines": [
+      "#include <stdio.h>",
+      "/* 打印数组，方便观察每个样例的排序结果 */",
+      "void print_array(const int arr[], int n) {",
+      "    for (int i = 0; i < n; i++) {",
+      "        printf(\"%d \", arr[i]);",
+      "    }",
+      "    printf(\"\\n\");",
+      "}",
+      "/* 插入排序：左侧保持有序，每次把新元素插入正确位置 */",
+      "void insertion_sort(int arr[], int n) {",
+      "    for (int i = 1; i < n; i++) {",
+      "        int key = arr[i];",
+      "        int j = i - 1;",
+      "        while (j >= 0 && arr[j] > key) {",
+      "            arr[j + 1] = arr[j];",
+      "            j--;",
+      "        }",
+      "        arr[j + 1] = key;",
+      "    }",
+      "}",
+      "/* 运行一个样例，避免 main 里重复写打印逻辑 */",
+      "void run_case(const char *name, int arr[], int n) {",
+      "    printf(\"=== %s ===\\n\", name);",
+      "    printf(\"排序前: \");",
+      "    print_array(arr, n);",
+      "    insertion_sort(arr, n);",
+      "    printf(\"排序后: \");",
+      "    print_array(arr, n);",
+      "    printf(\"\\n\");",
+      "}",
+      "int main(void) {",
+      "    int normal[] = {5, 2, 4, 6, 1, 3};",
+      "    int nearlySorted[] = {1, 2, 3, 5, 4, 6};",
+      "    int reversed[] = {6, 5, 4, 3, 2, 1};",
+      "    run_case(\"普通无序数组\", normal, 6);",
+      "    run_case(\"接近有序数组\", nearlySorted, 6);",
+      "    run_case(\"完全逆序数组\", reversed, 6);",
+      "    return 0;",
+      "}"
+    ],
+    "track_vars": {
+      "primary": [
+        "arr",
+        "i",
+        "j",
+        "key",
+        "n"
+      ],
+      "secondary": [
+        "_return"
+      ]
+    },
+    "var_classes": {
+      "_return": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "arr": {
+        "category": "primary",
+        "type": "array"
+      },
+      "i": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "j": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "key": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "n": {
+        "category": "primary",
+        "type": "scalar"
+      }
+    },
+    "viz_type": "array",
+    "initial_data": {
+      "normal": [
+        5,
+        2,
+        4,
+        6,
+        1,
+        3
+      ],
+      "nearlySorted": [
+        1,
+        2,
+        3,
+        5,
+        4,
+        6
+      ],
+      "reversed": [
+        6,
+        5,
+        4,
+        3,
+        2,
+        1
+      ],
+      "arr": [
+        5,
+        2,
+        4,
+        6,
+        1,
+        3
+      ]
+    },
+    "program_output": [
+      {
+        "after_step": 2,
+        "text": "=== 普通无序数组 === 排序前: 5 2 4 6 1 3"
+      },
+      {
+        "after_step": 47,
+        "text": "排序后: 1 2 3 4 5 6 === 接近有序数组 === 排序前: 1 2 3 5 4 6"
+      },
+      {
+        "after_step": 76,
+        "text": "排序后: 1 2 3 4 5 6 === 完全逆序数组 === 排序前: 6 5 4 3 2 1"
+      },
+      {
+        "after_step": 147,
+        "text": "排序后: 1 2 3 4 5 6"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step": 0,
+      "line": 31,
+      "type": "enter",
+      "func": "main",
+      "vars": {}
+    },
+    {
+      "step": 1,
+      "line": 22,
+      "type": "enter",
+      "func": "run_case",
+      "vars": {
+        "n": 6
+      }
+    },
+    {
+      "step": 2,
+      "line": 25,
+      "type": "enter",
+      "func": "print_array",
+      "vars": {
+        "arr": [
+          5,
+          2,
+          4,
+          6,
+          1,
+          3
+        ],
+        "n": 6
+      }
+    },
+    {
+      "step": 3,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0,
+        "n": 6
+      }
+    },
+    {
+      "step": 4,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "n": 6
+      }
+    },
+    {
+      "step": 5,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "n": 6
+      }
+    },
+    {
+      "step": 6,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3,
+        "n": 6
+      }
+    },
+    {
+      "step": 7,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 4,
+        "n": 6
+      }
+    },
+    {
+      "step": 8,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 5,
+        "n": 6
+      }
+    },
+    {
+      "step": 9,
+      "line": 26,
+      "type": "enter",
+      "func": "insertion_sort",
+      "vars": {
+        "arr": [
+          5,
+          2,
+          4,
+          6,
+          1,
+          3
+        ],
+        "n": 6
+      }
+    },
+    {
+      "step": 10,
+      "line": 11,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "n": 6
+      }
+    },
+    {
+      "step": 11,
+      "line": 14,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 0,
+        "key": 2
+      }
+    },
+    {
+      "step": 12,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          5,
+          5,
+          4,
+          6,
+          1,
+          3
+        ]
+      }
+    },
+    {
+      "step": 13,
+      "line": 16,
+      "type": "exec",
+      "vars": {
+        "j": -1
+      }
+    },
+    {
+      "step": 14,
+      "line": 18,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          2,
+          5,
+          4,
+          6,
+          1,
+          3
+        ]
+      }
+    },
+    {
+      "step": 15,
+      "line": 11,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "n": 6
+      }
+    },
+    {
+      "step": 16,
+      "line": 14,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 1,
+        "key": 4
+      }
+    },
+    {
+      "step": 17,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          2,
+          5,
+          5,
+          6,
+          1,
+          3
+        ]
+      }
+    },
+    {
+      "step": 18,
+      "line": 16,
+      "type": "exec",
+      "vars": {
+        "j": 0
+      }
+    },
+    {
+      "step": 19,
+      "line": 18,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          2,
+          4,
+          5,
+          6,
+          1,
+          3
+        ]
+      }
+    },
+    {
+      "step": 20,
+      "line": 11,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3,
+        "n": 6
+      }
+    },
+    {
+      "step": 21,
+      "line": 18,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          2,
+          4,
+          5,
+          6,
+          1,
+          3
+        ]
+      }
+    },
+    {
+      "step": 22,
+      "line": 11,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 4,
+        "n": 6
+      }
+    },
+    {
+      "step": 23,
+      "line": 14,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 3,
+        "key": 1
+      }
+    },
+    {
+      "step": 24,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          2,
+          4,
+          5,
+          6,
+          6,
+          3
+        ]
+      }
+    },
+    {
+      "step": 25,
+      "line": 16,
+      "type": "exec",
+      "vars": {
+        "j": 2
+      }
+    },
+    {
+      "step": 26,
+      "line": 14,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 2,
+        "key": 1
+      }
+    },
+    {
+      "step": 27,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          2,
+          4,
+          5,
+          5,
+          6,
+          3
+        ]
+      }
+    },
+    {
+      "step": 28,
+      "line": 16,
+      "type": "exec",
+      "vars": {
+        "j": 1
+      }
+    },
+    {
+      "step": 29,
+      "line": 14,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 1,
+        "key": 1
+      }
+    },
+    {
+      "step": 30,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          2,
+          4,
+          4,
+          5,
+          6,
+          3
+        ]
+      }
+    },
+    {
+      "step": 31,
+      "line": 16,
+      "type": "exec",
+      "vars": {
+        "j": 0
+      }
+    },
+    {
+      "step": 32,
+      "line": 14,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 0,
+        "key": 1
+      }
+    },
+    {
+      "step": 33,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          2,
+          2,
+          4,
+          5,
+          6,
+          3
+        ]
+      }
+    },
+    {
+      "step": 34,
+      "line": 16,
+      "type": "exec",
+      "vars": {
+        "j": -1
+      }
+    },
+    {
+      "step": 35,
+      "line": 18,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          1,
+          2,
+          4,
+          5,
+          6,
+          3
+        ]
+      }
+    },
+    {
+      "step": 36,
+      "line": 11,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 5,
+        "n": 6
+      }
+    },
+    {
+      "step": 37,
+      "line": 14,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 4,
+        "key": 3
+      }
+    },
+    {
+      "step": 38,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          1,
+          2,
+          4,
+          5,
+          6,
+          6
+        ]
+      }
+    },
+    {
+      "step": 39,
+      "line": 16,
+      "type": "exec",
+      "vars": {
+        "j": 3
+      }
+    },
+    {
+      "step": 40,
+      "line": 14,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 3,
+        "key": 3
+      }
+    },
+    {
+      "step": 41,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          1,
+          2,
+          4,
+          5,
+          5,
+          6
+        ]
+      }
+    },
+    {
+      "step": 42,
+      "line": 16,
+      "type": "exec",
+      "vars": {
+        "j": 2
+      }
+    },
+    {
+      "step": 43,
+      "line": 14,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 2,
+        "key": 3
+      }
+    },
+    {
+      "step": 44,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          1,
+          2,
+          4,
+          4,
+          5,
+          6
+        ]
+      }
+    },
+    {
+      "step": 45,
+      "line": 16,
+      "type": "exec",
+      "vars": {
+        "j": 1
+      }
+    },
+    {
+      "step": 46,
+      "line": 18,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
+      }
+    },
+    {
+      "step": 47,
+      "line": 28,
+      "type": "enter",
+      "func": "print_array",
+      "vars": {
+        "arr": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "n": 6
+      }
+    },
+    {
+      "step": 48,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0,
+        "n": 6
+      }
+    },
+    {
+      "step": 49,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "n": 6
+      }
+    },
+    {
+      "step": 50,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "n": 6
+      }
+    },
+    {
+      "step": 51,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3,
+        "n": 6
+      }
+    },
+    {
+      "step": 52,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 4,
+        "n": 6
+      }
+    },
+    {
+      "step": 53,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 5,
+        "n": 6
+      }
+    },
+    {
+      "step": 54,
+      "line": 22,
+      "type": "enter",
+      "func": "run_case",
+      "vars": {
+        "n": 6
+      }
+    },
+    {
+      "step": 55,
+      "line": 25,
+      "type": "enter",
+      "func": "print_array",
+      "vars": {
+        "arr": [
+          1,
+          2,
+          3,
+          5,
+          4,
+          6
+        ],
+        "n": 6
+      }
+    },
+    {
+      "step": 56,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0,
+        "n": 6
+      }
+    },
+    {
+      "step": 57,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "n": 6
+      }
+    },
+    {
+      "step": 58,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "n": 6
+      }
+    },
+    {
+      "step": 59,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3,
+        "n": 6
+      }
+    },
+    {
+      "step": 60,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 4,
+        "n": 6
+      }
+    },
+    {
+      "step": 61,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 5,
+        "n": 6
+      }
+    },
+    {
+      "step": 62,
+      "line": 26,
+      "type": "enter",
+      "func": "insertion_sort",
+      "vars": {
+        "arr": [
+          1,
+          2,
+          3,
+          5,
+          4,
+          6
+        ],
+        "n": 6
+      }
+    },
+    {
+      "step": 63,
+      "line": 11,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "n": 6
+      }
+    },
+    {
+      "step": 64,
+      "line": 18,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          1,
+          2,
+          3,
+          5,
+          4,
+          6
+        ]
+      }
+    },
+    {
+      "step": 65,
+      "line": 11,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "n": 6
+      }
+    },
+    {
+      "step": 66,
+      "line": 18,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          1,
+          2,
+          3,
+          5,
+          4,
+          6
+        ]
+      }
+    },
+    {
+      "step": 67,
+      "line": 11,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3,
+        "n": 6
+      }
+    },
+    {
+      "step": 68,
+      "line": 18,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          1,
+          2,
+          3,
+          5,
+          4,
+          6
+        ]
+      }
+    },
+    {
+      "step": 69,
+      "line": 11,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 4,
+        "n": 6
+      }
+    },
+    {
+      "step": 70,
+      "line": 14,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 3,
+        "key": 4
+      }
+    },
+    {
+      "step": 71,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          1,
+          2,
+          3,
+          5,
+          5,
+          6
+        ]
+      }
+    },
+    {
+      "step": 72,
+      "line": 16,
+      "type": "exec",
+      "vars": {
+        "j": 2
+      }
+    },
+    {
+      "step": 73,
+      "line": 18,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
+      }
+    },
+    {
+      "step": 74,
+      "line": 11,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 5,
+        "n": 6
+      }
+    },
+    {
+      "step": 75,
+      "line": 18,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
+      }
+    },
+    {
+      "step": 76,
+      "line": 28,
+      "type": "enter",
+      "func": "print_array",
+      "vars": {
+        "arr": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "n": 6
+      }
+    },
+    {
+      "step": 77,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0,
+        "n": 6
+      }
+    },
+    {
+      "step": 78,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "n": 6
+      }
+    },
+    {
+      "step": 79,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "n": 6
+      }
+    },
+    {
+      "step": 80,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3,
+        "n": 6
+      }
+    },
+    {
+      "step": 81,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 4,
+        "n": 6
+      }
+    },
+    {
+      "step": 82,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 5,
+        "n": 6
+      }
+    },
+    {
+      "step": 83,
+      "line": 22,
+      "type": "enter",
+      "func": "run_case",
+      "vars": {
+        "n": 6
+      }
+    },
+    {
+      "step": 84,
+      "line": 25,
+      "type": "enter",
+      "func": "print_array",
+      "vars": {
+        "arr": [
+          6,
+          5,
+          4,
+          3,
+          2,
+          1
+        ],
+        "n": 6
+      }
+    },
+    {
+      "step": 85,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0,
+        "n": 6
+      }
+    },
+    {
+      "step": 86,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "n": 6
+      }
+    },
+    {
+      "step": 87,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "n": 6
+      }
+    },
+    {
+      "step": 88,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3,
+        "n": 6
+      }
+    },
+    {
+      "step": 89,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 4,
+        "n": 6
+      }
+    },
+    {
+      "step": 90,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 5,
+        "n": 6
+      }
+    },
+    {
+      "step": 91,
+      "line": 26,
+      "type": "enter",
+      "func": "insertion_sort",
+      "vars": {
+        "arr": [
+          6,
+          5,
+          4,
+          3,
+          2,
+          1
+        ],
+        "n": 6
+      }
+    },
+    {
+      "step": 92,
+      "line": 11,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "n": 6
+      }
+    },
+    {
+      "step": 93,
+      "line": 14,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 0,
+        "key": 5
+      }
+    },
+    {
+      "step": 94,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          6,
+          6,
+          4,
+          3,
+          2,
+          1
+        ]
+      }
+    },
+    {
+      "step": 95,
+      "line": 16,
+      "type": "exec",
+      "vars": {
+        "j": -1
+      }
+    },
+    {
+      "step": 96,
+      "line": 18,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          5,
+          6,
+          4,
+          3,
+          2,
+          1
+        ]
+      }
+    },
+    {
+      "step": 97,
+      "line": 11,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "n": 6
+      }
+    },
+    {
+      "step": 98,
+      "line": 14,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 1,
+        "key": 4
+      }
+    },
+    {
+      "step": 99,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          5,
+          6,
+          6,
+          3,
+          2,
+          1
+        ]
+      }
+    },
+    {
+      "step": 100,
+      "line": 16,
+      "type": "exec",
+      "vars": {
+        "j": 0
+      }
+    },
+    {
+      "step": 101,
+      "line": 14,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 0,
+        "key": 4
+      }
+    },
+    {
+      "step": 102,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          5,
+          5,
+          6,
+          3,
+          2,
+          1
+        ]
+      }
+    },
+    {
+      "step": 103,
+      "line": 16,
+      "type": "exec",
+      "vars": {
+        "j": -1
+      }
+    },
+    {
+      "step": 104,
+      "line": 18,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          4,
+          5,
+          6,
+          3,
+          2,
+          1
+        ]
+      }
+    },
+    {
+      "step": 105,
+      "line": 11,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3,
+        "n": 6
+      }
+    },
+    {
+      "step": 106,
+      "line": 14,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 2,
+        "key": 3
+      }
+    },
+    {
+      "step": 107,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          4,
+          5,
+          6,
+          6,
+          2,
+          1
+        ]
+      }
+    },
+    {
+      "step": 108,
+      "line": 16,
+      "type": "exec",
+      "vars": {
+        "j": 1
+      }
+    },
+    {
+      "step": 109,
+      "line": 14,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 1,
+        "key": 3
+      }
+    },
+    {
+      "step": 110,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          4,
+          5,
+          5,
+          6,
+          2,
+          1
+        ]
+      }
+    },
+    {
+      "step": 111,
+      "line": 16,
+      "type": "exec",
+      "vars": {
+        "j": 0
+      }
+    },
+    {
+      "step": 112,
+      "line": 14,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 0,
+        "key": 3
+      }
+    },
+    {
+      "step": 113,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          4,
+          4,
+          5,
+          6,
+          2,
+          1
+        ]
+      }
+    },
+    {
+      "step": 114,
+      "line": 16,
+      "type": "exec",
+      "vars": {
+        "j": -1
+      }
+    },
+    {
+      "step": 115,
+      "line": 18,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          3,
+          4,
+          5,
+          6,
+          2,
+          1
+        ]
+      }
+    },
+    {
+      "step": 116,
+      "line": 11,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 4,
+        "n": 6
+      }
+    },
+    {
+      "step": 117,
+      "line": 14,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 3,
+        "key": 2
+      }
+    },
+    {
+      "step": 118,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          3,
+          4,
+          5,
+          6,
+          6,
+          1
+        ]
+      }
+    },
+    {
+      "step": 119,
+      "line": 16,
+      "type": "exec",
+      "vars": {
+        "j": 2
+      }
+    },
+    {
+      "step": 120,
+      "line": 14,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 2,
+        "key": 2
+      }
+    },
+    {
+      "step": 121,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          3,
+          4,
+          5,
+          5,
+          6,
+          1
+        ]
+      }
+    },
+    {
+      "step": 122,
+      "line": 16,
+      "type": "exec",
+      "vars": {
+        "j": 1
+      }
+    },
+    {
+      "step": 123,
+      "line": 14,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 1,
+        "key": 2
+      }
+    },
+    {
+      "step": 124,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          3,
+          4,
+          4,
+          5,
+          6,
+          1
+        ]
+      }
+    },
+    {
+      "step": 125,
+      "line": 16,
+      "type": "exec",
+      "vars": {
+        "j": 0
+      }
+    },
+    {
+      "step": 126,
+      "line": 14,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 0,
+        "key": 2
+      }
+    },
+    {
+      "step": 127,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          3,
+          3,
+          4,
+          5,
+          6,
+          1
+        ]
+      }
+    },
+    {
+      "step": 128,
+      "line": 16,
+      "type": "exec",
+      "vars": {
+        "j": -1
+      }
+    },
+    {
+      "step": 129,
+      "line": 18,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          1
+        ]
+      }
+    },
+    {
+      "step": 130,
+      "line": 11,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 5,
+        "n": 6
+      }
+    },
+    {
+      "step": 131,
+      "line": 14,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 4,
+        "key": 1
+      }
+    },
+    {
+      "step": 132,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          6
+        ]
+      }
+    },
+    {
+      "step": 133,
+      "line": 16,
+      "type": "exec",
+      "vars": {
+        "j": 3
+      }
+    },
+    {
+      "step": 134,
+      "line": 14,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 3,
+        "key": 1
+      }
+    },
+    {
+      "step": 135,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          2,
+          3,
+          4,
+          5,
+          5,
+          6
+        ]
+      }
+    },
+    {
+      "step": 136,
+      "line": 16,
+      "type": "exec",
+      "vars": {
+        "j": 2
+      }
+    },
+    {
+      "step": 137,
+      "line": 14,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 2,
+        "key": 1
+      }
+    },
+    {
+      "step": 138,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          2,
+          3,
+          4,
+          4,
+          5,
+          6
+        ]
+      }
+    },
+    {
+      "step": 139,
+      "line": 16,
+      "type": "exec",
+      "vars": {
+        "j": 1
+      }
+    },
+    {
+      "step": 140,
+      "line": 14,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 1,
+        "key": 1
+      }
+    },
+    {
+      "step": 141,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          2,
+          3,
+          3,
+          4,
+          5,
+          6
+        ]
+      }
+    },
+    {
+      "step": 142,
+      "line": 16,
+      "type": "exec",
+      "vars": {
+        "j": 0
+      }
+    },
+    {
+      "step": 143,
+      "line": 14,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 0,
+        "key": 1
+      }
+    },
+    {
+      "step": 144,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          2,
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
+      }
+    },
+    {
+      "step": 145,
+      "line": 16,
+      "type": "exec",
+      "vars": {
+        "j": -1
+      }
+    },
+    {
+      "step": 146,
+      "line": 18,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
+      }
+    },
+    {
+      "step": 147,
+      "line": 28,
+      "type": "enter",
+      "func": "print_array",
+      "vars": {
+        "arr": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "n": 6
+      }
+    },
+    {
+      "step": 148,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0,
+        "n": 6
+      }
+    },
+    {
+      "step": 149,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "n": 6
+      }
+    },
+    {
+      "step": 150,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "n": 6
+      }
+    },
+    {
+      "step": 151,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3,
+        "n": 6
+      }
+    },
+    {
+      "step": 152,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 4,
+        "n": 6
+      }
+    },
+    {
+      "step": 153,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 5,
+        "n": 6
+      }
+    },
+    {
+      "step": 154,
+      "line": 38,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 155,
+      "line": 38,
+      "type": "exit",
+      "func": "main",
+      "vars": {}
+    }
+  ],
+  "total_steps": 156
+}

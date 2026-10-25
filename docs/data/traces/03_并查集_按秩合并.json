@@ -1,0 +1,822 @@
+{
+  "meta": {
+    "algo": "03_并查集_按秩合并",
+    "source_lines": [
+      "#include <stdio.h>",
+      "#define MAXN 100010",
+      "int parent[MAXN];",
+      "int rank_[MAXN];  // 变量名加下划线是为了代码可读性，避免与可能的 rank() 函数混淆",
+      "void init(int n) {",
+      "    for (int i = 1; i <= n; i++) {",
+      "        parent[i] = i;",
+      "        rank_[i] = 0;  // 初始高度都是0",
+      "    }",
+      "}",
+      "int find(int x) {",
+      "    if (parent[x] != x) {",
+      "        parent[x] = find(parent[x]);  // 路径压缩",
+      "    }",
+      "    return parent[x];",
+      "}",
+      "void unite(int x, int y) {",
+      "    int rx = find(x);",
+      "    int ry = find(y);",
+      "    if (rx == ry) return;  // 已经是一伙的了",
+      "    // 按秩合并：小树挂到大树上",
+      "    if (rank_[rx] < rank_[ry]) {",
+      "        parent[rx] = ry;       // rx矮，挂到ry下面",
+      "    } else if (rank_[rx] > rank_[ry]) {",
+      "        parent[ry] = rx;       // ry矮，挂到rx下面",
+      "    } else {",
+      "        parent[ry] = rx;       // 一样高，随便挂，被挂的那个高度+1",
+      "        rank_[rx]++;",
+      "    }",
+      "}",
+      "int is_same(int x, int y) {",
+      "    return find(x) == find(y);",
+      "}",
+      "// 测试：按秩合并 + 路径压缩",
+      "int main() {",
+      "    init(6);",
+      "    unite(1, 2); unite(3, 4); unite(5, 6);",
+      "    printf(\"初始帮派：{1,2} {3,4} {5,6}\\n\");",
+      "    unite(1, 3);",
+      "    printf(\"合并1和3后：1和4一伙？%s\\n\", is_same(1, 4) ? \"是\" : \"不是\");",
+      "    unite(1, 5);",
+      "    printf(\"合并1和5后：2和6一伙？%s\\n\", is_same(2, 6) ? \"是\" : \"不是\");",
+      "    printf(\"\\n按秩合并确保了树的高度始终 ≤ log n，保证了效率\\n\");",
+      "    return 0;",
+      "}"
+    ],
+    "track_vars": {
+      "primary": [
+        "i",
+        "n"
+      ],
+      "secondary": [
+        "_return",
+        "rx",
+        "ry",
+        "x",
+        "y"
+      ]
+    },
+    "var_classes": {
+      "_return": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "i": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "n": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "parent": {
+        "category": "hidden",
+        "type": "scalar"
+      },
+      "rx": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "ry": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "x": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "y": {
+        "category": "secondary",
+        "type": "scalar"
+      }
+    },
+    "viz_type": "array",
+    "initial_data": {},
+    "program_output": [
+      {
+        "after_step": 30,
+        "text": "初始帮派： 初始帮派：{1,2} {3,4} {5,6}"
+      },
+      {
+        "after_step": 54,
+        "text": "合并1和3后：1和4一伙？是"
+      },
+      {
+        "after_step": 82,
+        "text": "合并1和5后：2和6一伙？是 按秩合并确保了树的高度始终 ≤ log n，保证了效率"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step": 0,
+      "line": 35,
+      "type": "enter",
+      "func": "main",
+      "vars": {}
+    },
+    {
+      "step": 1,
+      "line": 36,
+      "type": "enter",
+      "func": "init",
+      "vars": {
+        "n": 6
+      }
+    },
+    {
+      "step": 2,
+      "line": 6,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "n": 6
+      }
+    },
+    {
+      "step": 3,
+      "line": 6,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "n": 6
+      }
+    },
+    {
+      "step": 4,
+      "line": 6,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3,
+        "n": 6
+      }
+    },
+    {
+      "step": 5,
+      "line": 6,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 4,
+        "n": 6
+      }
+    },
+    {
+      "step": 6,
+      "line": 6,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 5,
+        "n": 6
+      }
+    },
+    {
+      "step": 7,
+      "line": 6,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 6,
+        "n": 6
+      }
+    },
+    {
+      "step": 8,
+      "line": 37,
+      "type": "enter",
+      "func": "unite",
+      "vars": {
+        "x": 1,
+        "y": 2
+      }
+    },
+    {
+      "step": 9,
+      "line": 18,
+      "type": "enter",
+      "func": "find",
+      "vars": {
+        "x": 1
+      }
+    },
+    {
+      "step": 10,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 11,
+      "line": 15,
+      "type": "exit",
+      "func": "find",
+      "vars": {}
+    },
+    {
+      "step": 12,
+      "line": 19,
+      "type": "enter",
+      "func": "find",
+      "vars": {
+        "x": 2
+      }
+    },
+    {
+      "step": 13,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "_return": 2
+      }
+    },
+    {
+      "step": 14,
+      "line": 15,
+      "type": "exit",
+      "func": "find",
+      "vars": {}
+    },
+    {
+      "step": 15,
+      "line": 20,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "rx": 1,
+        "ry": 2
+      }
+    },
+    {
+      "step": 16,
+      "line": 18,
+      "type": "enter",
+      "func": "find",
+      "vars": {
+        "x": 3
+      }
+    },
+    {
+      "step": 17,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "_return": 3
+      }
+    },
+    {
+      "step": 18,
+      "line": 15,
+      "type": "exit",
+      "func": "find",
+      "vars": {}
+    },
+    {
+      "step": 19,
+      "line": 19,
+      "type": "enter",
+      "func": "find",
+      "vars": {
+        "x": 4
+      }
+    },
+    {
+      "step": 20,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "_return": 4
+      }
+    },
+    {
+      "step": 21,
+      "line": 15,
+      "type": "exit",
+      "func": "find",
+      "vars": {}
+    },
+    {
+      "step": 22,
+      "line": 20,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "rx": 3,
+        "ry": 4
+      }
+    },
+    {
+      "step": 23,
+      "line": 18,
+      "type": "enter",
+      "func": "find",
+      "vars": {
+        "x": 5
+      }
+    },
+    {
+      "step": 24,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "_return": 5
+      }
+    },
+    {
+      "step": 25,
+      "line": 15,
+      "type": "exit",
+      "func": "find",
+      "vars": {}
+    },
+    {
+      "step": 26,
+      "line": 19,
+      "type": "enter",
+      "func": "find",
+      "vars": {
+        "x": 6
+      }
+    },
+    {
+      "step": 27,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "_return": 6
+      }
+    },
+    {
+      "step": 28,
+      "line": 15,
+      "type": "exit",
+      "func": "find",
+      "vars": {}
+    },
+    {
+      "step": 29,
+      "line": 20,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "rx": 5,
+        "ry": 6
+      }
+    },
+    {
+      "step": 30,
+      "line": 39,
+      "type": "enter",
+      "func": "unite",
+      "vars": {
+        "x": 1,
+        "y": 3
+      }
+    },
+    {
+      "step": 31,
+      "line": 18,
+      "type": "enter",
+      "func": "find",
+      "vars": {
+        "x": 1
+      }
+    },
+    {
+      "step": 32,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 33,
+      "line": 15,
+      "type": "exit",
+      "func": "find",
+      "vars": {}
+    },
+    {
+      "step": 34,
+      "line": 19,
+      "type": "enter",
+      "func": "find",
+      "vars": {
+        "x": 3
+      }
+    },
+    {
+      "step": 35,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "_return": 3
+      }
+    },
+    {
+      "step": 36,
+      "line": 15,
+      "type": "exit",
+      "func": "find",
+      "vars": {}
+    },
+    {
+      "step": 37,
+      "line": 20,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "rx": 1,
+        "ry": 3
+      }
+    },
+    {
+      "step": 38,
+      "line": 40,
+      "type": "enter",
+      "func": "is_same",
+      "vars": {
+        "x": 1,
+        "y": 4
+      }
+    },
+    {
+      "step": 39,
+      "line": 32,
+      "type": "enter",
+      "func": "find",
+      "vars": {
+        "x": 1
+      }
+    },
+    {
+      "step": 40,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 41,
+      "line": 15,
+      "type": "exit",
+      "func": "find",
+      "vars": {}
+    },
+    {
+      "step": 42,
+      "line": 12,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "x": 4
+      }
+    },
+    {
+      "step": 43,
+      "line": 13,
+      "type": "enter",
+      "func": "find",
+      "vars": {
+        "x": 3
+      }
+    },
+    {
+      "step": 44,
+      "line": 12,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "x": 3
+      }
+    },
+    {
+      "step": 45,
+      "line": 13,
+      "type": "enter",
+      "func": "find",
+      "vars": {
+        "x": 1
+      }
+    },
+    {
+      "step": 46,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 47,
+      "line": 15,
+      "type": "exit",
+      "func": "find",
+      "vars": {}
+    },
+    {
+      "step": 48,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 49,
+      "line": 15,
+      "type": "exit",
+      "func": "find",
+      "vars": {}
+    },
+    {
+      "step": 50,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 51,
+      "line": 15,
+      "type": "exit",
+      "func": "find",
+      "vars": {}
+    },
+    {
+      "step": 52,
+      "line": 32,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 53,
+      "line": 32,
+      "type": "exit",
+      "func": "is_same",
+      "vars": {}
+    },
+    {
+      "step": 54,
+      "line": 41,
+      "type": "enter",
+      "func": "unite",
+      "vars": {
+        "x": 1,
+        "y": 5
+      }
+    },
+    {
+      "step": 55,
+      "line": 18,
+      "type": "enter",
+      "func": "find",
+      "vars": {
+        "x": 1
+      }
+    },
+    {
+      "step": 56,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 57,
+      "line": 15,
+      "type": "exit",
+      "func": "find",
+      "vars": {}
+    },
+    {
+      "step": 58,
+      "line": 19,
+      "type": "enter",
+      "func": "find",
+      "vars": {
+        "x": 5
+      }
+    },
+    {
+      "step": 59,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "_return": 5
+      }
+    },
+    {
+      "step": 60,
+      "line": 15,
+      "type": "exit",
+      "func": "find",
+      "vars": {}
+    },
+    {
+      "step": 61,
+      "line": 20,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "rx": 1,
+        "ry": 5
+      }
+    },
+    {
+      "step": 62,
+      "line": 42,
+      "type": "enter",
+      "func": "is_same",
+      "vars": {
+        "x": 2,
+        "y": 6
+      }
+    },
+    {
+      "step": 63,
+      "line": 32,
+      "type": "enter",
+      "func": "find",
+      "vars": {
+        "x": 2
+      }
+    },
+    {
+      "step": 64,
+      "line": 12,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "x": 2
+      }
+    },
+    {
+      "step": 65,
+      "line": 13,
+      "type": "enter",
+      "func": "find",
+      "vars": {
+        "x": 1
+      }
+    },
+    {
+      "step": 66,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 67,
+      "line": 15,
+      "type": "exit",
+      "func": "find",
+      "vars": {}
+    },
+    {
+      "step": 68,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 69,
+      "line": 15,
+      "type": "exit",
+      "func": "find",
+      "vars": {}
+    },
+    {
+      "step": 70,
+      "line": 12,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "x": 6
+      }
+    },
+    {
+      "step": 71,
+      "line": 13,
+      "type": "enter",
+      "func": "find",
+      "vars": {
+        "x": 5
+      }
+    },
+    {
+      "step": 72,
+      "line": 12,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "x": 5
+      }
+    },
+    {
+      "step": 73,
+      "line": 13,
+      "type": "enter",
+      "func": "find",
+      "vars": {
+        "x": 1
+      }
+    },
+    {
+      "step": 74,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 75,
+      "line": 15,
+      "type": "exit",
+      "func": "find",
+      "vars": {}
+    },
+    {
+      "step": 76,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 77,
+      "line": 15,
+      "type": "exit",
+      "func": "find",
+      "vars": {}
+    },
+    {
+      "step": 78,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 79,
+      "line": 15,
+      "type": "exit",
+      "func": "find",
+      "vars": {}
+    },
+    {
+      "step": 80,
+      "line": 32,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 81,
+      "line": 32,
+      "type": "exit",
+      "func": "is_same",
+      "vars": {}
+    },
+    {
+      "step": 82,
+      "line": 44,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 83,
+      "line": 44,
+      "type": "exit",
+      "func": "main",
+      "vars": {}
+    }
+  ],
+  "total_steps": 84
+}

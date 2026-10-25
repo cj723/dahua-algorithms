@@ -1,0 +1,185 @@
+{
+  "meta": {
+    "algo": "09_树状数组_lowbit",
+    "source_lines": [
+      "#include <stdio.h>",
+      "#include <stdlib.h>",
+      "#include <string.h>",
+      "int lowbit(int x) {",
+      "    return x & (-x);",
+      "}",
+      "// 演示 lowbit 运算：取一个数二进制中最低位的1",
+      "int main() {",
+      "    printf(\"lowbit(x) = x & (-x)，取 x 二进制最低位的 1 所代表的值\\n\\n\");",
+      "    printf(\"lowbit(6)  = %d  （6=0b110,  最低位1在2^1位）\\n\", lowbit(6));",
+      "    printf(\"lowbit(8)  = %d  （8=0b1000, 最低位1在2^3位）\\n\", lowbit(8));",
+      "    printf(\"lowbit(12) = %d （12=0b1100, 最低位1在2^2位）\\n\", lowbit(12));",
+      "    printf(\"lowbit(7)  = %d  （7=0b111,  最低位1在2^0位）\\n\", lowbit(7));",
+      "    printf(\"\\n树状数组中，c[x] 管理从 x-lowbit(x)+1 到 x 的区间\\n\");",
+      "    return 0;",
+      "}"
+    ],
+    "track_vars": {
+      "primary": [],
+      "secondary": [
+        "_return",
+        "x"
+      ]
+    },
+    "var_classes": {
+      "_return": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "x": {
+        "category": "secondary",
+        "type": "scalar"
+      }
+    },
+    "viz_type": "array",
+    "initial_data": {},
+    "program_output": [
+      {
+        "after_step": 1,
+        "text": "lowbit(x) = x & (-x)，取 x 二进制最低位的 1 所代表的值"
+      },
+      {
+        "after_step": 4,
+        "text": "lowbit(6)  = 2  （6=0b110,  最低位1在2^1位）"
+      },
+      {
+        "after_step": 7,
+        "text": "lowbit(8)  = 8  （8=0b1000, 最低位1在2^3位）"
+      },
+      {
+        "after_step": 10,
+        "text": "lowbit(12) = 4 （12=0b1100, 最低位1在2^2位）"
+      },
+      {
+        "after_step": 13,
+        "text": "lowbit(7)  = 1  （7=0b111,  最低位1在2^0位） 树状数组中，c[x] 管理从 x-lowbit(x)+1 到 x 的区间"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step": 0,
+      "line": 8,
+      "type": "enter",
+      "func": "main",
+      "vars": {}
+    },
+    {
+      "step": 1,
+      "line": 10,
+      "type": "enter",
+      "func": "lowbit",
+      "vars": {
+        "x": 6
+      }
+    },
+    {
+      "step": 2,
+      "line": 5,
+      "type": "exec",
+      "vars": {
+        "_return": 2
+      }
+    },
+    {
+      "step": 3,
+      "line": 5,
+      "type": "exit",
+      "func": "lowbit",
+      "vars": {}
+    },
+    {
+      "step": 4,
+      "line": 11,
+      "type": "enter",
+      "func": "lowbit",
+      "vars": {
+        "x": 8
+      }
+    },
+    {
+      "step": 5,
+      "line": 5,
+      "type": "exec",
+      "vars": {
+        "_return": 8
+      }
+    },
+    {
+      "step": 6,
+      "line": 5,
+      "type": "exit",
+      "func": "lowbit",
+      "vars": {}
+    },
+    {
+      "step": 7,
+      "line": 12,
+      "type": "enter",
+      "func": "lowbit",
+      "vars": {
+        "x": 12
+      }
+    },
+    {
+      "step": 8,
+      "line": 5,
+      "type": "exec",
+      "vars": {
+        "_return": 4
+      }
+    },
+    {
+      "step": 9,
+      "line": 5,
+      "type": "exit",
+      "func": "lowbit",
+      "vars": {}
+    },
+    {
+      "step": 10,
+      "line": 13,
+      "type": "enter",
+      "func": "lowbit",
+      "vars": {
+        "x": 7
+      }
+    },
+    {
+      "step": 11,
+      "line": 5,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 12,
+      "line": 5,
+      "type": "exit",
+      "func": "lowbit",
+      "vars": {}
+    },
+    {
+      "step": 13,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 14,
+      "line": 15,
+      "type": "exit",
+      "func": "main",
+      "vars": {}
+    }
+  ],
+  "total_steps": 15
+}

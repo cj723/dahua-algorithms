@@ -1,0 +1,6077 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#171b28">
+<link rel="icon" href="../assets/mascots/student-dog.png">
+<title>第3章 分而治之 · 大话算法</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #1e2336;
+  --panel: #1a1f30;
+  --panel-deep: #151920;
+  --surface: #21283a;
+  --border: #30384c;
+  --text: #d7dae0;
+  --text-soft: #abb4c3;
+  --text-dim: #929caf;
+  --accent: #59a8ee;
+  --accent-soft: #243f5e;
+  --success: #98c379;
+  --control-height: 64px;
+}
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Noto Sans SC', 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text-soft);
+  overflow: hidden;
+}
+button, input, summary { font: inherit; }
+button:focus-visible, a:focus-visible, input:focus-visible, summary:focus-visible, [tabindex]:focus-visible {
+  outline: 3px solid rgba(89,168,238,.58);
+  outline-offset: 2px;
+}
+.header {
+  height: 65px;
+  background: rgba(23,28,43,.96);
+  padding: 0 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  position: relative;
+  z-index: 30;
+}
+.back-link {
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 13px;
+  white-space: nowrap;
+}
+.back-link:hover { text-decoration: underline; }
+.chapter-heading { min-width: 0; flex: 1; }
+.chapter-kicker { color: var(--text-dim); font-size: 12px; margin-bottom: 2px; }
+.chapter-heading h1 {
+  font-size: 19px;
+  line-height: 1.25;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.chapter-status {
+  min-width: 138px;
+  display: grid;
+  gap: 5px;
+}
+.chapter-status-text { color: var(--text-dim); font-size: 11px; text-align: right; }
+.chapter-status-track { height: 4px; background: #252c3e; border-radius: 99px; overflow: hidden; }
+.chapter-status-fill {
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, var(--accent), var(--success));
+  border-radius: inherit;
+  transition: width .3s ease;
+}
+.chapter-nav { display: flex; gap: 6px; }
+.chapter-nav a, .chapter-nav span {
+  min-width: 36px;
+  height: 36px;
+  padding: 0 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-soft);
+  text-decoration: none;
+  font-size: 12px;
+}
+.chapter-nav a:hover { border-color: var(--accent); color: var(--text); background: #202b40; }
+.chapter-nav .disabled { opacity: .35; cursor: default; }
+.mobile-view-switcher { display: none; }
+.main { display: flex; height: calc(100dvh - 65px); min-height: 0; }
+.code-panel {
+  width: 45%;
+  min-width: 360px;
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.code-header {
+  background: var(--panel);
+  padding: 9px 14px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.algo-tabs {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  flex: 1;
+  min-width: 0;
+}
+.algo-tab, .mode-tab {
+  border: 1px solid var(--border);
+  background: #22283a;
+  color: var(--text-dim);
+  border-radius: 7px;
+  cursor: pointer;
+  transition: background .18s ease, border-color .18s ease, color .18s ease;
+}
+.algo-tab { padding: 6px 11px; font-size: 12px; position: relative; }
+.algo-tab:hover, .mode-tab:hover { color: var(--text); border-color: #48536b; }
+.algo-tab.active, .mode-tab.active {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: #e8f3ff;
+}
+.algo-tab.completed::after {
+  content: '✓';
+  margin-left: 6px;
+  color: var(--success);
+  font-weight: 800;
+}
+.breakpoint-hint {
+  color: #737e92;
+  font-size: 11px;
+  line-height: 29px;
+  white-space: nowrap;
+}
+.mode-tabs {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: #171c2b;
+  border-bottom: 1px solid var(--border);
+}
+.mode-tabs.visible { display: flex; }
+.mode-label { font-size: 12px; color: var(--text-dim); margin-right: 2px; }
+.mode-tab { padding: 5px 12px; border-radius: 999px; font-size: 12px; }
+.code-body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  font-family: 'SFMono-Regular', 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+  font-size: var(--code-font-size, 15px);
+  line-height: 1.8;
+  scrollbar-color: #3b455c transparent;
+}
+.code-line { display: flex; min-width: max-content; padding: 0 16px 0 7px; position: relative; }
+.code-line:hover { background: #22283a; }
+.code-line.active {
+  background: rgba(73,164,238,.32);
+  border-left: 3px solid var(--accent);
+  box-shadow: inset 0 0 16px rgba(73,164,238,.18);
+}
+.code-line.executed { background: rgba(73,164,238,.035); }
+.code-line.setup { background: rgba(127,132,142,.045); color: #667084; }
+.line-num {
+  width: 42px;
+  border: 0;
+  background: transparent;
+  text-align: right;
+  color: #748096;
+  padding-right: 12px;
+  user-select: none;
+  flex-shrink: 0;
+  position: relative;
+  cursor: pointer;
+}
+.line-num:hover { color: var(--accent); }
+.line-num .breakpoint {
+  position: absolute;
+  left: 3px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #e05561;
+}
+.line-content { flex: 1; white-space: pre; }
+.kw, .num { color: #F3A862; }
+.fn { color: #59a8ee; }
+.var { color: #D980FA; }
+.str { color: #74C589; }
+.cmt { color: #71939a; font-style: italic; }
+.right-panel { flex: 1; display: flex; flex-direction: column; min-width: 0; min-height: 0; overflow: hidden; }
+.viz-panel {
+  flex: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 20px;
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
+}
+.viz-panel canvas { width: 100%; height: 100%; display: block; }
+body.concept-mode .viz-panel { flex: 1 1 auto; padding: 6px 20px; }
+body.concept-mode .vars-panel { flex: 0 1 168px; padding: 8px 18px; }
+body.concept-mode .output-panel { flex: 0 1 68px; padding: 6px 16px; }
+body.concept-mode .callstack { display: none; }
+.callstack {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  max-width: calc(100% - 24px);
+  background: rgba(33,38,54,.92);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 12px;
+  pointer-events: none;
+}
+.callstack-title, .vars-panel h3, .output-panel h3 { color: var(--text-dim); }
+.callstack-title { margin-bottom: 4px; }
+.callstack-item { color: var(--accent); padding: 2px 0; }
+.callstack-item::before { content: '▸ '; color: #68758a; }
+.vars-panel {
+  flex: 2;
+  background: var(--panel);
+  padding: 10px 18px;
+  border-top: 1px solid var(--border);
+  overflow-y: auto;
+  min-height: 0;
+}
+.output-panel {
+  flex: 1;
+  background: var(--panel-deep);
+  border-top: 1px solid var(--border);
+  padding: 8px 16px;
+  overflow-y: auto;
+  min-height: 0;
+  font-family: 'SFMono-Regular', 'JetBrains Mono', monospace;
+  font-size: var(--output-font-size, 13px);
+  color: var(--text-dim);
+}
+.output-panel h3 {
+  font-size: 12px;
+  margin-bottom: 4px;
+  position: sticky;
+  top: 0;
+  background: var(--panel-deep);
+  padding-bottom: 4px;
+  z-index: 1;
+}
+.output-line { padding: 1px 0; white-space: pre-wrap; word-break: break-word; }
+.vars-panel h3 { font-size: 13px; margin-bottom: 9px; }
+.var-grid { display: flex; flex-direction: column; gap: 6px; }
+.var-section-title { font-size: 11px; color: var(--text-dim); margin: 8px 0 4px; }
+.var-section:first-child .var-section-title { margin-top: 0; }
+.var-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.var-item {
+  background: #22283a;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 6px 13px;
+  font-family: monospace;
+  font-size: var(--var-font-size, 14px);
+}
+.var-name { color: var(--accent); }
+.var-val { color: var(--text); font-weight: 650; }
+.var-changed { animation: varPulse .5s ease; border-color: var(--accent); }
+.var-highlight { border-color: var(--accent); background: var(--accent-soft); }
+@keyframes varPulse { 0% { background: var(--accent-soft); } 100% { background: #22283a; } }
+.var-toggle { font-size: 12px; color: var(--text-dim); cursor: pointer; padding: 4px 0; user-select: none; }
+.control-bar {
+  min-height: var(--control-height);
+  flex-shrink: 0;
+  background: var(--panel);
+  border-top: 1px solid var(--border);
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+  z-index: 20;
+}
+.transport-controls { display: flex; align-items: center; gap: 7px; }
+.btn {
+  min-height: 38px;
+  background: #22283a;
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  white-space: nowrap;
+}
+.btn:hover:not(:disabled) { background: #2a3247; border-color: #4c5872; }
+.btn:disabled { opacity: .36; cursor: not-allowed; }
+.btn-primary { min-width: 82px; background: var(--accent-soft); border-color: var(--accent); }
+.btn-active { background: #285176; border-color: #77bfff; }
+.step-info {
+  margin-left: auto;
+  min-width: 68px;
+  font-size: 12px;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+.step-info strong { color: var(--text); }
+.settings-menu { position: relative; }
+.settings-menu summary {
+  list-style: none;
+  min-height: 38px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-soft);
+  cursor: pointer;
+  font-size: 12px;
+  user-select: none;
+}
+.settings-menu summary::-webkit-details-marker { display: none; }
+.settings-menu[open] summary { border-color: var(--accent); background: var(--accent-soft); color: var(--text); }
+.settings-popover {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 10px);
+  width: 250px;
+  padding: 14px;
+  display: grid;
+  gap: 12px;
+  background: rgba(23,28,43,.98);
+  border: 1px solid #3a465f;
+  border-radius: 12px;
+  box-shadow: 0 16px 42px rgba(0,0,0,.38);
+}
+.setting-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.setting-row label, .shortcut-help { font-size: 12px; color: var(--text-dim); }
+.speed-slider { width: 130px; accent-color: var(--accent); }
+.font-control { display: flex; align-items: center; gap: 6px; }
+.btn-sm { min-height: 32px; padding: 5px 10px; font-size: 12px; }
+.settings-divider { height: 1px; background: var(--border); }
+.shortcut-help { line-height: 1.65; }
+
+@media (max-width: 1050px) {
+  .code-panel { width: 42%; min-width: 320px; }
+  .chapter-status { display: none; }
+  .breakpoint-hint { display: none; }
+  .btn { padding-inline: 10px; }
+}
+
+@media (max-width: 900px) {
+  body { overflow: auto; padding-bottom: 72px; }
+  .header {
+    height: auto;
+    min-height: 60px;
+    padding: 8px 12px;
+    gap: 10px;
+    position: sticky;
+    top: 0;
+  }
+  .back-link { font-size: 0; width: 36px; height: 36px; display: grid; place-items: center; }
+  .back-link::before { content: '←'; font-size: 21px; }
+  .chapter-kicker { font-size: 10px; }
+  .chapter-heading h1 { font-size: 16px; }
+  .chapter-nav a, .chapter-nav span { width: 34px; min-width: 34px; padding: 0; font-size: 0; }
+  .chapter-nav a:first-child::before, .chapter-nav span:first-child::before { content: '‹'; font-size: 22px; }
+  .chapter-nav a:last-child::before, .chapter-nav span:last-child::before { content: '›'; font-size: 22px; }
+  .mobile-view-switcher {
+    position: sticky;
+    top: 60px;
+    z-index: 25;
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 4px;
+    padding: 7px 10px;
+    background: rgba(23,28,43,.97);
+    border-bottom: 1px solid var(--border);
+  }
+  .mobile-view-switcher button {
+    min-height: 38px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text-dim);
+  }
+  .mobile-view-switcher button.active {
+    color: #e8f3ff;
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+  .main { display: block; height: auto; min-height: calc(100dvh - 114px); }
+  .code-panel, .right-panel { width: 100%; min-width: 0; border: 0; }
+  .code-panel { height: calc(100dvh - 186px); }
+  .code-header { padding: 8px 10px; overflow: hidden; }
+  .algo-tabs { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 3px; scrollbar-width: thin; }
+  .algo-tab { flex: 0 0 auto; min-height: 38px; }
+  .mode-tabs { padding: 7px 10px; overflow-x: auto; }
+  .code-body { min-height: 0; font-size: max(13px,var(--code-font-size,15px)); }
+  .code-line { padding-right: 12px; }
+  .right-panel { min-height: calc(100dvh - 186px); overflow: visible; }
+  .viz-panel { height: calc(100dvh - 186px); min-height: 430px; flex: none !important; padding: 8px 10px !important; }
+  .vars-panel { min-height: 50dvh; padding: 14px; }
+  .output-panel { min-height: 28dvh; padding: 12px 14px; }
+  body[data-mobile-view="animation"] .code-panel,
+  body[data-mobile-view="animation"] .vars-panel,
+  body[data-mobile-view="animation"] .output-panel { display: none; }
+  body[data-mobile-view="code"] .right-panel > :not(.control-bar),
+  body[data-mobile-view="code"] .vars-panel,
+  body[data-mobile-view="code"] .output-panel { display: none; }
+  body[data-mobile-view="code"] .right-panel { min-height: 0; }
+  body[data-mobile-view="data"] .code-panel,
+  body[data-mobile-view="data"] .viz-panel { display: none; }
+  body[data-mobile-view="data"] .right-panel { min-height: calc(100dvh - 186px); }
+  .control-bar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    min-height: 72px;
+    padding: 9px max(10px,env(safe-area-inset-right)) calc(9px + env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left));
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 -10px 30px rgba(9,12,20,.36);
+  }
+  .transport-controls { gap: 7px; }
+  #btn-reset { display: none; }
+  .btn { min-width: 48px; min-height: 44px; padding: 8px 10px; font-size: 0; }
+  #btn-back::after { content: '◀'; font-size: 16px; }
+  #btn-play { min-width: 92px; font-size: 14px; }
+  #btn-step::after { content: '▶'; font-size: 16px; }
+  .step-info { margin-left: 0; min-width: 52px; text-align: center; font-size: 11px; }
+  .step-info .step-prefix { display: none; }
+  .settings-menu summary { width: 44px; min-height: 44px; padding: 0; justify-content: center; font-size: 0; }
+  .settings-menu summary::before { content: '⚙'; font-size: 17px; }
+  .settings-popover { right: -2px; width: min(280px,calc(100vw - 20px)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: .001ms !important;
+  }
+}
+</style>
+</head>
+<body data-mobile-view="animation">
+
+<header class="header">
+  <a class="back-link" href="../index.html" aria-label="返回学习地图">← 学习地图</a>
+  <div class="chapter-heading">
+    <div class="chapter-kicker">第3章</div>
+    <h1>分而治之</h1>
+  </div>
+  <div class="chapter-status" aria-label="本章学习进度">
+    <div class="chapter-status-text" id="chapter-progress-text">0 / 0 个演示完成</div>
+    <div class="chapter-status-track"><div class="chapter-status-fill" id="chapter-progress-fill"></div></div>
+  </div>
+  <nav class="chapter-nav" aria-label="章节导航">
+    <a href="ch02.html" aria-label="上一章：算法的度量衡" title="上一章：算法的度量衡">上一章</a>
+    <a href="ch04.html" aria-label="下一章：搜索的艺术" title="下一章：搜索的艺术">下一章</a>
+  </nav>
+</header>
+
+<div class="mobile-view-switcher" role="tablist" aria-label="学习视图">
+  <button type="button" class="active" data-mobile-view="animation" role="tab" aria-selected="true">动画</button>
+  <button type="button" data-mobile-view="code" role="tab" aria-selected="false">代码</button>
+  <button type="button" data-mobile-view="data" role="tab" aria-selected="false">变量</button>
+</div>
+
+<main class="main">
+  <section class="code-panel" aria-label="算法代码">
+    <div class="code-header">
+      <div class="algo-tabs" id="algo-tabs" role="tablist" aria-label="本章算法"></div>
+      <span class="breakpoint-hint">点击行号可设断点</span>
+    </div>
+    <div class="mode-tabs" id="mode-tabs" role="tablist" aria-label="演示模式"></div>
+    <div class="code-body" id="code-body" aria-label="代码执行过程"></div>
+  </section>
+
+  <section class="right-panel" aria-label="算法可视化与状态">
+    <div class="viz-panel">
+      <canvas id="viz-canvas" width="800" height="300" role="img" aria-label="算法执行动画"></canvas>
+      <div class="callstack" id="callstack"><div class="callstack-title">调用栈</div></div>
+    </div>
+    <div class="vars-panel">
+      <h3>变量状态</h3>
+      <div class="var-grid" id="var-grid"></div>
+    </div>
+    <div class="output-panel" id="output-panel">
+      <h3>程序输出</h3>
+      <div id="output-content" aria-live="polite"></div>
+    </div>
+
+    <div class="control-bar" aria-label="播放控制">
+      <div class="transport-controls">
+        <button class="btn" id="btn-reset" type="button" aria-label="重置当前演示" title="重置当前演示">⏮ 重置</button>
+        <button class="btn" id="btn-back" type="button" aria-label="上一步" title="上一步">◀ 后退</button>
+        <button class="btn btn-primary" id="btn-play" type="button" aria-label="播放或暂停">▶ 播放</button>
+        <button class="btn" id="btn-step" type="button" aria-label="下一步" title="下一步">⏭ 单步</button>
+      </div>
+      <div class="step-info" aria-live="polite">
+        <span class="step-prefix">步骤 </span><strong id="step-cur">0</strong> / <strong id="step-total">0</strong>
+      </div>
+      <details class="settings-menu">
+        <summary aria-label="播放设置">⚙ 设置</summary>
+        <div class="settings-popover">
+          <div class="setting-row">
+            <label for="speed-slider">播放速度</label>
+            <input type="range" class="speed-slider" id="speed-slider" min="1" max="10" value="5" aria-valuetext="速度 5">
+          </div>
+          <div class="setting-row">
+            <span class="mode-label">代码字体</span>
+            <div class="font-control">
+              <button class="btn btn-sm" type="button" id="font-dec" aria-label="减小代码字体">A−</button>
+              <button class="btn btn-sm" type="button" id="font-inc" aria-label="增大代码字体">A＋</button>
+            </div>
+          </div>
+          <button class="btn" id="btn-to-bp" type="button">运行到断点</button>
+          <div class="settings-divider"></div>
+          <div class="shortcut-help">页面空白处：空格播放/暂停，← → 单步，R 重置</div>
+        </div>
+      </details>
+    </div>
+  </section>
+</main>
+
+<script src="../js/learning-state.js?v=20260725"></script>
+<script src="../js/engine.js?v=20260725-ux2"></script>
+<script src="../js/viz-renderers.js?v=20260725-layout-audit"></script>
+<script>
+const CHAPTER_NUM = 3;
+const ALGOS = {
+  "01_归并排序": {
+    "title": "归并排序",
+    "defaultMode": "concept",
+    "modeLabels": {
+      "concept": "理解动画",
+      "trace": "代码执行"
+    },
+    "modes": {
+      "concept": {
+        "title": "归并排序",
+        "source": [
+          "算法: 归并排序",
+          "输入: 一个无序数组 arr",
+          "输出: 排好序的数组",
+          "",
+          "函数 merge_sort(arr):",
+          "    如果数组长度 <= 1: 直接返回",
+          "    把数组从中间分成左右两半",
+          "    分别递归排序左半和右半",
+          "    把两个有序数组合并成一个有序数组"
+        ],
+        "important_vars": {
+          "phase": "状态",
+          "array": "状态"
+        },
+        "track_vars": {
+          "primary": [
+            "phase",
+            "array"
+          ],
+          "secondary": []
+        },
+        "var_classes": {
+          "phase": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "array": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "concept": {
+            "category": "secondary",
+            "type": "concept"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 8,
+            "text": "概念动画：归并排序先不断拆分, 再把有序小段一路合并成完整有序数组。"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 6,
+            "type": "exec",
+            "vars": {
+              "phase": "先从完整数组开始, 归并排序的第一步是分成两半",
+              "array": "10,5,13,3,8,15,6",
+              "concept": {
+                "kind": "merge_sort",
+                "title": "归并排序",
+                "nodes": [
+                  {
+                    "id": "root",
+                    "values": [
+                      10,
+                      5,
+                      13,
+                      3,
+                      8,
+                      15,
+                      6
+                    ],
+                    "x": 0.5,
+                    "y": 0.05,
+                    "phase": "split"
+                  }
+                ],
+                "splitEdges": [],
+                "mergeEdges": [],
+                "activeSplit": [],
+                "activeMerge": [],
+                "activeNodes": [
+                  "root"
+                ],
+                "compareGroups": []
+              }
+            }
+          },
+          {
+            "step": 1,
+            "line": 6,
+            "type": "exec",
+            "vars": {
+              "phase": "从中间切开: 左边 4 个数, 右边 3 个数",
+              "array": "10,5,13,3,8,15,6",
+              "concept": {
+                "kind": "merge_sort",
+                "title": "归并排序",
+                "nodes": [
+                  {
+                    "id": "root",
+                    "values": [
+                      10,
+                      5,
+                      13,
+                      3,
+                      8,
+                      15,
+                      6
+                    ],
+                    "x": 0.5,
+                    "y": 0.05,
+                    "phase": "split"
+                  },
+                  {
+                    "id": "L",
+                    "values": [
+                      10,
+                      5,
+                      13,
+                      3
+                    ],
+                    "x": 0.3,
+                    "y": 0.22,
+                    "phase": "split"
+                  },
+                  {
+                    "id": "R",
+                    "values": [
+                      8,
+                      15,
+                      6
+                    ],
+                    "x": 0.7,
+                    "y": 0.22,
+                    "phase": "split"
+                  }
+                ],
+                "splitEdges": [
+                  [
+                    "root",
+                    "L"
+                  ],
+                  [
+                    "root",
+                    "R"
+                  ]
+                ],
+                "mergeEdges": [],
+                "activeSplit": [
+                  [
+                    "root",
+                    "L"
+                  ],
+                  [
+                    "root",
+                    "R"
+                  ]
+                ],
+                "activeMerge": [],
+                "activeNodes": [
+                  "L",
+                  "R"
+                ],
+                "compareGroups": []
+              }
+            }
+          },
+          {
+            "step": 2,
+            "line": 7,
+            "type": "exec",
+            "vars": {
+              "phase": "继续向下分, 直到每组只剩 1 个元素",
+              "array": "10,5,13,3,8,15,6",
+              "concept": {
+                "kind": "merge_sort",
+                "title": "归并排序",
+                "nodes": [
+                  {
+                    "id": "root",
+                    "values": [
+                      10,
+                      5,
+                      13,
+                      3,
+                      8,
+                      15,
+                      6
+                    ],
+                    "x": 0.5,
+                    "y": 0.05,
+                    "phase": "split"
+                  },
+                  {
+                    "id": "L",
+                    "values": [
+                      10,
+                      5,
+                      13,
+                      3
+                    ],
+                    "x": 0.3,
+                    "y": 0.22,
+                    "phase": "split"
+                  },
+                  {
+                    "id": "R",
+                    "values": [
+                      8,
+                      15,
+                      6
+                    ],
+                    "x": 0.7,
+                    "y": 0.22,
+                    "phase": "split"
+                  },
+                  {
+                    "id": "LL",
+                    "values": [
+                      10,
+                      5
+                    ],
+                    "x": 0.2,
+                    "y": 0.39,
+                    "phase": "split"
+                  },
+                  {
+                    "id": "LR",
+                    "values": [
+                      13,
+                      3
+                    ],
+                    "x": 0.4,
+                    "y": 0.39,
+                    "phase": "split"
+                  },
+                  {
+                    "id": "RL",
+                    "values": [
+                      8,
+                      15
+                    ],
+                    "x": 0.62,
+                    "y": 0.39,
+                    "phase": "split"
+                  },
+                  {
+                    "id": "RR",
+                    "values": [
+                      6
+                    ],
+                    "x": 0.82,
+                    "y": 0.39,
+                    "phase": "leaf"
+                  }
+                ],
+                "splitEdges": [
+                  [
+                    "root",
+                    "L"
+                  ],
+                  [
+                    "root",
+                    "R"
+                  ],
+                  [
+                    "L",
+                    "LL"
+                  ],
+                  [
+                    "L",
+                    "LR"
+                  ],
+                  [
+                    "R",
+                    "RL"
+                  ],
+                  [
+                    "R",
+                    "RR"
+                  ]
+                ],
+                "mergeEdges": [],
+                "activeSplit": [
+                  [
+                    "L",
+                    "LL"
+                  ],
+                  [
+                    "L",
+                    "LR"
+                  ],
+                  [
+                    "R",
+                    "RL"
+                  ],
+                  [
+                    "R",
+                    "RR"
+                  ]
+                ],
+                "activeMerge": [],
+                "activeNodes": [
+                  "LL",
+                  "LR",
+                  "RL",
+                  "RR"
+                ],
+                "compareGroups": []
+              }
+            }
+          },
+          {
+            "step": 3,
+            "line": 5,
+            "type": "exec",
+            "vars": {
+              "phase": "单个元素天然有序, 分解阶段到达叶子",
+              "array": "10,5,13,3,8,15,6",
+              "concept": {
+                "kind": "merge_sort",
+                "title": "归并排序",
+                "nodes": [
+                  {
+                    "id": "root",
+                    "values": [
+                      10,
+                      5,
+                      13,
+                      3,
+                      8,
+                      15,
+                      6
+                    ],
+                    "x": 0.5,
+                    "y": 0.05,
+                    "phase": "split"
+                  },
+                  {
+                    "id": "L",
+                    "values": [
+                      10,
+                      5,
+                      13,
+                      3
+                    ],
+                    "x": 0.3,
+                    "y": 0.22,
+                    "phase": "split"
+                  },
+                  {
+                    "id": "R",
+                    "values": [
+                      8,
+                      15,
+                      6
+                    ],
+                    "x": 0.7,
+                    "y": 0.22,
+                    "phase": "split"
+                  },
+                  {
+                    "id": "LL",
+                    "values": [
+                      10,
+                      5
+                    ],
+                    "x": 0.2,
+                    "y": 0.39,
+                    "phase": "split"
+                  },
+                  {
+                    "id": "LR",
+                    "values": [
+                      13,
+                      3
+                    ],
+                    "x": 0.4,
+                    "y": 0.39,
+                    "phase": "split"
+                  },
+                  {
+                    "id": "RL",
+                    "values": [
+                      8,
+                      15
+                    ],
+                    "x": 0.62,
+                    "y": 0.39,
+                    "phase": "split"
+                  },
+                  {
+                    "id": "RR",
+                    "values": [
+                      6
+                    ],
+                    "x": 0.82,
+                    "y": 0.39,
+                    "phase": "leaf"
+                  },
+                  {
+                    "id": "A10",
+                    "values": [
+                      10
+                    ],
+                    "x": 0.15,
+                    "y": 0.56,
+                    "phase": "leaf"
+                  },
+                  {
+                    "id": "A5",
+                    "values": [
+                      5
+                    ],
+                    "x": 0.25,
+                    "y": 0.56,
+                    "phase": "leaf"
+                  },
+                  {
+                    "id": "A13",
+                    "values": [
+                      13
+                    ],
+                    "x": 0.35,
+                    "y": 0.56,
+                    "phase": "leaf"
+                  },
+                  {
+                    "id": "A3",
+                    "values": [
+                      3
+                    ],
+                    "x": 0.45,
+                    "y": 0.56,
+                    "phase": "leaf"
+                  },
+                  {
+                    "id": "A8",
+                    "values": [
+                      8
+                    ],
+                    "x": 0.57,
+                    "y": 0.56,
+                    "phase": "leaf"
+                  },
+                  {
+                    "id": "A15",
+                    "values": [
+                      15
+                    ],
+                    "x": 0.67,
+                    "y": 0.56,
+                    "phase": "leaf"
+                  },
+                  {
+                    "id": "A6",
+                    "values": [
+                      6
+                    ],
+                    "x": 0.82,
+                    "y": 0.56,
+                    "phase": "leaf"
+                  }
+                ],
+                "splitEdges": [
+                  [
+                    "root",
+                    "L"
+                  ],
+                  [
+                    "root",
+                    "R"
+                  ],
+                  [
+                    "L",
+                    "LL"
+                  ],
+                  [
+                    "L",
+                    "LR"
+                  ],
+                  [
+                    "R",
+                    "RL"
+                  ],
+                  [
+                    "R",
+                    "RR"
+                  ],
+                  [
+                    "LL",
+                    "A10"
+                  ],
+                  [
+                    "LL",
+                    "A5"
+                  ],
+                  [
+                    "LR",
+                    "A13"
+                  ],
+                  [
+                    "LR",
+                    "A3"
+                  ],
+                  [
+                    "RL",
+                    "A8"
+                  ],
+                  [
+                    "RL",
+                    "A15"
+                  ],
+                  [
+                    "RR",
+                    "A6"
+                  ]
+                ],
+                "mergeEdges": [],
+                "activeSplit": [
+                  [
+                    "LL",
+                    "A10"
+                  ],
+                  [
+                    "LL",
+                    "A5"
+                  ],
+                  [
+                    "LR",
+                    "A13"
+                  ],
+                  [
+                    "LR",
+                    "A3"
+                  ],
+                  [
+                    "RL",
+                    "A8"
+                  ],
+                  [
+                    "RL",
+                    "A15"
+                  ],
+                  [
+                    "RR",
+                    "A6"
+                  ]
+                ],
+                "activeMerge": [],
+                "activeNodes": [
+                  "A10",
+                  "A5",
+                  "A13",
+                  "A3",
+                  "A8",
+                  "A15",
+                  "A6"
+                ],
+                "compareGroups": []
+              }
+            }
+          },
+          {
+            "step": 4,
+            "line": 8,
+            "type": "exec",
+            "vars": {
+              "phase": "开始合并: 两个单元素比较后排成有序小数组",
+              "array": "10,5,13,3,8,15,6",
+              "concept": {
+                "kind": "merge_sort",
+                "title": "归并排序",
+                "nodes": [
+                  {
+                    "id": "A10",
+                    "values": [
+                      10
+                    ],
+                    "x": 0.15,
+                    "y": 0.56,
+                    "phase": "leaf"
+                  },
+                  {
+                    "id": "A5",
+                    "values": [
+                      5
+                    ],
+                    "x": 0.25,
+                    "y": 0.56,
+                    "phase": "leaf"
+                  },
+                  {
+                    "id": "A13",
+                    "values": [
+                      13
+                    ],
+                    "x": 0.35,
+                    "y": 0.56,
+                    "phase": "leaf"
+                  },
+                  {
+                    "id": "A3",
+                    "values": [
+                      3
+                    ],
+                    "x": 0.45,
+                    "y": 0.56,
+                    "phase": "leaf"
+                  },
+                  {
+                    "id": "A8",
+                    "values": [
+                      8
+                    ],
+                    "x": 0.57,
+                    "y": 0.56,
+                    "phase": "leaf"
+                  },
+                  {
+                    "id": "A15",
+                    "values": [
+                      15
+                    ],
+                    "x": 0.67,
+                    "y": 0.56,
+                    "phase": "leaf"
+                  },
+                  {
+                    "id": "A6",
+                    "values": [
+                      6
+                    ],
+                    "x": 0.82,
+                    "y": 0.56,
+                    "phase": "leaf"
+                  },
+                  {
+                    "id": "M1",
+                    "values": [
+                      5,
+                      10
+                    ],
+                    "x": 0.2,
+                    "y": 0.72,
+                    "phase": "merge"
+                  },
+                  {
+                    "id": "M2",
+                    "values": [
+                      3,
+                      13
+                    ],
+                    "x": 0.4,
+                    "y": 0.72,
+                    "phase": "merge"
+                  },
+                  {
+                    "id": "M3",
+                    "values": [
+                      8,
+                      15
+                    ],
+                    "x": 0.62,
+                    "y": 0.72,
+                    "phase": "merge"
+                  },
+                  {
+                    "id": "M4",
+                    "values": [
+                      6
+                    ],
+                    "x": 0.82,
+                    "y": 0.72,
+                    "phase": "merge"
+                  }
+                ],
+                "splitEdges": [],
+                "mergeEdges": [
+                  [
+                    "A10",
+                    "M1"
+                  ],
+                  [
+                    "A5",
+                    "M1"
+                  ],
+                  [
+                    "A13",
+                    "M2"
+                  ],
+                  [
+                    "A3",
+                    "M2"
+                  ],
+                  [
+                    "A8",
+                    "M3"
+                  ],
+                  [
+                    "A15",
+                    "M3"
+                  ],
+                  [
+                    "A6",
+                    "M4"
+                  ]
+                ],
+                "activeSplit": [],
+                "activeMerge": [
+                  [
+                    "A10",
+                    "M1"
+                  ],
+                  [
+                    "A5",
+                    "M1"
+                  ],
+                  [
+                    "A13",
+                    "M2"
+                  ],
+                  [
+                    "A3",
+                    "M2"
+                  ],
+                  [
+                    "A8",
+                    "M3"
+                  ],
+                  [
+                    "A15",
+                    "M3"
+                  ],
+                  [
+                    "A6",
+                    "M4"
+                  ]
+                ],
+                "activeNodes": [
+                  "M1",
+                  "M2",
+                  "M3",
+                  "M4"
+                ],
+                "compareGroups": []
+              }
+            }
+          },
+          {
+            "step": 5,
+            "line": 8,
+            "type": "exec",
+            "vars": {
+              "phase": "继续把有序小数组合并成更大的有序数组",
+              "array": "10,5,13,3,8,15,6",
+              "concept": {
+                "kind": "merge_sort",
+                "title": "归并排序",
+                "nodes": [
+                  {
+                    "id": "A10",
+                    "values": [
+                      10
+                    ],
+                    "x": 0.15,
+                    "y": 0.56,
+                    "phase": "leaf"
+                  },
+                  {
+                    "id": "A5",
+                    "values": [
+                      5
+                    ],
+                    "x": 0.25,
+                    "y": 0.56,
+                    "phase": "leaf"
+                  },
+                  {
+                    "id": "A13",
+                    "values": [
+                      13
+                    ],
+                    "x": 0.35,
+                    "y": 0.56,
+                    "phase": "leaf"
+                  },
+                  {
+                    "id": "A3",
+                    "values": [
+                      3
+                    ],
+                    "x": 0.45,
+                    "y": 0.56,
+                    "phase": "leaf"
+                  },
+                  {
+                    "id": "A8",
+                    "values": [
+                      8
+                    ],
+                    "x": 0.57,
+                    "y": 0.56,
+                    "phase": "leaf"
+                  },
+                  {
+                    "id": "A15",
+                    "values": [
+                      15
+                    ],
+                    "x": 0.67,
+                    "y": 0.56,
+                    "phase": "leaf"
+                  },
+                  {
+                    "id": "A6",
+                    "values": [
+                      6
+                    ],
+                    "x": 0.82,
+                    "y": 0.56,
+                    "phase": "leaf"
+                  },
+                  {
+                    "id": "M1",
+                    "values": [
+                      5,
+                      10
+                    ],
+                    "x": 0.2,
+                    "y": 0.72,
+                    "phase": "merge"
+                  },
+                  {
+                    "id": "M2",
+                    "values": [
+                      3,
+                      13
+                    ],
+                    "x": 0.4,
+                    "y": 0.72,
+                    "phase": "merge"
+                  },
+                  {
+                    "id": "M3",
+                    "values": [
+                      8,
+                      15
+                    ],
+                    "x": 0.62,
+                    "y": 0.72,
+                    "phase": "merge"
+                  },
+                  {
+                    "id": "M4",
+                    "values": [
+                      6
+                    ],
+                    "x": 0.82,
+                    "y": 0.72,
+                    "phase": "merge"
+                  },
+                  {
+                    "id": "M5",
+                    "values": [
+                      3,
+                      5,
+                      10,
+                      13
+                    ],
+                    "x": 0.3,
+                    "y": 0.87,
+                    "phase": "merge"
+                  },
+                  {
+                    "id": "M6",
+                    "values": [
+                      6,
+                      8,
+                      15
+                    ],
+                    "x": 0.7,
+                    "y": 0.87,
+                    "phase": "merge"
+                  }
+                ],
+                "splitEdges": [],
+                "mergeEdges": [
+                  [
+                    "A10",
+                    "M1"
+                  ],
+                  [
+                    "A5",
+                    "M1"
+                  ],
+                  [
+                    "A13",
+                    "M2"
+                  ],
+                  [
+                    "A3",
+                    "M2"
+                  ],
+                  [
+                    "A8",
+                    "M3"
+                  ],
+                  [
+                    "A15",
+                    "M3"
+                  ],
+                  [
+                    "A6",
+                    "M4"
+                  ],
+                  [
+                    "M1",
+                    "M5"
+                  ],
+                  [
+                    "M2",
+                    "M5"
+                  ],
+                  [
+                    "M3",
+                    "M6"
+                  ],
+                  [
+                    "M4",
+                    "M6"
+                  ]
+                ],
+                "activeSplit": [],
+                "activeMerge": [
+                  [
+                    "M1",
+                    "M5"
+                  ],
+                  [
+                    "M2",
+                    "M5"
+                  ],
+                  [
+                    "M3",
+                    "M6"
+                  ],
+                  [
+                    "M4",
+                    "M6"
+                  ]
+                ],
+                "activeNodes": [
+                  "M5",
+                  "M6"
+                ],
+                "compareGroups": [
+                  [
+                    "M1",
+                    "M2"
+                  ],
+                  [
+                    "M3",
+                    "M4"
+                  ]
+                ]
+              }
+            }
+          },
+          {
+            "step": 6,
+            "line": 8,
+            "type": "exec",
+            "vars": {
+              "phase": "最后合并左右两边, 得到完整有序数组",
+              "array": "10,5,13,3,8,15,6",
+              "concept": {
+                "kind": "merge_sort",
+                "title": "归并排序",
+                "nodes": [
+                  {
+                    "id": "M1",
+                    "values": [
+                      5,
+                      10
+                    ],
+                    "x": 0.2,
+                    "y": 0.72,
+                    "phase": "merge"
+                  },
+                  {
+                    "id": "M2",
+                    "values": [
+                      3,
+                      13
+                    ],
+                    "x": 0.4,
+                    "y": 0.72,
+                    "phase": "merge"
+                  },
+                  {
+                    "id": "M3",
+                    "values": [
+                      8,
+                      15
+                    ],
+                    "x": 0.62,
+                    "y": 0.72,
+                    "phase": "merge"
+                  },
+                  {
+                    "id": "M4",
+                    "values": [
+                      6
+                    ],
+                    "x": 0.82,
+                    "y": 0.72,
+                    "phase": "merge"
+                  },
+                  {
+                    "id": "M5",
+                    "values": [
+                      3,
+                      5,
+                      10,
+                      13
+                    ],
+                    "x": 0.3,
+                    "y": 0.87,
+                    "phase": "merge"
+                  },
+                  {
+                    "id": "M6",
+                    "values": [
+                      6,
+                      8,
+                      15
+                    ],
+                    "x": 0.7,
+                    "y": 0.87,
+                    "phase": "merge"
+                  },
+                  {
+                    "id": "DONE",
+                    "values": [
+                      3,
+                      5,
+                      6,
+                      8,
+                      10,
+                      13,
+                      15
+                    ],
+                    "x": 0.5,
+                    "y": 1.02,
+                    "phase": "done"
+                  }
+                ],
+                "splitEdges": [],
+                "mergeEdges": [
+                  [
+                    "M1",
+                    "M5"
+                  ],
+                  [
+                    "M2",
+                    "M5"
+                  ],
+                  [
+                    "M3",
+                    "M6"
+                  ],
+                  [
+                    "M4",
+                    "M6"
+                  ],
+                  [
+                    "M5",
+                    "DONE"
+                  ],
+                  [
+                    "M6",
+                    "DONE"
+                  ]
+                ],
+                "activeSplit": [],
+                "activeMerge": [
+                  [
+                    "M5",
+                    "DONE"
+                  ],
+                  [
+                    "M6",
+                    "DONE"
+                  ]
+                ],
+                "activeNodes": [
+                  "DONE"
+                ],
+                "compareGroups": [
+                  [
+                    "M5",
+                    "M6"
+                  ]
+                ]
+              }
+            }
+          },
+          {
+            "step": 7,
+            "line": 9,
+            "type": "exec",
+            "vars": {
+              "phase": "归并排序完成: 先分到足够小, 再一路有序地合回来",
+              "array": "10,5,13,3,8,15,6",
+              "concept": {
+                "kind": "merge_sort",
+                "title": "归并排序",
+                "nodes": [
+                  {
+                    "id": "root",
+                    "values": [
+                      10,
+                      5,
+                      13,
+                      3,
+                      8,
+                      15,
+                      6
+                    ],
+                    "x": 0.5,
+                    "y": 0.05,
+                    "phase": "split"
+                  },
+                  {
+                    "id": "L",
+                    "values": [
+                      10,
+                      5,
+                      13,
+                      3
+                    ],
+                    "x": 0.3,
+                    "y": 0.22,
+                    "phase": "split"
+                  },
+                  {
+                    "id": "R",
+                    "values": [
+                      8,
+                      15,
+                      6
+                    ],
+                    "x": 0.7,
+                    "y": 0.22,
+                    "phase": "split"
+                  },
+                  {
+                    "id": "LL",
+                    "values": [
+                      10,
+                      5
+                    ],
+                    "x": 0.2,
+                    "y": 0.39,
+                    "phase": "split"
+                  },
+                  {
+                    "id": "LR",
+                    "values": [
+                      13,
+                      3
+                    ],
+                    "x": 0.4,
+                    "y": 0.39,
+                    "phase": "split"
+                  },
+                  {
+                    "id": "RL",
+                    "values": [
+                      8,
+                      15
+                    ],
+                    "x": 0.62,
+                    "y": 0.39,
+                    "phase": "split"
+                  },
+                  {
+                    "id": "RR",
+                    "values": [
+                      6
+                    ],
+                    "x": 0.82,
+                    "y": 0.39,
+                    "phase": "leaf"
+                  },
+                  {
+                    "id": "A10",
+                    "values": [
+                      10
+                    ],
+                    "x": 0.15,
+                    "y": 0.56,
+                    "phase": "leaf"
+                  },
+                  {
+                    "id": "A5",
+                    "values": [
+                      5
+                    ],
+                    "x": 0.25,
+                    "y": 0.56,
+                    "phase": "leaf"
+                  },
+                  {
+                    "id": "A13",
+                    "values": [
+                      13
+                    ],
+                    "x": 0.35,
+                    "y": 0.56,
+                    "phase": "leaf"
+                  },
+                  {
+                    "id": "A3",
+                    "values": [
+                      3
+                    ],
+                    "x": 0.45,
+                    "y": 0.56,
+                    "phase": "leaf"
+                  },
+                  {
+                    "id": "A8",
+                    "values": [
+                      8
+                    ],
+                    "x": 0.57,
+                    "y": 0.56,
+                    "phase": "leaf"
+                  },
+                  {
+                    "id": "A15",
+                    "values": [
+                      15
+                    ],
+                    "x": 0.67,
+                    "y": 0.56,
+                    "phase": "leaf"
+                  },
+                  {
+                    "id": "A6",
+                    "values": [
+                      6
+                    ],
+                    "x": 0.82,
+                    "y": 0.56,
+                    "phase": "leaf"
+                  },
+                  {
+                    "id": "M1",
+                    "values": [
+                      5,
+                      10
+                    ],
+                    "x": 0.2,
+                    "y": 0.72,
+                    "phase": "merge"
+                  },
+                  {
+                    "id": "M2",
+                    "values": [
+                      3,
+                      13
+                    ],
+                    "x": 0.4,
+                    "y": 0.72,
+                    "phase": "merge"
+                  },
+                  {
+                    "id": "M3",
+                    "values": [
+                      8,
+                      15
+                    ],
+                    "x": 0.62,
+                    "y": 0.72,
+                    "phase": "merge"
+                  },
+                  {
+                    "id": "M4",
+                    "values": [
+                      6
+                    ],
+                    "x": 0.82,
+                    "y": 0.72,
+                    "phase": "merge"
+                  },
+                  {
+                    "id": "M5",
+                    "values": [
+                      3,
+                      5,
+                      10,
+                      13
+                    ],
+                    "x": 0.3,
+                    "y": 0.87,
+                    "phase": "merge"
+                  },
+                  {
+                    "id": "M6",
+                    "values": [
+                      6,
+                      8,
+                      15
+                    ],
+                    "x": 0.7,
+                    "y": 0.87,
+                    "phase": "merge"
+                  },
+                  {
+                    "id": "DONE",
+                    "values": [
+                      3,
+                      5,
+                      6,
+                      8,
+                      10,
+                      13,
+                      15
+                    ],
+                    "x": 0.5,
+                    "y": 1.02,
+                    "phase": "done"
+                  }
+                ],
+                "splitEdges": [
+                  [
+                    "root",
+                    "L"
+                  ],
+                  [
+                    "root",
+                    "R"
+                  ],
+                  [
+                    "L",
+                    "LL"
+                  ],
+                  [
+                    "L",
+                    "LR"
+                  ],
+                  [
+                    "R",
+                    "RL"
+                  ],
+                  [
+                    "R",
+                    "RR"
+                  ],
+                  [
+                    "LL",
+                    "A10"
+                  ],
+                  [
+                    "LL",
+                    "A5"
+                  ],
+                  [
+                    "LR",
+                    "A13"
+                  ],
+                  [
+                    "LR",
+                    "A3"
+                  ],
+                  [
+                    "RL",
+                    "A8"
+                  ],
+                  [
+                    "RL",
+                    "A15"
+                  ],
+                  [
+                    "RR",
+                    "A6"
+                  ]
+                ],
+                "mergeEdges": [
+                  [
+                    "A10",
+                    "M1"
+                  ],
+                  [
+                    "A5",
+                    "M1"
+                  ],
+                  [
+                    "A13",
+                    "M2"
+                  ],
+                  [
+                    "A3",
+                    "M2"
+                  ],
+                  [
+                    "A8",
+                    "M3"
+                  ],
+                  [
+                    "A15",
+                    "M3"
+                  ],
+                  [
+                    "A6",
+                    "M4"
+                  ],
+                  [
+                    "M1",
+                    "M5"
+                  ],
+                  [
+                    "M2",
+                    "M5"
+                  ],
+                  [
+                    "M3",
+                    "M6"
+                  ],
+                  [
+                    "M4",
+                    "M6"
+                  ],
+                  [
+                    "M5",
+                    "DONE"
+                  ],
+                  [
+                    "M6",
+                    "DONE"
+                  ]
+                ],
+                "activeSplit": [],
+                "activeMerge": [],
+                "activeNodes": [
+                  "DONE"
+                ],
+                "compareGroups": []
+              }
+            }
+          }
+        ]
+      },
+      "trace": {
+        "title": "归并排序",
+        "source": [
+          "#include <stdio.h>",
+          "#include <stdlib.h>",
+          "/* 合并两个有序子数组 arr[left..mid] 和 arr[mid + 1..right] */",
+          "void merge(int arr[], int left, int mid, int right) {",
+          "    int n1 = mid - left + 1;   /* 左半部分的长度 */",
+          "    int n2 = right - mid;       /* 右半部分的长度 */",
+          "    /* 在堆上动态分配临时数组 */",
+          "    int *L = (int *)malloc(n1 * sizeof(int));",
+          "    int *R = (int *)malloc(n2 * sizeof(int));",
+          "    if (L == NULL || R == NULL) {",
+          "        free(L);",
+          "        free(R);",
+          "        fprintf(stderr, \"内存分配失败\\n\");",
+          "        exit(EXIT_FAILURE);",
+          "    }",
+          "    /* 把数据拷贝到临时数组 */",
+          "    for (int i = 0; i < n1; i++)",
+          "        L[i] = arr[left + i];",
+          "    for (int j = 0; j < n2; j++)",
+          "        R[j] = arr[mid + 1 + j];",
+          "    /* 合并临时数组回 arr[left..right] */",
+          "    int i = 0, j = 0, k = left;",
+          "    while (i < n1 && j < n2) {",
+          "        if (L[i] <= R[j]) {    /* 左边的更小，取左边的 */",
+          "            arr[k] = L[i];",
+          "            i++;",
+          "        } else {                /* 右边的更小，取右边的 */",
+          "            arr[k] = R[j];",
+          "            j++;",
+          "        }",
+          "        k++;",
+          "    }",
+          "    /* 把左边剩余的元素全搬过来 */",
+          "    while (i < n1) {",
+          "        arr[k] = L[i];",
+          "        i++; k++;",
+          "    }",
+          "    /* 把右边剩余的元素全搬过来 */",
+          "    while (j < n2) {",
+          "        arr[k] = R[j];",
+          "        j++; k++;",
+          "    }",
+          "    /* 释放临时数组（别忘了！） */",
+          "    free(L);",
+          "    free(R);",
+          "}",
+          "/* 归并排序主函数 */",
+          "void merge_sort(int arr[], int left, int right) {",
+          "    if (left < right) {             /* 终止条件：只剩一个元素时 left == right */",
+          "        int mid = left + (right - left) / 2;  /* 防溢出的中点写法 */",
+          "        merge_sort(arr, left, mid);       /* 递归排序左半部分 */",
+          "        merge_sort(arr, mid + 1, right);  /* 递归排序右半部分 */",
+          "        merge(arr, left, mid, right);     /* 合并两个有序子数组 */",
+          "    }",
+          "}",
+          "/* 测试 */",
+          "int main(void) {",
+          "    int arr[] = {10, 5, 13, 3, 8, 15, 6};",
+          "    int n = sizeof(arr) / sizeof(arr[0]);",
+          "    printf(\"排序前：\");",
+          "    for (int i = 0; i < n; i++)",
+          "        printf(\" %d\", arr[i]);",
+          "    printf(\"\\n\");",
+          "    merge_sort(arr, 0, n - 1);",
+          "    printf(\"排序后：\");",
+          "    for (int i = 0; i < n; i++)",
+          "        printf(\" %d\", arr[i]);",
+          "    printf(\"\\n\");",
+          "    return 0;",
+          "}"
+        ],
+        "important_vars": {
+          "i": "索引",
+          "j": "索引",
+          "mid": "索引",
+          "n": "参数",
+          "arr": "数据"
+        },
+        "track_vars": {
+          "primary": [
+            "arr",
+            "i",
+            "j",
+            "k",
+            "left",
+            "n",
+            "n1",
+            "n2",
+            "right"
+          ],
+          "secondary": [
+            "L",
+            "R",
+            "_return"
+          ]
+        },
+        "var_classes": {
+          "L": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "R": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "_return": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "arr": {
+            "category": "primary",
+            "type": "array"
+          },
+          "i": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "j": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "k": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "left": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "n": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "n1": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "n2": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "right": {
+            "category": "primary",
+            "type": "scalar"
+          }
+        },
+        "initial_data": {
+          "arr": [
+            10,
+            5,
+            13,
+            3,
+            8,
+            15,
+            6
+          ]
+        },
+        "program_output": [
+          {
+            "after_step": 1,
+            "text": "排序前： 10 5 13 3 8 15 6"
+          },
+          {
+            "after_step": 121,
+            "text": "排序后： 3 5 6 8 10 13 15"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 57,
+            "type": "enter",
+            "func": "main",
+            "vars": {}
+          },
+          {
+            "step": 1,
+            "line": 61,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 0,
+              "n": 7
+            }
+          },
+          {
+            "step": 2,
+            "line": 61,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 1,
+              "n": 7
+            }
+          },
+          {
+            "step": 3,
+            "line": 61,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 2,
+              "n": 7
+            }
+          },
+          {
+            "step": 4,
+            "line": 61,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 3,
+              "n": 7
+            }
+          },
+          {
+            "step": 5,
+            "line": 61,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 4,
+              "n": 7
+            }
+          },
+          {
+            "step": 6,
+            "line": 61,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 5,
+              "n": 7
+            }
+          },
+          {
+            "step": 7,
+            "line": 61,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 6,
+              "n": 7
+            }
+          },
+          {
+            "step": 8,
+            "line": 64,
+            "type": "enter",
+            "func": "merge_sort",
+            "vars": {
+              "arr": [
+                10,
+                5,
+                13,
+                3,
+                8,
+                15,
+                6
+              ],
+              "left": 0,
+              "right": 6
+            }
+          },
+          {
+            "step": 9,
+            "line": 49,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "left": 0,
+              "right": 6
+            }
+          },
+          {
+            "step": 10,
+            "line": 51,
+            "type": "enter",
+            "func": "merge_sort",
+            "vars": {
+              "arr": [
+                10,
+                5,
+                13,
+                3,
+                8,
+                15,
+                6
+              ],
+              "left": 0,
+              "right": 3
+            }
+          },
+          {
+            "step": 11,
+            "line": 49,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "left": 0,
+              "right": 3
+            }
+          },
+          {
+            "step": 12,
+            "line": 51,
+            "type": "enter",
+            "func": "merge_sort",
+            "vars": {
+              "arr": [
+                10,
+                5,
+                13,
+                3,
+                8,
+                15,
+                6
+              ],
+              "left": 0,
+              "right": 1
+            }
+          },
+          {
+            "step": 13,
+            "line": 49,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "left": 0,
+              "right": 1
+            }
+          },
+          {
+            "step": 14,
+            "line": 51,
+            "type": "enter",
+            "func": "merge_sort",
+            "vars": {
+              "arr": [
+                10,
+                5,
+                13,
+                3,
+                8,
+                15,
+                6
+              ],
+              "left": 0,
+              "right": 0
+            }
+          },
+          {
+            "step": 15,
+            "line": 17,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 0,
+              "n1": 1
+            }
+          },
+          {
+            "step": 16,
+            "line": 19,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "j": 0,
+              "n2": 1
+            }
+          },
+          {
+            "step": 17,
+            "line": 23,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 0,
+              "j": 0,
+              "n1": 1,
+              "n2": 1
+            }
+          },
+          {
+            "step": 18,
+            "line": 28,
+            "type": "exec",
+            "vars": {
+              "arr": [
+                5,
+                5,
+                13,
+                3,
+                8,
+                15,
+                6
+              ]
+            }
+          },
+          {
+            "step": 19,
+            "line": 29,
+            "type": "exec",
+            "vars": {
+              "j": 1
+            }
+          },
+          {
+            "step": 20,
+            "line": 31,
+            "type": "exec",
+            "vars": {
+              "k": 1
+            }
+          },
+          {
+            "step": 21,
+            "line": 34,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 0,
+              "n1": 1
+            }
+          },
+          {
+            "step": 22,
+            "line": 35,
+            "type": "exec",
+            "vars": {
+              "arr": [
+                5,
+                10,
+                13,
+                3,
+                8,
+                15,
+                6
+              ]
+            }
+          },
+          {
+            "step": 23,
+            "line": 36,
+            "type": "exec",
+            "vars": {
+              "i": 1
+            }
+          },
+          {
+            "step": 24,
+            "line": 49,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "left": 2,
+              "right": 3
+            }
+          },
+          {
+            "step": 25,
+            "line": 51,
+            "type": "enter",
+            "func": "merge_sort",
+            "vars": {
+              "arr": [
+                5,
+                10,
+                13,
+                3,
+                8,
+                15,
+                6
+              ],
+              "left": 2,
+              "right": 2
+            }
+          },
+          {
+            "step": 26,
+            "line": 17,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 0,
+              "n1": 1
+            }
+          },
+          {
+            "step": 27,
+            "line": 19,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "j": 0,
+              "n2": 1
+            }
+          },
+          {
+            "step": 28,
+            "line": 23,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 0,
+              "j": 0,
+              "n1": 1,
+              "n2": 1
+            }
+          },
+          {
+            "step": 29,
+            "line": 28,
+            "type": "exec",
+            "vars": {
+              "arr": [
+                5,
+                10,
+                3,
+                3,
+                8,
+                15,
+                6
+              ]
+            }
+          },
+          {
+            "step": 30,
+            "line": 29,
+            "type": "exec",
+            "vars": {
+              "j": 1
+            }
+          },
+          {
+            "step": 31,
+            "line": 31,
+            "type": "exec",
+            "vars": {
+              "k": 3
+            }
+          },
+          {
+            "step": 32,
+            "line": 34,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 0,
+              "n1": 1
+            }
+          },
+          {
+            "step": 33,
+            "line": 35,
+            "type": "exec",
+            "vars": {
+              "arr": [
+                5,
+                10,
+                3,
+                13,
+                8,
+                15,
+                6
+              ]
+            }
+          },
+          {
+            "step": 34,
+            "line": 36,
+            "type": "exec",
+            "vars": {
+              "i": 1
+            }
+          },
+          {
+            "step": 35,
+            "line": 17,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 0,
+              "n1": 2
+            }
+          },
+          {
+            "step": 36,
+            "line": 17,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 1,
+              "n1": 2
+            }
+          },
+          {
+            "step": 37,
+            "line": 19,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "j": 0,
+              "n2": 2
+            }
+          },
+          {
+            "step": 38,
+            "line": 19,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "j": 1,
+              "n2": 2
+            }
+          },
+          {
+            "step": 39,
+            "line": 23,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 0,
+              "j": 0,
+              "n1": 2,
+              "n2": 2
+            }
+          },
+          {
+            "step": 40,
+            "line": 28,
+            "type": "exec",
+            "vars": {
+              "arr": [
+                3,
+                10,
+                3,
+                13,
+                8,
+                15,
+                6
+              ]
+            }
+          },
+          {
+            "step": 41,
+            "line": 29,
+            "type": "exec",
+            "vars": {
+              "j": 1
+            }
+          },
+          {
+            "step": 42,
+            "line": 31,
+            "type": "exec",
+            "vars": {
+              "k": 1
+            }
+          },
+          {
+            "step": 43,
+            "line": 23,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 0,
+              "j": 1,
+              "n1": 2,
+              "n2": 2
+            }
+          },
+          {
+            "step": 44,
+            "line": 24,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "L": 16554768,
+              "R": 16554784,
+              "i": 0,
+              "j": 1
+            }
+          },
+          {
+            "step": 45,
+            "line": 25,
+            "type": "exec",
+            "vars": {
+              "arr": [
+                3,
+                5,
+                3,
+                13,
+                8,
+                15,
+                6
+              ]
+            }
+          },
+          {
+            "step": 46,
+            "line": 26,
+            "type": "exec",
+            "vars": {
+              "i": 1
+            }
+          },
+          {
+            "step": 47,
+            "line": 31,
+            "type": "exec",
+            "vars": {
+              "k": 2
+            }
+          },
+          {
+            "step": 48,
+            "line": 23,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 1,
+              "j": 1,
+              "n1": 2,
+              "n2": 2
+            }
+          },
+          {
+            "step": 49,
+            "line": 24,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "L": 16554768,
+              "R": 16554784,
+              "i": 1,
+              "j": 1
+            }
+          },
+          {
+            "step": 50,
+            "line": 25,
+            "type": "exec",
+            "vars": {
+              "arr": [
+                3,
+                5,
+                10,
+                13,
+                8,
+                15,
+                6
+              ]
+            }
+          },
+          {
+            "step": 51,
+            "line": 26,
+            "type": "exec",
+            "vars": {
+              "i": 2
+            }
+          },
+          {
+            "step": 52,
+            "line": 31,
+            "type": "exec",
+            "vars": {
+              "k": 3
+            }
+          },
+          {
+            "step": 53,
+            "line": 39,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "j": 1,
+              "n2": 2
+            }
+          },
+          {
+            "step": 54,
+            "line": 40,
+            "type": "exec",
+            "vars": {
+              "arr": [
+                3,
+                5,
+                10,
+                13,
+                8,
+                15,
+                6
+              ]
+            }
+          },
+          {
+            "step": 55,
+            "line": 41,
+            "type": "exec",
+            "vars": {
+              "j": 2
+            }
+          },
+          {
+            "step": 56,
+            "line": 49,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "left": 4,
+              "right": 6
+            }
+          },
+          {
+            "step": 57,
+            "line": 51,
+            "type": "enter",
+            "func": "merge_sort",
+            "vars": {
+              "arr": [
+                3,
+                5,
+                10,
+                13,
+                8,
+                15,
+                6
+              ],
+              "left": 4,
+              "right": 5
+            }
+          },
+          {
+            "step": 58,
+            "line": 49,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "left": 4,
+              "right": 5
+            }
+          },
+          {
+            "step": 59,
+            "line": 51,
+            "type": "enter",
+            "func": "merge_sort",
+            "vars": {
+              "arr": [
+                3,
+                5,
+                10,
+                13,
+                8,
+                15,
+                6
+              ],
+              "left": 4,
+              "right": 4
+            }
+          },
+          {
+            "step": 60,
+            "line": 17,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 0,
+              "n1": 1
+            }
+          },
+          {
+            "step": 61,
+            "line": 19,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "j": 0,
+              "n2": 1
+            }
+          },
+          {
+            "step": 62,
+            "line": 23,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 0,
+              "j": 0,
+              "n1": 1,
+              "n2": 1
+            }
+          },
+          {
+            "step": 63,
+            "line": 24,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "L": 16554768,
+              "R": 16554784,
+              "i": 0,
+              "j": 0
+            }
+          },
+          {
+            "step": 64,
+            "line": 25,
+            "type": "exec",
+            "vars": {
+              "arr": [
+                3,
+                5,
+                10,
+                13,
+                8,
+                15,
+                6
+              ]
+            }
+          },
+          {
+            "step": 65,
+            "line": 26,
+            "type": "exec",
+            "vars": {
+              "i": 1
+            }
+          },
+          {
+            "step": 66,
+            "line": 31,
+            "type": "exec",
+            "vars": {
+              "k": 5
+            }
+          },
+          {
+            "step": 67,
+            "line": 39,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "j": 0,
+              "n2": 1
+            }
+          },
+          {
+            "step": 68,
+            "line": 40,
+            "type": "exec",
+            "vars": {
+              "arr": [
+                3,
+                5,
+                10,
+                13,
+                8,
+                15,
+                6
+              ]
+            }
+          },
+          {
+            "step": 69,
+            "line": 41,
+            "type": "exec",
+            "vars": {
+              "j": 1
+            }
+          },
+          {
+            "step": 70,
+            "line": 17,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 0,
+              "n1": 2
+            }
+          },
+          {
+            "step": 71,
+            "line": 17,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 1,
+              "n1": 2
+            }
+          },
+          {
+            "step": 72,
+            "line": 19,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "j": 0,
+              "n2": 1
+            }
+          },
+          {
+            "step": 73,
+            "line": 23,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 0,
+              "j": 0,
+              "n1": 2,
+              "n2": 1
+            }
+          },
+          {
+            "step": 74,
+            "line": 28,
+            "type": "exec",
+            "vars": {
+              "arr": [
+                3,
+                5,
+                10,
+                13,
+                6,
+                15,
+                6
+              ]
+            }
+          },
+          {
+            "step": 75,
+            "line": 29,
+            "type": "exec",
+            "vars": {
+              "j": 1
+            }
+          },
+          {
+            "step": 76,
+            "line": 31,
+            "type": "exec",
+            "vars": {
+              "k": 5
+            }
+          },
+          {
+            "step": 77,
+            "line": 34,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 0,
+              "n1": 2
+            }
+          },
+          {
+            "step": 78,
+            "line": 35,
+            "type": "exec",
+            "vars": {
+              "arr": [
+                3,
+                5,
+                10,
+                13,
+                6,
+                8,
+                6
+              ]
+            }
+          },
+          {
+            "step": 79,
+            "line": 36,
+            "type": "exec",
+            "vars": {
+              "i": 1
+            }
+          },
+          {
+            "step": 80,
+            "line": 34,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 1,
+              "n1": 2
+            }
+          },
+          {
+            "step": 81,
+            "line": 35,
+            "type": "exec",
+            "vars": {
+              "arr": [
+                3,
+                5,
+                10,
+                13,
+                6,
+                8,
+                15
+              ]
+            }
+          },
+          {
+            "step": 82,
+            "line": 36,
+            "type": "exec",
+            "vars": {
+              "i": 2
+            }
+          },
+          {
+            "step": 83,
+            "line": 17,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 0,
+              "n1": 4
+            }
+          },
+          {
+            "step": 84,
+            "line": 17,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 1,
+              "n1": 4
+            }
+          },
+          {
+            "step": 85,
+            "line": 17,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 2,
+              "n1": 4
+            }
+          },
+          {
+            "step": 86,
+            "line": 17,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 3,
+              "n1": 4
+            }
+          },
+          {
+            "step": 87,
+            "line": 19,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "j": 0,
+              "n2": 3
+            }
+          },
+          {
+            "step": 88,
+            "line": 19,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "j": 1,
+              "n2": 3
+            }
+          },
+          {
+            "step": 89,
+            "line": 19,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "j": 2,
+              "n2": 3
+            }
+          },
+          {
+            "step": 90,
+            "line": 23,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 0,
+              "j": 0,
+              "n1": 4,
+              "n2": 3
+            }
+          },
+          {
+            "step": 91,
+            "line": 24,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "L": 16554768,
+              "R": 16554784,
+              "i": 0,
+              "j": 0
+            }
+          },
+          {
+            "step": 92,
+            "line": 25,
+            "type": "exec",
+            "vars": {
+              "arr": [
+                3,
+                5,
+                10,
+                13,
+                6,
+                8,
+                15
+              ]
+            }
+          },
+          {
+            "step": 93,
+            "line": 26,
+            "type": "exec",
+            "vars": {
+              "i": 1
+            }
+          },
+          {
+            "step": 94,
+            "line": 31,
+            "type": "exec",
+            "vars": {
+              "k": 1
+            }
+          },
+          {
+            "step": 95,
+            "line": 23,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 1,
+              "j": 0,
+              "n1": 4,
+              "n2": 3
+            }
+          },
+          {
+            "step": 96,
+            "line": 24,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "L": 16554768,
+              "R": 16554784,
+              "i": 1,
+              "j": 0
+            }
+          },
+          {
+            "step": 97,
+            "line": 25,
+            "type": "exec",
+            "vars": {
+              "arr": [
+                3,
+                5,
+                10,
+                13,
+                6,
+                8,
+                15
+              ]
+            }
+          },
+          {
+            "step": 98,
+            "line": 26,
+            "type": "exec",
+            "vars": {
+              "i": 2
+            }
+          },
+          {
+            "step": 99,
+            "line": 31,
+            "type": "exec",
+            "vars": {
+              "k": 2
+            }
+          },
+          {
+            "step": 100,
+            "line": 23,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 2,
+              "j": 0,
+              "n1": 4,
+              "n2": 3
+            }
+          },
+          {
+            "step": 101,
+            "line": 28,
+            "type": "exec",
+            "vars": {
+              "arr": [
+                3,
+                5,
+                6,
+                13,
+                6,
+                8,
+                15
+              ]
+            }
+          },
+          {
+            "step": 102,
+            "line": 29,
+            "type": "exec",
+            "vars": {
+              "j": 1
+            }
+          },
+          {
+            "step": 103,
+            "line": 31,
+            "type": "exec",
+            "vars": {
+              "k": 3
+            }
+          },
+          {
+            "step": 104,
+            "line": 23,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 2,
+              "j": 1,
+              "n1": 4,
+              "n2": 3
+            }
+          },
+          {
+            "step": 105,
+            "line": 28,
+            "type": "exec",
+            "vars": {
+              "arr": [
+                3,
+                5,
+                6,
+                8,
+                6,
+                8,
+                15
+              ]
+            }
+          },
+          {
+            "step": 106,
+            "line": 29,
+            "type": "exec",
+            "vars": {
+              "j": 2
+            }
+          },
+          {
+            "step": 107,
+            "line": 31,
+            "type": "exec",
+            "vars": {
+              "k": 4
+            }
+          },
+          {
+            "step": 108,
+            "line": 23,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 2,
+              "j": 2,
+              "n1": 4,
+              "n2": 3
+            }
+          },
+          {
+            "step": 109,
+            "line": 24,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "L": 16554768,
+              "R": 16554784,
+              "i": 2,
+              "j": 2
+            }
+          },
+          {
+            "step": 110,
+            "line": 25,
+            "type": "exec",
+            "vars": {
+              "arr": [
+                3,
+                5,
+                6,
+                8,
+                10,
+                8,
+                15
+              ]
+            }
+          },
+          {
+            "step": 111,
+            "line": 26,
+            "type": "exec",
+            "vars": {
+              "i": 3
+            }
+          },
+          {
+            "step": 112,
+            "line": 31,
+            "type": "exec",
+            "vars": {
+              "k": 5
+            }
+          },
+          {
+            "step": 113,
+            "line": 23,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 3,
+              "j": 2,
+              "n1": 4,
+              "n2": 3
+            }
+          },
+          {
+            "step": 114,
+            "line": 24,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "L": 16554768,
+              "R": 16554784,
+              "i": 3,
+              "j": 2
+            }
+          },
+          {
+            "step": 115,
+            "line": 25,
+            "type": "exec",
+            "vars": {
+              "arr": [
+                3,
+                5,
+                6,
+                8,
+                10,
+                13,
+                15
+              ]
+            }
+          },
+          {
+            "step": 116,
+            "line": 26,
+            "type": "exec",
+            "vars": {
+              "i": 4
+            }
+          },
+          {
+            "step": 117,
+            "line": 31,
+            "type": "exec",
+            "vars": {
+              "k": 6
+            }
+          },
+          {
+            "step": 118,
+            "line": 39,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "j": 2,
+              "n2": 3
+            }
+          },
+          {
+            "step": 119,
+            "line": 40,
+            "type": "exec",
+            "vars": {
+              "arr": [
+                3,
+                5,
+                6,
+                8,
+                10,
+                13,
+                15
+              ]
+            }
+          },
+          {
+            "step": 120,
+            "line": 41,
+            "type": "exec",
+            "vars": {
+              "j": 3
+            }
+          },
+          {
+            "step": 121,
+            "line": 66,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 0,
+              "n": 7
+            }
+          },
+          {
+            "step": 122,
+            "line": 66,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 1,
+              "n": 7
+            }
+          },
+          {
+            "step": 123,
+            "line": 66,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 2,
+              "n": 7
+            }
+          },
+          {
+            "step": 124,
+            "line": 66,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 3,
+              "n": 7
+            }
+          },
+          {
+            "step": 125,
+            "line": 66,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 4,
+              "n": 7
+            }
+          },
+          {
+            "step": 126,
+            "line": 66,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 5,
+              "n": 7
+            }
+          },
+          {
+            "step": 127,
+            "line": 66,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 6,
+              "n": 7
+            }
+          },
+          {
+            "step": 128,
+            "line": 69,
+            "type": "exec",
+            "vars": {
+              "_return": 0
+            }
+          },
+          {
+            "step": 129,
+            "line": 69,
+            "type": "exit",
+            "func": "main",
+            "vars": {}
+          }
+        ]
+      }
+    }
+  },
+  "02_快速排序": {
+    "title": "快速排序",
+    "defaultMode": "concept",
+    "modeLabels": {
+      "concept": "理解动画",
+      "trace": "代码执行"
+    },
+    "modes": {
+      "concept": {
+        "title": "快速排序",
+        "source": [
+          "算法: 快速排序",
+          "输入: 一个无序数组 arr",
+          "输出: 排好序的数组",
+          "",
+          "函数 quick_sort(arr):",
+          "    选择一个 pivot",
+          "    把小于 pivot 的元素放到左边",
+          "    把大于 pivot 的元素放到右边",
+          "    pivot 已经到达最终位置",
+          "    分别递归排序左右两边"
+        ],
+        "important_vars": {
+          "pivot": "基准值",
+          "range": "当前区间",
+          "phase": "阶段"
+        },
+        "track_vars": {
+          "primary": [
+            "pivot",
+            "range",
+            "phase"
+          ],
+          "secondary": []
+        },
+        "var_classes": {
+          "pivot": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "range": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "phase": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "concept": {
+            "category": "secondary",
+            "type": "concept"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 8,
+            "text": "概念动画：快排的关键不是一次排完, 而是让 pivot 一次次站到最终位置。"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 5,
+            "type": "exec",
+            "vars": {
+              "pivot": 6,
+              "range": "0..6",
+              "phase": "选择最后一个元素 6 做 pivot, 开始从左到右分区",
+              "concept": {
+                "kind": "array_process",
+                "mode": "quick",
+                "title": "快速排序",
+                "values": [
+                  10,
+                  5,
+                  13,
+                  3,
+                  8,
+                  15,
+                  6
+                ],
+                "pivotIdx": 6,
+                "compare": [
+                  0,
+                  6
+                ],
+                "leftZone": [],
+                "sorted": [],
+                "range": [
+                  0,
+                  6
+                ],
+                "phase": "选择最后一个元素 6 做 pivot, 开始从左到右分区"
+              }
+            }
+          },
+          {
+            "step": 1,
+            "line": 7,
+            "type": "exec",
+            "vars": {
+              "pivot": 6,
+              "range": "0..6",
+              "phase": "5 小于 6, 被交换到左侧小区",
+              "concept": {
+                "kind": "array_process",
+                "mode": "quick",
+                "title": "快速排序",
+                "values": [
+                  5,
+                  10,
+                  13,
+                  3,
+                  8,
+                  15,
+                  6
+                ],
+                "pivotIdx": 6,
+                "compare": [
+                  1,
+                  6
+                ],
+                "leftZone": [
+                  0
+                ],
+                "sorted": [],
+                "range": [
+                  0,
+                  6
+                ],
+                "phase": "5 小于 6, 被交换到左侧小区"
+              }
+            }
+          },
+          {
+            "step": 2,
+            "line": 7,
+            "type": "exec",
+            "vars": {
+              "pivot": 6,
+              "range": "0..6",
+              "phase": "继续扫描, 3 也进入左侧小区",
+              "concept": {
+                "kind": "array_process",
+                "mode": "quick",
+                "title": "快速排序",
+                "values": [
+                  5,
+                  3,
+                  13,
+                  10,
+                  8,
+                  15,
+                  6
+                ],
+                "pivotIdx": 6,
+                "compare": [
+                  3,
+                  6
+                ],
+                "leftZone": [
+                  0,
+                  1
+                ],
+                "sorted": [],
+                "range": [
+                  0,
+                  6
+                ],
+                "phase": "继续扫描, 3 也进入左侧小区"
+              }
+            }
+          },
+          {
+            "step": 3,
+            "line": 8,
+            "type": "exec",
+            "vars": {
+              "pivot": 6,
+              "range": "0..6",
+              "phase": "把 pivot 放到中间: 6 已经在最终位置",
+              "concept": {
+                "kind": "array_process",
+                "mode": "quick",
+                "title": "快速排序",
+                "values": [
+                  5,
+                  3,
+                  6,
+                  10,
+                  8,
+                  15,
+                  13
+                ],
+                "pivotIdx": 2,
+                "compare": [],
+                "leftZone": [
+                  0,
+                  1
+                ],
+                "sorted": [
+                  2
+                ],
+                "range": [
+                  0,
+                  6
+                ],
+                "phase": "把 pivot 放到中间: 6 已经在最终位置"
+              }
+            }
+          },
+          {
+            "step": 4,
+            "line": 10,
+            "type": "exec",
+            "vars": {
+              "pivot": 5,
+              "range": "0..1",
+              "phase": "递归处理左边 [5, 3], 小数组很快排好",
+              "concept": {
+                "kind": "array_process",
+                "mode": "quick",
+                "title": "快速排序",
+                "values": [
+                  3,
+                  5,
+                  6,
+                  10,
+                  8,
+                  15,
+                  13
+                ],
+                "pivotIdx": 1,
+                "compare": [
+                  0,
+                  1
+                ],
+                "leftZone": [
+                  0
+                ],
+                "sorted": [
+                  1,
+                  2
+                ],
+                "range": [
+                  0,
+                  1
+                ],
+                "phase": "递归处理左边 [5, 3], 小数组很快排好"
+              }
+            }
+          },
+          {
+            "step": 5,
+            "line": 5,
+            "type": "exec",
+            "vars": {
+              "pivot": 13,
+              "range": "3..6",
+              "phase": "递归处理右边, 这次 pivot 是 13",
+              "concept": {
+                "kind": "array_process",
+                "mode": "quick",
+                "title": "快速排序",
+                "values": [
+                  3,
+                  5,
+                  6,
+                  10,
+                  8,
+                  15,
+                  13
+                ],
+                "pivotIdx": 6,
+                "compare": [
+                  3,
+                  6
+                ],
+                "leftZone": [
+                  3,
+                  4
+                ],
+                "sorted": [
+                  0,
+                  1,
+                  2
+                ],
+                "range": [
+                  3,
+                  6
+                ],
+                "phase": "递归处理右边, 这次 pivot 是 13"
+              }
+            }
+          },
+          {
+            "step": 6,
+            "line": 8,
+            "type": "exec",
+            "vars": {
+              "pivot": 13,
+              "range": "3..6",
+              "phase": "13 归位后, 右侧只剩 15",
+              "concept": {
+                "kind": "array_process",
+                "mode": "quick",
+                "title": "快速排序",
+                "values": [
+                  3,
+                  5,
+                  6,
+                  10,
+                  8,
+                  13,
+                  15
+                ],
+                "pivotIdx": 5,
+                "compare": [],
+                "leftZone": [
+                  3,
+                  4
+                ],
+                "sorted": [
+                  0,
+                  1,
+                  2,
+                  5,
+                  6
+                ],
+                "range": [
+                  3,
+                  6
+                ],
+                "phase": "13 归位后, 右侧只剩 15"
+              }
+            }
+          },
+          {
+            "step": 7,
+            "line": 9,
+            "type": "exec",
+            "vars": {
+              "pivot": "-",
+              "range": "-",
+              "phase": "所有 pivot 陆续归位, 数组完成排序",
+              "concept": {
+                "kind": "array_process",
+                "mode": "quick",
+                "title": "快速排序",
+                "values": [
+                  3,
+                  5,
+                  6,
+                  8,
+                  10,
+                  13,
+                  15
+                ],
+                "pivotIdx": null,
+                "compare": [],
+                "leftZone": [],
+                "sorted": [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6
+                ],
+                "range": [],
+                "phase": "所有 pivot 陆续归位, 数组完成排序"
+              }
+            }
+          }
+        ]
+      },
+      "trace": {
+        "title": "快速排序",
+        "source": [
+          "#include <stdio.h>",
+          "/* 交换两个整数 */",
+          "void swap(int *a, int *b) {",
+          "    int temp = *a;",
+          "    *a = *b;",
+          "    *b = temp;",
+          "}",
+          "/* 分区函数：选最后一个元素为基准，返回基准值的最终位置 */",
+          "int partition(int arr[], int low, int high) {",
+          "    int pivot = arr[high];    /* 基准值选最后一个元素 */",
+          "    int i = low - 1;          /* i 指向“小于基准值区域”的末尾 */",
+          "    for (int j = low; j < high; j++) {",
+          "        if (arr[j] < pivot) {  /* 当前元素比基准值小 */",
+          "            i++;",
+          "            swap(&arr[i], &arr[j]);  /* 把它扔到“小区”里 */",
+          "        }",
+          "    }",
+          "    swap(&arr[i + 1], &arr[high]);  /* 把基准值放到正确位置 */",
+          "    return i + 1;                    /* 返回基准值的位置 */",
+          "}",
+          "/* 快速排序主函数 */",
+          "void quick_sort(int arr[], int low, int high) {",
+          "    if (low < high) {",
+          "        /* 分区，拿到基准值的位置 */",
+          "        int pi = partition(arr, low, high);",
+          "        /* 递归排序基准值左边的部分 */",
+          "        quick_sort(arr, low, pi - 1);",
+          "        /* 递归排序基准值右边的部分 */",
+          "        quick_sort(arr, pi + 1, high);",
+          "    }",
+          "}",
+          "/* 测试 */",
+          "int main(void) {",
+          "    int arr[] = {10, 5, 13, 3, 8, 15, 6};",
+          "    int n = sizeof(arr) / sizeof(arr[0]);",
+          "    printf(\"排序前：\");",
+          "    for (int i = 0; i < n; i++)",
+          "        printf(\" %d\", arr[i]);",
+          "    printf(\"\\n\");",
+          "    quick_sort(arr, 0, n - 1);",
+          "    printf(\"排序后：\");",
+          "    for (int i = 0; i < n; i++)",
+          "        printf(\" %d\", arr[i]);",
+          "    printf(\"\\n\");",
+          "    return 0;",
+          "}"
+        ],
+        "important_vars": {
+          "i": "索引",
+          "j": "索引",
+          "n": "参数",
+          "arr": "数据"
+        },
+        "track_vars": {
+          "primary": [
+            "arr",
+            "high",
+            "i",
+            "j",
+            "low",
+            "n",
+            "pivot"
+          ],
+          "secondary": [
+            "_return"
+          ]
+        },
+        "var_classes": {
+          "_return": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "arr": {
+            "category": "primary",
+            "type": "array"
+          },
+          "high": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "i": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "j": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "low": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "n": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "pivot": {
+            "category": "primary",
+            "type": "scalar"
+          }
+        },
+        "initial_data": {
+          "arr": [
+            10,
+            5,
+            13,
+            3,
+            8,
+            15,
+            6
+          ]
+        },
+        "program_output": [
+          {
+            "after_step": 1,
+            "text": "排序前： 10 5 13 3 8 15 6"
+          },
+          {
+            "after_step": 52,
+            "text": "排序后： 3 5 6 8 10 13 15"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 33,
+            "type": "enter",
+            "func": "main",
+            "vars": {}
+          },
+          {
+            "step": 1,
+            "line": 37,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 0,
+              "n": 7
+            }
+          },
+          {
+            "step": 2,
+            "line": 37,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 1,
+              "n": 7
+            }
+          },
+          {
+            "step": 3,
+            "line": 37,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 2,
+              "n": 7
+            }
+          },
+          {
+            "step": 4,
+            "line": 37,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 3,
+              "n": 7
+            }
+          },
+          {
+            "step": 5,
+            "line": 37,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 4,
+              "n": 7
+            }
+          },
+          {
+            "step": 6,
+            "line": 37,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 5,
+              "n": 7
+            }
+          },
+          {
+            "step": 7,
+            "line": 37,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 6,
+              "n": 7
+            }
+          },
+          {
+            "step": 8,
+            "line": 40,
+            "type": "enter",
+            "func": "quick_sort",
+            "vars": {
+              "arr": [
+                10,
+                5,
+                13,
+                3,
+                8,
+                15,
+                6
+              ],
+              "low": 0,
+              "high": 6
+            }
+          },
+          {
+            "step": 9,
+            "line": 23,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "high": 6,
+              "low": 0
+            }
+          },
+          {
+            "step": 10,
+            "line": 25,
+            "type": "enter",
+            "func": "partition",
+            "vars": {
+              "arr": [
+                10,
+                5,
+                13,
+                3,
+                8,
+                15,
+                6
+              ],
+              "low": 0,
+              "high": 6
+            }
+          },
+          {
+            "step": 11,
+            "line": 12,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "high": 6,
+              "j": 0
+            }
+          },
+          {
+            "step": 12,
+            "line": 12,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "high": 6,
+              "j": 1
+            }
+          },
+          {
+            "step": 13,
+            "line": 13,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "j": 1,
+              "pivot": 6
+            }
+          },
+          {
+            "step": 14,
+            "line": 14,
+            "type": "exec",
+            "vars": {
+              "i": 0
+            }
+          },
+          {
+            "step": 15,
+            "line": 12,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "high": 6,
+              "j": 2
+            }
+          },
+          {
+            "step": 16,
+            "line": 12,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "high": 6,
+              "j": 3
+            }
+          },
+          {
+            "step": 17,
+            "line": 13,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "j": 3,
+              "pivot": 6
+            }
+          },
+          {
+            "step": 18,
+            "line": 14,
+            "type": "exec",
+            "vars": {
+              "i": 1
+            }
+          },
+          {
+            "step": 19,
+            "line": 12,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "high": 6,
+              "j": 4
+            }
+          },
+          {
+            "step": 20,
+            "line": 12,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "high": 6,
+              "j": 5
+            }
+          },
+          {
+            "step": 21,
+            "line": 19,
+            "type": "exec",
+            "vars": {
+              "_return": 2
+            }
+          },
+          {
+            "step": 22,
+            "line": 19,
+            "type": "exit",
+            "func": "partition",
+            "vars": {}
+          },
+          {
+            "step": 23,
+            "line": 27,
+            "type": "enter",
+            "func": "quick_sort",
+            "vars": {
+              "arr": [
+                5,
+                3,
+                6,
+                10,
+                8,
+                15,
+                13
+              ],
+              "low": 0,
+              "high": 1
+            }
+          },
+          {
+            "step": 24,
+            "line": 23,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "high": 1,
+              "low": 0
+            }
+          },
+          {
+            "step": 25,
+            "line": 25,
+            "type": "enter",
+            "func": "partition",
+            "vars": {
+              "arr": [
+                5,
+                3,
+                6,
+                10,
+                8,
+                15,
+                13
+              ],
+              "low": 0,
+              "high": 1
+            }
+          },
+          {
+            "step": 26,
+            "line": 12,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "high": 1,
+              "j": 0
+            }
+          },
+          {
+            "step": 27,
+            "line": 19,
+            "type": "exec",
+            "vars": {
+              "_return": 0
+            }
+          },
+          {
+            "step": 28,
+            "line": 19,
+            "type": "exit",
+            "func": "partition",
+            "vars": {}
+          },
+          {
+            "step": 29,
+            "line": 27,
+            "type": "enter",
+            "func": "quick_sort",
+            "vars": {
+              "arr": [
+                3,
+                5,
+                6,
+                10,
+                8,
+                15,
+                13
+              ],
+              "low": 0,
+              "high": -1
+            }
+          },
+          {
+            "step": 30,
+            "line": 29,
+            "type": "enter",
+            "func": "quick_sort",
+            "vars": {
+              "arr": [
+                3,
+                5,
+                6,
+                10,
+                8,
+                15,
+                13
+              ],
+              "low": 1,
+              "high": 1
+            }
+          },
+          {
+            "step": 31,
+            "line": 29,
+            "type": "enter",
+            "func": "quick_sort",
+            "vars": {
+              "arr": [
+                3,
+                5,
+                6,
+                10,
+                8,
+                15,
+                13
+              ],
+              "low": 3,
+              "high": 6
+            }
+          },
+          {
+            "step": 32,
+            "line": 23,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "high": 6,
+              "low": 3
+            }
+          },
+          {
+            "step": 33,
+            "line": 25,
+            "type": "enter",
+            "func": "partition",
+            "vars": {
+              "arr": [
+                3,
+                5,
+                6,
+                10,
+                8,
+                15,
+                13
+              ],
+              "low": 3,
+              "high": 6
+            }
+          },
+          {
+            "step": 34,
+            "line": 12,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "high": 6,
+              "j": 3
+            }
+          },
+          {
+            "step": 35,
+            "line": 13,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "j": 3,
+              "pivot": 13
+            }
+          },
+          {
+            "step": 36,
+            "line": 14,
+            "type": "exec",
+            "vars": {
+              "i": 3
+            }
+          },
+          {
+            "step": 37,
+            "line": 12,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "high": 6,
+              "j": 4
+            }
+          },
+          {
+            "step": 38,
+            "line": 13,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "j": 4,
+              "pivot": 13
+            }
+          },
+          {
+            "step": 39,
+            "line": 14,
+            "type": "exec",
+            "vars": {
+              "i": 4
+            }
+          },
+          {
+            "step": 40,
+            "line": 12,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "high": 6,
+              "j": 5
+            }
+          },
+          {
+            "step": 41,
+            "line": 19,
+            "type": "exec",
+            "vars": {
+              "_return": 5
+            }
+          },
+          {
+            "step": 42,
+            "line": 19,
+            "type": "exit",
+            "func": "partition",
+            "vars": {}
+          },
+          {
+            "step": 43,
+            "line": 27,
+            "type": "enter",
+            "func": "quick_sort",
+            "vars": {
+              "arr": [
+                3,
+                5,
+                6,
+                10,
+                8,
+                13,
+                15
+              ],
+              "low": 3,
+              "high": 4
+            }
+          },
+          {
+            "step": 44,
+            "line": 23,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "high": 4,
+              "low": 3
+            }
+          },
+          {
+            "step": 45,
+            "line": 25,
+            "type": "enter",
+            "func": "partition",
+            "vars": {
+              "arr": [
+                3,
+                5,
+                6,
+                10,
+                8,
+                13,
+                15
+              ],
+              "low": 3,
+              "high": 4
+            }
+          },
+          {
+            "step": 46,
+            "line": 12,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "high": 4,
+              "j": 3
+            }
+          },
+          {
+            "step": 47,
+            "line": 19,
+            "type": "exec",
+            "vars": {
+              "_return": 3
+            }
+          },
+          {
+            "step": 48,
+            "line": 19,
+            "type": "exit",
+            "func": "partition",
+            "vars": {}
+          },
+          {
+            "step": 49,
+            "line": 27,
+            "type": "enter",
+            "func": "quick_sort",
+            "vars": {
+              "arr": [
+                3,
+                5,
+                6,
+                8,
+                10,
+                13,
+                15
+              ],
+              "low": 3,
+              "high": 2
+            }
+          },
+          {
+            "step": 50,
+            "line": 29,
+            "type": "enter",
+            "func": "quick_sort",
+            "vars": {
+              "arr": [
+                3,
+                5,
+                6,
+                8,
+                10,
+                13,
+                15
+              ],
+              "low": 4,
+              "high": 4
+            }
+          },
+          {
+            "step": 51,
+            "line": 29,
+            "type": "enter",
+            "func": "quick_sort",
+            "vars": {
+              "arr": [
+                3,
+                5,
+                6,
+                8,
+                10,
+                13,
+                15
+              ],
+              "low": 6,
+              "high": 6
+            }
+          },
+          {
+            "step": 52,
+            "line": 42,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 0,
+              "n": 7
+            }
+          },
+          {
+            "step": 53,
+            "line": 42,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 1,
+              "n": 7
+            }
+          },
+          {
+            "step": 54,
+            "line": 42,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 2,
+              "n": 7
+            }
+          },
+          {
+            "step": 55,
+            "line": 42,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 3,
+              "n": 7
+            }
+          },
+          {
+            "step": 56,
+            "line": 42,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 4,
+              "n": 7
+            }
+          },
+          {
+            "step": 57,
+            "line": 42,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 5,
+              "n": 7
+            }
+          },
+          {
+            "step": 58,
+            "line": 42,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 6,
+              "n": 7
+            }
+          },
+          {
+            "step": 59,
+            "line": 45,
+            "type": "exec",
+            "vars": {
+              "_return": 0
+            }
+          },
+          {
+            "step": 60,
+            "line": 45,
+            "type": "exit",
+            "func": "main",
+            "vars": {}
+          }
+        ]
+      }
+    }
+  },
+  "03_Karatsuba快速乘法": {
+    "title": "Karatsuba快速乘法",
+    "defaultMode": "concept",
+    "modeLabels": {
+      "concept": "理解动画",
+      "trace": "代码执行"
+    },
+    "modes": {
+      "concept": {
+        "title": "Karatsuba快速乘法",
+        "source": [
+          "算法: Karatsuba 快速乘法",
+          "输入: x = 1234, y = 5678",
+          "把 x 拆成 a=12, b=34",
+          "把 y 拆成 c=56, d=78",
+          "只算三次乘法: ac、bd、(a+b)(c+d)",
+          "ad+bc = (a+b)(c+d) - ac - bd",
+          "按位权合并: ac×10000 + (ad+bc)×100 + bd",
+          "得到最终乘积"
+        ],
+        "important_vars": {
+          "phase": "状态",
+          "x": "状态",
+          "y": "状态"
+        },
+        "track_vars": {
+          "primary": [
+            "phase",
+            "x",
+            "y"
+          ],
+          "secondary": []
+        },
+        "var_classes": {
+          "phase": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "x": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "y": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "concept": {
+            "category": "secondary",
+            "type": "concept"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 8,
+            "text": "概念动画：Karatsuba 用一次加法乘积替代两次交叉乘法, 把 4 次乘法降成 3 次。"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 2,
+            "type": "exec",
+            "vars": {
+              "phase": "先把两个四位数摆出来",
+              "x": 1234,
+              "y": 5678,
+              "concept": {
+                "kind": "karatsuba",
+                "title": "Karatsuba 快速乘法",
+                "x": 1234,
+                "y": 5678,
+                "a": 12,
+                "b": 34,
+                "c": 56,
+                "d": 78,
+                "active": [],
+                "values": {},
+                "phase": "先把两个四位数摆出来"
+              }
+            }
+          },
+          {
+            "step": 1,
+            "line": 3,
+            "type": "exec",
+            "vars": {
+              "phase": "把 1234 拆成高位 12 和低位 34",
+              "x": 1234,
+              "y": 5678,
+              "concept": {
+                "kind": "karatsuba",
+                "title": "Karatsuba 快速乘法",
+                "x": 1234,
+                "y": 5678,
+                "a": 12,
+                "b": 34,
+                "c": 56,
+                "d": 78,
+                "active": [
+                  "splitX"
+                ],
+                "values": {},
+                "phase": "把 1234 拆成高位 12 和低位 34"
+              }
+            }
+          },
+          {
+            "step": 2,
+            "line": 4,
+            "type": "exec",
+            "vars": {
+              "phase": "把 5678 拆成高位 56 和低位 78",
+              "x": 1234,
+              "y": 5678,
+              "concept": {
+                "kind": "karatsuba",
+                "title": "Karatsuba 快速乘法",
+                "x": 1234,
+                "y": 5678,
+                "a": 12,
+                "b": 34,
+                "c": 56,
+                "d": 78,
+                "active": [
+                  "splitX",
+                  "splitY"
+                ],
+                "values": {},
+                "phase": "把 5678 拆成高位 56 和低位 78"
+              }
+            }
+          },
+          {
+            "step": 3,
+            "line": 5,
+            "type": "exec",
+            "vars": {
+              "phase": "第一次乘法: ac = 12 × 56 = 672",
+              "x": 1234,
+              "y": 5678,
+              "concept": {
+                "kind": "karatsuba",
+                "title": "Karatsuba 快速乘法",
+                "x": 1234,
+                "y": 5678,
+                "a": 12,
+                "b": 34,
+                "c": 56,
+                "d": 78,
+                "active": [
+                  "ac"
+                ],
+                "values": {
+                  "ac": 672
+                },
+                "phase": "第一次乘法: ac = 12 × 56 = 672"
+              }
+            }
+          },
+          {
+            "step": 4,
+            "line": 5,
+            "type": "exec",
+            "vars": {
+              "phase": "第二次乘法: bd = 34 × 78 = 2652",
+              "x": 1234,
+              "y": 5678,
+              "concept": {
+                "kind": "karatsuba",
+                "title": "Karatsuba 快速乘法",
+                "x": 1234,
+                "y": 5678,
+                "a": 12,
+                "b": 34,
+                "c": 56,
+                "d": 78,
+                "active": [
+                  "bd"
+                ],
+                "values": {
+                  "ac": 672,
+                  "bd": 2652
+                },
+                "phase": "第二次乘法: bd = 34 × 78 = 2652"
+              }
+            }
+          },
+          {
+            "step": 5,
+            "line": 5,
+            "type": "exec",
+            "vars": {
+              "phase": "第三次乘法: (a+b)(c+d) = 46 × 134 = 6164",
+              "x": 1234,
+              "y": 5678,
+              "concept": {
+                "kind": "karatsuba",
+                "title": "Karatsuba 快速乘法",
+                "x": 1234,
+                "y": 5678,
+                "a": 12,
+                "b": 34,
+                "c": 56,
+                "d": 78,
+                "active": [
+                  "sum"
+                ],
+                "values": {
+                  "ac": 672,
+                  "bd": 2652,
+                  "sum": 6164
+                },
+                "phase": "第三次乘法: (a+b)(c+d) = 46 × 134 = 6164"
+              }
+            }
+          },
+          {
+            "step": 6,
+            "line": 6,
+            "type": "exec",
+            "vars": {
+              "phase": "用减法补出中间项: ad+bc = 6164 - 672 - 2652 = 2840",
+              "x": 1234,
+              "y": 5678,
+              "concept": {
+                "kind": "karatsuba",
+                "title": "Karatsuba 快速乘法",
+                "x": 1234,
+                "y": 5678,
+                "a": 12,
+                "b": 34,
+                "c": 56,
+                "d": 78,
+                "active": [
+                  "middle"
+                ],
+                "values": {
+                  "ac": 672,
+                  "bd": 2652,
+                  "sum": 6164,
+                  "middle": 2840
+                },
+                "phase": "用减法补出中间项: ad+bc = 6164 - 672 - 2652 = 2840"
+              }
+            }
+          },
+          {
+            "step": 7,
+            "line": 7,
+            "type": "exec",
+            "vars": {
+              "phase": "合并: 672×10000 + 2840×100 + 2652 = 7006652",
+              "x": 1234,
+              "y": 5678,
+              "concept": {
+                "kind": "karatsuba",
+                "title": "Karatsuba 快速乘法",
+                "x": 1234,
+                "y": 5678,
+                "a": 12,
+                "b": 34,
+                "c": 56,
+                "d": 78,
+                "active": [
+                  "result"
+                ],
+                "values": {
+                  "ac": 672,
+                  "bd": 2652,
+                  "sum": 6164,
+                  "middle": 2840,
+                  "result": 7006652
+                },
+                "phase": "合并: 672×10000 + 2840×100 + 2652 = 7006652"
+              }
+            }
+          }
+        ]
+      },
+      "trace": {
+        "title": "Karatsuba快速乘法",
+        "source": [
+          "#include <stdio.h>",
+          "#include <math.h>",
+          "/* 求较大值 */",
+          "/* 教学版写法：使用 log10。真实工程中不能用浮点函数处理大整数。 */",
+          "long long max(long long a, long long b) {",
+          "    return (a > b) ? a : b;",
+          "}",
+          "/* Karatsuba 乘法 */",
+          "long long karatsuba(long long x, long long y) {",
+          "    /* 小规模直接算（终止条件） */",
+          "    if (x < 10 || y < 10)",
+          "        return x * y;",
+          "    /* 计算位数 */",
+          "    /* 注意：log10 有浮点精度风险，大数可能出错。工程建议用循环计算位数 */",
+          "    long long n = max(",
+          "        (long long)log10(x) + 1,",
+          "        (long long)log10(y) + 1",
+          "    );",
+          "    /* 对半分（向上取整） */",
+          "    long long half = (n + 1) / 2;",
+          "    /* 教学版写法：使用 pow。数值过大时浮点数会丢失精度。 */",
+          "    long long power = (long long)pow(10, half);",
+          "    /* 拆分 */",
+          "    long long a = x / power;   /* x 的高位 */",
+          "    long long b = x % power;   /* x 的低位 */",
+          "    long long c = y / power;   /* y 的高位 */",
+          "    long long d = y % power;   /* y 的低位 */",
+          "    /* 递归计算三次乘法 */",
+          "    long long ac = karatsuba(a, c);",
+          "    long long bd = karatsuba(b, d);",
+          "    long long ad_bc = karatsuba(a + b, c + d) - ac - bd;",
+          "    /* 合并结果 */",
+          "    /* X × Y = ac × 10^(2×half) + (ad+bc) × 10^half + bd */",
+          "    return ac * (long long)pow(10, 2 * half)",
+          "         + ad_bc * power",
+          "         + bd;",
+          "}",
+          "int main(void) {",
+          "    long long x = 1234, y = 5678;",
+          "    printf(\"传统乘法：%lld\\n\", x * y);",
+          "    printf(\"Karatsuba：%lld\\n\", karatsuba(x, y));",
+          "    return 0;",
+          "}"
+        ],
+        "important_vars": {},
+        "track_vars": {
+          "primary": [
+            "a"
+          ],
+          "secondary": [
+            "_return",
+            "b",
+            "x",
+            "y"
+          ]
+        },
+        "var_classes": {
+          "_return": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "a": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "b": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "x": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "y": {
+            "category": "secondary",
+            "type": "scalar"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 1,
+            "text": "传统乘法：7006652"
+          },
+          {
+            "after_step": 76,
+            "text": "Karatsuba：7006652"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 38,
+            "type": "enter",
+            "func": "main",
+            "vars": {}
+          },
+          {
+            "step": 1,
+            "line": 41,
+            "type": "enter",
+            "func": "karatsuba",
+            "vars": {
+              "x": 1234,
+              "y": 5678
+            }
+          },
+          {
+            "step": 2,
+            "line": 5,
+            "type": "enter",
+            "func": "max",
+            "vars": {
+              "a": 4,
+              "b": 4
+            }
+          },
+          {
+            "step": 3,
+            "line": 6,
+            "type": "exec",
+            "vars": {
+              "_return": 4
+            }
+          },
+          {
+            "step": 4,
+            "line": 6,
+            "type": "exit",
+            "func": "max",
+            "vars": {}
+          },
+          {
+            "step": 5,
+            "line": 29,
+            "type": "enter",
+            "func": "karatsuba",
+            "vars": {
+              "x": 12,
+              "y": 56
+            }
+          },
+          {
+            "step": 6,
+            "line": 5,
+            "type": "enter",
+            "func": "max",
+            "vars": {
+              "a": 2,
+              "b": 2
+            }
+          },
+          {
+            "step": 7,
+            "line": 6,
+            "type": "exec",
+            "vars": {
+              "_return": 2
+            }
+          },
+          {
+            "step": 8,
+            "line": 6,
+            "type": "exit",
+            "func": "max",
+            "vars": {}
+          },
+          {
+            "step": 9,
+            "line": 29,
+            "type": "enter",
+            "func": "karatsuba",
+            "vars": {
+              "x": 1,
+              "y": 5
+            }
+          },
+          {
+            "step": 10,
+            "line": 12,
+            "type": "exec",
+            "vars": {
+              "_return": 5
+            }
+          },
+          {
+            "step": 11,
+            "line": 12,
+            "type": "exit",
+            "func": "karatsuba",
+            "vars": {}
+          },
+          {
+            "step": 12,
+            "line": 30,
+            "type": "enter",
+            "func": "karatsuba",
+            "vars": {
+              "x": 2,
+              "y": 6
+            }
+          },
+          {
+            "step": 13,
+            "line": 12,
+            "type": "exec",
+            "vars": {
+              "_return": 12
+            }
+          },
+          {
+            "step": 14,
+            "line": 12,
+            "type": "exit",
+            "func": "karatsuba",
+            "vars": {}
+          },
+          {
+            "step": 15,
+            "line": 31,
+            "type": "enter",
+            "func": "karatsuba",
+            "vars": {
+              "x": 3,
+              "y": 11
+            }
+          },
+          {
+            "step": 16,
+            "line": 12,
+            "type": "exec",
+            "vars": {
+              "_return": 33
+            }
+          },
+          {
+            "step": 17,
+            "line": 12,
+            "type": "exit",
+            "func": "karatsuba",
+            "vars": {}
+          },
+          {
+            "step": 18,
+            "line": 34,
+            "type": "exec",
+            "vars": {
+              "_return": 672
+            }
+          },
+          {
+            "step": 19,
+            "line": 34,
+            "type": "exit",
+            "func": "karatsuba",
+            "vars": {}
+          },
+          {
+            "step": 20,
+            "line": 30,
+            "type": "enter",
+            "func": "karatsuba",
+            "vars": {
+              "x": 34,
+              "y": 78
+            }
+          },
+          {
+            "step": 21,
+            "line": 5,
+            "type": "enter",
+            "func": "max",
+            "vars": {
+              "a": 2,
+              "b": 2
+            }
+          },
+          {
+            "step": 22,
+            "line": 6,
+            "type": "exec",
+            "vars": {
+              "_return": 2
+            }
+          },
+          {
+            "step": 23,
+            "line": 6,
+            "type": "exit",
+            "func": "max",
+            "vars": {}
+          },
+          {
+            "step": 24,
+            "line": 29,
+            "type": "enter",
+            "func": "karatsuba",
+            "vars": {
+              "x": 3,
+              "y": 7
+            }
+          },
+          {
+            "step": 25,
+            "line": 12,
+            "type": "exec",
+            "vars": {
+              "_return": 21
+            }
+          },
+          {
+            "step": 26,
+            "line": 12,
+            "type": "exit",
+            "func": "karatsuba",
+            "vars": {}
+          },
+          {
+            "step": 27,
+            "line": 30,
+            "type": "enter",
+            "func": "karatsuba",
+            "vars": {
+              "x": 4,
+              "y": 8
+            }
+          },
+          {
+            "step": 28,
+            "line": 12,
+            "type": "exec",
+            "vars": {
+              "_return": 32
+            }
+          },
+          {
+            "step": 29,
+            "line": 12,
+            "type": "exit",
+            "func": "karatsuba",
+            "vars": {}
+          },
+          {
+            "step": 30,
+            "line": 31,
+            "type": "enter",
+            "func": "karatsuba",
+            "vars": {
+              "x": 7,
+              "y": 15
+            }
+          },
+          {
+            "step": 31,
+            "line": 12,
+            "type": "exec",
+            "vars": {
+              "_return": 105
+            }
+          },
+          {
+            "step": 32,
+            "line": 12,
+            "type": "exit",
+            "func": "karatsuba",
+            "vars": {}
+          },
+          {
+            "step": 33,
+            "line": 34,
+            "type": "exec",
+            "vars": {
+              "_return": 2652
+            }
+          },
+          {
+            "step": 34,
+            "line": 34,
+            "type": "exit",
+            "func": "karatsuba",
+            "vars": {}
+          },
+          {
+            "step": 35,
+            "line": 31,
+            "type": "enter",
+            "func": "karatsuba",
+            "vars": {
+              "x": 46,
+              "y": 134
+            }
+          },
+          {
+            "step": 36,
+            "line": 5,
+            "type": "enter",
+            "func": "max",
+            "vars": {
+              "a": 2,
+              "b": 3
+            }
+          },
+          {
+            "step": 37,
+            "line": 6,
+            "type": "exec",
+            "vars": {
+              "_return": 3
+            }
+          },
+          {
+            "step": 38,
+            "line": 6,
+            "type": "exit",
+            "func": "max",
+            "vars": {}
+          },
+          {
+            "step": 39,
+            "line": 29,
+            "type": "enter",
+            "func": "karatsuba",
+            "vars": {
+              "x": 0,
+              "y": 1
+            }
+          },
+          {
+            "step": 40,
+            "line": 12,
+            "type": "exec",
+            "vars": {
+              "_return": 0
+            }
+          },
+          {
+            "step": 41,
+            "line": 12,
+            "type": "exit",
+            "func": "karatsuba",
+            "vars": {}
+          },
+          {
+            "step": 42,
+            "line": 30,
+            "type": "enter",
+            "func": "karatsuba",
+            "vars": {
+              "x": 46,
+              "y": 34
+            }
+          },
+          {
+            "step": 43,
+            "line": 5,
+            "type": "enter",
+            "func": "max",
+            "vars": {
+              "a": 2,
+              "b": 2
+            }
+          },
+          {
+            "step": 44,
+            "line": 6,
+            "type": "exec",
+            "vars": {
+              "_return": 2
+            }
+          },
+          {
+            "step": 45,
+            "line": 6,
+            "type": "exit",
+            "func": "max",
+            "vars": {}
+          },
+          {
+            "step": 46,
+            "line": 29,
+            "type": "enter",
+            "func": "karatsuba",
+            "vars": {
+              "x": 4,
+              "y": 3
+            }
+          },
+          {
+            "step": 47,
+            "line": 12,
+            "type": "exec",
+            "vars": {
+              "_return": 12
+            }
+          },
+          {
+            "step": 48,
+            "line": 12,
+            "type": "exit",
+            "func": "karatsuba",
+            "vars": {}
+          },
+          {
+            "step": 49,
+            "line": 30,
+            "type": "enter",
+            "func": "karatsuba",
+            "vars": {
+              "x": 6,
+              "y": 4
+            }
+          },
+          {
+            "step": 50,
+            "line": 12,
+            "type": "exec",
+            "vars": {
+              "_return": 24
+            }
+          },
+          {
+            "step": 51,
+            "line": 12,
+            "type": "exit",
+            "func": "karatsuba",
+            "vars": {}
+          },
+          {
+            "step": 52,
+            "line": 31,
+            "type": "enter",
+            "func": "karatsuba",
+            "vars": {
+              "x": 10,
+              "y": 7
+            }
+          },
+          {
+            "step": 53,
+            "line": 12,
+            "type": "exec",
+            "vars": {
+              "_return": 70
+            }
+          },
+          {
+            "step": 54,
+            "line": 12,
+            "type": "exit",
+            "func": "karatsuba",
+            "vars": {}
+          },
+          {
+            "step": 55,
+            "line": 34,
+            "type": "exec",
+            "vars": {
+              "_return": 1564
+            }
+          },
+          {
+            "step": 56,
+            "line": 34,
+            "type": "exit",
+            "func": "karatsuba",
+            "vars": {}
+          },
+          {
+            "step": 57,
+            "line": 31,
+            "type": "enter",
+            "func": "karatsuba",
+            "vars": {
+              "x": 46,
+              "y": 35
+            }
+          },
+          {
+            "step": 58,
+            "line": 5,
+            "type": "enter",
+            "func": "max",
+            "vars": {
+              "a": 2,
+              "b": 2
+            }
+          },
+          {
+            "step": 59,
+            "line": 6,
+            "type": "exec",
+            "vars": {
+              "_return": 2
+            }
+          },
+          {
+            "step": 60,
+            "line": 6,
+            "type": "exit",
+            "func": "max",
+            "vars": {}
+          },
+          {
+            "step": 61,
+            "line": 29,
+            "type": "enter",
+            "func": "karatsuba",
+            "vars": {
+              "x": 4,
+              "y": 3
+            }
+          },
+          {
+            "step": 62,
+            "line": 12,
+            "type": "exec",
+            "vars": {
+              "_return": 12
+            }
+          },
+          {
+            "step": 63,
+            "line": 12,
+            "type": "exit",
+            "func": "karatsuba",
+            "vars": {}
+          },
+          {
+            "step": 64,
+            "line": 30,
+            "type": "enter",
+            "func": "karatsuba",
+            "vars": {
+              "x": 6,
+              "y": 5
+            }
+          },
+          {
+            "step": 65,
+            "line": 12,
+            "type": "exec",
+            "vars": {
+              "_return": 30
+            }
+          },
+          {
+            "step": 66,
+            "line": 12,
+            "type": "exit",
+            "func": "karatsuba",
+            "vars": {}
+          },
+          {
+            "step": 67,
+            "line": 31,
+            "type": "enter",
+            "func": "karatsuba",
+            "vars": {
+              "x": 10,
+              "y": 8
+            }
+          },
+          {
+            "step": 68,
+            "line": 12,
+            "type": "exec",
+            "vars": {
+              "_return": 80
+            }
+          },
+          {
+            "step": 69,
+            "line": 12,
+            "type": "exit",
+            "func": "karatsuba",
+            "vars": {}
+          },
+          {
+            "step": 70,
+            "line": 34,
+            "type": "exec",
+            "vars": {
+              "_return": 1610
+            }
+          },
+          {
+            "step": 71,
+            "line": 34,
+            "type": "exit",
+            "func": "karatsuba",
+            "vars": {}
+          },
+          {
+            "step": 72,
+            "line": 34,
+            "type": "exec",
+            "vars": {
+              "_return": 6164
+            }
+          },
+          {
+            "step": 73,
+            "line": 34,
+            "type": "exit",
+            "func": "karatsuba",
+            "vars": {}
+          },
+          {
+            "step": 74,
+            "line": 34,
+            "type": "exec",
+            "vars": {
+              "_return": 7006652
+            }
+          },
+          {
+            "step": 75,
+            "line": 34,
+            "type": "exit",
+            "func": "karatsuba",
+            "vars": {}
+          },
+          {
+            "step": 76,
+            "line": 42,
+            "type": "exec",
+            "vars": {
+              "_return": 0
+            }
+          },
+          {
+            "step": 77,
+            "line": 42,
+            "type": "exit",
+            "func": "main",
+            "vars": {}
+          }
+        ]
+      }
+    }
+  }
+};
+const firstKey = Object.keys(ALGOS)[0];
+const requestedKey = new URLSearchParams(location.search).get('algo');
+const savedAtOpen = DHLearning.load();
+let currentKey = ALGOS[requestedKey]
+  ? requestedKey
+  : (savedAtOpen.last && savedAtOpen.last.chapter === CHAPTER_NUM && ALGOS[savedAtOpen.last.algorithm]
+      ? savedAtOpen.last.algorithm
+      : firstKey);
+let currentMode = null;
+const engine = new TraceEngine('viz-canvas', 'code-body', 'var-grid', 'callstack');
+const tabsEl = document.getElementById('algo-tabs');
+const modeTabsEl = document.getElementById('mode-tabs');
+
+function has_modes(algo) {
+  return algo && algo.modes && typeof algo.modes === 'object';
+}
+
+function mode_label(rawAlgo, mode) {
+  const labels = rawAlgo.modeLabels || {};
+  if (labels[mode]) return labels[mode];
+  if (mode === 'concept') return '理解动画';
+  if (mode === 'trace') return '代码执行';
+  return mode;
+}
+
+function resolve_algo(rawAlgo) {
+  if (!has_modes(rawAlgo)) return rawAlgo;
+  const mode = currentMode || rawAlgo.defaultMode || Object.keys(rawAlgo.modes)[0];
+  return rawAlgo.modes[mode] || rawAlgo.modes[rawAlgo.defaultMode] || Object.values(rawAlgo.modes)[0];
+}
+
+function is_concept_algo(algo) {
+  if (!algo) return false;
+  const classes = algo.var_classes || {};
+  if (Object.values(classes).some(info => info && info.type === 'concept')) return true;
+  return (algo.steps || []).some(step => step.vars && step.vars.concept);
+}
+
+function update_tab_states() {
+  const completed = new Set(DHLearning.load().completedDemos);
+  tabsEl.querySelectorAll('.algo-tab').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.key === currentKey);
+    btn.classList.toggle('completed', completed.has(DHLearning.demoId(CHAPTER_NUM, btn.dataset.key)));
+    btn.setAttribute('aria-selected', String(btn.dataset.key === currentKey));
+  });
+}
+
+function update_chapter_progress() {
+  const state = DHLearning.load();
+  const completed = new Set(state.completedDemos);
+  const keys = Object.keys(ALGOS);
+  const done = keys.filter(key => completed.has(DHLearning.demoId(CHAPTER_NUM, key))).length;
+  document.getElementById('chapter-progress-text').textContent = `${done} / ${keys.length} 个演示完成`;
+  document.getElementById('chapter-progress-fill').style.width = `${keys.length ? done / keys.length * 100 : 0}%`;
+  update_tab_states();
+}
+
+function render_mode_tabs(rawAlgo) {
+  modeTabsEl.innerHTML = '';
+  if (!has_modes(rawAlgo)) {
+    modeTabsEl.classList.remove('visible');
+    currentMode = null;
+    return;
+  }
+  modeTabsEl.classList.add('visible');
+  const label = document.createElement('span');
+  label.className = 'mode-label';
+  label.textContent = '学习方式';
+  modeTabsEl.appendChild(label);
+  const activeMode = currentMode || rawAlgo.defaultMode || Object.keys(rawAlgo.modes)[0];
+  Object.keys(rawAlgo.modes).forEach(mode => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'mode-tab' + (mode === activeMode ? ' active' : '');
+    btn.textContent = mode_label(rawAlgo, mode);
+    btn.setAttribute('role', 'tab');
+    btn.setAttribute('aria-selected', String(mode === activeMode));
+    btn.addEventListener('click', () => {
+      if (currentMode === mode) return;
+      currentMode = mode;
+      load_current_algo(false);
+      if (matchMedia('(max-width: 900px)').matches) {
+        set_mobile_view(mode === 'trace' ? 'code' : 'animation');
+      }
+    });
+    modeTabsEl.appendChild(btn);
+  });
+}
+
+function load_current_algo(allowRestore = true) {
+  const rawAlgo = ALGOS[currentKey];
+  const beforeLoad = DHLearning.load().last;
+  if (has_modes(rawAlgo)) {
+    const savedMode = beforeLoad && beforeLoad.chapter === CHAPTER_NUM && beforeLoad.algorithm === currentKey
+      ? beforeLoad.mode
+      : null;
+    if (!currentMode) currentMode = savedMode && rawAlgo.modes[savedMode]
+      ? savedMode
+      : (rawAlgo.defaultMode || Object.keys(rawAlgo.modes)[0]);
+  } else {
+    currentMode = null;
+  }
+  render_mode_tabs(rawAlgo);
+  const activeAlgo = resolve_algo(rawAlgo);
+  document.body.classList.toggle('concept-mode', currentMode === 'concept' || is_concept_algo(activeAlgo));
+  engine.stop_play();
+  engine.load(activeAlgo);
+  try {
+    const currentUrl = new URL(location.href);
+    currentUrl.searchParams.set('algo', currentKey);
+    history.replaceState(null, '', currentUrl.href);
+  } catch (_) {
+    // file:// 预览环境可能限制 history API，不影响演示本身。
+  }
+  update_tab_states();
+
+  if (
+    allowRestore
+    && beforeLoad
+    && beforeLoad.chapter === CHAPTER_NUM
+    && beforeLoad.algorithm === currentKey
+    && beforeLoad.mode === currentMode
+    && beforeLoad.step > 0
+    && activeAlgo.steps.length
+  ) {
+    const restoreStep = Math.min(beforeLoad.step, activeAlgo.steps.length - 1);
+    requestAnimationFrame(() => engine.go_to_step(restoreStep));
+  }
+}
+
+Object.entries(ALGOS).forEach(([key, algo]) => {
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'algo-tab';
+  btn.dataset.key = key;
+  btn.textContent = algo.title;
+  btn.setAttribute('role', 'tab');
+  btn.setAttribute('aria-selected', String(key === currentKey));
+  btn.addEventListener('click', () => {
+    if (currentKey === key) return;
+    currentKey = key;
+    currentMode = has_modes(algo) ? (algo.defaultMode || Object.keys(algo.modes)[0]) : null;
+    load_current_algo(true);
+  });
+  tabsEl.appendChild(btn);
+});
+
+document.addEventListener('dh:stepchange', event => {
+  const detail = event.detail || {};
+  DHLearning.updateLast(CHAPTER_NUM, currentKey, currentMode, detail.currentStep);
+  if (detail.atEnd) DHLearning.markDemoComplete(CHAPTER_NUM, currentKey);
+  update_chapter_progress();
+});
+
+document.getElementById('btn-play').addEventListener('click', () => engine.playing ? engine.stop_play() : engine.start_play());
+document.getElementById('btn-step').addEventListener('click', () => { engine.stop_play(); engine.step_forward(); });
+document.getElementById('btn-reset').addEventListener('click', () => engine.reset());
+document.getElementById('btn-back').addEventListener('click', () => { engine.stop_play(); engine.step_backward(); });
+document.getElementById('btn-to-bp').addEventListener('click', () => { engine.stop_play(); engine.play_to_bp(); });
+
+const speedSlider = document.getElementById('speed-slider');
+const savedSpeed = localStorage.getItem('dh_speed');
+if (savedSpeed !== null) speedSlider.value = savedSpeed;
+speedSlider.setAttribute('aria-valuetext', `速度 ${speedSlider.value}`);
+speedSlider.addEventListener('input', () => {
+  localStorage.setItem('dh_speed', speedSlider.value);
+  speedSlider.setAttribute('aria-valuetext', `速度 ${speedSlider.value}`);
+  if (engine.playing) { clearTimeout(engine.playTimer); engine._play_loop(); }
+});
+speedSlider.addEventListener('keydown', event => {
+  if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+  event.preventDefault();
+  event.stopPropagation();
+  const direction = event.key === 'ArrowRight' ? 1 : -1;
+  speedSlider.value = String(Math.max(Number(speedSlider.min), Math.min(Number(speedSlider.max), Number(speedSlider.value) + direction)));
+  speedSlider.dispatchEvent(new Event('input', { bubbles: true }));
+});
+document.getElementById('font-dec').addEventListener('click', () => engine.font_dec());
+document.getElementById('font-inc').addEventListener('click', () => engine.font_inc());
+
+document.addEventListener('keydown', event => {
+  const target = event.target;
+  if (target && target.closest && target.closest('button,input,select,textarea,a,summary,[contenteditable="true"]')) return;
+  if (event.key === ' ') {
+    event.preventDefault();
+    engine.playing ? engine.stop_play() : engine.start_play();
+  } else if (event.key === 'ArrowRight') {
+    event.preventDefault();
+    engine.stop_play();
+    engine.step_forward();
+  } else if (event.key === 'ArrowLeft') {
+    event.preventDefault();
+    engine.stop_play();
+    engine.step_backward();
+  } else if (event.key.toLowerCase() === 'r' && !event.metaKey && !event.ctrlKey && !event.altKey) {
+    engine.reset();
+  }
+});
+
+function set_mobile_view(view) {
+  document.body.dataset.mobileView = view;
+  document.querySelectorAll('.mobile-view-switcher button').forEach(btn => {
+    const active = btn.dataset.mobileView === view;
+    btn.classList.toggle('active', active);
+    btn.setAttribute('aria-selected', String(active));
+  });
+  if (view === 'animation' && engine.currentStep >= 0) {
+    requestAnimationFrame(() => engine.go_to_step(engine.currentStep));
+  }
+}
+
+document.querySelectorAll('.mobile-view-switcher button').forEach(btn => {
+  btn.addEventListener('click', () => set_mobile_view(btn.dataset.mobileView));
+});
+
+DHLearning.visitChapter(CHAPTER_NUM);
+update_chapter_progress();
+load_current_algo(true);
+</script>
+</body>
+</html>

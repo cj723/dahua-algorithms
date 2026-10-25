@@ -1,0 +1,1690 @@
+{
+  "meta": {
+    "algo": "02_哈夫曼编码",
+    "source_lines": [
+      "#include <stdio.h>",
+      "#include <stdlib.h>",
+      "#define MAX_TREE_HT 256",
+      "/* 哈夫曼树节点 */",
+      "typedef struct MinHeapNode {",
+      "    char data;          /* 存字符（如果是内部节点，我们用 '$' 占位） */",
+      "    int freq;           /* 存频率 */",
+      "    struct MinHeapNode *left, *right;",
+      "} MinHeapNode;",
+      "/* 最小堆（用来每次快速找到频率最小的两个节点） */",
+      "typedef struct {",
+      "    int size;",
+      "    int capacity;",
+      "    MinHeapNode **array;",
+      "} MinHeap;",
+      "/* 创建新节点 */",
+      "MinHeapNode *new_node(char data, int freq) {",
+      "    MinHeapNode *node = (MinHeapNode *)malloc(sizeof(MinHeapNode));",
+      "    if (!node) return NULL;",
+      "    node->data = data;",
+      "    node->freq = freq;",
+      "    node->left = node->right = NULL;",
+      "    return node;",
+      "}",
+      "/* 创建最小堆 */",
+      "MinHeap *create_min_heap(int capacity) {",
+      "    MinHeap *heap = (MinHeap *)malloc(sizeof(MinHeap));",
+      "    if (!heap) return NULL;",
+      "    heap->size = 0;",
+      "    heap->capacity = capacity;",
+      "    heap->array = (MinHeapNode **)malloc(capacity * sizeof(MinHeapNode *));",
+      "    if (!heap->array) {",
+      "        free(heap);",
+      "        return NULL;",
+      "    }",
+      "    return heap;",
+      "}",
+      "void free_huffman_tree(MinHeapNode *root) {",
+      "    if (!root) return;",
+      "    free_huffman_tree(root->left);",
+      "    free_huffman_tree(root->right);",
+      "    free(root);",
+      "}",
+      "void free_min_heap(MinHeap *heap) {",
+      "    if (!heap) return;",
+      "    free(heap->array);",
+      "    free(heap);",
+      "}",
+      "/* 交换两个节点 */",
+      "void swap_nodes(MinHeapNode **a, MinHeapNode **b) {",
+      "    MinHeapNode *t = *a;",
+      "    *a = *b;",
+      "    *b = t;",
+      "}",
+      "/* 最小堆化 */",
+      "void min_heapify(MinHeap *heap, int idx) {",
+      "    int smallest = idx;",
+      "    int left = 2 * idx + 1;",
+      "    int right = 2 * idx + 2;",
+      "    if (left < heap->size &&",
+      "        heap->array[left]->freq < heap->array[smallest]->freq)",
+      "        smallest = left;",
+      "    if (right < heap->size &&",
+      "        heap->array[right]->freq < heap->array[smallest]->freq)",
+      "        smallest = right;",
+      "    if (smallest != idx) {",
+      "        swap_nodes(&heap->array[smallest], &heap->array[idx]);",
+      "        min_heapify(heap, smallest);",
+      "    }",
+      "}",
+      "/* 插入节点 */",
+      "int insert_min_heap(MinHeap *heap, MinHeapNode *node) {",
+      "    if (!heap || !node || heap->size >= heap->capacity) return 0;",
+      "    int i = heap->size++;",
+      "    heap->array[i] = node;",
+      "    /* 上浮 */",
+      "    while (i && node->freq < heap->array[(i - 1) / 2]->freq) {",
+      "        heap->array[i] = heap->array[(i - 1) / 2];",
+      "        i = (i - 1) / 2;",
+      "    }",
+      "    heap->array[i] = node;",
+      "    return 1;",
+      "}",
+      "/* 提取最小节点 */",
+      "MinHeapNode *extract_min(MinHeap *heap) {",
+      "    if (!heap || heap->size <= 0) return NULL;",
+      "    MinHeapNode *temp = heap->array[0];",
+      "    heap->array[0] = heap->array[--heap->size];",
+      "    if (heap->size > 0) min_heapify(heap, 0);",
+      "    return temp;",
+      "}",
+      "/* 构建哈夫曼树 */",
+      "MinHeapNode *build_huffman_tree(char data[], int freq[], int size) {",
+      "    MinHeap *heap = create_min_heap(size);",
+      "    if (!heap) return NULL;",
+      "    for (int i = 0; i < size; i++) {",
+      "        MinHeapNode *node = new_node(data[i], freq[i]);",
+      "        if (!insert_min_heap(heap, node)) {",
+      "            free_huffman_tree(node);",
+      "            for (int j = 0; j < heap->size; j++) free_huffman_tree(heap->array[j]);",
+      "            free_min_heap(heap);",
+      "            return NULL;",
+      "        }",
+      "    }",
+      "    /* 每次合并两个最小的 */",
+      "    while (heap->size > 1) {",
+      "        MinHeapNode *left = extract_min(heap);",
+      "        MinHeapNode *right = extract_min(heap);",
+      "        /* '$' 表示内部节点，不是叶子 */",
+      "        MinHeapNode *top = new_node('$', left->freq + right->freq);",
+      "        if (!top) {",
+      "            free_huffman_tree(left);",
+      "            free_huffman_tree(right);",
+      "            for (int j = 0; j < heap->size; j++) free_huffman_tree(heap->array[j]);",
+      "            free_min_heap(heap);",
+      "            return NULL;",
+      "        }",
+      "        top->left = left;",
+      "        top->right = right;",
+      "        if (!insert_min_heap(heap, top)) {",
+      "            free_huffman_tree(top);",
+      "            for (int j = 0; j < heap->size; j++) free_huffman_tree(heap->array[j]);",
+      "            free_min_heap(heap);",
+      "            return NULL;",
+      "        }",
+      "    }",
+      "    MinHeapNode *root = extract_min(heap);",
+      "    free_min_heap(heap);",
+      "    return root;",
+      "}",
+      "/* 打印编码（递归遍历） */",
+      "void print_codes(MinHeapNode *root, int arr[], int top) {",
+      "    if (!root) return;",
+      "    if (root->left) {",
+      "        arr[top] = 0;",
+      "        print_codes(root->left, arr, top + 1);",
+      "    }",
+      "    if (root->right) {",
+      "        arr[top] = 1;",
+      "        print_codes(root->right, arr, top + 1);",
+      "    }",
+      "    /* 叶子节点 */",
+      "    if (!root->left && !root->right) {",
+      "        printf(\"  %c: \", root->data);",
+      "        for (int i = 0; i < top; i++)",
+      "            printf(\"%d\", arr[i]);",
+      "        printf(\"\\n\");",
+      "    }",
+      "}",
+      "int main(void) {",
+      "    char data[] = {'a', 'b', 'c', 'd', 'e', 'f'};",
+      "    int freq[] = {45, 13, 12, 16, 9, 5};",
+      "    int size = sizeof(data) / sizeof(data[0]);",
+      "    MinHeapNode *root = build_huffman_tree(data, freq, size);",
+      "    if (!root) {",
+      "        printf(\"构建哈夫曼树失败：内存不足。\\n\");",
+      "        return 1;",
+      "    }",
+      "    int arr[MAX_TREE_HT + 1], top = 0;",
+      "    printf(\"哈夫曼编码：\\n\");",
+      "    print_codes(root, arr, top);",
+      "    free_huffman_tree(root);",
+      "    return 0;",
+      "}"
+    ],
+    "track_vars": {
+      "primary": [
+        "arr",
+        "i",
+        "idx"
+      ],
+      "secondary": [
+        "_return",
+        "smallest",
+        "top"
+      ]
+    },
+    "var_classes": {
+      "_return": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "arr": {
+        "category": "primary",
+        "type": "array"
+      },
+      "i": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "idx": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "smallest": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "top": {
+        "category": "secondary",
+        "type": "scalar"
+      }
+    },
+    "viz_type": "array",
+    "initial_data": {
+      "freq": [
+        45,
+        13,
+        12,
+        16,
+        9,
+        5
+      ],
+      "arr": [
+        0,
+        1
+      ]
+    },
+    "program_output": [
+      {
+        "after_step": 95,
+        "text": "哈夫曼编码："
+      },
+      {
+        "after_step": 102,
+        "text": "a: 0"
+      },
+      {
+        "after_step": 116,
+        "text": "c: 1 0 0"
+      },
+      {
+        "after_step": 124,
+        "text": "b: 1 0 1"
+      },
+      {
+        "after_step": 140,
+        "text": "f: 1 1 0 0"
+      },
+      {
+        "after_step": 149,
+        "text": "e: 1 1 0 1"
+      },
+      {
+        "after_step": 158,
+        "text": "d: 1 1 1"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step": 0,
+      "line": 150,
+      "type": "enter",
+      "func": "main",
+      "vars": {}
+    },
+    {
+      "step": 1,
+      "line": 73,
+      "type": "cond",
+      "result": false,
+      "vars": {}
+    },
+    {
+      "step": 2,
+      "line": 82,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 3,
+      "line": 82,
+      "type": "exit",
+      "func": "insert_min_heap",
+      "vars": {}
+    },
+    {
+      "step": 4,
+      "line": 73,
+      "type": "cond",
+      "result": false,
+      "vars": {}
+    },
+    {
+      "step": 5,
+      "line": 77,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1
+      }
+    },
+    {
+      "step": 6,
+      "line": 79,
+      "type": "exec",
+      "vars": {
+        "i": 0
+      }
+    },
+    {
+      "step": 7,
+      "line": 82,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 8,
+      "line": 82,
+      "type": "exit",
+      "func": "insert_min_heap",
+      "vars": {}
+    },
+    {
+      "step": 9,
+      "line": 73,
+      "type": "cond",
+      "result": false,
+      "vars": {}
+    },
+    {
+      "step": 10,
+      "line": 77,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2
+      }
+    },
+    {
+      "step": 11,
+      "line": 79,
+      "type": "exec",
+      "vars": {
+        "i": 0
+      }
+    },
+    {
+      "step": 12,
+      "line": 82,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 13,
+      "line": 82,
+      "type": "exit",
+      "func": "insert_min_heap",
+      "vars": {}
+    },
+    {
+      "step": 14,
+      "line": 73,
+      "type": "cond",
+      "result": false,
+      "vars": {}
+    },
+    {
+      "step": 15,
+      "line": 77,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3
+      }
+    },
+    {
+      "step": 16,
+      "line": 79,
+      "type": "exec",
+      "vars": {
+        "i": 1
+      }
+    },
+    {
+      "step": 17,
+      "line": 82,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 18,
+      "line": 82,
+      "type": "exit",
+      "func": "insert_min_heap",
+      "vars": {}
+    },
+    {
+      "step": 19,
+      "line": 73,
+      "type": "cond",
+      "result": false,
+      "vars": {}
+    },
+    {
+      "step": 20,
+      "line": 77,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 4
+      }
+    },
+    {
+      "step": 21,
+      "line": 79,
+      "type": "exec",
+      "vars": {
+        "i": 1
+      }
+    },
+    {
+      "step": 22,
+      "line": 77,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1
+      }
+    },
+    {
+      "step": 23,
+      "line": 79,
+      "type": "exec",
+      "vars": {
+        "i": 0
+      }
+    },
+    {
+      "step": 24,
+      "line": 82,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 25,
+      "line": 82,
+      "type": "exit",
+      "func": "insert_min_heap",
+      "vars": {}
+    },
+    {
+      "step": 26,
+      "line": 73,
+      "type": "cond",
+      "result": false,
+      "vars": {}
+    },
+    {
+      "step": 27,
+      "line": 77,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 5
+      }
+    },
+    {
+      "step": 28,
+      "line": 79,
+      "type": "exec",
+      "vars": {
+        "i": 2
+      }
+    },
+    {
+      "step": 29,
+      "line": 77,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2
+      }
+    },
+    {
+      "step": 30,
+      "line": 79,
+      "type": "exec",
+      "vars": {
+        "i": 0
+      }
+    },
+    {
+      "step": 31,
+      "line": 82,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 32,
+      "line": 82,
+      "type": "exit",
+      "func": "insert_min_heap",
+      "vars": {}
+    },
+    {
+      "step": 33,
+      "line": 62,
+      "type": "exec",
+      "vars": {
+        "smallest": 1
+      }
+    },
+    {
+      "step": 34,
+      "line": 65,
+      "type": "exec",
+      "vars": {
+        "smallest": 2
+      }
+    },
+    {
+      "step": 35,
+      "line": 66,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "idx": 0,
+        "smallest": 2
+      }
+    },
+    {
+      "step": 36,
+      "line": 68,
+      "type": "enter",
+      "func": "min_heapify",
+      "vars": {
+        "idx": 2
+      }
+    },
+    {
+      "step": 37,
+      "line": 62,
+      "type": "exec",
+      "vars": {
+        "smallest": 2
+      }
+    },
+    {
+      "step": 38,
+      "line": 65,
+      "type": "exec",
+      "vars": {
+        "smallest": 2
+      }
+    },
+    {
+      "step": 39,
+      "line": 62,
+      "type": "exec",
+      "vars": {
+        "smallest": 1
+      }
+    },
+    {
+      "step": 40,
+      "line": 65,
+      "type": "exec",
+      "vars": {
+        "smallest": 1
+      }
+    },
+    {
+      "step": 41,
+      "line": 66,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "idx": 0,
+        "smallest": 1
+      }
+    },
+    {
+      "step": 42,
+      "line": 68,
+      "type": "enter",
+      "func": "min_heapify",
+      "vars": {
+        "idx": 1
+      }
+    },
+    {
+      "step": 43,
+      "line": 62,
+      "type": "exec",
+      "vars": {
+        "smallest": 1
+      }
+    },
+    {
+      "step": 44,
+      "line": 65,
+      "type": "exec",
+      "vars": {
+        "smallest": 1
+      }
+    },
+    {
+      "step": 45,
+      "line": 73,
+      "type": "cond",
+      "result": false,
+      "vars": {}
+    },
+    {
+      "step": 46,
+      "line": 77,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 4
+      }
+    },
+    {
+      "step": 47,
+      "line": 79,
+      "type": "exec",
+      "vars": {
+        "i": 1
+      }
+    },
+    {
+      "step": 48,
+      "line": 82,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 49,
+      "line": 82,
+      "type": "exit",
+      "func": "insert_min_heap",
+      "vars": {}
+    },
+    {
+      "step": 50,
+      "line": 62,
+      "type": "exec",
+      "vars": {
+        "smallest": 1
+      }
+    },
+    {
+      "step": 51,
+      "line": 65,
+      "type": "exec",
+      "vars": {
+        "smallest": 2
+      }
+    },
+    {
+      "step": 52,
+      "line": 66,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "idx": 0,
+        "smallest": 2
+      }
+    },
+    {
+      "step": 53,
+      "line": 68,
+      "type": "enter",
+      "func": "min_heapify",
+      "vars": {
+        "idx": 2
+      }
+    },
+    {
+      "step": 54,
+      "line": 62,
+      "type": "exec",
+      "vars": {
+        "smallest": 2
+      }
+    },
+    {
+      "step": 55,
+      "line": 65,
+      "type": "exec",
+      "vars": {
+        "smallest": 2
+      }
+    },
+    {
+      "step": 56,
+      "line": 62,
+      "type": "exec",
+      "vars": {
+        "smallest": 1
+      }
+    },
+    {
+      "step": 57,
+      "line": 65,
+      "type": "exec",
+      "vars": {
+        "smallest": 1
+      }
+    },
+    {
+      "step": 58,
+      "line": 66,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "idx": 0,
+        "smallest": 1
+      }
+    },
+    {
+      "step": 59,
+      "line": 68,
+      "type": "enter",
+      "func": "min_heapify",
+      "vars": {
+        "idx": 1
+      }
+    },
+    {
+      "step": 60,
+      "line": 62,
+      "type": "exec",
+      "vars": {
+        "smallest": 1
+      }
+    },
+    {
+      "step": 61,
+      "line": 65,
+      "type": "exec",
+      "vars": {
+        "smallest": 1
+      }
+    },
+    {
+      "step": 62,
+      "line": 73,
+      "type": "cond",
+      "result": false,
+      "vars": {}
+    },
+    {
+      "step": 63,
+      "line": 77,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3
+      }
+    },
+    {
+      "step": 64,
+      "line": 79,
+      "type": "exec",
+      "vars": {
+        "i": 1
+      }
+    },
+    {
+      "step": 65,
+      "line": 82,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 66,
+      "line": 82,
+      "type": "exit",
+      "func": "insert_min_heap",
+      "vars": {}
+    },
+    {
+      "step": 67,
+      "line": 62,
+      "type": "exec",
+      "vars": {
+        "smallest": 1
+      }
+    },
+    {
+      "step": 68,
+      "line": 65,
+      "type": "exec",
+      "vars": {
+        "smallest": 2
+      }
+    },
+    {
+      "step": 69,
+      "line": 66,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "idx": 0,
+        "smallest": 2
+      }
+    },
+    {
+      "step": 70,
+      "line": 68,
+      "type": "enter",
+      "func": "min_heapify",
+      "vars": {
+        "idx": 2
+      }
+    },
+    {
+      "step": 71,
+      "line": 62,
+      "type": "exec",
+      "vars": {
+        "smallest": 2
+      }
+    },
+    {
+      "step": 72,
+      "line": 65,
+      "type": "exec",
+      "vars": {
+        "smallest": 2
+      }
+    },
+    {
+      "step": 73,
+      "line": 62,
+      "type": "exec",
+      "vars": {
+        "smallest": 1
+      }
+    },
+    {
+      "step": 74,
+      "line": 65,
+      "type": "exec",
+      "vars": {
+        "smallest": 1
+      }
+    },
+    {
+      "step": 75,
+      "line": 66,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "idx": 0,
+        "smallest": 1
+      }
+    },
+    {
+      "step": 76,
+      "line": 68,
+      "type": "enter",
+      "func": "min_heapify",
+      "vars": {
+        "idx": 1
+      }
+    },
+    {
+      "step": 77,
+      "line": 62,
+      "type": "exec",
+      "vars": {
+        "smallest": 1
+      }
+    },
+    {
+      "step": 78,
+      "line": 65,
+      "type": "exec",
+      "vars": {
+        "smallest": 1
+      }
+    },
+    {
+      "step": 79,
+      "line": 73,
+      "type": "cond",
+      "result": false,
+      "vars": {}
+    },
+    {
+      "step": 80,
+      "line": 82,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 81,
+      "line": 82,
+      "type": "exit",
+      "func": "insert_min_heap",
+      "vars": {}
+    },
+    {
+      "step": 82,
+      "line": 62,
+      "type": "exec",
+      "vars": {
+        "smallest": 0
+      }
+    },
+    {
+      "step": 83,
+      "line": 65,
+      "type": "exec",
+      "vars": {
+        "smallest": 0
+      }
+    },
+    {
+      "step": 84,
+      "line": 62,
+      "type": "exec",
+      "vars": {
+        "smallest": 0
+      }
+    },
+    {
+      "step": 85,
+      "line": 65,
+      "type": "exec",
+      "vars": {
+        "smallest": 0
+      }
+    },
+    {
+      "step": 86,
+      "line": 73,
+      "type": "cond",
+      "result": false,
+      "vars": {}
+    },
+    {
+      "step": 87,
+      "line": 82,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 88,
+      "line": 82,
+      "type": "exit",
+      "func": "insert_min_heap",
+      "vars": {}
+    },
+    {
+      "step": 89,
+      "line": 62,
+      "type": "exec",
+      "vars": {
+        "smallest": 0
+      }
+    },
+    {
+      "step": 90,
+      "line": 65,
+      "type": "exec",
+      "vars": {
+        "smallest": 0
+      }
+    },
+    {
+      "step": 91,
+      "line": 73,
+      "type": "cond",
+      "result": false,
+      "vars": {}
+    },
+    {
+      "step": 92,
+      "line": 82,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 93,
+      "line": 82,
+      "type": "exit",
+      "func": "insert_min_heap",
+      "vars": {}
+    },
+    {
+      "step": 94,
+      "line": 45,
+      "type": "cond",
+      "result": false,
+      "vars": {}
+    },
+    {
+      "step": 95,
+      "line": 161,
+      "type": "enter",
+      "func": "print_codes",
+      "vars": {
+        "top": 0
+      }
+    },
+    {
+      "step": 96,
+      "line": 133,
+      "type": "cond",
+      "result": false,
+      "vars": {}
+    },
+    {
+      "step": 97,
+      "line": 134,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 98,
+      "line": 135,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "step": 99,
+      "line": 136,
+      "type": "enter",
+      "func": "print_codes",
+      "vars": {
+        "top": 1
+      }
+    },
+    {
+      "step": 100,
+      "line": 133,
+      "type": "cond",
+      "result": false,
+      "vars": {}
+    },
+    {
+      "step": 101,
+      "line": 143,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 102,
+      "line": 145,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0,
+        "top": 1
+      }
+    },
+    {
+      "step": 103,
+      "line": 138,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 104,
+      "line": 139,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          1,
+          1
+        ]
+      }
+    },
+    {
+      "step": 105,
+      "line": 140,
+      "type": "enter",
+      "func": "print_codes",
+      "vars": {
+        "top": 1
+      }
+    },
+    {
+      "step": 106,
+      "line": 133,
+      "type": "cond",
+      "result": false,
+      "vars": {}
+    },
+    {
+      "step": 107,
+      "line": 134,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 108,
+      "line": 135,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          1,
+          0
+        ]
+      }
+    },
+    {
+      "step": 109,
+      "line": 136,
+      "type": "enter",
+      "func": "print_codes",
+      "vars": {
+        "top": 2
+      }
+    },
+    {
+      "step": 110,
+      "line": 133,
+      "type": "cond",
+      "result": false,
+      "vars": {}
+    },
+    {
+      "step": 111,
+      "line": 134,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 112,
+      "line": 135,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          1,
+          0
+        ]
+      }
+    },
+    {
+      "step": 113,
+      "line": 136,
+      "type": "enter",
+      "func": "print_codes",
+      "vars": {
+        "top": 3
+      }
+    },
+    {
+      "step": 114,
+      "line": 133,
+      "type": "cond",
+      "result": false,
+      "vars": {}
+    },
+    {
+      "step": 115,
+      "line": 143,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 116,
+      "line": 145,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0,
+        "top": 3
+      }
+    },
+    {
+      "step": 117,
+      "line": 145,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "top": 3
+      }
+    },
+    {
+      "step": 118,
+      "line": 145,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "top": 3
+      }
+    },
+    {
+      "step": 119,
+      "line": 138,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 120,
+      "line": 139,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          1,
+          0
+        ]
+      }
+    },
+    {
+      "step": 121,
+      "line": 140,
+      "type": "enter",
+      "func": "print_codes",
+      "vars": {
+        "top": 3
+      }
+    },
+    {
+      "step": 122,
+      "line": 133,
+      "type": "cond",
+      "result": false,
+      "vars": {}
+    },
+    {
+      "step": 123,
+      "line": 143,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 124,
+      "line": 145,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0,
+        "top": 3
+      }
+    },
+    {
+      "step": 125,
+      "line": 145,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "top": 3
+      }
+    },
+    {
+      "step": 126,
+      "line": 145,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "top": 3
+      }
+    },
+    {
+      "step": 127,
+      "line": 138,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 128,
+      "line": 139,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          1,
+          1
+        ]
+      }
+    },
+    {
+      "step": 129,
+      "line": 140,
+      "type": "enter",
+      "func": "print_codes",
+      "vars": {
+        "top": 2
+      }
+    },
+    {
+      "step": 130,
+      "line": 133,
+      "type": "cond",
+      "result": false,
+      "vars": {}
+    },
+    {
+      "step": 131,
+      "line": 134,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 132,
+      "line": 135,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          1,
+          1
+        ]
+      }
+    },
+    {
+      "step": 133,
+      "line": 136,
+      "type": "enter",
+      "func": "print_codes",
+      "vars": {
+        "top": 3
+      }
+    },
+    {
+      "step": 134,
+      "line": 133,
+      "type": "cond",
+      "result": false,
+      "vars": {}
+    },
+    {
+      "step": 135,
+      "line": 134,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 136,
+      "line": 135,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          1,
+          1
+        ]
+      }
+    },
+    {
+      "step": 137,
+      "line": 136,
+      "type": "enter",
+      "func": "print_codes",
+      "vars": {
+        "top": 4
+      }
+    },
+    {
+      "step": 138,
+      "line": 133,
+      "type": "cond",
+      "result": false,
+      "vars": {}
+    },
+    {
+      "step": 139,
+      "line": 143,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 140,
+      "line": 145,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0,
+        "top": 4
+      }
+    },
+    {
+      "step": 141,
+      "line": 145,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "top": 4
+      }
+    },
+    {
+      "step": 142,
+      "line": 145,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "top": 4
+      }
+    },
+    {
+      "step": 143,
+      "line": 145,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3,
+        "top": 4
+      }
+    },
+    {
+      "step": 144,
+      "line": 138,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 145,
+      "line": 139,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          1,
+          1
+        ]
+      }
+    },
+    {
+      "step": 146,
+      "line": 140,
+      "type": "enter",
+      "func": "print_codes",
+      "vars": {
+        "top": 4
+      }
+    },
+    {
+      "step": 147,
+      "line": 133,
+      "type": "cond",
+      "result": false,
+      "vars": {}
+    },
+    {
+      "step": 148,
+      "line": 143,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 149,
+      "line": 145,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0,
+        "top": 4
+      }
+    },
+    {
+      "step": 150,
+      "line": 145,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "top": 4
+      }
+    },
+    {
+      "step": 151,
+      "line": 145,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "top": 4
+      }
+    },
+    {
+      "step": 152,
+      "line": 145,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3,
+        "top": 4
+      }
+    },
+    {
+      "step": 153,
+      "line": 138,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 154,
+      "line": 139,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          1,
+          1
+        ]
+      }
+    },
+    {
+      "step": 155,
+      "line": 140,
+      "type": "enter",
+      "func": "print_codes",
+      "vars": {
+        "top": 3
+      }
+    },
+    {
+      "step": 156,
+      "line": 133,
+      "type": "cond",
+      "result": false,
+      "vars": {}
+    },
+    {
+      "step": 157,
+      "line": 143,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 158,
+      "line": 145,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0,
+        "top": 3
+      }
+    },
+    {
+      "step": 159,
+      "line": 145,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "top": 3
+      }
+    },
+    {
+      "step": 160,
+      "line": 145,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "top": 3
+      }
+    },
+    {
+      "step": 161,
+      "line": 39,
+      "type": "cond",
+      "result": false,
+      "vars": {}
+    },
+    {
+      "step": 162,
+      "line": 39,
+      "type": "cond",
+      "result": false,
+      "vars": {}
+    },
+    {
+      "step": 163,
+      "line": 39,
+      "type": "cond",
+      "result": false,
+      "vars": {}
+    },
+    {
+      "step": 164,
+      "line": 39,
+      "type": "cond",
+      "result": false,
+      "vars": {}
+    },
+    {
+      "step": 165,
+      "line": 39,
+      "type": "cond",
+      "result": false,
+      "vars": {}
+    },
+    {
+      "step": 166,
+      "line": 39,
+      "type": "cond",
+      "result": false,
+      "vars": {}
+    },
+    {
+      "step": 167,
+      "line": 39,
+      "type": "cond",
+      "result": false,
+      "vars": {}
+    },
+    {
+      "step": 168,
+      "line": 39,
+      "type": "cond",
+      "result": false,
+      "vars": {}
+    },
+    {
+      "step": 169,
+      "line": 39,
+      "type": "cond",
+      "result": false,
+      "vars": {}
+    },
+    {
+      "step": 170,
+      "line": 39,
+      "type": "cond",
+      "result": false,
+      "vars": {}
+    },
+    {
+      "step": 171,
+      "line": 39,
+      "type": "cond",
+      "result": false,
+      "vars": {}
+    },
+    {
+      "step": 172,
+      "line": 163,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 173,
+      "line": 163,
+      "type": "exit",
+      "func": "main",
+      "vars": {}
+    }
+  ],
+  "total_steps": 174
+}

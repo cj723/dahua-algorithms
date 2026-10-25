@@ -1,0 +1,5789 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#171b28">
+<link rel="icon" href="../assets/mascots/student-dog.png">
+<title>第14章 字符串匹配 · 大话算法</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #1e2336;
+  --panel: #1a1f30;
+  --panel-deep: #151920;
+  --surface: #21283a;
+  --border: #30384c;
+  --text: #d7dae0;
+  --text-soft: #abb4c3;
+  --text-dim: #929caf;
+  --accent: #59a8ee;
+  --accent-soft: #243f5e;
+  --success: #98c379;
+  --control-height: 64px;
+}
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Noto Sans SC', 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text-soft);
+  overflow: hidden;
+}
+button, input, summary { font: inherit; }
+button:focus-visible, a:focus-visible, input:focus-visible, summary:focus-visible, [tabindex]:focus-visible {
+  outline: 3px solid rgba(89,168,238,.58);
+  outline-offset: 2px;
+}
+.header {
+  height: 65px;
+  background: rgba(23,28,43,.96);
+  padding: 0 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  position: relative;
+  z-index: 30;
+}
+.back-link {
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 13px;
+  white-space: nowrap;
+}
+.back-link:hover { text-decoration: underline; }
+.chapter-heading { min-width: 0; flex: 1; }
+.chapter-kicker { color: var(--text-dim); font-size: 12px; margin-bottom: 2px; }
+.chapter-heading h1 {
+  font-size: 19px;
+  line-height: 1.25;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.chapter-status {
+  min-width: 138px;
+  display: grid;
+  gap: 5px;
+}
+.chapter-status-text { color: var(--text-dim); font-size: 11px; text-align: right; }
+.chapter-status-track { height: 4px; background: #252c3e; border-radius: 99px; overflow: hidden; }
+.chapter-status-fill {
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, var(--accent), var(--success));
+  border-radius: inherit;
+  transition: width .3s ease;
+}
+.chapter-nav { display: flex; gap: 6px; }
+.chapter-nav a, .chapter-nav span {
+  min-width: 36px;
+  height: 36px;
+  padding: 0 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-soft);
+  text-decoration: none;
+  font-size: 12px;
+}
+.chapter-nav a:hover { border-color: var(--accent); color: var(--text); background: #202b40; }
+.chapter-nav .disabled { opacity: .35; cursor: default; }
+.mobile-view-switcher { display: none; }
+.main { display: flex; height: calc(100dvh - 65px); min-height: 0; }
+.code-panel {
+  width: 45%;
+  min-width: 360px;
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.code-header {
+  background: var(--panel);
+  padding: 9px 14px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.algo-tabs {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  flex: 1;
+  min-width: 0;
+}
+.algo-tab, .mode-tab {
+  border: 1px solid var(--border);
+  background: #22283a;
+  color: var(--text-dim);
+  border-radius: 7px;
+  cursor: pointer;
+  transition: background .18s ease, border-color .18s ease, color .18s ease;
+}
+.algo-tab { padding: 6px 11px; font-size: 12px; position: relative; }
+.algo-tab:hover, .mode-tab:hover { color: var(--text); border-color: #48536b; }
+.algo-tab.active, .mode-tab.active {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: #e8f3ff;
+}
+.algo-tab.completed::after {
+  content: '✓';
+  margin-left: 6px;
+  color: var(--success);
+  font-weight: 800;
+}
+.breakpoint-hint {
+  color: #737e92;
+  font-size: 11px;
+  line-height: 29px;
+  white-space: nowrap;
+}
+.mode-tabs {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: #171c2b;
+  border-bottom: 1px solid var(--border);
+}
+.mode-tabs.visible { display: flex; }
+.mode-label { font-size: 12px; color: var(--text-dim); margin-right: 2px; }
+.mode-tab { padding: 5px 12px; border-radius: 999px; font-size: 12px; }
+.code-body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  font-family: 'SFMono-Regular', 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+  font-size: var(--code-font-size, 15px);
+  line-height: 1.8;
+  scrollbar-color: #3b455c transparent;
+}
+.code-line { display: flex; min-width: max-content; padding: 0 16px 0 7px; position: relative; }
+.code-line:hover { background: #22283a; }
+.code-line.active {
+  background: rgba(73,164,238,.32);
+  border-left: 3px solid var(--accent);
+  box-shadow: inset 0 0 16px rgba(73,164,238,.18);
+}
+.code-line.executed { background: rgba(73,164,238,.035); }
+.code-line.setup { background: rgba(127,132,142,.045); color: #667084; }
+.line-num {
+  width: 42px;
+  border: 0;
+  background: transparent;
+  text-align: right;
+  color: #748096;
+  padding-right: 12px;
+  user-select: none;
+  flex-shrink: 0;
+  position: relative;
+  cursor: pointer;
+}
+.line-num:hover { color: var(--accent); }
+.line-num .breakpoint {
+  position: absolute;
+  left: 3px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #e05561;
+}
+.line-content { flex: 1; white-space: pre; }
+.kw, .num { color: #F3A862; }
+.fn { color: #59a8ee; }
+.var { color: #D980FA; }
+.str { color: #74C589; }
+.cmt { color: #71939a; font-style: italic; }
+.right-panel { flex: 1; display: flex; flex-direction: column; min-width: 0; min-height: 0; overflow: hidden; }
+.viz-panel {
+  flex: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 20px;
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
+}
+.viz-panel canvas { width: 100%; height: 100%; display: block; }
+body.concept-mode .viz-panel { flex: 1 1 auto; padding: 6px 20px; }
+body.concept-mode .vars-panel { flex: 0 1 168px; padding: 8px 18px; }
+body.concept-mode .output-panel { flex: 0 1 68px; padding: 6px 16px; }
+body.concept-mode .callstack { display: none; }
+.callstack {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  max-width: calc(100% - 24px);
+  background: rgba(33,38,54,.92);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 12px;
+  pointer-events: none;
+}
+.callstack-title, .vars-panel h3, .output-panel h3 { color: var(--text-dim); }
+.callstack-title { margin-bottom: 4px; }
+.callstack-item { color: var(--accent); padding: 2px 0; }
+.callstack-item::before { content: '▸ '; color: #68758a; }
+.vars-panel {
+  flex: 2;
+  background: var(--panel);
+  padding: 10px 18px;
+  border-top: 1px solid var(--border);
+  overflow-y: auto;
+  min-height: 0;
+}
+.output-panel {
+  flex: 1;
+  background: var(--panel-deep);
+  border-top: 1px solid var(--border);
+  padding: 8px 16px;
+  overflow-y: auto;
+  min-height: 0;
+  font-family: 'SFMono-Regular', 'JetBrains Mono', monospace;
+  font-size: var(--output-font-size, 13px);
+  color: var(--text-dim);
+}
+.output-panel h3 {
+  font-size: 12px;
+  margin-bottom: 4px;
+  position: sticky;
+  top: 0;
+  background: var(--panel-deep);
+  padding-bottom: 4px;
+  z-index: 1;
+}
+.output-line { padding: 1px 0; white-space: pre-wrap; word-break: break-word; }
+.vars-panel h3 { font-size: 13px; margin-bottom: 9px; }
+.var-grid { display: flex; flex-direction: column; gap: 6px; }
+.var-section-title { font-size: 11px; color: var(--text-dim); margin: 8px 0 4px; }
+.var-section:first-child .var-section-title { margin-top: 0; }
+.var-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.var-item {
+  background: #22283a;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 6px 13px;
+  font-family: monospace;
+  font-size: var(--var-font-size, 14px);
+}
+.var-name { color: var(--accent); }
+.var-val { color: var(--text); font-weight: 650; }
+.var-changed { animation: varPulse .5s ease; border-color: var(--accent); }
+.var-highlight { border-color: var(--accent); background: var(--accent-soft); }
+@keyframes varPulse { 0% { background: var(--accent-soft); } 100% { background: #22283a; } }
+.var-toggle { font-size: 12px; color: var(--text-dim); cursor: pointer; padding: 4px 0; user-select: none; }
+.control-bar {
+  min-height: var(--control-height);
+  flex-shrink: 0;
+  background: var(--panel);
+  border-top: 1px solid var(--border);
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+  z-index: 20;
+}
+.transport-controls { display: flex; align-items: center; gap: 7px; }
+.btn {
+  min-height: 38px;
+  background: #22283a;
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  white-space: nowrap;
+}
+.btn:hover:not(:disabled) { background: #2a3247; border-color: #4c5872; }
+.btn:disabled { opacity: .36; cursor: not-allowed; }
+.btn-primary { min-width: 82px; background: var(--accent-soft); border-color: var(--accent); }
+.btn-active { background: #285176; border-color: #77bfff; }
+.step-info {
+  margin-left: auto;
+  min-width: 68px;
+  font-size: 12px;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+.step-info strong { color: var(--text); }
+.settings-menu { position: relative; }
+.settings-menu summary {
+  list-style: none;
+  min-height: 38px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-soft);
+  cursor: pointer;
+  font-size: 12px;
+  user-select: none;
+}
+.settings-menu summary::-webkit-details-marker { display: none; }
+.settings-menu[open] summary { border-color: var(--accent); background: var(--accent-soft); color: var(--text); }
+.settings-popover {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 10px);
+  width: 250px;
+  padding: 14px;
+  display: grid;
+  gap: 12px;
+  background: rgba(23,28,43,.98);
+  border: 1px solid #3a465f;
+  border-radius: 12px;
+  box-shadow: 0 16px 42px rgba(0,0,0,.38);
+}
+.setting-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.setting-row label, .shortcut-help { font-size: 12px; color: var(--text-dim); }
+.speed-slider { width: 130px; accent-color: var(--accent); }
+.font-control { display: flex; align-items: center; gap: 6px; }
+.btn-sm { min-height: 32px; padding: 5px 10px; font-size: 12px; }
+.settings-divider { height: 1px; background: var(--border); }
+.shortcut-help { line-height: 1.65; }
+
+@media (max-width: 1050px) {
+  .code-panel { width: 42%; min-width: 320px; }
+  .chapter-status { display: none; }
+  .breakpoint-hint { display: none; }
+  .btn { padding-inline: 10px; }
+}
+
+@media (max-width: 900px) {
+  body { overflow: auto; padding-bottom: 72px; }
+  .header {
+    height: auto;
+    min-height: 60px;
+    padding: 8px 12px;
+    gap: 10px;
+    position: sticky;
+    top: 0;
+  }
+  .back-link { font-size: 0; width: 36px; height: 36px; display: grid; place-items: center; }
+  .back-link::before { content: '←'; font-size: 21px; }
+  .chapter-kicker { font-size: 10px; }
+  .chapter-heading h1 { font-size: 16px; }
+  .chapter-nav a, .chapter-nav span { width: 34px; min-width: 34px; padding: 0; font-size: 0; }
+  .chapter-nav a:first-child::before, .chapter-nav span:first-child::before { content: '‹'; font-size: 22px; }
+  .chapter-nav a:last-child::before, .chapter-nav span:last-child::before { content: '›'; font-size: 22px; }
+  .mobile-view-switcher {
+    position: sticky;
+    top: 60px;
+    z-index: 25;
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 4px;
+    padding: 7px 10px;
+    background: rgba(23,28,43,.97);
+    border-bottom: 1px solid var(--border);
+  }
+  .mobile-view-switcher button {
+    min-height: 38px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text-dim);
+  }
+  .mobile-view-switcher button.active {
+    color: #e8f3ff;
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+  .main { display: block; height: auto; min-height: calc(100dvh - 114px); }
+  .code-panel, .right-panel { width: 100%; min-width: 0; border: 0; }
+  .code-panel { height: calc(100dvh - 186px); }
+  .code-header { padding: 8px 10px; overflow: hidden; }
+  .algo-tabs { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 3px; scrollbar-width: thin; }
+  .algo-tab { flex: 0 0 auto; min-height: 38px; }
+  .mode-tabs { padding: 7px 10px; overflow-x: auto; }
+  .code-body { min-height: 0; font-size: max(13px,var(--code-font-size,15px)); }
+  .code-line { padding-right: 12px; }
+  .right-panel { min-height: calc(100dvh - 186px); overflow: visible; }
+  .viz-panel { height: calc(100dvh - 186px); min-height: 430px; flex: none !important; padding: 8px 10px !important; }
+  .vars-panel { min-height: 50dvh; padding: 14px; }
+  .output-panel { min-height: 28dvh; padding: 12px 14px; }
+  body[data-mobile-view="animation"] .code-panel,
+  body[data-mobile-view="animation"] .vars-panel,
+  body[data-mobile-view="animation"] .output-panel { display: none; }
+  body[data-mobile-view="code"] .right-panel > :not(.control-bar),
+  body[data-mobile-view="code"] .vars-panel,
+  body[data-mobile-view="code"] .output-panel { display: none; }
+  body[data-mobile-view="code"] .right-panel { min-height: 0; }
+  body[data-mobile-view="data"] .code-panel,
+  body[data-mobile-view="data"] .viz-panel { display: none; }
+  body[data-mobile-view="data"] .right-panel { min-height: calc(100dvh - 186px); }
+  .control-bar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    min-height: 72px;
+    padding: 9px max(10px,env(safe-area-inset-right)) calc(9px + env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left));
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 -10px 30px rgba(9,12,20,.36);
+  }
+  .transport-controls { gap: 7px; }
+  #btn-reset { display: none; }
+  .btn { min-width: 48px; min-height: 44px; padding: 8px 10px; font-size: 0; }
+  #btn-back::after { content: '◀'; font-size: 16px; }
+  #btn-play { min-width: 92px; font-size: 14px; }
+  #btn-step::after { content: '▶'; font-size: 16px; }
+  .step-info { margin-left: 0; min-width: 52px; text-align: center; font-size: 11px; }
+  .step-info .step-prefix { display: none; }
+  .settings-menu summary { width: 44px; min-height: 44px; padding: 0; justify-content: center; font-size: 0; }
+  .settings-menu summary::before { content: '⚙'; font-size: 17px; }
+  .settings-popover { right: -2px; width: min(280px,calc(100vw - 20px)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: .001ms !important;
+  }
+}
+</style>
+</head>
+<body data-mobile-view="animation">
+
+<header class="header">
+  <a class="back-link" href="../index.html" aria-label="返回学习地图">← 学习地图</a>
+  <div class="chapter-heading">
+    <div class="chapter-kicker">第14章</div>
+    <h1>字符串匹配</h1>
+  </div>
+  <div class="chapter-status" aria-label="本章学习进度">
+    <div class="chapter-status-text" id="chapter-progress-text">0 / 0 个演示完成</div>
+    <div class="chapter-status-track"><div class="chapter-status-fill" id="chapter-progress-fill"></div></div>
+  </div>
+  <nav class="chapter-nav" aria-label="章节导航">
+    <a href="ch13.html" aria-label="上一章：最短路径的升级版" title="上一章：最短路径的升级版">上一章</a>
+    <a href="ch15.html" aria-label="下一章：高级数据结构" title="下一章：高级数据结构">下一章</a>
+  </nav>
+</header>
+
+<div class="mobile-view-switcher" role="tablist" aria-label="学习视图">
+  <button type="button" class="active" data-mobile-view="animation" role="tab" aria-selected="true">动画</button>
+  <button type="button" data-mobile-view="code" role="tab" aria-selected="false">代码</button>
+  <button type="button" data-mobile-view="data" role="tab" aria-selected="false">变量</button>
+</div>
+
+<main class="main">
+  <section class="code-panel" aria-label="算法代码">
+    <div class="code-header">
+      <div class="algo-tabs" id="algo-tabs" role="tablist" aria-label="本章算法"></div>
+      <span class="breakpoint-hint">点击行号可设断点</span>
+    </div>
+    <div class="mode-tabs" id="mode-tabs" role="tablist" aria-label="演示模式"></div>
+    <div class="code-body" id="code-body" aria-label="代码执行过程"></div>
+  </section>
+
+  <section class="right-panel" aria-label="算法可视化与状态">
+    <div class="viz-panel">
+      <canvas id="viz-canvas" width="800" height="300" role="img" aria-label="算法执行动画"></canvas>
+      <div class="callstack" id="callstack"><div class="callstack-title">调用栈</div></div>
+    </div>
+    <div class="vars-panel">
+      <h3>变量状态</h3>
+      <div class="var-grid" id="var-grid"></div>
+    </div>
+    <div class="output-panel" id="output-panel">
+      <h3>程序输出</h3>
+      <div id="output-content" aria-live="polite"></div>
+    </div>
+
+    <div class="control-bar" aria-label="播放控制">
+      <div class="transport-controls">
+        <button class="btn" id="btn-reset" type="button" aria-label="重置当前演示" title="重置当前演示">⏮ 重置</button>
+        <button class="btn" id="btn-back" type="button" aria-label="上一步" title="上一步">◀ 后退</button>
+        <button class="btn btn-primary" id="btn-play" type="button" aria-label="播放或暂停">▶ 播放</button>
+        <button class="btn" id="btn-step" type="button" aria-label="下一步" title="下一步">⏭ 单步</button>
+      </div>
+      <div class="step-info" aria-live="polite">
+        <span class="step-prefix">步骤 </span><strong id="step-cur">0</strong> / <strong id="step-total">0</strong>
+      </div>
+      <details class="settings-menu">
+        <summary aria-label="播放设置">⚙ 设置</summary>
+        <div class="settings-popover">
+          <div class="setting-row">
+            <label for="speed-slider">播放速度</label>
+            <input type="range" class="speed-slider" id="speed-slider" min="1" max="10" value="5" aria-valuetext="速度 5">
+          </div>
+          <div class="setting-row">
+            <span class="mode-label">代码字体</span>
+            <div class="font-control">
+              <button class="btn btn-sm" type="button" id="font-dec" aria-label="减小代码字体">A−</button>
+              <button class="btn btn-sm" type="button" id="font-inc" aria-label="增大代码字体">A＋</button>
+            </div>
+          </div>
+          <button class="btn" id="btn-to-bp" type="button">运行到断点</button>
+          <div class="settings-divider"></div>
+          <div class="shortcut-help">页面空白处：空格播放/暂停，← → 单步，R 重置</div>
+        </div>
+      </details>
+    </div>
+  </section>
+</main>
+
+<script src="../js/learning-state.js?v=20260725"></script>
+<script src="../js/engine.js?v=20260725-ux2"></script>
+<script src="../js/viz-renderers.js?v=20260725-layout-audit"></script>
+<script>
+const CHAPTER_NUM = 14;
+const ALGOS = {
+  "01_暴力匹配_BF": {
+    "title": "暴力匹配（BF）",
+    "defaultMode": "concept",
+    "modeLabels": {
+      "concept": "理解动画",
+      "trace": "代码执行"
+    },
+    "modes": {
+      "concept": {
+        "title": "暴力匹配（BF）",
+        "source": [
+          "算法: BF 暴力匹配",
+          "输入: text, pattern",
+          "输出: pattern 在 text 中的起始位置",
+          "",
+          "for offset = 0..n-m:",
+          "    从 pattern[0] 开始逐个字符比较",
+          "    如果遇到失配, 换下一个 offset 从头再试",
+          "    如果 pattern 全部对上, 匹配成功"
+        ],
+        "important_vars": {
+          "offset": "状态",
+          "j": "状态",
+          "phase": "状态"
+        },
+        "track_vars": {
+          "primary": [
+            "offset",
+            "j",
+            "phase"
+          ],
+          "secondary": []
+        },
+        "var_classes": {
+          "offset": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "j": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "phase": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "concept": {
+            "category": "secondary",
+            "type": "concept"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 5,
+            "text": "概念动画：BF 很直观, 但每次失败都从头再来, 重复比较很多。"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 5,
+            "type": "exec",
+            "vars": {
+              "offset": 0,
+              "j": 0,
+              "phase": "先把模式串放在主串开头, 从第一格开始比较",
+              "concept": {
+                "kind": "string_match_concept",
+                "title": "暴力匹配_BF",
+                "text": "ABABDABACDABABCABAB",
+                "pattern": "ABABCABAB",
+                "offset": 0,
+                "j": 0,
+                "mode": "bf",
+                "mismatch": false,
+                "success": false,
+                "windowOnly": false,
+                "hashText": null,
+                "hashPattern": null,
+                "jumpTo": null,
+                "caption": "先把模式串放在主串开头, 从第一格开始比较"
+              }
+            }
+          },
+          {
+            "step": 1,
+            "line": 6,
+            "type": "exec",
+            "vars": {
+              "offset": 0,
+              "j": 4,
+              "phase": "前4个字符相同, 第5个字符 C 对 D 失配",
+              "concept": {
+                "kind": "string_match_concept",
+                "title": "暴力匹配_BF",
+                "text": "ABABDABACDABABCABAB",
+                "pattern": "ABABCABAB",
+                "offset": 0,
+                "j": 4,
+                "mode": "bf",
+                "mismatch": true,
+                "success": false,
+                "windowOnly": false,
+                "hashText": null,
+                "hashPattern": null,
+                "jumpTo": null,
+                "caption": "前4个字符相同, 第5个字符 C 对 D 失配"
+              }
+            }
+          },
+          {
+            "step": 2,
+            "line": 7,
+            "type": "exec",
+            "vars": {
+              "offset": 1,
+              "j": 0,
+              "phase": "BF 不记历史, 整个模式串右移一格, 又从头比较",
+              "concept": {
+                "kind": "string_match_concept",
+                "title": "暴力匹配_BF",
+                "text": "ABABDABACDABABCABAB",
+                "pattern": "ABABCABAB",
+                "offset": 1,
+                "j": 0,
+                "mode": "bf",
+                "mismatch": true,
+                "success": false,
+                "windowOnly": false,
+                "hashText": null,
+                "hashPattern": null,
+                "jumpTo": null,
+                "caption": "BF 不记历史, 整个模式串右移一格, 又从头比较"
+              }
+            }
+          },
+          {
+            "step": 3,
+            "line": 7,
+            "type": "exec",
+            "vars": {
+              "offset": 5,
+              "j": 3,
+              "phase": "中间会反复出现“对几格又失败”的情况, 所以 BF 会做很多重复比较",
+              "concept": {
+                "kind": "string_match_concept",
+                "title": "暴力匹配_BF",
+                "text": "ABABDABACDABABCABAB",
+                "pattern": "ABABCABAB",
+                "offset": 5,
+                "j": 3,
+                "mode": "bf",
+                "mismatch": true,
+                "success": false,
+                "windowOnly": false,
+                "hashText": null,
+                "hashPattern": null,
+                "jumpTo": null,
+                "caption": "中间会反复出现“对几格又失败”的情况, 所以 BF 会做很多重复比较"
+              }
+            }
+          },
+          {
+            "step": 4,
+            "line": 8,
+            "type": "exec",
+            "vars": {
+              "offset": 10,
+              "j": 8,
+              "phase": "移动到 offset=10 时, 9 个字符全部对上, 匹配成功",
+              "concept": {
+                "kind": "string_match_concept",
+                "title": "暴力匹配_BF",
+                "text": "ABABDABACDABABCABAB",
+                "pattern": "ABABCABAB",
+                "offset": 10,
+                "j": 8,
+                "mode": "bf",
+                "mismatch": false,
+                "success": true,
+                "windowOnly": false,
+                "hashText": null,
+                "hashPattern": null,
+                "jumpTo": null,
+                "caption": "移动到 offset=10 时, 9 个字符全部对上, 匹配成功"
+              }
+            }
+          }
+        ]
+      },
+      "trace": {
+        "title": "暴力匹配（BF）",
+        "source": [
+          "#include <stdio.h>",
+          "#include <string.h>",
+          "",
+          "/* BF 暴力匹配算法 */",
+          "int bf_search(const char *text, const char *pattern) {",
+          "    int n = (int)strlen(text);",
+          "    int m = (int)strlen(pattern);",
+          "",
+          "    if (m == 0) return 0;      /* 空模式串：约定匹配在起始位置 */",
+          "    if (n < m) return -1;      /* 模式串比文本还长，不可能匹配 */",
+          "    ",
+          "    for (int i = 0; i <= n - m; i++) {",
+          "        int j = 0;",
+          "        for (; j < m; j++) {",
+          "            if (text[i + j] != pattern[j]) {",
+          "                break;  /* 不匹配，跳出内层循环 */",
+          "            }",
+          "        }",
+          "        if (j == m) {",
+          "            return i;  /* 找到了，返回起始位置 */",
+          "        }",
+          "    }",
+          "    return -1;  /* 没找到 */",
+          "}",
+          "",
+          "int main(void) {",
+          "    char text[] = \"ABABDABACDABABCABAB\";",
+          "    char pattern[] = \"ABABCABAB\";",
+          "    ",
+          "    int pos = bf_search(text, pattern);",
+          "    if (pos != -1) {",
+          "        printf(\"匹配成功！起始位置：%d\\n\", pos);",
+          "    } else {",
+          "        printf(\"未找到匹配\\n\");",
+          "    }",
+          "    return 0;",
+          "}",
+          ""
+        ],
+        "important_vars": {
+          "n": "参数",
+          "m": "参数",
+          "i": "索引",
+          "j": "索引",
+          "pos": "索引"
+        },
+        "track_vars": {
+          "primary": [
+            "i",
+            "j",
+            "window",
+            "pattern",
+            "word",
+            "prefix",
+            "state",
+            "fail",
+            "total",
+            "phase"
+          ],
+          "secondary": [
+            "next",
+            "nextval",
+            "matches",
+            "text",
+            "position",
+            "_return",
+            "stringMatch"
+          ]
+        },
+        "var_classes": {
+          "_return": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "i": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "j": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "m": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "n": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "pos": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "stringMatch": {
+            "category": "secondary",
+            "type": "string_match"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 8,
+            "text": "匹配成功！起始位置：10"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 26,
+            "type": "enter",
+            "func": "main",
+            "vars": {
+              "phase": "文本长度 19, 模式串长度 9"
+            }
+          },
+          {
+            "step": 1,
+            "line": 5,
+            "type": "enter",
+            "func": "bf_search",
+            "vars": {
+              "i": 0,
+              "j": 0,
+              "phase": "先把模式串与文本开头对齐"
+            }
+          },
+          {
+            "step": 2,
+            "line": 15,
+            "type": "exec",
+            "func": "bf_search",
+            "vars": {
+              "i": 0,
+              "j": 4,
+              "compare": "D≠C",
+              "phase": "前 4 个字符相同, 第 5 个字符失配",
+              "stringMatch": {
+                "text": "ABABDABACDABABCABAB",
+                "pattern": "ABABCABAB",
+                "i": 0,
+                "j": 4,
+                "offset": 0,
+                "mode": "bf",
+                "mismatch": false,
+                "success": false,
+                "windowOnly": false
+              }
+            }
+          },
+          {
+            "step": 3,
+            "line": 12,
+            "type": "exec",
+            "func": "bf_search",
+            "vars": {
+              "i": 1,
+              "phase": "BF 只向右移动一格, 再从模式串开头比较",
+              "stringMatch": {
+                "text": "ABABDABACDABABCABAB",
+                "pattern": "ABABCABAB",
+                "i": 1,
+                "j": 4,
+                "offset": 1,
+                "mode": "bf",
+                "mismatch": false,
+                "success": false,
+                "windowOnly": false
+              }
+            }
+          },
+          {
+            "step": 4,
+            "line": 15,
+            "type": "exec",
+            "func": "bf_search",
+            "vars": {
+              "i": 5,
+              "j": 3,
+              "phase": "继续逐个起点尝试, 已匹配信息不会被保留",
+              "stringMatch": {
+                "text": "ABABDABACDABABCABAB",
+                "pattern": "ABABCABAB",
+                "i": 5,
+                "j": 3,
+                "offset": 5,
+                "mode": "bf",
+                "mismatch": false,
+                "success": false,
+                "windowOnly": false
+              }
+            }
+          },
+          {
+            "step": 5,
+            "line": 19,
+            "type": "exec",
+            "func": "bf_search",
+            "vars": {
+              "i": 10,
+              "j": 9,
+              "phase": "移动到位置 10 时, 9 个字符全部匹配"
+            }
+          },
+          {
+            "step": 6,
+            "line": 20,
+            "type": "exit",
+            "func": "bf_search",
+            "vars": {
+              "_return": 10,
+              "phase": "返回首次出现位置 10"
+            }
+          },
+          {
+            "step": 7,
+            "line": 36,
+            "type": "exit",
+            "func": "main",
+            "vars": {
+              "_return": 0,
+              "phase": "程序结束"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "02_KMP_next数组": {
+    "title": "KMP（next 数组）",
+    "defaultMode": "concept",
+    "modeLabels": {
+      "concept": "理解动画",
+      "trace": "代码执行"
+    },
+    "modes": {
+      "concept": {
+        "title": "KMP（next 数组）",
+        "source": [
+          "算法: 构建 KMP next 数组",
+          "输入: 模式串 pattern",
+          "输出: next 数组",
+          "",
+          "next[0] = -1",
+          "i = 0, j = -1",
+          "当 i < m - 1:",
+          "    如果 j == -1 或 pattern[i] == pattern[j]:",
+          "        i++, j++",
+          "        next[i] = j",
+          "    否则:",
+          "        j = next[j]"
+        ],
+        "important_vars": {
+          "i": "状态",
+          "j": "状态",
+          "phase": "状态"
+        },
+        "track_vars": {
+          "primary": [
+            "i",
+            "j",
+            "phase"
+          ],
+          "secondary": []
+        },
+        "var_classes": {
+          "i": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "j": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "phase": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "concept": {
+            "category": "secondary",
+            "type": "concept"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 6,
+            "text": "概念动画：next 数组记录失配后模式串应该回退到哪里。"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 5,
+            "type": "exec",
+            "vars": {
+              "i": 0,
+              "j": -1,
+              "phase": "next[0] = -1 是哨兵, 表示已经退无可退",
+              "concept": {
+                "kind": "kmp_table",
+                "title": "KMP next数组",
+                "pattern": "ABABCABAB",
+                "tableName": "next",
+                "values": [
+                  -1,
+                  0,
+                  0,
+                  1,
+                  2,
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                "active": 0,
+                "built": 0,
+                "optimized": false
+              }
+            }
+          },
+          {
+            "step": 1,
+            "line": 8,
+            "type": "exec",
+            "vars": {
+              "i": 1,
+              "j": 0,
+              "phase": "A 和 B 不同, 最长相同前后缀长度是 0",
+              "concept": {
+                "kind": "kmp_table",
+                "title": "KMP next数组",
+                "pattern": "ABABCABAB",
+                "tableName": "next",
+                "values": [
+                  -1,
+                  0,
+                  0,
+                  1,
+                  2,
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                "active": 1,
+                "built": 2,
+                "optimized": false
+              }
+            }
+          },
+          {
+            "step": 2,
+            "line": 10,
+            "type": "exec",
+            "vars": {
+              "i": 3,
+              "j": 1,
+              "phase": "ABAB 的前缀 A 和后缀 A 对上了",
+              "concept": {
+                "kind": "kmp_table",
+                "title": "KMP next数组",
+                "pattern": "ABABCABAB",
+                "tableName": "next",
+                "values": [
+                  -1,
+                  0,
+                  0,
+                  1,
+                  2,
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                "active": 3,
+                "built": 4,
+                "optimized": false
+              }
+            }
+          },
+          {
+            "step": 3,
+            "line": 10,
+            "type": "exec",
+            "vars": {
+              "i": 4,
+              "j": 2,
+              "phase": "ABAB 的前缀 AB 和后缀 AB 对上了",
+              "concept": {
+                "kind": "kmp_table",
+                "title": "KMP next数组",
+                "pattern": "ABABCABAB",
+                "tableName": "next",
+                "values": [
+                  -1,
+                  0,
+                  0,
+                  1,
+                  2,
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                "active": 4,
+                "built": 5,
+                "optimized": false
+              }
+            }
+          },
+          {
+            "step": 4,
+            "line": 12,
+            "type": "exec",
+            "vars": {
+              "i": 5,
+              "j": 0,
+              "phase": "遇到 C 后, 前后缀关系断开, 准备回退",
+              "concept": {
+                "kind": "kmp_table",
+                "title": "KMP next数组",
+                "pattern": "ABABCABAB",
+                "tableName": "next",
+                "values": [
+                  -1,
+                  0,
+                  0,
+                  1,
+                  2,
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                "active": 5,
+                "built": 6,
+                "optimized": false
+              }
+            }
+          },
+          {
+            "step": 5,
+            "line": 10,
+            "type": "exec",
+            "vars": {
+              "i": 8,
+              "j": 3,
+              "phase": "表建完后, 匹配失配时可以直接跳到表指示的位置",
+              "concept": {
+                "kind": "kmp_table",
+                "title": "KMP next数组",
+                "pattern": "ABABCABAB",
+                "tableName": "next",
+                "values": [
+                  -1,
+                  0,
+                  0,
+                  1,
+                  2,
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                "active": 8,
+                "built": 9,
+                "optimized": false
+              }
+            }
+          }
+        ]
+      },
+      "trace": {
+        "title": "KMP（next 数组）",
+        "source": [
+          "#include <stdio.h>",
+          "#include <string.h>",
+          "",
+          "/* 构建 next 数组 */",
+          "void build_next(const char *pattern, int *next, int m) {",
+          "    next[0] = -1;",
+          "    int i = 0, j = -1;",
+          "    ",
+          "    while (i < m - 1) {",
+          "        if (j == -1 || pattern[i] == pattern[j]) {",
+          "            i++;",
+          "            j++;",
+          "            next[i] = j;",
+          "        } else {",
+          "            j = next[j];  /* 回退！这里用到了已经算好的 next 值 */",
+          "        }",
+          "    }",
+          "}",
+          "",
+          "/* 测试：构建 KMP next 数组 */",
+          "int main(void) {",
+          "    char pattern[] = \"ABABCABAB\";",
+          "    int m = (int)strlen(pattern);",
+          "    int next[100];",
+          "",
+          "    build_next(pattern, next, m);",
+          "",
+          "    printf(\"模式串：%s\\n\", pattern);",
+          "    printf(\"next 数组：\");",
+          "    for (int i = 0; i < m; i++) printf(\"%d \", next[i]);",
+          "    printf(\"\\n\\n说明：next[i] 表示 pattern[0..i - 1] 的最长相同前后缀长度\\n\");",
+          "    printf(\"next[0] = -1 是哨兵，匹配时遇到 next[j] = -1 则 i++、j++\\n\");",
+          "",
+          "    return 0;",
+          "}",
+          ""
+        ],
+        "important_vars": {
+          "i": "索引",
+          "m": "参数",
+          "next": "数据"
+        },
+        "track_vars": {
+          "primary": [
+            "i",
+            "j",
+            "window",
+            "pattern",
+            "word",
+            "prefix",
+            "state",
+            "fail",
+            "total",
+            "phase"
+          ],
+          "secondary": [
+            "next",
+            "nextval",
+            "matches",
+            "text",
+            "position",
+            "_return"
+          ]
+        },
+        "var_classes": {
+          "_return": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "i": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "j": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "m": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "next": {
+            "category": "primary",
+            "type": "array"
+          }
+        },
+        "initial_data": {
+          "next": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            2051904,
+            1,
+            0,
+            0,
+            1,
+            0,
+            515,
+            0,
+            4608,
+            0,
+            1874962936,
+            1,
+            125200,
+            0,
+            2,
+            0,
+            -326729536,
+            1,
+            -326723552,
+            1,
+            1874962848,
+            1,
+            -2140974420,
+            1,
+            -326729640,
+            1,
+            40,
+            0,
+            8,
+            0,
+            -326723616,
+            1,
+            48,
+            0,
+            -326729536,
+            1,
+            1874962896,
+            1,
+            -2140976616,
+            1,
+            8,
+            0,
+            48,
+            0,
+            16,
+            0,
+            -326729472,
+            1,
+            1874962960,
+            1,
+            -2140977200,
+            1,
+            -1786445710,
+            911574050,
+            -368747480,
+            1,
+            1107296256,
+            0,
+            -2140977564,
+            1,
+            -300414824,
+            1,
+            1874963000,
+            1,
+            1,
+            0,
+            -326729640,
+            1,
+            1874963120,
+            1,
+            -2140978460,
+            1,
+            -16,
+            -1,
+            -368747480,
+            1,
+            1073741824,
+            0,
+            -2140972060,
+            1,
+            -438592176,
+            1,
+            1,
+            1,
+            0,
+            0,
+            0,
+            0,
+            -323881104,
+            1,
+            1874963632,
+            1,
+            1,
+            0
+          ]
+        },
+        "program_output": [
+          {
+            "after_step": 7,
+            "text": "模式串：ABABCABAB；next：-1 0 0 1 2 0 1 2 3"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 21,
+            "type": "enter",
+            "func": "main",
+            "vars": {
+              "pattern": "ABABCABAB",
+              "phase": "为模式串构建哨兵版 next 数组"
+            }
+          },
+          {
+            "step": 1,
+            "line": 5,
+            "type": "enter",
+            "func": "build_next",
+            "vars": {
+              "i": 0,
+              "j": -1,
+              "next": [
+                -1
+              ],
+              "phase": "next[0]=-1 表示已经无处可退"
+            }
+          },
+          {
+            "step": 2,
+            "line": 13,
+            "type": "exec",
+            "func": "build_next",
+            "vars": {
+              "i": 1,
+              "j": 0,
+              "next": [
+                -1,
+                0
+              ],
+              "phase": "得到 next[1]=0"
+            }
+          },
+          {
+            "step": 3,
+            "line": 15,
+            "type": "exec",
+            "func": "build_next",
+            "vars": {
+              "i": 1,
+              "j": -1,
+              "phase": "B≠A, 候选前缀退到哨兵"
+            }
+          },
+          {
+            "step": 4,
+            "line": 13,
+            "type": "exec",
+            "func": "build_next",
+            "vars": {
+              "i": 4,
+              "j": 2,
+              "next": [
+                -1,
+                0,
+                0,
+                1,
+                2
+              ],
+              "phase": "ABAB 的最长相等真前后缀是 AB"
+            }
+          },
+          {
+            "step": 5,
+            "line": 15,
+            "type": "exec",
+            "func": "build_next",
+            "vars": {
+              "i": 4,
+              "j": 0,
+              "phase": "C 与候选前缀失配, 连续缩短候选"
+            }
+          },
+          {
+            "step": 6,
+            "line": 34,
+            "type": "exit",
+            "func": "main",
+            "vars": {
+              "_return": 0,
+              "next": [
+                -1,
+                0,
+                0,
+                1,
+                2,
+                0,
+                1,
+                2,
+                3
+              ],
+              "phase": "完整 next 数组构建完成"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "03_KMP_匹配过程": {
+    "title": "KMP（匹配过程）",
+    "defaultMode": "concept",
+    "modeLabels": {
+      "concept": "理解动画",
+      "trace": "代码执行"
+    },
+    "modes": {
+      "concept": {
+        "title": "KMP（匹配过程）",
+        "source": [
+          "算法: KMP 匹配过程",
+          "输入: text, pattern, next",
+          "输出: pattern 在 text 中的起始位置",
+          "",
+          "i 指向 text, j 指向 pattern",
+          "如果 text[i] == pattern[j]: i++, j++",
+          "否则: j = next[j]",
+          "注意: text 指针 i 不回退"
+        ],
+        "important_vars": {
+          "offset": "状态",
+          "j": "状态",
+          "phase": "状态"
+        },
+        "track_vars": {
+          "primary": [
+            "offset",
+            "j",
+            "phase"
+          ],
+          "secondary": []
+        },
+        "var_classes": {
+          "offset": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "j": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "phase": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "concept": {
+            "category": "secondary",
+            "type": "concept"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 6,
+            "text": "概念动画：KMP 的核心是文本指针不回退, 失配时只移动模式串。"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 5,
+            "type": "exec",
+            "vars": {
+              "offset": 0,
+              "j": 0,
+              "phase": "KMP 也从左往右比较, 但会记住已经对上的前缀",
+              "concept": {
+                "kind": "string_match_concept",
+                "title": "KMP_匹配过程",
+                "text": "ABABDABACDABABCABAB",
+                "pattern": "ABABCABAB",
+                "offset": 0,
+                "j": 0,
+                "mode": "kmp",
+                "mismatch": false,
+                "success": false,
+                "windowOnly": false,
+                "hashText": null,
+                "hashPattern": null,
+                "jumpTo": null,
+                "caption": "KMP 也从左往右比较, 但会记住已经对上的前缀"
+              }
+            }
+          },
+          {
+            "step": 1,
+            "line": 6,
+            "type": "exec",
+            "vars": {
+              "offset": 0,
+              "j": 4,
+              "phase": "ABAB 已经对上, 第5格失配时, 这段历史不能浪费",
+              "concept": {
+                "kind": "string_match_concept",
+                "title": "KMP_匹配过程",
+                "text": "ABABDABACDABABCABAB",
+                "pattern": "ABABCABAB",
+                "offset": 0,
+                "j": 4,
+                "mode": "kmp",
+                "mismatch": true,
+                "success": false,
+                "windowOnly": false,
+                "hashText": null,
+                "hashPattern": null,
+                "jumpTo": null,
+                "caption": "ABAB 已经对上, 第5格失配时, 这段历史不能浪费"
+              }
+            }
+          },
+          {
+            "step": 2,
+            "line": 7,
+            "type": "exec",
+            "vars": {
+              "offset": 2,
+              "j": 2,
+              "phase": "next[4]=2, 模式串滑到能复用 AB 的位置, 主串指针不回头",
+              "concept": {
+                "kind": "string_match_concept",
+                "title": "KMP_匹配过程",
+                "text": "ABABDABACDABABCABAB",
+                "pattern": "ABABCABAB",
+                "offset": 2,
+                "j": 2,
+                "mode": "kmp",
+                "mismatch": false,
+                "success": false,
+                "windowOnly": false,
+                "hashText": null,
+                "hashPattern": null,
+                "jumpTo": 2,
+                "caption": "next[4]=2, 模式串滑到能复用 AB 的位置, 主串指针不回头"
+              }
+            }
+          },
+          {
+            "step": 3,
+            "line": 7,
+            "type": "exec",
+            "vars": {
+              "offset": 5,
+              "j": 0,
+              "phase": "如果当前前缀也接不上, j 继续按 next 回退, 仍然不用重扫主串",
+              "concept": {
+                "kind": "string_match_concept",
+                "title": "KMP_匹配过程",
+                "text": "ABABDABACDABABCABAB",
+                "pattern": "ABABCABAB",
+                "offset": 5,
+                "j": 0,
+                "mode": "kmp",
+                "mismatch": true,
+                "success": false,
+                "windowOnly": false,
+                "hashText": null,
+                "hashPattern": null,
+                "jumpTo": null,
+                "caption": "如果当前前缀也接不上, j 继续按 next 回退, 仍然不用重扫主串"
+              }
+            }
+          },
+          {
+            "step": 4,
+            "line": 6,
+            "type": "exec",
+            "vars": {
+              "offset": 10,
+              "j": 5,
+              "phase": "来到 offset=10 后, 匹配一路向前推进",
+              "concept": {
+                "kind": "string_match_concept",
+                "title": "KMP_匹配过程",
+                "text": "ABABDABACDABABCABAB",
+                "pattern": "ABABCABAB",
+                "offset": 10,
+                "j": 5,
+                "mode": "kmp",
+                "mismatch": false,
+                "success": false,
+                "windowOnly": false,
+                "hashText": null,
+                "hashPattern": null,
+                "jumpTo": null,
+                "caption": "来到 offset=10 后, 匹配一路向前推进"
+              }
+            }
+          },
+          {
+            "step": 5,
+            "line": 8,
+            "type": "exec",
+            "vars": {
+              "offset": 10,
+              "j": 8,
+              "phase": "模式串全部对上, 返回起始位置 10",
+              "concept": {
+                "kind": "string_match_concept",
+                "title": "KMP_匹配过程",
+                "text": "ABABDABACDABABCABAB",
+                "pattern": "ABABCABAB",
+                "offset": 10,
+                "j": 8,
+                "mode": "kmp",
+                "mismatch": false,
+                "success": true,
+                "windowOnly": false,
+                "hashText": null,
+                "hashPattern": null,
+                "jumpTo": null,
+                "caption": "模式串全部对上, 返回起始位置 10"
+              }
+            }
+          }
+        ]
+      },
+      "trace": {
+        "title": "KMP（匹配过程）",
+        "source": [
+          "#include <stdio.h>",
+          "#include <string.h>",
+          "#include <stdlib.h>",
+          "",
+          "void build_next(const char *pattern, int *next, int m) {",
+          "    next[0] = -1;",
+          "    int i = 0, j = -1;",
+          "    while (i < m - 1) {",
+          "        if (j == -1 || pattern[i] == pattern[j]) {",
+          "            i++;",
+          "            j++;",
+          "            next[i] = j;",
+          "        } else {",
+          "            j = next[j];",
+          "        }",
+          "    }",
+          "}",
+          "",
+          "/* KMP 匹配算法 */",
+          "int kmp_search(const char *text, const char *pattern) {",
+          "    int n = (int)strlen(text);",
+          "    int m = (int)strlen(pattern);",
+          "",
+          "    if (m == 0) return 0;      /* 空模式串：约定匹配在起始位置 */",
+          "    if (n < m) return -1;      /* 模式串比文本还长，不可能匹配 */",
+          "",
+          "    int *next = (int *)malloc(m * sizeof(int));",
+          "    if (next == NULL) {",
+          "        printf(\"内存分配失败\\n\");",
+          "        return -1;",
+          "    }",
+          "    ",
+          "    build_next(pattern, next, m);",
+          "    ",
+          "    int i = 0, j = 0;  /* i 是 text 的指针，j 是 pattern 的指针 */",
+          "    while (i < n && j < m) {",
+          "        if (j == -1 || text[i] == pattern[j]) {",
+          "            i++;",
+          "            j++;",
+          "        } else {",
+          "            j = next[j];  /* 模式串回退，文本指针不动！ */",
+          "        }",
+          "    }",
+          "    ",
+          "    free(next);",
+          "    ",
+          "    if (j == m) {",
+          "        return i - m;  /* 找到了，返回起始位置 */",
+          "    }",
+          "    return -1;",
+          "}",
+          "",
+          "int main(void) {",
+          "    char text[] = \"ABABDABACDABABCABAB\";",
+          "    char pattern[] = \"ABABCABAB\";",
+          "    ",
+          "    int pos = kmp_search(text, pattern);",
+          "    if (pos != -1) {",
+          "        printf(\"KMP 匹配成功！起始位置：%d\\n\", pos);",
+          "    } else {",
+          "        printf(\"未找到匹配\\n\");",
+          "    }",
+          "    return 0;",
+          "}",
+          ""
+        ],
+        "important_vars": {
+          "i": "索引",
+          "n": "参数",
+          "m": "参数",
+          "pos": "索引"
+        },
+        "track_vars": {
+          "primary": [
+            "i",
+            "j",
+            "window",
+            "pattern",
+            "word",
+            "prefix",
+            "state",
+            "fail",
+            "total",
+            "phase"
+          ],
+          "secondary": [
+            "next",
+            "nextval",
+            "matches",
+            "text",
+            "position",
+            "_return",
+            "stringMatch"
+          ]
+        },
+        "var_classes": {
+          "_return": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "i": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "j": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "m": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "n": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "pos": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "stringMatch": {
+            "category": "secondary",
+            "type": "string_match"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 8,
+            "text": "KMP 匹配成功！起始位置：10"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 53,
+            "type": "enter",
+            "func": "main",
+            "vars": {
+              "phase": "文本和模式串与 BF 使用同一组样例"
+            }
+          },
+          {
+            "step": 1,
+            "line": 20,
+            "type": "enter",
+            "func": "kmp_search",
+            "vars": {
+              "i": 0,
+              "j": 0,
+              "phase": "先构建 next, 再开始匹配"
+            }
+          },
+          {
+            "step": 2,
+            "line": 10,
+            "type": "exec",
+            "func": "kmp_search",
+            "vars": {
+              "i": 4,
+              "j": 4,
+              "phase": "文本前 4 个字符 ABAB 匹配"
+            }
+          },
+          {
+            "step": 3,
+            "line": 14,
+            "type": "exec",
+            "func": "kmp_search",
+            "vars": {
+              "i": 4,
+              "j": 2,
+              "compare": "D≠C",
+              "phase": "失配时 i 不回退, j 从 4 跳到 next[4]=2"
+            }
+          },
+          {
+            "step": 4,
+            "line": 14,
+            "type": "exec",
+            "func": "kmp_search",
+            "vars": {
+              "i": 4,
+              "j": 0,
+              "phase": "仍不匹配, 模式串继续按 next 回退"
+            }
+          },
+          {
+            "step": 5,
+            "line": 10,
+            "type": "exec",
+            "func": "kmp_search",
+            "vars": {
+              "i": 19,
+              "j": 9,
+              "phase": "文本指针始终向前, 最终模式串全部匹配"
+            }
+          },
+          {
+            "step": 6,
+            "line": 48,
+            "type": "exit",
+            "func": "kmp_search",
+            "vars": {
+              "_return": 10,
+              "phase": "匹配起点为 19-9=10"
+            }
+          },
+          {
+            "step": 7,
+            "line": 63,
+            "type": "exit",
+            "func": "main",
+            "vars": {
+              "_return": 0,
+              "phase": "程序结束"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "04_KMP_nextval优化": {
+    "title": "KMP（nextval 优化）",
+    "defaultMode": "concept",
+    "modeLabels": {
+      "concept": "理解动画",
+      "trace": "代码执行"
+    },
+    "modes": {
+      "concept": {
+        "title": "KMP（nextval 优化）",
+        "source": [
+          "算法: 构建 KMP nextval 数组",
+          "输入: 模式串 pattern",
+          "输出: nextval 数组",
+          "",
+          "先像 next 一样寻找回退位置",
+          "如果 pattern[i] != pattern[j]:",
+          "    nextval[i] = j",
+          "否则:",
+          "    nextval[i] = nextval[j]",
+          "",
+          "核心: 避免退到一个必然再次失配的位置"
+        ],
+        "important_vars": {
+          "i": "状态",
+          "j": "状态",
+          "phase": "状态"
+        },
+        "track_vars": {
+          "primary": [
+            "i",
+            "j",
+            "phase"
+          ],
+          "secondary": []
+        },
+        "var_classes": {
+          "i": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "j": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "phase": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "concept": {
+            "category": "secondary",
+            "type": "concept"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 6,
+            "text": "概念动画：nextval 在 next 基础上跳过重复字符导致的无意义失配。"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 5,
+            "type": "exec",
+            "vars": {
+              "i": 0,
+              "j": -1,
+              "phase": "nextval[0] = -1, 仍然保留哨兵",
+              "concept": {
+                "kind": "kmp_table",
+                "title": "KMP nextval优化",
+                "pattern": "ABABCABAB",
+                "tableName": "nextval",
+                "values": [
+                  -1,
+                  0,
+                  -1,
+                  0,
+                  2,
+                  -1,
+                  0,
+                  -1,
+                  0
+                ],
+                "active": 0,
+                "built": 0,
+                "optimized": true
+              }
+            }
+          },
+          {
+            "step": 1,
+            "line": 10,
+            "type": "exec",
+            "vars": {
+              "i": 2,
+              "j": -1,
+              "phase": "如果回退后还是同一个字符, 就继续跳过",
+              "concept": {
+                "kind": "kmp_table",
+                "title": "KMP nextval优化",
+                "pattern": "ABABCABAB",
+                "tableName": "nextval",
+                "values": [
+                  -1,
+                  0,
+                  -1,
+                  0,
+                  2,
+                  -1,
+                  0,
+                  -1,
+                  0
+                ],
+                "active": 2,
+                "built": 3,
+                "optimized": true
+              }
+            }
+          },
+          {
+            "step": 2,
+            "line": 10,
+            "type": "exec",
+            "vars": {
+              "i": 4,
+              "j": 2,
+              "phase": "字符不同的位置保留正常回退值",
+              "concept": {
+                "kind": "kmp_table",
+                "title": "KMP nextval优化",
+                "pattern": "ABABCABAB",
+                "tableName": "nextval",
+                "values": [
+                  -1,
+                  0,
+                  -1,
+                  0,
+                  2,
+                  -1,
+                  0,
+                  -1,
+                  0
+                ],
+                "active": 4,
+                "built": 5,
+                "optimized": true
+              }
+            }
+          },
+          {
+            "step": 3,
+            "line": 12,
+            "type": "exec",
+            "vars": {
+              "i": 5,
+              "j": -1,
+              "phase": "C 失配时直接退到哨兵, 少做一次重复比较",
+              "concept": {
+                "kind": "kmp_table",
+                "title": "KMP nextval优化",
+                "pattern": "ABABCABAB",
+                "tableName": "nextval",
+                "values": [
+                  -1,
+                  0,
+                  -1,
+                  0,
+                  2,
+                  -1,
+                  0,
+                  -1,
+                  0
+                ],
+                "active": 5,
+                "built": 6,
+                "optimized": true
+              }
+            }
+          },
+          {
+            "step": 4,
+            "line": 10,
+            "type": "exec",
+            "vars": {
+              "i": 7,
+              "j": -1,
+              "phase": "相同字符导致的重复失配被压缩掉",
+              "concept": {
+                "kind": "kmp_table",
+                "title": "KMP nextval优化",
+                "pattern": "ABABCABAB",
+                "tableName": "nextval",
+                "values": [
+                  -1,
+                  0,
+                  -1,
+                  0,
+                  2,
+                  -1,
+                  0,
+                  -1,
+                  0
+                ],
+                "active": 7,
+                "built": 8,
+                "optimized": true
+              }
+            }
+          },
+          {
+            "step": 5,
+            "line": 10,
+            "type": "exec",
+            "vars": {
+              "i": 8,
+              "j": 0,
+              "phase": "nextval 是 next 的再剪枝版本",
+              "concept": {
+                "kind": "kmp_table",
+                "title": "KMP nextval优化",
+                "pattern": "ABABCABAB",
+                "tableName": "nextval",
+                "values": [
+                  -1,
+                  0,
+                  -1,
+                  0,
+                  2,
+                  -1,
+                  0,
+                  -1,
+                  0
+                ],
+                "active": 8,
+                "built": 9,
+                "optimized": true
+              }
+            }
+          }
+        ]
+      },
+      "trace": {
+        "title": "KMP（nextval  优化）",
+        "source": [
+          "#include <stdio.h>",
+          "#include <stdlib.h>",
+          "#include <string.h>",
+          "",
+          "/* 构建 next 数组（用于对比） */",
+          "void build_next(const char *pattern, int *next, int m) {",
+          "    next[0] = -1;",
+          "    int i = 0, j = -1;",
+          "    while (i < m - 1) {",
+          "        if (j == -1 || pattern[i] == pattern[j]) {",
+          "            i++;",
+          "            j++;",
+          "            next[i] = j;",
+          "        } else {",
+          "            j = next[j];",
+          "        }",
+          "    }",
+          "}",
+          "",
+          "/* 构建 nextval 数组（KMP 终极优化） */",
+          "void build_nextval(const char *pattern, int *nextval, int m) {",
+          "    nextval[0] = -1;",
+          "    int i = 0, j = -1;",
+          "    while (i < m - 1) {",
+          "        if (j == -1 || pattern[i] == pattern[j]) {",
+          "            i++;",
+          "            j++;",
+          "            /* 关键区别：如果回退位置的字符和当前位置相同，",
+          "             * 回退过去必然再次失配，直接再跳一步 */",
+          "            if (pattern[i] != pattern[j]) {",
+          "                nextval[i] = j;",
+          "            } else {",
+          "                nextval[i] = nextval[j];",
+          "            }",
+          "        } else {",
+          "            j = nextval[j];",
+          "        }",
+          "    }",
+          "}",
+          "",
+          "/* 测试：构建 KMP nextval 数组（相比 next 的优化版） */",
+          "int main(void) {",
+          "    char pattern[] = \"ABABCABAB\";",
+          "    int m = (int)strlen(pattern);",
+          "    int nextval[100], next[100];",
+          "",
+          "    build_nextval(pattern, nextval, m);",
+          "    build_next(pattern, next, m);",
+          "",
+          "    printf(\"模式串：    \");",
+          "    for (int i = 0; i < m; i++) printf(\" %c \", pattern[i]);",
+          "    printf(\"\\nnext 数组：  \");",
+          "    for (int i = 0; i < m; i++) printf(\"%2d \", next[i]);",
+          "    printf(\"\\nnextval 数组：\");",
+          "    for (int i = 0; i < m; i++) printf(\"%2d \", nextval[i]);",
+          "    printf(\"\\n\\n说明：nextval 在 next 基础上进一步优化——\\n\");",
+          "    printf(\"如果回退位置的字符与当前相同，直接跳过（避免重复失配）\\n\");",
+          "",
+          "    return 0;",
+          "}",
+          ""
+        ],
+        "important_vars": {
+          "i": "索引",
+          "m": "参数",
+          "nextval": "数据"
+        },
+        "track_vars": {
+          "primary": [
+            "i",
+            "j",
+            "window",
+            "pattern",
+            "word",
+            "prefix",
+            "state",
+            "fail",
+            "total",
+            "phase"
+          ],
+          "secondary": [
+            "next",
+            "nextval",
+            "matches",
+            "text",
+            "position",
+            "_return"
+          ]
+        },
+        "var_classes": {
+          "_return": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "i": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "j": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "m": {
+            "category": "primary",
+            "type": "scalar"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 6,
+            "text": "next：-1 0 0 1 2 0 1 2 3；nextval：-1 0 -1 0 2 -1 0 -1 0"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 42,
+            "type": "enter",
+            "func": "main",
+            "vars": {
+              "pattern": "ABABCABAB",
+              "phase": "同时构建 next 与 nextval"
+            }
+          },
+          {
+            "step": 1,
+            "line": 21,
+            "type": "enter",
+            "func": "build_nextval",
+            "vars": {
+              "i": 0,
+              "j": -1,
+              "nextval": [
+                -1
+              ],
+              "phase": "nextval[0] 同样使用 -1 哨兵"
+            }
+          },
+          {
+            "step": 2,
+            "line": 31,
+            "type": "exec",
+            "func": "build_nextval",
+            "vars": {
+              "i": 1,
+              "j": 0,
+              "nextval": [
+                -1,
+                0
+              ],
+              "phase": "字符不同, 保留普通回退位置"
+            }
+          },
+          {
+            "step": 3,
+            "line": 33,
+            "type": "exec",
+            "func": "build_nextval",
+            "vars": {
+              "i": 2,
+              "j": 0,
+              "nextval": [
+                -1,
+                0,
+                -1
+              ],
+              "phase": "字符相同, 直接跳过必然再次失败的位置"
+            }
+          },
+          {
+            "step": 4,
+            "line": 33,
+            "type": "exec",
+            "func": "build_nextval",
+            "vars": {
+              "i": 8,
+              "j": 3,
+              "phase": "重复结构继续沿优化后的回退链跳转"
+            }
+          },
+          {
+            "step": 5,
+            "line": 59,
+            "type": "exit",
+            "func": "main",
+            "vars": {
+              "_return": 0,
+              "next": [
+                -1,
+                0,
+                0,
+                1,
+                2,
+                0,
+                1,
+                2,
+                3
+              ],
+              "nextval": [
+                -1,
+                0,
+                -1,
+                0,
+                2,
+                -1,
+                0,
+                -1,
+                0
+              ],
+              "phase": "nextval 减少重复失配, 不改变 O(n+m)"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "05_RabinKarp_哈希匹配": {
+    "title": "Rabin–Karp（哈希匹配）",
+    "defaultMode": "concept",
+    "modeLabels": {
+      "concept": "理解动画",
+      "trace": "代码执行"
+    },
+    "modes": {
+      "concept": {
+        "title": "Rabin–Karp（哈希匹配）",
+        "source": [
+          "算法: Rabin-Karp 哈希匹配",
+          "输入: text, pattern",
+          "输出: 所有匹配位置",
+          "",
+          "先计算 pattern 的哈希",
+          "再计算 text 当前窗口的哈希",
+          "如果哈希不同, 直接滑动窗口",
+          "如果哈希相同, 再逐字符确认",
+          "窗口右移时用滚动哈希快速更新"
+        ],
+        "important_vars": {
+          "offset": "状态",
+          "j": "状态",
+          "phase": "状态"
+        },
+        "track_vars": {
+          "primary": [
+            "offset",
+            "j",
+            "phase"
+          ],
+          "secondary": []
+        },
+        "var_classes": {
+          "offset": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "j": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "phase": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "concept": {
+            "category": "secondary",
+            "type": "concept"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 6,
+            "text": "概念动画：Rabin-Karp 先用哈希快速筛掉大多数窗口, 命中哈希后再认真核对。"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 4,
+            "type": "exec",
+            "vars": {
+              "offset": 0,
+              "j": 0,
+              "phase": "把模式串和同长度窗口都压成一个数字指纹",
+              "concept": {
+                "kind": "string_match_concept",
+                "title": "RabinKarp_哈希匹配",
+                "text": "ABABDABACDABABCABAB",
+                "pattern": "ABABCABAB",
+                "offset": 0,
+                "j": 0,
+                "mode": "rk",
+                "mismatch": false,
+                "success": false,
+                "windowOnly": true,
+                "hashText": 512,
+                "hashPattern": 731,
+                "jumpTo": null,
+                "caption": "把模式串和同长度窗口都压成一个数字指纹"
+              }
+            }
+          },
+          {
+            "step": 1,
+            "line": 7,
+            "type": "exec",
+            "vars": {
+              "offset": 0,
+              "j": 0,
+              "phase": "哈希不同, 这一整段窗口不用逐字比较, 直接跳过",
+              "concept": {
+                "kind": "string_match_concept",
+                "title": "RabinKarp_哈希匹配",
+                "text": "ABABDABACDABABCABAB",
+                "pattern": "ABABCABAB",
+                "offset": 0,
+                "j": 0,
+                "mode": "rk",
+                "mismatch": false,
+                "success": false,
+                "windowOnly": true,
+                "hashText": 512,
+                "hashPattern": 731,
+                "jumpTo": null,
+                "caption": "哈希不同, 这一整段窗口不用逐字比较, 直接跳过"
+              }
+            }
+          },
+          {
+            "step": 2,
+            "line": 9,
+            "type": "exec",
+            "vars": {
+              "offset": 1,
+              "j": 0,
+              "phase": "窗口右移时, 减掉左边旧字符, 加上右边新字符",
+              "concept": {
+                "kind": "string_match_concept",
+                "title": "RabinKarp_哈希匹配",
+                "text": "ABABDABACDABABCABAB",
+                "pattern": "ABABCABAB",
+                "offset": 1,
+                "j": 0,
+                "mode": "rk",
+                "mismatch": false,
+                "success": false,
+                "windowOnly": true,
+                "hashText": 438,
+                "hashPattern": 731,
+                "jumpTo": null,
+                "caption": "窗口右移时, 减掉左边旧字符, 加上右边新字符"
+              }
+            }
+          },
+          {
+            "step": 3,
+            "line": 7,
+            "type": "exec",
+            "vars": {
+              "offset": 5,
+              "j": 0,
+              "phase": "大多数窗口只看哈希就能排除, 像先用机器快筛",
+              "concept": {
+                "kind": "string_match_concept",
+                "title": "RabinKarp_哈希匹配",
+                "text": "ABABDABACDABABCABAB",
+                "pattern": "ABABCABAB",
+                "offset": 5,
+                "j": 0,
+                "mode": "rk",
+                "mismatch": false,
+                "success": false,
+                "windowOnly": true,
+                "hashText": 609,
+                "hashPattern": 731,
+                "jumpTo": null,
+                "caption": "大多数窗口只看哈希就能排除, 像先用机器快筛"
+              }
+            }
+          },
+          {
+            "step": 4,
+            "line": 8,
+            "type": "exec",
+            "vars": {
+              "offset": 10,
+              "j": 0,
+              "phase": "哈希相同, 这时才值得逐字符确认, 防止哈希冲突",
+              "concept": {
+                "kind": "string_match_concept",
+                "title": "RabinKarp_哈希匹配",
+                "text": "ABABDABACDABABCABAB",
+                "pattern": "ABABCABAB",
+                "offset": 10,
+                "j": 0,
+                "mode": "rk",
+                "mismatch": false,
+                "success": false,
+                "windowOnly": false,
+                "hashText": 731,
+                "hashPattern": 731,
+                "jumpTo": null,
+                "caption": "哈希相同, 这时才值得逐字符确认, 防止哈希冲突"
+              }
+            }
+          },
+          {
+            "step": 5,
+            "line": 8,
+            "type": "exec",
+            "vars": {
+              "offset": 10,
+              "j": 8,
+              "phase": "逐字符确认也全部相同, 匹配位置是 10",
+              "concept": {
+                "kind": "string_match_concept",
+                "title": "RabinKarp_哈希匹配",
+                "text": "ABABDABACDABABCABAB",
+                "pattern": "ABABCABAB",
+                "offset": 10,
+                "j": 8,
+                "mode": "rk",
+                "mismatch": false,
+                "success": true,
+                "windowOnly": false,
+                "hashText": 731,
+                "hashPattern": 731,
+                "jumpTo": null,
+                "caption": "逐字符确认也全部相同, 匹配位置是 10"
+              }
+            }
+          }
+        ]
+      },
+      "trace": {
+        "title": "Rabin–Karp（哈希匹配）",
+        "source": [
+          "#include <stdio.h>",
+          "#include <string.h>",
+          "",
+          "#define BASE 256    /* 字符集大小 */",
+          "#define MOD  1000000007  /* 大素数 10^9 + 7，减少哈希冲突 */",
+          "",
+          "/* Rabin-Karp 算法 */",
+          "void rabin_karp(const char *text, const char *pattern) {",
+          "    int n = (int)strlen(text);",
+          "    int m = (int)strlen(pattern);",
+          "",
+          "    if (m == 0) {",
+          "        printf(\"匹配成功！起始位置：0\\n\");",
+          "        return;",
+          "    }",
+          "    if (n < m) {",
+          "        return;",
+          "    }",
+          "    ",
+          "    /* 计算 BASE^(m - 1) % MOD，用于滚动时减去最高位 */",
+          "    long long h = 1;",
+          "    for (int i = 0; i < m - 1; i++) {",
+          "        h = (h * BASE) % MOD;",
+          "    }",
+          "    ",
+          "    /* 计算模式串和文本第一个窗口的哈希值 */",
+          "    long long hash_p = 0;  /* 模式串的哈希 */",
+          "    long long hash_t = 0;  /* 文本当前窗口的哈希 */",
+          "    for (int i = 0; i < m; i++) {",
+          "        hash_p = (BASE * hash_p + (unsigned char)pattern[i]) % MOD;",
+          "        hash_t = (BASE * hash_t + (unsigned char)text[i]) % MOD;",
+          "    }",
+          "    ",
+          "    /* 滑动窗口 */",
+          "    for (int i = 0; i <= n - m; i++) {",
+          "        /* 哈希值匹配，逐字符确认 */",
+          "        if (hash_p == hash_t) {",
+          "            int j;",
+          "            for (j = 0; j < m; j++) {",
+          "                if (text[i + j] != pattern[j]) {",
+          "                    break;",
+          "                }",
+          "            }",
+          "            if (j == m) {",
+          "                printf(\"匹配成功！起始位置：%d\\n\", i);",
+          "            }",
+          "        }",
+          "        ",
+          "        /* 滚动计算下一个窗口的哈希 */",
+          "        if (i < n - m) {",
+          "            long long lead = (unsigned char)text[i];",
+          "            long long tail = (unsigned char)text[i + m];",
+          "            hash_t = (BASE * (hash_t - lead * h) + tail) % MOD;",
+          "            /* C 语言取模可能得到负数，修正为非负 */",
+          "            if (hash_t < 0) {",
+          "                hash_t += MOD;",
+          "            }",
+          "        }",
+          "    }",
+          "}",
+          "",
+          "int main(void) {",
+          "    char text[] = \"ABABDABACDABABCABAB\";",
+          "    char pattern[] = \"ABABCABAB\";",
+          "    ",
+          "    printf(\"Rabin-Karp 匹配结果：\\n\");",
+          "    rabin_karp(text, pattern);",
+          "    return 0;",
+          "}",
+          ""
+        ],
+        "important_vars": {
+          "n": "参数",
+          "m": "参数",
+          "i": "索引"
+        },
+        "track_vars": {
+          "primary": [
+            "i",
+            "j",
+            "window",
+            "pattern",
+            "word",
+            "prefix",
+            "state",
+            "fail",
+            "total",
+            "phase"
+          ],
+          "secondary": [
+            "next",
+            "nextval",
+            "matches",
+            "text",
+            "position",
+            "_return",
+            "stringMatch"
+          ]
+        },
+        "var_classes": {
+          "_return": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "h": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "hash_p": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "hash_t": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "i": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "j": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "m": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "n": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "stringMatch": {
+            "category": "secondary",
+            "type": "string_match"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 8,
+            "text": "Rabin-Karp 匹配成功！起始位置：10"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 62,
+            "type": "enter",
+            "func": "main",
+            "vars": {
+              "phase": "文本和模式串沿用同一匹配样例"
+            }
+          },
+          {
+            "step": 1,
+            "line": 8,
+            "type": "enter",
+            "func": "rabin_karp",
+            "vars": {
+              "phase": "先计算模式串和首个窗口的哈希"
+            }
+          },
+          {
+            "step": 2,
+            "line": 1,
+            "type": "exec",
+            "func": "rabin_karp",
+            "vars": {
+              "window": 0,
+              "phase": "把 9 个字符压缩成数字指纹"
+            }
+          },
+          {
+            "step": 3,
+            "line": 37,
+            "type": "exec",
+            "func": "rabin_karp",
+            "vars": {
+              "window": 0,
+              "phase": "哈希不同, 不必逐字符比较"
+            }
+          },
+          {
+            "step": 4,
+            "line": 1,
+            "type": "exec",
+            "func": "rabin_karp",
+            "vars": {
+              "window": 1,
+              "phase": "删掉窗口最左字符, 加入右侧新字符"
+            }
+          },
+          {
+            "step": 5,
+            "line": 37,
+            "type": "exec",
+            "func": "rabin_karp",
+            "vars": {
+              "window": 10,
+              "phase": "位置 10 的窗口哈希与模式串相同"
+            }
+          },
+          {
+            "step": 6,
+            "line": 44,
+            "type": "exec",
+            "func": "rabin_karp",
+            "vars": {
+              "window": 10,
+              "j": 9,
+              "phase": "再逐字符确认, 排除哈希冲突"
+            }
+          },
+          {
+            "step": 7,
+            "line": 68,
+            "type": "exit",
+            "func": "main",
+            "vars": {
+              "_return": 0,
+              "position": 10,
+              "phase": "匹配成功, 起始位置为 10"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "06_Trie字典树": {
+    "title": "Trie字典树",
+    "defaultMode": "concept",
+    "modeLabels": {
+      "concept": "理解动画",
+      "trace": "代码执行"
+    },
+    "modes": {
+      "concept": {
+        "title": "Trie字典树",
+        "source": [
+          "算法: Trie 字典树",
+          "输入: 单词集合 words",
+          "输出: 支持查找和前缀判断的树",
+          "",
+          "从根节点开始",
+          "插入单词时, 每个字符走一条边",
+          "没有边就新建节点",
+          "单词结束处打上 end 标记",
+          "",
+          "查找时沿字符路径走, 路断则失败"
+        ],
+        "important_vars": {
+          "word": "状态",
+          "phase": "状态"
+        },
+        "track_vars": {
+          "primary": [
+            "word",
+            "phase"
+          ],
+          "secondary": []
+        },
+        "var_classes": {
+          "word": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "phase": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "concept": {
+            "category": "secondary",
+            "type": "concept"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 7,
+            "text": "概念动画：Trie 把相同前缀合并到同一条路径上。"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 5,
+            "type": "exec",
+            "vars": {
+              "word": "app",
+              "phase": "从根节点出发, 准备插入 app",
+              "concept": {
+                "kind": "trie",
+                "title": "Trie 字典树",
+                "nodes": [
+                  {
+                    "id": "root",
+                    "label": "",
+                    "x": 0.5,
+                    "y": 0.12,
+                    "end": false
+                  }
+                ],
+                "edges": [],
+                "activeEdges": [],
+                "word": "app"
+              }
+            }
+          },
+          {
+            "step": 1,
+            "line": 7,
+            "type": "exec",
+            "vars": {
+              "word": "app",
+              "phase": "插入 app: a → p → p, 最后一个 p 标记为单词结束",
+              "concept": {
+                "kind": "trie",
+                "title": "Trie 字典树",
+                "nodes": [
+                  {
+                    "id": "root",
+                    "label": "",
+                    "x": 0.5,
+                    "y": 0.12,
+                    "end": false
+                  },
+                  {
+                    "id": "a",
+                    "label": "a",
+                    "x": 0.33,
+                    "y": 0.3,
+                    "end": false
+                  },
+                  {
+                    "id": "ap",
+                    "label": "p",
+                    "x": 0.28,
+                    "y": 0.48,
+                    "end": false
+                  },
+                  {
+                    "id": "app",
+                    "label": "p*",
+                    "x": 0.21,
+                    "y": 0.66,
+                    "end": true
+                  }
+                ],
+                "edges": [
+                  [
+                    "root",
+                    "a"
+                  ],
+                  [
+                    "a",
+                    "ap"
+                  ],
+                  [
+                    "ap",
+                    "app"
+                  ]
+                ],
+                "activeEdges": [
+                  [
+                    "root",
+                    "a"
+                  ],
+                  [
+                    "a",
+                    "ap"
+                  ],
+                  [
+                    "ap",
+                    "app"
+                  ]
+                ],
+                "word": "app"
+              }
+            }
+          },
+          {
+            "step": 2,
+            "line": 7,
+            "type": "exec",
+            "vars": {
+              "word": "apple",
+              "phase": "继续插入 apple, 复用 app 的前缀路径",
+              "concept": {
+                "kind": "trie",
+                "title": "Trie 字典树",
+                "nodes": [
+                  {
+                    "id": "root",
+                    "label": "",
+                    "x": 0.5,
+                    "y": 0.12,
+                    "end": false
+                  },
+                  {
+                    "id": "a",
+                    "label": "a",
+                    "x": 0.33,
+                    "y": 0.3,
+                    "end": false
+                  },
+                  {
+                    "id": "ap",
+                    "label": "p",
+                    "x": 0.28,
+                    "y": 0.48,
+                    "end": false
+                  },
+                  {
+                    "id": "app",
+                    "label": "p*",
+                    "x": 0.21,
+                    "y": 0.66,
+                    "end": true
+                  },
+                  {
+                    "id": "appl",
+                    "label": "l",
+                    "x": 0.31,
+                    "y": 0.66,
+                    "end": false
+                  },
+                  {
+                    "id": "apple",
+                    "label": "e*",
+                    "x": 0.31,
+                    "y": 0.84,
+                    "end": true
+                  }
+                ],
+                "edges": [
+                  [
+                    "root",
+                    "a"
+                  ],
+                  [
+                    "a",
+                    "ap"
+                  ],
+                  [
+                    "ap",
+                    "app"
+                  ],
+                  [
+                    "app",
+                    "appl"
+                  ],
+                  [
+                    "appl",
+                    "apple"
+                  ]
+                ],
+                "activeEdges": [
+                  [
+                    "app",
+                    "appl"
+                  ],
+                  [
+                    "appl",
+                    "apple"
+                  ]
+                ],
+                "word": "apple"
+              }
+            }
+          },
+          {
+            "step": 3,
+            "line": 7,
+            "type": "exec",
+            "vars": {
+              "word": "ape",
+              "phase": "插入 ape, 在 ap 后分出另一条 e 分支",
+              "concept": {
+                "kind": "trie",
+                "title": "Trie 字典树",
+                "nodes": [
+                  {
+                    "id": "root",
+                    "label": "",
+                    "x": 0.5,
+                    "y": 0.12,
+                    "end": false
+                  },
+                  {
+                    "id": "a",
+                    "label": "a",
+                    "x": 0.33,
+                    "y": 0.3,
+                    "end": false
+                  },
+                  {
+                    "id": "ap",
+                    "label": "p",
+                    "x": 0.28,
+                    "y": 0.48,
+                    "end": false
+                  },
+                  {
+                    "id": "app",
+                    "label": "p*",
+                    "x": 0.21,
+                    "y": 0.66,
+                    "end": true
+                  },
+                  {
+                    "id": "appl",
+                    "label": "l",
+                    "x": 0.31,
+                    "y": 0.66,
+                    "end": false
+                  },
+                  {
+                    "id": "apple",
+                    "label": "e*",
+                    "x": 0.31,
+                    "y": 0.84,
+                    "end": true
+                  },
+                  {
+                    "id": "ape",
+                    "label": "e*",
+                    "x": 0.4,
+                    "y": 0.66,
+                    "end": true
+                  }
+                ],
+                "edges": [
+                  [
+                    "root",
+                    "a"
+                  ],
+                  [
+                    "a",
+                    "ap"
+                  ],
+                  [
+                    "ap",
+                    "app"
+                  ],
+                  [
+                    "app",
+                    "appl"
+                  ],
+                  [
+                    "appl",
+                    "apple"
+                  ],
+                  [
+                    "ap",
+                    "ape"
+                  ]
+                ],
+                "activeEdges": [
+                  [
+                    "ap",
+                    "ape"
+                  ]
+                ],
+                "word": "ape"
+              }
+            }
+          },
+          {
+            "step": 4,
+            "line": 7,
+            "type": "exec",
+            "vars": {
+              "word": "bat",
+              "phase": "插入 bat, 从根节点走另一条 b 分支",
+              "concept": {
+                "kind": "trie",
+                "title": "Trie 字典树",
+                "nodes": [
+                  {
+                    "id": "root",
+                    "label": "",
+                    "x": 0.5,
+                    "y": 0.12,
+                    "end": false
+                  },
+                  {
+                    "id": "a",
+                    "label": "a",
+                    "x": 0.33,
+                    "y": 0.3,
+                    "end": false
+                  },
+                  {
+                    "id": "ap",
+                    "label": "p",
+                    "x": 0.28,
+                    "y": 0.48,
+                    "end": false
+                  },
+                  {
+                    "id": "app",
+                    "label": "p*",
+                    "x": 0.21,
+                    "y": 0.66,
+                    "end": true
+                  },
+                  {
+                    "id": "appl",
+                    "label": "l",
+                    "x": 0.31,
+                    "y": 0.66,
+                    "end": false
+                  },
+                  {
+                    "id": "apple",
+                    "label": "e*",
+                    "x": 0.31,
+                    "y": 0.84,
+                    "end": true
+                  },
+                  {
+                    "id": "ape",
+                    "label": "e*",
+                    "x": 0.4,
+                    "y": 0.66,
+                    "end": true
+                  },
+                  {
+                    "id": "b",
+                    "label": "b",
+                    "x": 0.67,
+                    "y": 0.3,
+                    "end": false
+                  },
+                  {
+                    "id": "ba",
+                    "label": "a",
+                    "x": 0.67,
+                    "y": 0.48,
+                    "end": false
+                  },
+                  {
+                    "id": "bat",
+                    "label": "t*",
+                    "x": 0.67,
+                    "y": 0.66,
+                    "end": true
+                  }
+                ],
+                "edges": [
+                  [
+                    "root",
+                    "a"
+                  ],
+                  [
+                    "a",
+                    "ap"
+                  ],
+                  [
+                    "ap",
+                    "app"
+                  ],
+                  [
+                    "app",
+                    "appl"
+                  ],
+                  [
+                    "appl",
+                    "apple"
+                  ],
+                  [
+                    "ap",
+                    "ape"
+                  ],
+                  [
+                    "root",
+                    "b"
+                  ],
+                  [
+                    "b",
+                    "ba"
+                  ],
+                  [
+                    "ba",
+                    "bat"
+                  ]
+                ],
+                "activeEdges": [
+                  [
+                    "root",
+                    "b"
+                  ],
+                  [
+                    "b",
+                    "ba"
+                  ],
+                  [
+                    "ba",
+                    "bat"
+                  ]
+                ],
+                "word": "bat"
+              }
+            }
+          },
+          {
+            "step": 5,
+            "line": 9,
+            "type": "exec",
+            "vars": {
+              "word": "apex",
+              "phase": "查找 apex: a、p、e 能走到, 但后面没有 x, 路断失败",
+              "concept": {
+                "kind": "trie",
+                "title": "Trie 字典树",
+                "nodes": [
+                  {
+                    "id": "root",
+                    "label": "",
+                    "x": 0.5,
+                    "y": 0.12,
+                    "end": false
+                  },
+                  {
+                    "id": "a",
+                    "label": "a",
+                    "x": 0.33,
+                    "y": 0.3,
+                    "end": false
+                  },
+                  {
+                    "id": "ap",
+                    "label": "p",
+                    "x": 0.28,
+                    "y": 0.48,
+                    "end": false
+                  },
+                  {
+                    "id": "app",
+                    "label": "p*",
+                    "x": 0.21,
+                    "y": 0.66,
+                    "end": true
+                  },
+                  {
+                    "id": "appl",
+                    "label": "l",
+                    "x": 0.31,
+                    "y": 0.66,
+                    "end": false
+                  },
+                  {
+                    "id": "apple",
+                    "label": "e*",
+                    "x": 0.31,
+                    "y": 0.84,
+                    "end": true
+                  },
+                  {
+                    "id": "ape",
+                    "label": "e*",
+                    "x": 0.4,
+                    "y": 0.66,
+                    "end": true
+                  },
+                  {
+                    "id": "b",
+                    "label": "b",
+                    "x": 0.67,
+                    "y": 0.3,
+                    "end": false
+                  },
+                  {
+                    "id": "ba",
+                    "label": "a",
+                    "x": 0.67,
+                    "y": 0.48,
+                    "end": false
+                  },
+                  {
+                    "id": "bat",
+                    "label": "t*",
+                    "x": 0.67,
+                    "y": 0.66,
+                    "end": true
+                  }
+                ],
+                "edges": [
+                  [
+                    "root",
+                    "a"
+                  ],
+                  [
+                    "a",
+                    "ap"
+                  ],
+                  [
+                    "ap",
+                    "app"
+                  ],
+                  [
+                    "app",
+                    "appl"
+                  ],
+                  [
+                    "appl",
+                    "apple"
+                  ],
+                  [
+                    "ap",
+                    "ape"
+                  ],
+                  [
+                    "root",
+                    "b"
+                  ],
+                  [
+                    "b",
+                    "ba"
+                  ],
+                  [
+                    "ba",
+                    "bat"
+                  ]
+                ],
+                "activeEdges": [
+                  [
+                    "root",
+                    "a"
+                  ],
+                  [
+                    "a",
+                    "ap"
+                  ],
+                  [
+                    "ap",
+                    "ape"
+                  ]
+                ],
+                "word": "apex"
+              }
+            }
+          },
+          {
+            "step": 6,
+            "line": 9,
+            "type": "exec",
+            "vars": {
+              "word": "ap",
+              "phase": "前缀 ap 存在: 只要路径不断, 不要求 end 标记",
+              "concept": {
+                "kind": "trie",
+                "title": "Trie 字典树",
+                "nodes": [
+                  {
+                    "id": "root",
+                    "label": "",
+                    "x": 0.5,
+                    "y": 0.12,
+                    "end": false
+                  },
+                  {
+                    "id": "a",
+                    "label": "a",
+                    "x": 0.33,
+                    "y": 0.3,
+                    "end": false
+                  },
+                  {
+                    "id": "ap",
+                    "label": "p",
+                    "x": 0.28,
+                    "y": 0.48,
+                    "end": false
+                  },
+                  {
+                    "id": "app",
+                    "label": "p*",
+                    "x": 0.21,
+                    "y": 0.66,
+                    "end": true
+                  },
+                  {
+                    "id": "appl",
+                    "label": "l",
+                    "x": 0.31,
+                    "y": 0.66,
+                    "end": false
+                  },
+                  {
+                    "id": "apple",
+                    "label": "e*",
+                    "x": 0.31,
+                    "y": 0.84,
+                    "end": true
+                  },
+                  {
+                    "id": "ape",
+                    "label": "e*",
+                    "x": 0.4,
+                    "y": 0.66,
+                    "end": true
+                  },
+                  {
+                    "id": "b",
+                    "label": "b",
+                    "x": 0.67,
+                    "y": 0.3,
+                    "end": false
+                  },
+                  {
+                    "id": "ba",
+                    "label": "a",
+                    "x": 0.67,
+                    "y": 0.48,
+                    "end": false
+                  },
+                  {
+                    "id": "bat",
+                    "label": "t*",
+                    "x": 0.67,
+                    "y": 0.66,
+                    "end": true
+                  }
+                ],
+                "edges": [
+                  [
+                    "root",
+                    "a"
+                  ],
+                  [
+                    "a",
+                    "ap"
+                  ],
+                  [
+                    "ap",
+                    "app"
+                  ],
+                  [
+                    "app",
+                    "appl"
+                  ],
+                  [
+                    "appl",
+                    "apple"
+                  ],
+                  [
+                    "ap",
+                    "ape"
+                  ],
+                  [
+                    "root",
+                    "b"
+                  ],
+                  [
+                    "b",
+                    "ba"
+                  ],
+                  [
+                    "ba",
+                    "bat"
+                  ]
+                ],
+                "activeEdges": [
+                  [
+                    "root",
+                    "a"
+                  ],
+                  [
+                    "a",
+                    "ap"
+                  ]
+                ],
+                "word": "ap"
+              }
+            }
+          }
+        ]
+      },
+      "trace": {
+        "title": "Trie字典树",
+        "source": [
+          "#include <stdio.h>",
+          "#include <stdlib.h>",
+          "#include <string.h>",
+          "#include <stdbool.h>",
+          "",
+          "#define ALPHABET_SIZE 26  /* 假设只处理小写字母 */",
+          "",
+          "/* Trie 树节点 */",
+          "typedef struct TrieNode {",
+          "    struct TrieNode *children[ALPHABET_SIZE];",
+          "    bool is_end;  /* 是否是某个单词的结尾 */",
+          "} TrieNode;",
+          "",
+          "/* 创建新节点 */",
+          "TrieNode *create_node(void) {",
+          "    TrieNode *node = (TrieNode *)malloc(sizeof(TrieNode));",
+          "    if (node == NULL) {",
+          "        printf(\"内存分配失败\\n\");",
+          "        exit(1);",
+          "    }",
+          "    node->is_end = false;",
+          "    for (int i = 0; i < ALPHABET_SIZE; i++) {",
+          "        node->children[i] = NULL;",
+          "    }",
+          "    return node;",
+          "}",
+          "",
+          "/* 插入单词：本示例只处理 'a' 到 'z' */",
+          "void trie_insert(TrieNode *root, const char *word) {",
+          "    TrieNode *cur = root;",
+          "    for (int i = 0; word[i] != '\\0'; i++) {",
+          "        int idx = word[i] - 'a';",
+          "        if (idx < 0 || idx >= ALPHABET_SIZE) {",
+          "            continue;  /* 简化处理：跳过非小写字母 */",
+          "        }",
+          "        if (cur->children[idx] == NULL) {",
+          "            cur->children[idx] = create_node();",
+          "        }",
+          "        cur = cur->children[idx];",
+          "    }",
+          "    cur->is_end = true;",
+          "}",
+          "",
+          "/* 查找单词 */",
+          "bool trie_search(TrieNode *root, const char *word) {",
+          "    TrieNode *cur = root;",
+          "    for (int i = 0; word[i] != '\\0'; i++) {",
+          "        int idx = word[i] - 'a';",
+          "        if (idx < 0 || idx >= ALPHABET_SIZE) {",
+          "            return false;",
+          "        }",
+          "        if (cur->children[idx] == NULL) {",
+          "            return false;  /* 路径断了，不存在 */",
+          "        }",
+          "        cur = cur->children[idx];",
+          "    }",
+          "    return cur->is_end;  /* 必须是完整单词的结尾 */",
+          "}",
+          "",
+          "/* 检查是否存在以 prefix 为前缀的单词 */",
+          "bool trie_starts_with(TrieNode *root, const char *prefix) {",
+          "    TrieNode *cur = root;",
+          "    for (int i = 0; prefix[i] != '\\0'; i++) {",
+          "        int idx = prefix[i] - 'a';",
+          "        if (idx < 0 || idx >= ALPHABET_SIZE) {",
+          "            return false;",
+          "        }",
+          "        if (cur->children[idx] == NULL) {",
+          "            return false;",
+          "        }",
+          "        cur = cur->children[idx];",
+          "    }",
+          "    return true;",
+          "}",
+          "",
+          "/* 释放 Trie 树 */",
+          "void trie_free(TrieNode *root) {",
+          "    if (root == NULL) return;",
+          "    for (int i = 0; i < ALPHABET_SIZE; i++) {",
+          "        trie_free(root->children[i]);",
+          "    }",
+          "    free(root);",
+          "}",
+          "",
+          "int main(void) {",
+          "    TrieNode *root = create_node();",
+          "    ",
+          "    /* 插入一些单词 */",
+          "    trie_insert(root, \"apple\");",
+          "    trie_insert(root, \"app\");",
+          "    trie_insert(root, \"ape\");",
+          "    trie_insert(root, \"bat\");",
+          "    ",
+          "    /* 查找 */",
+          "    printf(\"查找 'apple': %s\\n\", trie_search(root, \"apple\") ? \"找到\" : \"未找到\");",
+          "    printf(\"查找 'app': %s\\n\", trie_search(root, \"app\") ? \"找到\" : \"未找到\");",
+          "    printf(\"查找 'apex': %s\\n\", trie_search(root, \"apex\") ? \"找到\" : \"未找到\");",
+          "    printf(\"前缀 'ap': %s\\n\", trie_starts_with(root, \"ap\") ? \"存在\" : \"不存在\");",
+          "    ",
+          "    trie_free(root);",
+          "    return 0;",
+          "}",
+          ""
+        ],
+        "important_vars": {
+          "i": "索引",
+          "idx": "索引"
+        },
+        "track_vars": {
+          "primary": [
+            "i",
+            "j",
+            "window",
+            "pattern",
+            "word",
+            "prefix",
+            "state",
+            "fail",
+            "total",
+            "phase"
+          ],
+          "secondary": [
+            "next",
+            "nextval",
+            "matches",
+            "text",
+            "position",
+            "_return"
+          ]
+        },
+        "var_classes": {
+          "_return": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "cur": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "i": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "idx": {
+            "category": "primary",
+            "type": "scalar"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 9,
+            "text": "apple：找到；app：找到；apex：未找到；前缀 ap：存在"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 85,
+            "type": "enter",
+            "func": "main",
+            "vars": {
+              "phase": "准备插入 apple、app、ape、bat"
+            }
+          },
+          {
+            "step": 1,
+            "line": 29,
+            "type": "enter",
+            "func": "trie_insert",
+            "vars": {
+              "word": "apple",
+              "phase": "从根节点逐字符建立分支"
+            }
+          },
+          {
+            "step": 2,
+            "line": 37,
+            "type": "exec",
+            "func": "trie_insert",
+            "vars": {
+              "prefix": "app",
+              "phase": "公共前缀 app 只创建一次"
+            }
+          },
+          {
+            "step": 3,
+            "line": 41,
+            "type": "exec",
+            "func": "trie_insert",
+            "vars": {
+              "word": "app",
+              "phase": "app 本身也是完整单词, 标记结尾"
+            }
+          },
+          {
+            "step": 4,
+            "line": 45,
+            "type": "enter",
+            "func": "trie_search",
+            "vars": {
+              "word": "apple",
+              "phase": "沿字符路径查找 apple"
+            }
+          },
+          {
+            "step": 5,
+            "line": 57,
+            "type": "exit",
+            "func": "trie_search",
+            "vars": {
+              "_return": true,
+              "word": "apple",
+              "phase": "路径存在且是单词结尾"
+            }
+          },
+          {
+            "step": 6,
+            "line": 50,
+            "type": "exit",
+            "func": "trie_search",
+            "vars": {
+              "_return": false,
+              "word": "apex",
+              "phase": "apex 的 x 分支不存在"
+            }
+          },
+          {
+            "step": 7,
+            "line": 61,
+            "type": "enter",
+            "func": "trie_starts_with",
+            "vars": {
+              "prefix": "ap",
+              "phase": "前缀查询只要求路径存在"
+            }
+          },
+          {
+            "step": 8,
+            "line": 101,
+            "type": "exit",
+            "func": "main",
+            "vars": {
+              "_return": 0,
+              "phase": "查找与前缀查询全部完成"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "07_AC自动机": {
+    "title": "AC自动机",
+    "defaultMode": "concept",
+    "modeLabels": {
+      "concept": "理解动画",
+      "trace": "代码执行"
+    },
+    "modes": {
+      "concept": {
+        "title": "AC自动机",
+        "source": [
+          "算法: AC 自动机",
+          "输入: 多个关键词 patterns, 文本 text",
+          "输出: 所有关键词匹配次数",
+          "",
+          "1. 先把关键词插入 Trie",
+          "2. BFS 构建 fail 指针",
+          "3. 扫描文本, 能走子边就前进",
+          "4. 不能走时沿 fail 指针回退",
+          "5. 每到一个节点, 累加该节点和 fail 链上的匹配"
+        ],
+        "important_vars": {
+          "text": "状态",
+          "total": "状态",
+          "phase": "状态"
+        },
+        "track_vars": {
+          "primary": [
+            "text",
+            "total",
+            "phase"
+          ],
+          "secondary": []
+        },
+        "var_classes": {
+          "text": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "total": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "phase": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "concept": {
+            "category": "secondary",
+            "type": "concept"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 8,
+            "text": "概念动画：AC 自动机 = Trie + fail 指针, 一次扫描找出多个关键词。"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 5,
+            "type": "exec",
+            "vars": {
+              "text": "构建Trie",
+              "total": 0,
+              "phase": "把 abc、bcd、cde 插入同一棵 Trie",
+              "concept": {
+                "kind": "ac_automaton",
+                "title": "AC 自动机",
+                "nodes": [
+                  {
+                    "id": "root",
+                    "label": "",
+                    "x": 0.5,
+                    "y": 0.12,
+                    "end": false
+                  },
+                  {
+                    "id": "a",
+                    "label": "a",
+                    "x": 0.28,
+                    "y": 0.3,
+                    "end": false
+                  },
+                  {
+                    "id": "ab",
+                    "label": "b",
+                    "x": 0.28,
+                    "y": 0.48,
+                    "end": false
+                  },
+                  {
+                    "id": "abc",
+                    "label": "c*",
+                    "x": 0.28,
+                    "y": 0.66,
+                    "end": true
+                  },
+                  {
+                    "id": "b",
+                    "label": "b",
+                    "x": 0.5,
+                    "y": 0.3,
+                    "end": false
+                  },
+                  {
+                    "id": "bc",
+                    "label": "c",
+                    "x": 0.5,
+                    "y": 0.48,
+                    "end": false
+                  },
+                  {
+                    "id": "bcd",
+                    "label": "d*",
+                    "x": 0.5,
+                    "y": 0.66,
+                    "end": true
+                  },
+                  {
+                    "id": "c",
+                    "label": "c",
+                    "x": 0.72,
+                    "y": 0.3,
+                    "end": false
+                  },
+                  {
+                    "id": "cd",
+                    "label": "d",
+                    "x": 0.72,
+                    "y": 0.48,
+                    "end": false
+                  },
+                  {
+                    "id": "cde",
+                    "label": "e*",
+                    "x": 0.72,
+                    "y": 0.66,
+                    "end": true
+                  }
+                ],
+                "edges": [
+                  [
+                    "root",
+                    "a"
+                  ],
+                  [
+                    "a",
+                    "ab"
+                  ],
+                  [
+                    "ab",
+                    "abc"
+                  ],
+                  [
+                    "root",
+                    "b"
+                  ],
+                  [
+                    "b",
+                    "bc"
+                  ],
+                  [
+                    "bc",
+                    "bcd"
+                  ],
+                  [
+                    "root",
+                    "c"
+                  ],
+                  [
+                    "c",
+                    "cd"
+                  ],
+                  [
+                    "cd",
+                    "cde"
+                  ]
+                ],
+                "failEdges": [
+                  [
+                    "ab",
+                    "b"
+                  ],
+                  [
+                    "abc",
+                    "bc"
+                  ],
+                  [
+                    "bc",
+                    "c"
+                  ],
+                  [
+                    "bcd",
+                    "cd"
+                  ],
+                  [
+                    "cd",
+                    "root"
+                  ],
+                  [
+                    "cde",
+                    "root"
+                  ]
+                ],
+                "activeFails": [],
+                "activePath": [],
+                "text": "构建Trie",
+                "total": 0
+              }
+            }
+          },
+          {
+            "step": 1,
+            "line": 6,
+            "type": "exec",
+            "vars": {
+              "text": "BFS建fail",
+              "total": 0,
+              "phase": "第一层 a、b、c 的 fail 都指向 root",
+              "concept": {
+                "kind": "ac_automaton",
+                "title": "AC 自动机",
+                "nodes": [
+                  {
+                    "id": "root",
+                    "label": "",
+                    "x": 0.5,
+                    "y": 0.12,
+                    "end": false
+                  },
+                  {
+                    "id": "a",
+                    "label": "a",
+                    "x": 0.28,
+                    "y": 0.3,
+                    "end": false
+                  },
+                  {
+                    "id": "ab",
+                    "label": "b",
+                    "x": 0.28,
+                    "y": 0.48,
+                    "end": false
+                  },
+                  {
+                    "id": "abc",
+                    "label": "c*",
+                    "x": 0.28,
+                    "y": 0.66,
+                    "end": true
+                  },
+                  {
+                    "id": "b",
+                    "label": "b",
+                    "x": 0.5,
+                    "y": 0.3,
+                    "end": false
+                  },
+                  {
+                    "id": "bc",
+                    "label": "c",
+                    "x": 0.5,
+                    "y": 0.48,
+                    "end": false
+                  },
+                  {
+                    "id": "bcd",
+                    "label": "d*",
+                    "x": 0.5,
+                    "y": 0.66,
+                    "end": true
+                  },
+                  {
+                    "id": "c",
+                    "label": "c",
+                    "x": 0.72,
+                    "y": 0.3,
+                    "end": false
+                  },
+                  {
+                    "id": "cd",
+                    "label": "d",
+                    "x": 0.72,
+                    "y": 0.48,
+                    "end": false
+                  },
+                  {
+                    "id": "cde",
+                    "label": "e*",
+                    "x": 0.72,
+                    "y": 0.66,
+                    "end": true
+                  }
+                ],
+                "edges": [
+                  [
+                    "root",
+                    "a"
+                  ],
+                  [
+                    "a",
+                    "ab"
+                  ],
+                  [
+                    "ab",
+                    "abc"
+                  ],
+                  [
+                    "root",
+                    "b"
+                  ],
+                  [
+                    "b",
+                    "bc"
+                  ],
+                  [
+                    "bc",
+                    "bcd"
+                  ],
+                  [
+                    "root",
+                    "c"
+                  ],
+                  [
+                    "c",
+                    "cd"
+                  ],
+                  [
+                    "cd",
+                    "cde"
+                  ]
+                ],
+                "failEdges": [
+                  [
+                    "ab",
+                    "b"
+                  ],
+                  [
+                    "abc",
+                    "bc"
+                  ],
+                  [
+                    "bc",
+                    "c"
+                  ],
+                  [
+                    "bcd",
+                    "cd"
+                  ],
+                  [
+                    "cd",
+                    "root"
+                  ],
+                  [
+                    "cde",
+                    "root"
+                  ]
+                ],
+                "activeFails": [
+                  [
+                    "a",
+                    "root"
+                  ],
+                  [
+                    "b",
+                    "root"
+                  ],
+                  [
+                    "c",
+                    "root"
+                  ]
+                ],
+                "activePath": [],
+                "text": "BFS建fail",
+                "total": 0
+              }
+            }
+          },
+          {
+            "step": 2,
+            "line": 6,
+            "type": "exec",
+            "vars": {
+              "text": "BFS建fail",
+              "total": 0,
+              "phase": "abc 的 fail 指向 bc: 后缀 bc 仍然是另一个关键词的前缀",
+              "concept": {
+                "kind": "ac_automaton",
+                "title": "AC 自动机",
+                "nodes": [
+                  {
+                    "id": "root",
+                    "label": "",
+                    "x": 0.5,
+                    "y": 0.12,
+                    "end": false
+                  },
+                  {
+                    "id": "a",
+                    "label": "a",
+                    "x": 0.28,
+                    "y": 0.3,
+                    "end": false
+                  },
+                  {
+                    "id": "ab",
+                    "label": "b",
+                    "x": 0.28,
+                    "y": 0.48,
+                    "end": false
+                  },
+                  {
+                    "id": "abc",
+                    "label": "c*",
+                    "x": 0.28,
+                    "y": 0.66,
+                    "end": true
+                  },
+                  {
+                    "id": "b",
+                    "label": "b",
+                    "x": 0.5,
+                    "y": 0.3,
+                    "end": false
+                  },
+                  {
+                    "id": "bc",
+                    "label": "c",
+                    "x": 0.5,
+                    "y": 0.48,
+                    "end": false
+                  },
+                  {
+                    "id": "bcd",
+                    "label": "d*",
+                    "x": 0.5,
+                    "y": 0.66,
+                    "end": true
+                  },
+                  {
+                    "id": "c",
+                    "label": "c",
+                    "x": 0.72,
+                    "y": 0.3,
+                    "end": false
+                  },
+                  {
+                    "id": "cd",
+                    "label": "d",
+                    "x": 0.72,
+                    "y": 0.48,
+                    "end": false
+                  },
+                  {
+                    "id": "cde",
+                    "label": "e*",
+                    "x": 0.72,
+                    "y": 0.66,
+                    "end": true
+                  }
+                ],
+                "edges": [
+                  [
+                    "root",
+                    "a"
+                  ],
+                  [
+                    "a",
+                    "ab"
+                  ],
+                  [
+                    "ab",
+                    "abc"
+                  ],
+                  [
+                    "root",
+                    "b"
+                  ],
+                  [
+                    "b",
+                    "bc"
+                  ],
+                  [
+                    "bc",
+                    "bcd"
+                  ],
+                  [
+                    "root",
+                    "c"
+                  ],
+                  [
+                    "c",
+                    "cd"
+                  ],
+                  [
+                    "cd",
+                    "cde"
+                  ]
+                ],
+                "failEdges": [
+                  [
+                    "ab",
+                    "b"
+                  ],
+                  [
+                    "abc",
+                    "bc"
+                  ],
+                  [
+                    "bc",
+                    "c"
+                  ],
+                  [
+                    "bcd",
+                    "cd"
+                  ],
+                  [
+                    "cd",
+                    "root"
+                  ],
+                  [
+                    "cde",
+                    "root"
+                  ]
+                ],
+                "activeFails": [
+                  [
+                    "ab",
+                    "b"
+                  ],
+                  [
+                    "abc",
+                    "bc"
+                  ]
+                ],
+                "activePath": [],
+                "text": "BFS建fail",
+                "total": 0
+              }
+            }
+          },
+          {
+            "step": 3,
+            "line": 8,
+            "type": "exec",
+            "vars": {
+              "text": "x",
+              "total": 0,
+              "phase": "扫描 xabcdex: x 没有边, 留在 root",
+              "concept": {
+                "kind": "ac_automaton",
+                "title": "AC 自动机",
+                "nodes": [
+                  {
+                    "id": "root",
+                    "label": "",
+                    "x": 0.5,
+                    "y": 0.12,
+                    "end": false
+                  },
+                  {
+                    "id": "a",
+                    "label": "a",
+                    "x": 0.28,
+                    "y": 0.3,
+                    "end": false
+                  },
+                  {
+                    "id": "ab",
+                    "label": "b",
+                    "x": 0.28,
+                    "y": 0.48,
+                    "end": false
+                  },
+                  {
+                    "id": "abc",
+                    "label": "c*",
+                    "x": 0.28,
+                    "y": 0.66,
+                    "end": true
+                  },
+                  {
+                    "id": "b",
+                    "label": "b",
+                    "x": 0.5,
+                    "y": 0.3,
+                    "end": false
+                  },
+                  {
+                    "id": "bc",
+                    "label": "c",
+                    "x": 0.5,
+                    "y": 0.48,
+                    "end": false
+                  },
+                  {
+                    "id": "bcd",
+                    "label": "d*",
+                    "x": 0.5,
+                    "y": 0.66,
+                    "end": true
+                  },
+                  {
+                    "id": "c",
+                    "label": "c",
+                    "x": 0.72,
+                    "y": 0.3,
+                    "end": false
+                  },
+                  {
+                    "id": "cd",
+                    "label": "d",
+                    "x": 0.72,
+                    "y": 0.48,
+                    "end": false
+                  },
+                  {
+                    "id": "cde",
+                    "label": "e*",
+                    "x": 0.72,
+                    "y": 0.66,
+                    "end": true
+                  }
+                ],
+                "edges": [
+                  [
+                    "root",
+                    "a"
+                  ],
+                  [
+                    "a",
+                    "ab"
+                  ],
+                  [
+                    "ab",
+                    "abc"
+                  ],
+                  [
+                    "root",
+                    "b"
+                  ],
+                  [
+                    "b",
+                    "bc"
+                  ],
+                  [
+                    "bc",
+                    "bcd"
+                  ],
+                  [
+                    "root",
+                    "c"
+                  ],
+                  [
+                    "c",
+                    "cd"
+                  ],
+                  [
+                    "cd",
+                    "cde"
+                  ]
+                ],
+                "failEdges": [
+                  [
+                    "ab",
+                    "b"
+                  ],
+                  [
+                    "abc",
+                    "bc"
+                  ],
+                  [
+                    "bc",
+                    "c"
+                  ],
+                  [
+                    "bcd",
+                    "cd"
+                  ],
+                  [
+                    "cd",
+                    "root"
+                  ],
+                  [
+                    "cde",
+                    "root"
+                  ]
+                ],
+                "activeFails": [],
+                "activePath": [],
+                "text": "x",
+                "total": 0
+              }
+            }
+          },
+          {
+            "step": 4,
+            "line": 8,
+            "type": "exec",
+            "vars": {
+              "text": "xabc",
+              "total": 1,
+              "phase": "读到 a、b、c, 到达 abc, 命中 abc",
+              "concept": {
+                "kind": "ac_automaton",
+                "title": "AC 自动机",
+                "nodes": [
+                  {
+                    "id": "root",
+                    "label": "",
+                    "x": 0.5,
+                    "y": 0.12,
+                    "end": false
+                  },
+                  {
+                    "id": "a",
+                    "label": "a",
+                    "x": 0.28,
+                    "y": 0.3,
+                    "end": false
+                  },
+                  {
+                    "id": "ab",
+                    "label": "b",
+                    "x": 0.28,
+                    "y": 0.48,
+                    "end": false
+                  },
+                  {
+                    "id": "abc",
+                    "label": "c*",
+                    "x": 0.28,
+                    "y": 0.66,
+                    "end": true
+                  },
+                  {
+                    "id": "b",
+                    "label": "b",
+                    "x": 0.5,
+                    "y": 0.3,
+                    "end": false
+                  },
+                  {
+                    "id": "bc",
+                    "label": "c",
+                    "x": 0.5,
+                    "y": 0.48,
+                    "end": false
+                  },
+                  {
+                    "id": "bcd",
+                    "label": "d*",
+                    "x": 0.5,
+                    "y": 0.66,
+                    "end": true
+                  },
+                  {
+                    "id": "c",
+                    "label": "c",
+                    "x": 0.72,
+                    "y": 0.3,
+                    "end": false
+                  },
+                  {
+                    "id": "cd",
+                    "label": "d",
+                    "x": 0.72,
+                    "y": 0.48,
+                    "end": false
+                  },
+                  {
+                    "id": "cde",
+                    "label": "e*",
+                    "x": 0.72,
+                    "y": 0.66,
+                    "end": true
+                  }
+                ],
+                "edges": [
+                  [
+                    "root",
+                    "a"
+                  ],
+                  [
+                    "a",
+                    "ab"
+                  ],
+                  [
+                    "ab",
+                    "abc"
+                  ],
+                  [
+                    "root",
+                    "b"
+                  ],
+                  [
+                    "b",
+                    "bc"
+                  ],
+                  [
+                    "bc",
+                    "bcd"
+                  ],
+                  [
+                    "root",
+                    "c"
+                  ],
+                  [
+                    "c",
+                    "cd"
+                  ],
+                  [
+                    "cd",
+                    "cde"
+                  ]
+                ],
+                "failEdges": [
+                  [
+                    "ab",
+                    "b"
+                  ],
+                  [
+                    "abc",
+                    "bc"
+                  ],
+                  [
+                    "bc",
+                    "c"
+                  ],
+                  [
+                    "bcd",
+                    "cd"
+                  ],
+                  [
+                    "cd",
+                    "root"
+                  ],
+                  [
+                    "cde",
+                    "root"
+                  ]
+                ],
+                "activeFails": [],
+                "activePath": [
+                  "a",
+                  "ab",
+                  "abc"
+                ],
+                "text": "xabc",
+                "total": 1
+              }
+            }
+          },
+          {
+            "step": 5,
+            "line": 9,
+            "type": "exec",
+            "vars": {
+              "text": "xabcd",
+              "total": 2,
+              "phase": "继续读 d: abc 没有 d 边, 沿 fail 回到 bc, 再走 d 命中 bcd",
+              "concept": {
+                "kind": "ac_automaton",
+                "title": "AC 自动机",
+                "nodes": [
+                  {
+                    "id": "root",
+                    "label": "",
+                    "x": 0.5,
+                    "y": 0.12,
+                    "end": false
+                  },
+                  {
+                    "id": "a",
+                    "label": "a",
+                    "x": 0.28,
+                    "y": 0.3,
+                    "end": false
+                  },
+                  {
+                    "id": "ab",
+                    "label": "b",
+                    "x": 0.28,
+                    "y": 0.48,
+                    "end": false
+                  },
+                  {
+                    "id": "abc",
+                    "label": "c*",
+                    "x": 0.28,
+                    "y": 0.66,
+                    "end": true
+                  },
+                  {
+                    "id": "b",
+                    "label": "b",
+                    "x": 0.5,
+                    "y": 0.3,
+                    "end": false
+                  },
+                  {
+                    "id": "bc",
+                    "label": "c",
+                    "x": 0.5,
+                    "y": 0.48,
+                    "end": false
+                  },
+                  {
+                    "id": "bcd",
+                    "label": "d*",
+                    "x": 0.5,
+                    "y": 0.66,
+                    "end": true
+                  },
+                  {
+                    "id": "c",
+                    "label": "c",
+                    "x": 0.72,
+                    "y": 0.3,
+                    "end": false
+                  },
+                  {
+                    "id": "cd",
+                    "label": "d",
+                    "x": 0.72,
+                    "y": 0.48,
+                    "end": false
+                  },
+                  {
+                    "id": "cde",
+                    "label": "e*",
+                    "x": 0.72,
+                    "y": 0.66,
+                    "end": true
+                  }
+                ],
+                "edges": [
+                  [
+                    "root",
+                    "a"
+                  ],
+                  [
+                    "a",
+                    "ab"
+                  ],
+                  [
+                    "ab",
+                    "abc"
+                  ],
+                  [
+                    "root",
+                    "b"
+                  ],
+                  [
+                    "b",
+                    "bc"
+                  ],
+                  [
+                    "bc",
+                    "bcd"
+                  ],
+                  [
+                    "root",
+                    "c"
+                  ],
+                  [
+                    "c",
+                    "cd"
+                  ],
+                  [
+                    "cd",
+                    "cde"
+                  ]
+                ],
+                "failEdges": [
+                  [
+                    "ab",
+                    "b"
+                  ],
+                  [
+                    "abc",
+                    "bc"
+                  ],
+                  [
+                    "bc",
+                    "c"
+                  ],
+                  [
+                    "bcd",
+                    "cd"
+                  ],
+                  [
+                    "cd",
+                    "root"
+                  ],
+                  [
+                    "cde",
+                    "root"
+                  ]
+                ],
+                "activeFails": [
+                  [
+                    "abc",
+                    "bc"
+                  ]
+                ],
+                "activePath": [
+                  "bc",
+                  "bcd"
+                ],
+                "text": "xabcd",
+                "total": 2
+              }
+            }
+          },
+          {
+            "step": 6,
+            "line": 9,
+            "type": "exec",
+            "vars": {
+              "text": "xabcde",
+              "total": 3,
+              "phase": "继续读 e: bcd 没有 e 边, 沿 fail 回到 cd, 再走 e 命中 cde",
+              "concept": {
+                "kind": "ac_automaton",
+                "title": "AC 自动机",
+                "nodes": [
+                  {
+                    "id": "root",
+                    "label": "",
+                    "x": 0.5,
+                    "y": 0.12,
+                    "end": false
+                  },
+                  {
+                    "id": "a",
+                    "label": "a",
+                    "x": 0.28,
+                    "y": 0.3,
+                    "end": false
+                  },
+                  {
+                    "id": "ab",
+                    "label": "b",
+                    "x": 0.28,
+                    "y": 0.48,
+                    "end": false
+                  },
+                  {
+                    "id": "abc",
+                    "label": "c*",
+                    "x": 0.28,
+                    "y": 0.66,
+                    "end": true
+                  },
+                  {
+                    "id": "b",
+                    "label": "b",
+                    "x": 0.5,
+                    "y": 0.3,
+                    "end": false
+                  },
+                  {
+                    "id": "bc",
+                    "label": "c",
+                    "x": 0.5,
+                    "y": 0.48,
+                    "end": false
+                  },
+                  {
+                    "id": "bcd",
+                    "label": "d*",
+                    "x": 0.5,
+                    "y": 0.66,
+                    "end": true
+                  },
+                  {
+                    "id": "c",
+                    "label": "c",
+                    "x": 0.72,
+                    "y": 0.3,
+                    "end": false
+                  },
+                  {
+                    "id": "cd",
+                    "label": "d",
+                    "x": 0.72,
+                    "y": 0.48,
+                    "end": false
+                  },
+                  {
+                    "id": "cde",
+                    "label": "e*",
+                    "x": 0.72,
+                    "y": 0.66,
+                    "end": true
+                  }
+                ],
+                "edges": [
+                  [
+                    "root",
+                    "a"
+                  ],
+                  [
+                    "a",
+                    "ab"
+                  ],
+                  [
+                    "ab",
+                    "abc"
+                  ],
+                  [
+                    "root",
+                    "b"
+                  ],
+                  [
+                    "b",
+                    "bc"
+                  ],
+                  [
+                    "bc",
+                    "bcd"
+                  ],
+                  [
+                    "root",
+                    "c"
+                  ],
+                  [
+                    "c",
+                    "cd"
+                  ],
+                  [
+                    "cd",
+                    "cde"
+                  ]
+                ],
+                "failEdges": [
+                  [
+                    "ab",
+                    "b"
+                  ],
+                  [
+                    "abc",
+                    "bc"
+                  ],
+                  [
+                    "bc",
+                    "c"
+                  ],
+                  [
+                    "bcd",
+                    "cd"
+                  ],
+                  [
+                    "cd",
+                    "root"
+                  ],
+                  [
+                    "cde",
+                    "root"
+                  ]
+                ],
+                "activeFails": [
+                  [
+                    "bcd",
+                    "cd"
+                  ]
+                ],
+                "activePath": [
+                  "cd",
+                  "cde"
+                ],
+                "text": "xabcde",
+                "total": 3
+              }
+            }
+          },
+          {
+            "step": 7,
+            "line": 8,
+            "type": "exec",
+            "vars": {
+              "text": "xabcdex",
+              "total": 3,
+              "phase": "最后 x 没有可走边, 全文扫描完成, 文本指针从未回退",
+              "concept": {
+                "kind": "ac_automaton",
+                "title": "AC 自动机",
+                "nodes": [
+                  {
+                    "id": "root",
+                    "label": "",
+                    "x": 0.5,
+                    "y": 0.12,
+                    "end": false
+                  },
+                  {
+                    "id": "a",
+                    "label": "a",
+                    "x": 0.28,
+                    "y": 0.3,
+                    "end": false
+                  },
+                  {
+                    "id": "ab",
+                    "label": "b",
+                    "x": 0.28,
+                    "y": 0.48,
+                    "end": false
+                  },
+                  {
+                    "id": "abc",
+                    "label": "c*",
+                    "x": 0.28,
+                    "y": 0.66,
+                    "end": true
+                  },
+                  {
+                    "id": "b",
+                    "label": "b",
+                    "x": 0.5,
+                    "y": 0.3,
+                    "end": false
+                  },
+                  {
+                    "id": "bc",
+                    "label": "c",
+                    "x": 0.5,
+                    "y": 0.48,
+                    "end": false
+                  },
+                  {
+                    "id": "bcd",
+                    "label": "d*",
+                    "x": 0.5,
+                    "y": 0.66,
+                    "end": true
+                  },
+                  {
+                    "id": "c",
+                    "label": "c",
+                    "x": 0.72,
+                    "y": 0.3,
+                    "end": false
+                  },
+                  {
+                    "id": "cd",
+                    "label": "d",
+                    "x": 0.72,
+                    "y": 0.48,
+                    "end": false
+                  },
+                  {
+                    "id": "cde",
+                    "label": "e*",
+                    "x": 0.72,
+                    "y": 0.66,
+                    "end": true
+                  }
+                ],
+                "edges": [
+                  [
+                    "root",
+                    "a"
+                  ],
+                  [
+                    "a",
+                    "ab"
+                  ],
+                  [
+                    "ab",
+                    "abc"
+                  ],
+                  [
+                    "root",
+                    "b"
+                  ],
+                  [
+                    "b",
+                    "bc"
+                  ],
+                  [
+                    "bc",
+                    "bcd"
+                  ],
+                  [
+                    "root",
+                    "c"
+                  ],
+                  [
+                    "c",
+                    "cd"
+                  ],
+                  [
+                    "cd",
+                    "cde"
+                  ]
+                ],
+                "failEdges": [
+                  [
+                    "ab",
+                    "b"
+                  ],
+                  [
+                    "abc",
+                    "bc"
+                  ],
+                  [
+                    "bc",
+                    "c"
+                  ],
+                  [
+                    "bcd",
+                    "cd"
+                  ],
+                  [
+                    "cd",
+                    "root"
+                  ],
+                  [
+                    "cde",
+                    "root"
+                  ]
+                ],
+                "activeFails": [],
+                "activePath": [],
+                "text": "xabcdex",
+                "total": 3
+              }
+            }
+          }
+        ]
+      },
+      "trace": {
+        "title": "AC自动机",
+        "source": [
+          "#include <stdio.h>",
+          "#include <stdlib.h>",
+          "#include <string.h>",
+          "",
+          "#define ALPHABET_SIZE 26",
+          "#define MAX_QUEUE 10000",
+          "",
+          "typedef struct ACNode {",
+          "    struct ACNode *children[ALPHABET_SIZE];",
+          "    struct ACNode *fail;",
+          "    int count;",
+          "} ACNode;",
+          "",
+          "/* 创建节点 */",
+          "ACNode *create_node(void) {",
+          "    ACNode *node = (ACNode *)calloc(1, sizeof(ACNode));",
+          "    if (node == NULL) {",
+          "        printf(\"内存分配失败\\n\");",
+          "        exit(1);",
+          "    }",
+          "    return node;",
+          "}",
+          "",
+          "/* 插入模式串 */",
+          "void insert(ACNode *root, const char *word) {",
+          "    ACNode *cur = root;",
+          "",
+          "    for (int i = 0; word[i]; i++) {",
+          "        int idx = word[i] - 'a';",
+          "        if (idx < 0 || idx >= ALPHABET_SIZE) {",
+          "            continue;  /* 简化处理：跳过非小写字母 */",
+          "        }",
+          "",
+          "        if (!cur->children[idx]) {",
+          "            cur->children[idx] = create_node();",
+          "        }",
+          "",
+          "        cur = cur->children[idx];",
+          "    }",
+          "",
+          "    cur->count++;",
+          "}",
+          "",
+          "/* BFS 构建 fail 指针 */",
+          "void build_fail(ACNode *root) {",
+          "    ACNode *queue[MAX_QUEUE];",
+          "    int front = 0, rear = 0;",
+          "",
+          "    root->fail = root;",
+          "",
+          "    /* 第一层 fail 指向 root */",
+          "    for (int i = 0; i < ALPHABET_SIZE; i++) {",
+          "        if (root->children[i]) {",
+          "            root->children[i]->fail = root;",
+          "            if (rear >= MAX_QUEUE) {",
+          "                printf(\"队列容量不足\\n\");",
+          "                exit(1);",
+          "            }",
+          "            queue[rear++] = root->children[i];",
+          "        }",
+          "    }",
+          "",
+          "    while (front < rear) {",
+          "        ACNode *cur = queue[front++];",
+          "",
+          "        for (int i = 0; i < ALPHABET_SIZE; i++) {",
+          "            ACNode *child = cur->children[i];",
+          "",
+          "            if (!child) continue;",
+          "",
+          "            ACNode *p = cur->fail;",
+          "",
+          "            while (p != root && !p->children[i]) {",
+          "                p = p->fail;",
+          "            }",
+          "",
+          "            if (p->children[i] && p->children[i] != child) {",
+          "                child->fail = p->children[i];",
+          "            } else {",
+          "                child->fail = root;",
+          "            }",
+          "",
+          "            /* 继承 fail 链上的匹配 */",
+          "            child->count += child->fail->count;",
+          "",
+          "            if (rear >= MAX_QUEUE) {",
+          "                printf(\"队列容量不足\\n\");",
+          "                exit(1);",
+          "            }",
+          "            queue[rear++] = child;",
+          "        }",
+          "    }",
+          "}",
+          "",
+          "/* 搜索 */",
+          "int ac_search(ACNode *root, const char *text) {",
+          "    ACNode *cur = root;",
+          "    int total = 0;",
+          "",
+          "    for (int i = 0; text[i]; i++) {",
+          "        int idx = text[i] - 'a';",
+          "        if (idx < 0 || idx >= ALPHABET_SIZE) {",
+          "            cur = root;",
+          "            continue;",
+          "        }",
+          "",
+          "        while (cur != root && !cur->children[idx]) {",
+          "            cur = cur->fail;",
+          "        }",
+          "",
+          "        if (cur->children[idx]) {",
+          "            cur = cur->children[idx];",
+          "        }",
+          "",
+          "        total += cur->count;",
+          "    }",
+          "",
+          "    return total;",
+          "}",
+          "",
+          "void ac_free(ACNode *root) {",
+          "    if (root == NULL) return;",
+          "    for (int i = 0; i < ALPHABET_SIZE; i++) {",
+          "        ac_free(root->children[i]);",
+          "    }",
+          "    free(root);",
+          "}",
+          "",
+          "int main(void) {",
+          "    ACNode *root = create_node();",
+          "",
+          "    insert(root, \"abc\");",
+          "    insert(root, \"bcd\");",
+          "    insert(root, \"cde\");",
+          "",
+          "    build_fail(root);",
+          "",
+          "    char text[] = \"xabcdex\";",
+          "",
+          "    int ans = ac_search(root, text);",
+          "",
+          "    printf(\"match count = %d\\n\", ans);",
+          "    ac_free(root);",
+          "",
+          "    return 0;",
+          "}",
+          ""
+        ],
+        "important_vars": {
+          "i": "索引",
+          "idx": "索引",
+          "ans": "变量"
+        },
+        "track_vars": {
+          "primary": [
+            "i",
+            "j",
+            "window",
+            "pattern",
+            "word",
+            "prefix",
+            "state",
+            "fail",
+            "total",
+            "phase"
+          ],
+          "secondary": [
+            "next",
+            "nextval",
+            "matches",
+            "text",
+            "position",
+            "_return"
+          ]
+        },
+        "var_classes": {
+          "_return": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "child": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "cur": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "front": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "i": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "idx": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "p": {
+            "category": "hidden",
+            "type": "scalar"
+          },
+          "total": {
+            "category": "secondary",
+            "type": "scalar"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 11,
+            "text": "match count = 3（abc、bcd、cde）"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 129,
+            "type": "enter",
+            "func": "main",
+            "vars": {
+              "patterns": [
+                "abc",
+                "bcd",
+                "cde"
+              ],
+              "text": "xabcdex",
+              "phase": "三个模式串共享一棵 Trie"
+            }
+          },
+          {
+            "step": 1,
+            "line": 25,
+            "type": "enter",
+            "func": "insert",
+            "vars": {
+              "word": "abc",
+              "phase": "依次插入 abc、bcd、cde"
+            }
+          },
+          {
+            "step": 2,
+            "line": 45,
+            "type": "enter",
+            "func": "build_fail",
+            "vars": {
+              "phase": "用 BFS 从浅到深构建 fail 指针"
+            }
+          },
+          {
+            "step": 3,
+            "line": 54,
+            "type": "exec",
+            "func": "build_fail",
+            "vars": {
+              "phase": "第一层 a、b、c 失配后都回到 root"
+            }
+          },
+          {
+            "step": 4,
+            "line": 78,
+            "type": "exec",
+            "func": "build_fail",
+            "vars": {
+              "state": "abc",
+              "fail": "bc",
+              "phase": "abc 的最长有效后缀 bc 仍是 Trie 前缀"
+            }
+          },
+          {
+            "step": 5,
+            "line": 96,
+            "type": "enter",
+            "func": "ac_search",
+            "vars": {
+              "text": "xabcdex",
+              "phase": "文本指针只向前扫描一次"
+            }
+          },
+          {
+            "step": 6,
+            "line": 115,
+            "type": "exec",
+            "func": "ac_search",
+            "vars": {
+              "read": "xabc",
+              "matches": [
+                "abc"
+              ],
+              "total": 1,
+              "phase": "读到 c 时命中 abc"
+            }
+          },
+          {
+            "step": 7,
+            "line": 108,
+            "type": "exec",
+            "func": "ac_search",
+            "vars": {
+              "read": "xabcd",
+              "state": "bc",
+              "phase": "没有 d 边, 沿 fail 保留后缀 bc"
+            }
+          },
+          {
+            "step": 8,
+            "line": 115,
+            "type": "exec",
+            "func": "ac_search",
+            "vars": {
+              "read": "xabcd",
+              "matches": [
+                "bcd"
+              ],
+              "total": 2,
+              "phase": "沿 bc→d 命中 bcd"
+            }
+          },
+          {
+            "step": 9,
+            "line": 115,
+            "type": "exec",
+            "func": "ac_search",
+            "vars": {
+              "read": "xabcde",
+              "matches": [
+                "cde"
+              ],
+              "total": 3,
+              "phase": "继续利用后缀 cd 命中 cde"
+            }
+          },
+          {
+            "step": 10,
+            "line": 145,
+            "type": "exit",
+            "func": "main",
+            "vars": {
+              "_return": 0,
+              "total": 3,
+              "phase": "一次扫描命中 3 个模式串"
+            }
+          }
+        ]
+      }
+    }
+  }
+};
+const firstKey = Object.keys(ALGOS)[0];
+const requestedKey = new URLSearchParams(location.search).get('algo');
+const savedAtOpen = DHLearning.load();
+let currentKey = ALGOS[requestedKey]
+  ? requestedKey
+  : (savedAtOpen.last && savedAtOpen.last.chapter === CHAPTER_NUM && ALGOS[savedAtOpen.last.algorithm]
+      ? savedAtOpen.last.algorithm
+      : firstKey);
+let currentMode = null;
+const engine = new TraceEngine('viz-canvas', 'code-body', 'var-grid', 'callstack');
+const tabsEl = document.getElementById('algo-tabs');
+const modeTabsEl = document.getElementById('mode-tabs');
+
+function has_modes(algo) {
+  return algo && algo.modes && typeof algo.modes === 'object';
+}
+
+function mode_label(rawAlgo, mode) {
+  const labels = rawAlgo.modeLabels || {};
+  if (labels[mode]) return labels[mode];
+  if (mode === 'concept') return '理解动画';
+  if (mode === 'trace') return '代码执行';
+  return mode;
+}
+
+function resolve_algo(rawAlgo) {
+  if (!has_modes(rawAlgo)) return rawAlgo;
+  const mode = currentMode || rawAlgo.defaultMode || Object.keys(rawAlgo.modes)[0];
+  return rawAlgo.modes[mode] || rawAlgo.modes[rawAlgo.defaultMode] || Object.values(rawAlgo.modes)[0];
+}
+
+function is_concept_algo(algo) {
+  if (!algo) return false;
+  const classes = algo.var_classes || {};
+  if (Object.values(classes).some(info => info && info.type === 'concept')) return true;
+  return (algo.steps || []).some(step => step.vars && step.vars.concept);
+}
+
+function update_tab_states() {
+  const completed = new Set(DHLearning.load().completedDemos);
+  tabsEl.querySelectorAll('.algo-tab').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.key === currentKey);
+    btn.classList.toggle('completed', completed.has(DHLearning.demoId(CHAPTER_NUM, btn.dataset.key)));
+    btn.setAttribute('aria-selected', String(btn.dataset.key === currentKey));
+  });
+}
+
+function update_chapter_progress() {
+  const state = DHLearning.load();
+  const completed = new Set(state.completedDemos);
+  const keys = Object.keys(ALGOS);
+  const done = keys.filter(key => completed.has(DHLearning.demoId(CHAPTER_NUM, key))).length;
+  document.getElementById('chapter-progress-text').textContent = `${done} / ${keys.length} 个演示完成`;
+  document.getElementById('chapter-progress-fill').style.width = `${keys.length ? done / keys.length * 100 : 0}%`;
+  update_tab_states();
+}
+
+function render_mode_tabs(rawAlgo) {
+  modeTabsEl.innerHTML = '';
+  if (!has_modes(rawAlgo)) {
+    modeTabsEl.classList.remove('visible');
+    currentMode = null;
+    return;
+  }
+  modeTabsEl.classList.add('visible');
+  const label = document.createElement('span');
+  label.className = 'mode-label';
+  label.textContent = '学习方式';
+  modeTabsEl.appendChild(label);
+  const activeMode = currentMode || rawAlgo.defaultMode || Object.keys(rawAlgo.modes)[0];
+  Object.keys(rawAlgo.modes).forEach(mode => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'mode-tab' + (mode === activeMode ? ' active' : '');
+    btn.textContent = mode_label(rawAlgo, mode);
+    btn.setAttribute('role', 'tab');
+    btn.setAttribute('aria-selected', String(mode === activeMode));
+    btn.addEventListener('click', () => {
+      if (currentMode === mode) return;
+      currentMode = mode;
+      load_current_algo(false);
+      if (matchMedia('(max-width: 900px)').matches) {
+        set_mobile_view(mode === 'trace' ? 'code' : 'animation');
+      }
+    });
+    modeTabsEl.appendChild(btn);
+  });
+}
+
+function load_current_algo(allowRestore = true) {
+  const rawAlgo = ALGOS[currentKey];
+  const beforeLoad = DHLearning.load().last;
+  if (has_modes(rawAlgo)) {
+    const savedMode = beforeLoad && beforeLoad.chapter === CHAPTER_NUM && beforeLoad.algorithm === currentKey
+      ? beforeLoad.mode
+      : null;
+    if (!currentMode) currentMode = savedMode && rawAlgo.modes[savedMode]
+      ? savedMode
+      : (rawAlgo.defaultMode || Object.keys(rawAlgo.modes)[0]);
+  } else {
+    currentMode = null;
+  }
+  render_mode_tabs(rawAlgo);
+  const activeAlgo = resolve_algo(rawAlgo);
+  document.body.classList.toggle('concept-mode', currentMode === 'concept' || is_concept_algo(activeAlgo));
+  engine.stop_play();
+  engine.load(activeAlgo);
+  try {
+    const currentUrl = new URL(location.href);
+    currentUrl.searchParams.set('algo', currentKey);
+    history.replaceState(null, '', currentUrl.href);
+  } catch (_) {
+    // file:// 预览环境可能限制 history API，不影响演示本身。
+  }
+  update_tab_states();
+
+  if (
+    allowRestore
+    && beforeLoad
+    && beforeLoad.chapter === CHAPTER_NUM
+    && beforeLoad.algorithm === currentKey
+    && beforeLoad.mode === currentMode
+    && beforeLoad.step > 0
+    && activeAlgo.steps.length
+  ) {
+    const restoreStep = Math.min(beforeLoad.step, activeAlgo.steps.length - 1);
+    requestAnimationFrame(() => engine.go_to_step(restoreStep));
+  }
+}
+
+Object.entries(ALGOS).forEach(([key, algo]) => {
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'algo-tab';
+  btn.dataset.key = key;
+  btn.textContent = algo.title;
+  btn.setAttribute('role', 'tab');
+  btn.setAttribute('aria-selected', String(key === currentKey));
+  btn.addEventListener('click', () => {
+    if (currentKey === key) return;
+    currentKey = key;
+    currentMode = has_modes(algo) ? (algo.defaultMode || Object.keys(algo.modes)[0]) : null;
+    load_current_algo(true);
+  });
+  tabsEl.appendChild(btn);
+});
+
+document.addEventListener('dh:stepchange', event => {
+  const detail = event.detail || {};
+  DHLearning.updateLast(CHAPTER_NUM, currentKey, currentMode, detail.currentStep);
+  if (detail.atEnd) DHLearning.markDemoComplete(CHAPTER_NUM, currentKey);
+  update_chapter_progress();
+});
+
+document.getElementById('btn-play').addEventListener('click', () => engine.playing ? engine.stop_play() : engine.start_play());
+document.getElementById('btn-step').addEventListener('click', () => { engine.stop_play(); engine.step_forward(); });
+document.getElementById('btn-reset').addEventListener('click', () => engine.reset());
+document.getElementById('btn-back').addEventListener('click', () => { engine.stop_play(); engine.step_backward(); });
+document.getElementById('btn-to-bp').addEventListener('click', () => { engine.stop_play(); engine.play_to_bp(); });
+
+const speedSlider = document.getElementById('speed-slider');
+const savedSpeed = localStorage.getItem('dh_speed');
+if (savedSpeed !== null) speedSlider.value = savedSpeed;
+speedSlider.setAttribute('aria-valuetext', `速度 ${speedSlider.value}`);
+speedSlider.addEventListener('input', () => {
+  localStorage.setItem('dh_speed', speedSlider.value);
+  speedSlider.setAttribute('aria-valuetext', `速度 ${speedSlider.value}`);
+  if (engine.playing) { clearTimeout(engine.playTimer); engine._play_loop(); }
+});
+speedSlider.addEventListener('keydown', event => {
+  if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+  event.preventDefault();
+  event.stopPropagation();
+  const direction = event.key === 'ArrowRight' ? 1 : -1;
+  speedSlider.value = String(Math.max(Number(speedSlider.min), Math.min(Number(speedSlider.max), Number(speedSlider.value) + direction)));
+  speedSlider.dispatchEvent(new Event('input', { bubbles: true }));
+});
+document.getElementById('font-dec').addEventListener('click', () => engine.font_dec());
+document.getElementById('font-inc').addEventListener('click', () => engine.font_inc());
+
+document.addEventListener('keydown', event => {
+  const target = event.target;
+  if (target && target.closest && target.closest('button,input,select,textarea,a,summary,[contenteditable="true"]')) return;
+  if (event.key === ' ') {
+    event.preventDefault();
+    engine.playing ? engine.stop_play() : engine.start_play();
+  } else if (event.key === 'ArrowRight') {
+    event.preventDefault();
+    engine.stop_play();
+    engine.step_forward();
+  } else if (event.key === 'ArrowLeft') {
+    event.preventDefault();
+    engine.stop_play();
+    engine.step_backward();
+  } else if (event.key.toLowerCase() === 'r' && !event.metaKey && !event.ctrlKey && !event.altKey) {
+    engine.reset();
+  }
+});
+
+function set_mobile_view(view) {
+  document.body.dataset.mobileView = view;
+  document.querySelectorAll('.mobile-view-switcher button').forEach(btn => {
+    const active = btn.dataset.mobileView === view;
+    btn.classList.toggle('active', active);
+    btn.setAttribute('aria-selected', String(active));
+  });
+  if (view === 'animation' && engine.currentStep >= 0) {
+    requestAnimationFrame(() => engine.go_to_step(engine.currentStep));
+  }
+}
+
+document.querySelectorAll('.mobile-view-switcher button').forEach(btn => {
+  btn.addEventListener('click', () => set_mobile_view(btn.dataset.mobileView));
+});
+
+DHLearning.visitChapter(CHAPTER_NUM);
+update_chapter_progress();
+load_current_algo(true);
+</script>
+</body>
+</html>

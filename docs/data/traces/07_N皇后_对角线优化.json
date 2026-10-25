@@ -1,0 +1,1876 @@
+{
+  "meta": {
+    "algo": "07_N皇后_对角线优化",
+    "source_lines": [
+      "#include <stdio.h>",
+      "#define MAX_N 15",
+      "int n;",
+      "int pos[MAX_N];",
+      "int col_used[MAX_N];",
+      "int diag1_used[2 * MAX_N];   /* row - col + n */",
+      "int diag2_used[2 * MAX_N];   /* row + col */",
+      "int solution_count = 0;",
+      "void print_board(void) {",
+      "    printf(\"第 %d 组解：\\n\", solution_count);",
+      "    for (int i = 0; i < n; i++) {",
+      "        for (int j = 0; j < n; j++) {",
+      "            if (pos[i] == j) printf(\"Q \");",
+      "            else printf(\". \");",
+      "        }",
+      "        printf(\"\\n\");",
+      "    }",
+      "    printf(\"\\n\");",
+      "}",
+      "void backtrack(int row) {",
+      "    if (row == n) {",
+      "        solution_count++;",
+      "        print_board();",
+      "        return;",
+      "    }",
+      "    for (int col = 0; col < n; col++) {",
+      "        int d1 = row - col + n;",
+      "        int d2 = row + col;",
+      "        if (col_used[col] || diag1_used[d1] || diag2_used[d2]) {",
+      "            continue;",
+      "        }",
+      "        /* 做选择 */",
+      "        pos[row] = col;",
+      "        col_used[col] = 1;",
+      "        diag1_used[d1] = 1;",
+      "        diag2_used[d2] = 1;",
+      "        backtrack(row + 1);",
+      "        /* 撤销选择 */",
+      "        col_used[col] = 0;",
+      "        diag1_used[d1] = 0;",
+      "        diag2_used[d2] = 0;",
+      "    }",
+      "}",
+      "int main(void) {",
+      "    n = 4;",
+      "    backtrack(0);",
+      "    printf(\"总解数：%d\\n\", solution_count);",
+      "    return 0;",
+      "}"
+    ],
+    "track_vars": {
+      "primary": [
+        "i",
+        "j",
+        "n"
+      ],
+      "secondary": [
+        "_return",
+        "col",
+        "col_used",
+        "d1",
+        "d2",
+        "diag1_used",
+        "diag2_used",
+        "row",
+        "solution_count"
+      ]
+    },
+    "var_classes": {
+      "_return": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "col": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "col_used": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "d1": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "d2": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "diag1_used": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "diag2_used": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "i": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "j": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "n": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "row": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "solution_count": {
+        "category": "secondary",
+        "type": "scalar"
+      }
+    },
+    "viz_type": "array",
+    "initial_data": {},
+    "program_output": [
+      {
+        "after_step": 57,
+        "text": "第 1 组解： . Q . . . . . Q Q . . . . . Q ."
+      },
+      {
+        "after_step": 103,
+        "text": "第 2 组解： . . Q . Q . . . . . . Q . Q . ."
+      },
+      {
+        "after_step": 167,
+        "text": "总解数：2"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step": 0,
+      "line": 44,
+      "type": "enter",
+      "func": "main",
+      "vars": {}
+    },
+    {
+      "step": 1,
+      "line": 45,
+      "type": "exec",
+      "vars": {
+        "n": 4
+      }
+    },
+    {
+      "step": 2,
+      "line": 46,
+      "type": "enter",
+      "func": "backtrack",
+      "vars": {
+        "row": 0
+      }
+    },
+    {
+      "step": 3,
+      "line": 26,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 0
+      }
+    },
+    {
+      "step": 4,
+      "line": 37,
+      "type": "enter",
+      "func": "backtrack",
+      "vars": {
+        "row": 1
+      }
+    },
+    {
+      "step": 5,
+      "line": 26,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 0
+      }
+    },
+    {
+      "step": 6,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 0,
+        "col_used": 74186760,
+        "d1": 5,
+        "d2": 1,
+        "diag1_used": 74186820,
+        "diag2_used": 74186940
+      }
+    },
+    {
+      "step": 7,
+      "line": 26,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 1
+      }
+    },
+    {
+      "step": 8,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 1,
+        "col_used": 74186760,
+        "d1": 4,
+        "d2": 2,
+        "diag1_used": 74186820,
+        "diag2_used": 74186940
+      }
+    },
+    {
+      "step": 9,
+      "line": 26,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 2
+      }
+    },
+    {
+      "step": 10,
+      "line": 37,
+      "type": "enter",
+      "func": "backtrack",
+      "vars": {
+        "row": 2
+      }
+    },
+    {
+      "step": 11,
+      "line": 26,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 0
+      }
+    },
+    {
+      "step": 12,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 0,
+        "col_used": 74186760,
+        "d1": 6,
+        "d2": 2,
+        "diag1_used": 74186820,
+        "diag2_used": 74186940
+      }
+    },
+    {
+      "step": 13,
+      "line": 26,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 1
+      }
+    },
+    {
+      "step": 14,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 1,
+        "col_used": 74186760,
+        "d1": 5,
+        "d2": 3,
+        "diag1_used": 74186820,
+        "diag2_used": 74186940
+      }
+    },
+    {
+      "step": 15,
+      "line": 26,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 2
+      }
+    },
+    {
+      "step": 16,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 2,
+        "col_used": 74186760,
+        "d1": 4,
+        "d2": 4,
+        "diag1_used": 74186820,
+        "diag2_used": 74186940
+      }
+    },
+    {
+      "step": 17,
+      "line": 26,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 3
+      }
+    },
+    {
+      "step": 18,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 3,
+        "col_used": 74186760,
+        "d1": 3,
+        "d2": 5,
+        "diag1_used": 74186820,
+        "diag2_used": 74186940
+      }
+    },
+    {
+      "step": 19,
+      "line": 26,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 3
+      }
+    },
+    {
+      "step": 20,
+      "line": 37,
+      "type": "enter",
+      "func": "backtrack",
+      "vars": {
+        "row": 2
+      }
+    },
+    {
+      "step": 21,
+      "line": 26,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 0
+      }
+    },
+    {
+      "step": 22,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 0,
+        "col_used": 74186760,
+        "d1": 6,
+        "d2": 2,
+        "diag1_used": 74186820,
+        "diag2_used": 74186940
+      }
+    },
+    {
+      "step": 23,
+      "line": 26,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 1
+      }
+    },
+    {
+      "step": 24,
+      "line": 37,
+      "type": "enter",
+      "func": "backtrack",
+      "vars": {
+        "row": 3
+      }
+    },
+    {
+      "step": 25,
+      "line": 26,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 0
+      }
+    },
+    {
+      "step": 26,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 0,
+        "col_used": 74186760,
+        "d1": 7,
+        "d2": 3,
+        "diag1_used": 74186820,
+        "diag2_used": 74186940
+      }
+    },
+    {
+      "step": 27,
+      "line": 26,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 1
+      }
+    },
+    {
+      "step": 28,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 1,
+        "col_used": 74186760,
+        "d1": 6,
+        "d2": 4,
+        "diag1_used": 74186820,
+        "diag2_used": 74186940
+      }
+    },
+    {
+      "step": 29,
+      "line": 26,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 2
+      }
+    },
+    {
+      "step": 30,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 2,
+        "col_used": 74186760,
+        "d1": 5,
+        "d2": 5,
+        "diag1_used": 74186820,
+        "diag2_used": 74186940
+      }
+    },
+    {
+      "step": 31,
+      "line": 26,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 3
+      }
+    },
+    {
+      "step": 32,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 3,
+        "col_used": 74186760,
+        "d1": 4,
+        "d2": 6,
+        "diag1_used": 74186820,
+        "diag2_used": 74186940
+      }
+    },
+    {
+      "step": 33,
+      "line": 26,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 2
+      }
+    },
+    {
+      "step": 34,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 2,
+        "col_used": 74186760,
+        "d1": 4,
+        "d2": 4,
+        "diag1_used": 74186820,
+        "diag2_used": 74186940
+      }
+    },
+    {
+      "step": 35,
+      "line": 26,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 3
+      }
+    },
+    {
+      "step": 36,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 3,
+        "col_used": 74186760,
+        "d1": 3,
+        "d2": 5,
+        "diag1_used": 74186820,
+        "diag2_used": 74186940
+      }
+    },
+    {
+      "step": 37,
+      "line": 26,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 1
+      }
+    },
+    {
+      "step": 38,
+      "line": 37,
+      "type": "enter",
+      "func": "backtrack",
+      "vars": {
+        "row": 1
+      }
+    },
+    {
+      "step": 39,
+      "line": 26,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 0
+      }
+    },
+    {
+      "step": 40,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 0,
+        "col_used": 74186760,
+        "d1": 5,
+        "d2": 1,
+        "diag1_used": 74186820,
+        "diag2_used": 74186940
+      }
+    },
+    {
+      "step": 41,
+      "line": 26,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 1
+      }
+    },
+    {
+      "step": 42,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 1,
+        "col_used": 74186760,
+        "d1": 4,
+        "d2": 2,
+        "diag1_used": 74186820,
+        "diag2_used": 74186940
+      }
+    },
+    {
+      "step": 43,
+      "line": 26,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 2
+      }
+    },
+    {
+      "step": 44,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 2,
+        "col_used": 74186760,
+        "d1": 3,
+        "d2": 3,
+        "diag1_used": 74186820,
+        "diag2_used": 74186940
+      }
+    },
+    {
+      "step": 45,
+      "line": 26,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 3
+      }
+    },
+    {
+      "step": 46,
+      "line": 37,
+      "type": "enter",
+      "func": "backtrack",
+      "vars": {
+        "row": 2
+      }
+    },
+    {
+      "step": 47,
+      "line": 26,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 0
+      }
+    },
+    {
+      "step": 48,
+      "line": 37,
+      "type": "enter",
+      "func": "backtrack",
+      "vars": {
+        "row": 3
+      }
+    },
+    {
+      "step": 49,
+      "line": 26,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 0
+      }
+    },
+    {
+      "step": 50,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 0,
+        "col_used": 74186760,
+        "d1": 7,
+        "d2": 3,
+        "diag1_used": 74186820,
+        "diag2_used": 74186940
+      }
+    },
+    {
+      "step": 51,
+      "line": 26,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 1
+      }
+    },
+    {
+      "step": 52,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 1,
+        "col_used": 74186760,
+        "d1": 6,
+        "d2": 4,
+        "diag1_used": 74186820,
+        "diag2_used": 74186940
+      }
+    },
+    {
+      "step": 53,
+      "line": 26,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 2
+      }
+    },
+    {
+      "step": 54,
+      "line": 37,
+      "type": "enter",
+      "func": "backtrack",
+      "vars": {
+        "row": 4
+      }
+    },
+    {
+      "step": 55,
+      "line": 21,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "row": 4
+      }
+    },
+    {
+      "step": 56,
+      "line": 22,
+      "type": "exec",
+      "vars": {
+        "solution_count": 1
+      }
+    },
+    {
+      "step": 57,
+      "line": 11,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0
+      }
+    },
+    {
+      "step": 58,
+      "line": 12,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 0
+      }
+    },
+    {
+      "step": 59,
+      "line": 12,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 1
+      }
+    },
+    {
+      "step": 60,
+      "line": 12,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 2
+      }
+    },
+    {
+      "step": 61,
+      "line": 12,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 3
+      }
+    },
+    {
+      "step": 62,
+      "line": 11,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1
+      }
+    },
+    {
+      "step": 63,
+      "line": 12,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 0
+      }
+    },
+    {
+      "step": 64,
+      "line": 12,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 1
+      }
+    },
+    {
+      "step": 65,
+      "line": 12,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 2
+      }
+    },
+    {
+      "step": 66,
+      "line": 12,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 3
+      }
+    },
+    {
+      "step": 67,
+      "line": 11,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2
+      }
+    },
+    {
+      "step": 68,
+      "line": 12,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 0
+      }
+    },
+    {
+      "step": 69,
+      "line": 12,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 1
+      }
+    },
+    {
+      "step": 70,
+      "line": 12,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 2
+      }
+    },
+    {
+      "step": 71,
+      "line": 12,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 3
+      }
+    },
+    {
+      "step": 72,
+      "line": 11,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3
+      }
+    },
+    {
+      "step": 73,
+      "line": 12,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 0
+      }
+    },
+    {
+      "step": 74,
+      "line": 12,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 1
+      }
+    },
+    {
+      "step": 75,
+      "line": 12,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 2
+      }
+    },
+    {
+      "step": 76,
+      "line": 12,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 3
+      }
+    },
+    {
+      "step": 77,
+      "line": 26,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 3
+      }
+    },
+    {
+      "step": 78,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 3,
+        "col_used": 74186760,
+        "d1": 4,
+        "d2": 6,
+        "diag1_used": 74186820,
+        "diag2_used": 74186940
+      }
+    },
+    {
+      "step": 79,
+      "line": 26,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 1
+      }
+    },
+    {
+      "step": 80,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 1,
+        "col_used": 74186760,
+        "d1": 5,
+        "d2": 3,
+        "diag1_used": 74186820,
+        "diag2_used": 74186940
+      }
+    },
+    {
+      "step": 81,
+      "line": 26,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 2
+      }
+    },
+    {
+      "step": 82,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 2,
+        "col_used": 74186760,
+        "d1": 4,
+        "d2": 4,
+        "diag1_used": 74186820,
+        "diag2_used": 74186940
+      }
+    },
+    {
+      "step": 83,
+      "line": 26,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 3
+      }
+    },
+    {
+      "step": 84,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 3,
+        "col_used": 74186760,
+        "d1": 3,
+        "d2": 5,
+        "diag1_used": 74186820,
+        "diag2_used": 74186940
+      }
+    },
+    {
+      "step": 85,
+      "line": 26,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 2
+      }
+    },
+    {
+      "step": 86,
+      "line": 37,
+      "type": "enter",
+      "func": "backtrack",
+      "vars": {
+        "row": 1
+      }
+    },
+    {
+      "step": 87,
+      "line": 26,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 0
+      }
+    },
+    {
+      "step": 88,
+      "line": 37,
+      "type": "enter",
+      "func": "backtrack",
+      "vars": {
+        "row": 2
+      }
+    },
+    {
+      "step": 89,
+      "line": 26,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 0
+      }
+    },
+    {
+      "step": 90,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 0,
+        "col_used": 74186760,
+        "d1": 6,
+        "d2": 2,
+        "diag1_used": 74186820,
+        "diag2_used": 74186940
+      }
+    },
+    {
+      "step": 91,
+      "line": 26,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 1
+      }
+    },
+    {
+      "step": 92,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 1,
+        "col_used": 74186760,
+        "d1": 5,
+        "d2": 3,
+        "diag1_used": 74186820,
+        "diag2_used": 74186940
+      }
+    },
+    {
+      "step": 93,
+      "line": 26,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 2
+      }
+    },
+    {
+      "step": 94,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 2,
+        "col_used": 74186760,
+        "d1": 4,
+        "d2": 4,
+        "diag1_used": 74186820,
+        "diag2_used": 74186940
+      }
+    },
+    {
+      "step": 95,
+      "line": 26,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 3
+      }
+    },
+    {
+      "step": 96,
+      "line": 37,
+      "type": "enter",
+      "func": "backtrack",
+      "vars": {
+        "row": 3
+      }
+    },
+    {
+      "step": 97,
+      "line": 26,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 0
+      }
+    },
+    {
+      "step": 98,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 0,
+        "col_used": 74186760,
+        "d1": 7,
+        "d2": 3,
+        "diag1_used": 74186820,
+        "diag2_used": 74186940
+      }
+    },
+    {
+      "step": 99,
+      "line": 26,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 1
+      }
+    },
+    {
+      "step": 100,
+      "line": 37,
+      "type": "enter",
+      "func": "backtrack",
+      "vars": {
+        "row": 4
+      }
+    },
+    {
+      "step": 101,
+      "line": 21,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "row": 4
+      }
+    },
+    {
+      "step": 102,
+      "line": 22,
+      "type": "exec",
+      "vars": {
+        "solution_count": 2
+      }
+    },
+    {
+      "step": 103,
+      "line": 11,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0
+      }
+    },
+    {
+      "step": 104,
+      "line": 12,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 0
+      }
+    },
+    {
+      "step": 105,
+      "line": 12,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 1
+      }
+    },
+    {
+      "step": 106,
+      "line": 12,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 2
+      }
+    },
+    {
+      "step": 107,
+      "line": 12,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 3
+      }
+    },
+    {
+      "step": 108,
+      "line": 11,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1
+      }
+    },
+    {
+      "step": 109,
+      "line": 12,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 0
+      }
+    },
+    {
+      "step": 110,
+      "line": 12,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 1
+      }
+    },
+    {
+      "step": 111,
+      "line": 12,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 2
+      }
+    },
+    {
+      "step": 112,
+      "line": 12,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 3
+      }
+    },
+    {
+      "step": 113,
+      "line": 11,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2
+      }
+    },
+    {
+      "step": 114,
+      "line": 12,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 0
+      }
+    },
+    {
+      "step": 115,
+      "line": 12,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 1
+      }
+    },
+    {
+      "step": 116,
+      "line": 12,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 2
+      }
+    },
+    {
+      "step": 117,
+      "line": 12,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 3
+      }
+    },
+    {
+      "step": 118,
+      "line": 11,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3
+      }
+    },
+    {
+      "step": 119,
+      "line": 12,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 0
+      }
+    },
+    {
+      "step": 120,
+      "line": 12,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 1
+      }
+    },
+    {
+      "step": 121,
+      "line": 12,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 2
+      }
+    },
+    {
+      "step": 122,
+      "line": 12,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 3
+      }
+    },
+    {
+      "step": 123,
+      "line": 26,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 2
+      }
+    },
+    {
+      "step": 124,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 2,
+        "col_used": 74186760,
+        "d1": 5,
+        "d2": 5,
+        "diag1_used": 74186820,
+        "diag2_used": 74186940
+      }
+    },
+    {
+      "step": 125,
+      "line": 26,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 3
+      }
+    },
+    {
+      "step": 126,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 3,
+        "col_used": 74186760,
+        "d1": 4,
+        "d2": 6,
+        "diag1_used": 74186820,
+        "diag2_used": 74186940
+      }
+    },
+    {
+      "step": 127,
+      "line": 26,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 1
+      }
+    },
+    {
+      "step": 128,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 1,
+        "col_used": 74186760,
+        "d1": 4,
+        "d2": 2,
+        "diag1_used": 74186820,
+        "diag2_used": 74186940
+      }
+    },
+    {
+      "step": 129,
+      "line": 26,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 2
+      }
+    },
+    {
+      "step": 130,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 2,
+        "col_used": 74186760,
+        "d1": 3,
+        "d2": 3,
+        "diag1_used": 74186820,
+        "diag2_used": 74186940
+      }
+    },
+    {
+      "step": 131,
+      "line": 26,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 3
+      }
+    },
+    {
+      "step": 132,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 3,
+        "col_used": 74186760,
+        "d1": 2,
+        "d2": 4,
+        "diag1_used": 74186820,
+        "diag2_used": 74186940
+      }
+    },
+    {
+      "step": 133,
+      "line": 26,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 3
+      }
+    },
+    {
+      "step": 134,
+      "line": 37,
+      "type": "enter",
+      "func": "backtrack",
+      "vars": {
+        "row": 1
+      }
+    },
+    {
+      "step": 135,
+      "line": 26,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 0
+      }
+    },
+    {
+      "step": 136,
+      "line": 37,
+      "type": "enter",
+      "func": "backtrack",
+      "vars": {
+        "row": 2
+      }
+    },
+    {
+      "step": 137,
+      "line": 26,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 0
+      }
+    },
+    {
+      "step": 138,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 0,
+        "col_used": 74186760,
+        "d1": 6,
+        "d2": 2,
+        "diag1_used": 74186820,
+        "diag2_used": 74186940
+      }
+    },
+    {
+      "step": 139,
+      "line": 26,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 1
+      }
+    },
+    {
+      "step": 140,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 1,
+        "col_used": 74186760,
+        "d1": 5,
+        "d2": 3,
+        "diag1_used": 74186820,
+        "diag2_used": 74186940
+      }
+    },
+    {
+      "step": 141,
+      "line": 26,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 2
+      }
+    },
+    {
+      "step": 142,
+      "line": 37,
+      "type": "enter",
+      "func": "backtrack",
+      "vars": {
+        "row": 3
+      }
+    },
+    {
+      "step": 143,
+      "line": 26,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 0
+      }
+    },
+    {
+      "step": 144,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 0,
+        "col_used": 74186760,
+        "d1": 7,
+        "d2": 3,
+        "diag1_used": 74186820,
+        "diag2_used": 74186940
+      }
+    },
+    {
+      "step": 145,
+      "line": 26,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 1
+      }
+    },
+    {
+      "step": 146,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 1,
+        "col_used": 74186760,
+        "d1": 6,
+        "d2": 4,
+        "diag1_used": 74186820,
+        "diag2_used": 74186940
+      }
+    },
+    {
+      "step": 147,
+      "line": 26,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 2
+      }
+    },
+    {
+      "step": 148,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 2,
+        "col_used": 74186760,
+        "d1": 5,
+        "d2": 5,
+        "diag1_used": 74186820,
+        "diag2_used": 74186940
+      }
+    },
+    {
+      "step": 149,
+      "line": 26,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 3
+      }
+    },
+    {
+      "step": 150,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 3,
+        "col_used": 74186760,
+        "d1": 4,
+        "d2": 6,
+        "diag1_used": 74186820,
+        "diag2_used": 74186940
+      }
+    },
+    {
+      "step": 151,
+      "line": 26,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 3
+      }
+    },
+    {
+      "step": 152,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 3,
+        "col_used": 74186760,
+        "d1": 3,
+        "d2": 5,
+        "diag1_used": 74186820,
+        "diag2_used": 74186940
+      }
+    },
+    {
+      "step": 153,
+      "line": 26,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 1
+      }
+    },
+    {
+      "step": 154,
+      "line": 37,
+      "type": "enter",
+      "func": "backtrack",
+      "vars": {
+        "row": 2
+      }
+    },
+    {
+      "step": 155,
+      "line": 26,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 0
+      }
+    },
+    {
+      "step": 156,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 0,
+        "col_used": 74186760,
+        "d1": 6,
+        "d2": 2,
+        "diag1_used": 74186820,
+        "diag2_used": 74186940
+      }
+    },
+    {
+      "step": 157,
+      "line": 26,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 1
+      }
+    },
+    {
+      "step": 158,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 1,
+        "col_used": 74186760,
+        "d1": 5,
+        "d2": 3,
+        "diag1_used": 74186820,
+        "diag2_used": 74186940
+      }
+    },
+    {
+      "step": 159,
+      "line": 26,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 2
+      }
+    },
+    {
+      "step": 160,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 2,
+        "col_used": 74186760,
+        "d1": 4,
+        "d2": 4,
+        "diag1_used": 74186820,
+        "diag2_used": 74186940
+      }
+    },
+    {
+      "step": 161,
+      "line": 26,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 3
+      }
+    },
+    {
+      "step": 162,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 3,
+        "col_used": 74186760,
+        "d1": 3,
+        "d2": 5,
+        "diag1_used": 74186820,
+        "diag2_used": 74186940
+      }
+    },
+    {
+      "step": 163,
+      "line": 26,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 2
+      }
+    },
+    {
+      "step": 164,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 2,
+        "col_used": 74186760,
+        "d1": 3,
+        "d2": 3,
+        "diag1_used": 74186820,
+        "diag2_used": 74186940
+      }
+    },
+    {
+      "step": 165,
+      "line": 26,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 3
+      }
+    },
+    {
+      "step": 166,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "col": 3,
+        "col_used": 74186760,
+        "d1": 2,
+        "d2": 4,
+        "diag1_used": 74186820,
+        "diag2_used": 74186940
+      }
+    },
+    {
+      "step": 167,
+      "line": 48,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 168,
+      "line": 48,
+      "type": "exit",
+      "func": "main",
+      "vars": {}
+    }
+  ],
+  "total_steps": 169
+}

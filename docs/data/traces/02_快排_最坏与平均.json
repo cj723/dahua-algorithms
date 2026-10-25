@@ -1,0 +1,689 @@
+{
+  "meta": {
+    "algo": "02_快排_最坏与平均",
+    "source_lines": [
+      "#include <stdio.h>",
+      "/* 交换两个数 */",
+      "void swap(int *a, int *b) {",
+      "    int temp = *a;",
+      "    *a = *b;",
+      "    *b = temp;",
+      "}",
+      "/* 分区函数：选最后一个元素作为基准，小的放左边，大的放右边 */",
+      "int partition(int arr[], int low, int high) {",
+      "    int pivot = arr[high];  /* 基准值 */",
+      "    int i = low - 1;        /* \"小元素区\"的边界 */",
+      "    for (int j = low; j < high; j++) {",
+      "        if (arr[j] < pivot) {",
+      "            i++;",
+      "            swap(&arr[i], &arr[j]);",
+      "        }",
+      "    }",
+      "    swap(&arr[i + 1], &arr[high]);",
+      "    return i + 1;",
+      "}",
+      "/* 快速排序 */",
+      "void quick_sort(int arr[], int low, int high) {",
+      "    if (low < high) {",
+      "        int pi = partition(arr, low, high);",
+      "        quick_sort(arr, low, pi - 1);   /* 排左边 */",
+      "        quick_sort(arr, pi + 1, high);  /* 排右边 */",
+      "    }",
+      "}",
+      "void print_array(int arr[], int n) {",
+      "    for (int i = 0; i < n; i++) {",
+      "        printf(\"%d \", arr[i]);",
+      "    }",
+      "    printf(\"\\n\");",
+      "}",
+      "int main(void) {",
+      "    int arr[] = {10, 7, 8, 9, 1, 5};",
+      "    int n = 6;",
+      "    printf(\"排序前：\");",
+      "    print_array(arr, n);",
+      "    quick_sort(arr, 0, n - 1);",
+      "    printf(\"排序后：\");",
+      "    print_array(arr, n);",
+      "    return 0;",
+      "}"
+    ],
+    "track_vars": {
+      "primary": [
+        "arr",
+        "high",
+        "i",
+        "j",
+        "low",
+        "n",
+        "pivot"
+      ],
+      "secondary": [
+        "_return"
+      ]
+    },
+    "var_classes": {
+      "_return": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "arr": {
+        "category": "primary",
+        "type": "array"
+      },
+      "high": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "i": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "j": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "low": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "n": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "pivot": {
+        "category": "primary",
+        "type": "scalar"
+      }
+    },
+    "viz_type": "array",
+    "initial_data": {
+      "arr": [
+        10,
+        7,
+        8,
+        9,
+        1,
+        5
+      ]
+    },
+    "program_output": [
+      {
+        "after_step": 1,
+        "text": "排序前： 10 7 8 9 1 5"
+      },
+      {
+        "after_step": 42,
+        "text": "排序后： 1 5 7 8 9 10"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step": 0,
+      "line": 35,
+      "type": "enter",
+      "func": "main",
+      "vars": {}
+    },
+    {
+      "step": 1,
+      "line": 39,
+      "type": "enter",
+      "func": "print_array",
+      "vars": {
+        "arr": [
+          10,
+          7,
+          8,
+          9,
+          1,
+          5
+        ],
+        "n": 6
+      }
+    },
+    {
+      "step": 2,
+      "line": 30,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0,
+        "n": 6
+      }
+    },
+    {
+      "step": 3,
+      "line": 30,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "n": 6
+      }
+    },
+    {
+      "step": 4,
+      "line": 30,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "n": 6
+      }
+    },
+    {
+      "step": 5,
+      "line": 30,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3,
+        "n": 6
+      }
+    },
+    {
+      "step": 6,
+      "line": 30,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 4,
+        "n": 6
+      }
+    },
+    {
+      "step": 7,
+      "line": 30,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 5,
+        "n": 6
+      }
+    },
+    {
+      "step": 8,
+      "line": 40,
+      "type": "enter",
+      "func": "quick_sort",
+      "vars": {
+        "arr": [
+          10,
+          7,
+          8,
+          9,
+          1,
+          5
+        ],
+        "low": 0,
+        "high": 5
+      }
+    },
+    {
+      "step": 9,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "high": 5,
+        "low": 0
+      }
+    },
+    {
+      "step": 10,
+      "line": 24,
+      "type": "enter",
+      "func": "partition",
+      "vars": {
+        "arr": [
+          10,
+          7,
+          8,
+          9,
+          1,
+          5
+        ],
+        "low": 0,
+        "high": 5
+      }
+    },
+    {
+      "step": 11,
+      "line": 12,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "high": 5,
+        "j": 0
+      }
+    },
+    {
+      "step": 12,
+      "line": 12,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "high": 5,
+        "j": 1
+      }
+    },
+    {
+      "step": 13,
+      "line": 12,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "high": 5,
+        "j": 2
+      }
+    },
+    {
+      "step": 14,
+      "line": 12,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "high": 5,
+        "j": 3
+      }
+    },
+    {
+      "step": 15,
+      "line": 12,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "high": 5,
+        "j": 4
+      }
+    },
+    {
+      "step": 16,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 4,
+        "pivot": 5
+      }
+    },
+    {
+      "step": 17,
+      "line": 14,
+      "type": "exec",
+      "vars": {
+        "i": 0
+      }
+    },
+    {
+      "step": 18,
+      "line": 19,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 19,
+      "line": 19,
+      "type": "exit",
+      "func": "partition",
+      "vars": {}
+    },
+    {
+      "step": 20,
+      "line": 25,
+      "type": "enter",
+      "func": "quick_sort",
+      "vars": {
+        "arr": [
+          1,
+          5,
+          8,
+          9,
+          10,
+          7
+        ],
+        "low": 0,
+        "high": 0
+      }
+    },
+    {
+      "step": 21,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "high": 5,
+        "low": 2
+      }
+    },
+    {
+      "step": 22,
+      "line": 24,
+      "type": "enter",
+      "func": "partition",
+      "vars": {
+        "arr": [
+          1,
+          5,
+          8,
+          9,
+          10,
+          7
+        ],
+        "low": 2,
+        "high": 5
+      }
+    },
+    {
+      "step": 23,
+      "line": 12,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "high": 5,
+        "j": 2
+      }
+    },
+    {
+      "step": 24,
+      "line": 12,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "high": 5,
+        "j": 3
+      }
+    },
+    {
+      "step": 25,
+      "line": 12,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "high": 5,
+        "j": 4
+      }
+    },
+    {
+      "step": 26,
+      "line": 19,
+      "type": "exec",
+      "vars": {
+        "_return": 2
+      }
+    },
+    {
+      "step": 27,
+      "line": 19,
+      "type": "exit",
+      "func": "partition",
+      "vars": {}
+    },
+    {
+      "step": 28,
+      "line": 25,
+      "type": "enter",
+      "func": "quick_sort",
+      "vars": {
+        "arr": [
+          1,
+          5,
+          7,
+          9,
+          10,
+          8
+        ],
+        "low": 2,
+        "high": 1
+      }
+    },
+    {
+      "step": 29,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "high": 5,
+        "low": 3
+      }
+    },
+    {
+      "step": 30,
+      "line": 24,
+      "type": "enter",
+      "func": "partition",
+      "vars": {
+        "arr": [
+          1,
+          5,
+          7,
+          9,
+          10,
+          8
+        ],
+        "low": 3,
+        "high": 5
+      }
+    },
+    {
+      "step": 31,
+      "line": 12,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "high": 5,
+        "j": 3
+      }
+    },
+    {
+      "step": 32,
+      "line": 12,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "high": 5,
+        "j": 4
+      }
+    },
+    {
+      "step": 33,
+      "line": 19,
+      "type": "exec",
+      "vars": {
+        "_return": 3
+      }
+    },
+    {
+      "step": 34,
+      "line": 19,
+      "type": "exit",
+      "func": "partition",
+      "vars": {}
+    },
+    {
+      "step": 35,
+      "line": 25,
+      "type": "enter",
+      "func": "quick_sort",
+      "vars": {
+        "arr": [
+          1,
+          5,
+          7,
+          8,
+          10,
+          9
+        ],
+        "low": 3,
+        "high": 2
+      }
+    },
+    {
+      "step": 36,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "high": 5,
+        "low": 4
+      }
+    },
+    {
+      "step": 37,
+      "line": 24,
+      "type": "enter",
+      "func": "partition",
+      "vars": {
+        "arr": [
+          1,
+          5,
+          7,
+          8,
+          10,
+          9
+        ],
+        "low": 4,
+        "high": 5
+      }
+    },
+    {
+      "step": 38,
+      "line": 12,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "high": 5,
+        "j": 4
+      }
+    },
+    {
+      "step": 39,
+      "line": 19,
+      "type": "exec",
+      "vars": {
+        "_return": 4
+      }
+    },
+    {
+      "step": 40,
+      "line": 19,
+      "type": "exit",
+      "func": "partition",
+      "vars": {}
+    },
+    {
+      "step": 41,
+      "line": 25,
+      "type": "enter",
+      "func": "quick_sort",
+      "vars": {
+        "arr": [
+          1,
+          5,
+          7,
+          8,
+          9,
+          10
+        ],
+        "low": 4,
+        "high": 3
+      }
+    },
+    {
+      "step": 42,
+      "line": 42,
+      "type": "enter",
+      "func": "print_array",
+      "vars": {
+        "arr": [
+          1,
+          5,
+          7,
+          8,
+          9,
+          10
+        ],
+        "n": 6
+      }
+    },
+    {
+      "step": 43,
+      "line": 30,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0,
+        "n": 6
+      }
+    },
+    {
+      "step": 44,
+      "line": 30,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "n": 6
+      }
+    },
+    {
+      "step": 45,
+      "line": 30,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "n": 6
+      }
+    },
+    {
+      "step": 46,
+      "line": 30,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3,
+        "n": 6
+      }
+    },
+    {
+      "step": 47,
+      "line": 30,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 4,
+        "n": 6
+      }
+    },
+    {
+      "step": 48,
+      "line": 30,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 5,
+        "n": 6
+      }
+    },
+    {
+      "step": 49,
+      "line": 43,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 50,
+      "line": 43,
+      "type": "exit",
+      "func": "main",
+      "vars": {}
+    }
+  ],
+  "total_steps": 51
+}

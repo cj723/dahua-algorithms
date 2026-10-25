@@ -1,0 +1,745 @@
+{
+  "meta": {
+    "algo": "03_Karatsuba快速乘法",
+    "source_lines": [
+      "#include <stdio.h>",
+      "#include <math.h>",
+      "/* 求较大值 */",
+      "/* 教学版写法：使用 log10。真实工程中不能用浮点函数处理大整数。 */",
+      "long long max(long long a, long long b) {",
+      "    return (a > b) ? a : b;",
+      "}",
+      "/* Karatsuba 乘法 */",
+      "long long karatsuba(long long x, long long y) {",
+      "    /* 小规模直接算（终止条件） */",
+      "    if (x < 10 || y < 10)",
+      "        return x * y;",
+      "    /* 计算位数 */",
+      "    /* 注意：log10 有浮点精度风险，大数可能出错。工程建议用循环计算位数 */",
+      "    long long n = max(",
+      "        (long long)log10(x) + 1,",
+      "        (long long)log10(y) + 1",
+      "    );",
+      "    /* 对半分（向上取整） */",
+      "    long long half = (n + 1) / 2;",
+      "    /* 教学版写法：使用 pow。数值过大时浮点数会丢失精度。 */",
+      "    long long power = (long long)pow(10, half);",
+      "    /* 拆分 */",
+      "    long long a = x / power;   /* x 的高位 */",
+      "    long long b = x % power;   /* x 的低位 */",
+      "    long long c = y / power;   /* y 的高位 */",
+      "    long long d = y % power;   /* y 的低位 */",
+      "    /* 递归计算三次乘法 */",
+      "    long long ac = karatsuba(a, c);",
+      "    long long bd = karatsuba(b, d);",
+      "    long long ad_bc = karatsuba(a + b, c + d) - ac - bd;",
+      "    /* 合并结果 */",
+      "    /* X × Y = ac × 10^(2×half) + (ad+bc) × 10^half + bd */",
+      "    return ac * (long long)pow(10, 2 * half)",
+      "         + ad_bc * power",
+      "         + bd;",
+      "}",
+      "int main(void) {",
+      "    long long x = 1234, y = 5678;",
+      "    printf(\"传统乘法：%lld\\n\", x * y);",
+      "    printf(\"Karatsuba：%lld\\n\", karatsuba(x, y));",
+      "    return 0;",
+      "}"
+    ],
+    "track_vars": {
+      "primary": [
+        "a"
+      ],
+      "secondary": [
+        "_return",
+        "b",
+        "x",
+        "y"
+      ]
+    },
+    "var_classes": {
+      "_return": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "a": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "b": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "x": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "y": {
+        "category": "secondary",
+        "type": "scalar"
+      }
+    },
+    "viz_type": "array",
+    "initial_data": {},
+    "program_output": [
+      {
+        "after_step": 1,
+        "text": "传统乘法：7006652"
+      },
+      {
+        "after_step": 76,
+        "text": "Karatsuba：7006652"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step": 0,
+      "line": 38,
+      "type": "enter",
+      "func": "main",
+      "vars": {}
+    },
+    {
+      "step": 1,
+      "line": 41,
+      "type": "enter",
+      "func": "karatsuba",
+      "vars": {
+        "x": 1234,
+        "y": 5678
+      }
+    },
+    {
+      "step": 2,
+      "line": 5,
+      "type": "enter",
+      "func": "max",
+      "vars": {
+        "a": 4,
+        "b": 4
+      }
+    },
+    {
+      "step": 3,
+      "line": 6,
+      "type": "exec",
+      "vars": {
+        "_return": 4
+      }
+    },
+    {
+      "step": 4,
+      "line": 6,
+      "type": "exit",
+      "func": "max",
+      "vars": {}
+    },
+    {
+      "step": 5,
+      "line": 29,
+      "type": "enter",
+      "func": "karatsuba",
+      "vars": {
+        "x": 12,
+        "y": 56
+      }
+    },
+    {
+      "step": 6,
+      "line": 5,
+      "type": "enter",
+      "func": "max",
+      "vars": {
+        "a": 2,
+        "b": 2
+      }
+    },
+    {
+      "step": 7,
+      "line": 6,
+      "type": "exec",
+      "vars": {
+        "_return": 2
+      }
+    },
+    {
+      "step": 8,
+      "line": 6,
+      "type": "exit",
+      "func": "max",
+      "vars": {}
+    },
+    {
+      "step": 9,
+      "line": 29,
+      "type": "enter",
+      "func": "karatsuba",
+      "vars": {
+        "x": 1,
+        "y": 5
+      }
+    },
+    {
+      "step": 10,
+      "line": 12,
+      "type": "exec",
+      "vars": {
+        "_return": 5
+      }
+    },
+    {
+      "step": 11,
+      "line": 12,
+      "type": "exit",
+      "func": "karatsuba",
+      "vars": {}
+    },
+    {
+      "step": 12,
+      "line": 30,
+      "type": "enter",
+      "func": "karatsuba",
+      "vars": {
+        "x": 2,
+        "y": 6
+      }
+    },
+    {
+      "step": 13,
+      "line": 12,
+      "type": "exec",
+      "vars": {
+        "_return": 12
+      }
+    },
+    {
+      "step": 14,
+      "line": 12,
+      "type": "exit",
+      "func": "karatsuba",
+      "vars": {}
+    },
+    {
+      "step": 15,
+      "line": 31,
+      "type": "enter",
+      "func": "karatsuba",
+      "vars": {
+        "x": 3,
+        "y": 11
+      }
+    },
+    {
+      "step": 16,
+      "line": 12,
+      "type": "exec",
+      "vars": {
+        "_return": 33
+      }
+    },
+    {
+      "step": 17,
+      "line": 12,
+      "type": "exit",
+      "func": "karatsuba",
+      "vars": {}
+    },
+    {
+      "step": 18,
+      "line": 34,
+      "type": "exec",
+      "vars": {
+        "_return": 672
+      }
+    },
+    {
+      "step": 19,
+      "line": 34,
+      "type": "exit",
+      "func": "karatsuba",
+      "vars": {}
+    },
+    {
+      "step": 20,
+      "line": 30,
+      "type": "enter",
+      "func": "karatsuba",
+      "vars": {
+        "x": 34,
+        "y": 78
+      }
+    },
+    {
+      "step": 21,
+      "line": 5,
+      "type": "enter",
+      "func": "max",
+      "vars": {
+        "a": 2,
+        "b": 2
+      }
+    },
+    {
+      "step": 22,
+      "line": 6,
+      "type": "exec",
+      "vars": {
+        "_return": 2
+      }
+    },
+    {
+      "step": 23,
+      "line": 6,
+      "type": "exit",
+      "func": "max",
+      "vars": {}
+    },
+    {
+      "step": 24,
+      "line": 29,
+      "type": "enter",
+      "func": "karatsuba",
+      "vars": {
+        "x": 3,
+        "y": 7
+      }
+    },
+    {
+      "step": 25,
+      "line": 12,
+      "type": "exec",
+      "vars": {
+        "_return": 21
+      }
+    },
+    {
+      "step": 26,
+      "line": 12,
+      "type": "exit",
+      "func": "karatsuba",
+      "vars": {}
+    },
+    {
+      "step": 27,
+      "line": 30,
+      "type": "enter",
+      "func": "karatsuba",
+      "vars": {
+        "x": 4,
+        "y": 8
+      }
+    },
+    {
+      "step": 28,
+      "line": 12,
+      "type": "exec",
+      "vars": {
+        "_return": 32
+      }
+    },
+    {
+      "step": 29,
+      "line": 12,
+      "type": "exit",
+      "func": "karatsuba",
+      "vars": {}
+    },
+    {
+      "step": 30,
+      "line": 31,
+      "type": "enter",
+      "func": "karatsuba",
+      "vars": {
+        "x": 7,
+        "y": 15
+      }
+    },
+    {
+      "step": 31,
+      "line": 12,
+      "type": "exec",
+      "vars": {
+        "_return": 105
+      }
+    },
+    {
+      "step": 32,
+      "line": 12,
+      "type": "exit",
+      "func": "karatsuba",
+      "vars": {}
+    },
+    {
+      "step": 33,
+      "line": 34,
+      "type": "exec",
+      "vars": {
+        "_return": 2652
+      }
+    },
+    {
+      "step": 34,
+      "line": 34,
+      "type": "exit",
+      "func": "karatsuba",
+      "vars": {}
+    },
+    {
+      "step": 35,
+      "line": 31,
+      "type": "enter",
+      "func": "karatsuba",
+      "vars": {
+        "x": 46,
+        "y": 134
+      }
+    },
+    {
+      "step": 36,
+      "line": 5,
+      "type": "enter",
+      "func": "max",
+      "vars": {
+        "a": 2,
+        "b": 3
+      }
+    },
+    {
+      "step": 37,
+      "line": 6,
+      "type": "exec",
+      "vars": {
+        "_return": 3
+      }
+    },
+    {
+      "step": 38,
+      "line": 6,
+      "type": "exit",
+      "func": "max",
+      "vars": {}
+    },
+    {
+      "step": 39,
+      "line": 29,
+      "type": "enter",
+      "func": "karatsuba",
+      "vars": {
+        "x": 0,
+        "y": 1
+      }
+    },
+    {
+      "step": 40,
+      "line": 12,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 41,
+      "line": 12,
+      "type": "exit",
+      "func": "karatsuba",
+      "vars": {}
+    },
+    {
+      "step": 42,
+      "line": 30,
+      "type": "enter",
+      "func": "karatsuba",
+      "vars": {
+        "x": 46,
+        "y": 34
+      }
+    },
+    {
+      "step": 43,
+      "line": 5,
+      "type": "enter",
+      "func": "max",
+      "vars": {
+        "a": 2,
+        "b": 2
+      }
+    },
+    {
+      "step": 44,
+      "line": 6,
+      "type": "exec",
+      "vars": {
+        "_return": 2
+      }
+    },
+    {
+      "step": 45,
+      "line": 6,
+      "type": "exit",
+      "func": "max",
+      "vars": {}
+    },
+    {
+      "step": 46,
+      "line": 29,
+      "type": "enter",
+      "func": "karatsuba",
+      "vars": {
+        "x": 4,
+        "y": 3
+      }
+    },
+    {
+      "step": 47,
+      "line": 12,
+      "type": "exec",
+      "vars": {
+        "_return": 12
+      }
+    },
+    {
+      "step": 48,
+      "line": 12,
+      "type": "exit",
+      "func": "karatsuba",
+      "vars": {}
+    },
+    {
+      "step": 49,
+      "line": 30,
+      "type": "enter",
+      "func": "karatsuba",
+      "vars": {
+        "x": 6,
+        "y": 4
+      }
+    },
+    {
+      "step": 50,
+      "line": 12,
+      "type": "exec",
+      "vars": {
+        "_return": 24
+      }
+    },
+    {
+      "step": 51,
+      "line": 12,
+      "type": "exit",
+      "func": "karatsuba",
+      "vars": {}
+    },
+    {
+      "step": 52,
+      "line": 31,
+      "type": "enter",
+      "func": "karatsuba",
+      "vars": {
+        "x": 10,
+        "y": 7
+      }
+    },
+    {
+      "step": 53,
+      "line": 12,
+      "type": "exec",
+      "vars": {
+        "_return": 70
+      }
+    },
+    {
+      "step": 54,
+      "line": 12,
+      "type": "exit",
+      "func": "karatsuba",
+      "vars": {}
+    },
+    {
+      "step": 55,
+      "line": 34,
+      "type": "exec",
+      "vars": {
+        "_return": 1564
+      }
+    },
+    {
+      "step": 56,
+      "line": 34,
+      "type": "exit",
+      "func": "karatsuba",
+      "vars": {}
+    },
+    {
+      "step": 57,
+      "line": 31,
+      "type": "enter",
+      "func": "karatsuba",
+      "vars": {
+        "x": 46,
+        "y": 35
+      }
+    },
+    {
+      "step": 58,
+      "line": 5,
+      "type": "enter",
+      "func": "max",
+      "vars": {
+        "a": 2,
+        "b": 2
+      }
+    },
+    {
+      "step": 59,
+      "line": 6,
+      "type": "exec",
+      "vars": {
+        "_return": 2
+      }
+    },
+    {
+      "step": 60,
+      "line": 6,
+      "type": "exit",
+      "func": "max",
+      "vars": {}
+    },
+    {
+      "step": 61,
+      "line": 29,
+      "type": "enter",
+      "func": "karatsuba",
+      "vars": {
+        "x": 4,
+        "y": 3
+      }
+    },
+    {
+      "step": 62,
+      "line": 12,
+      "type": "exec",
+      "vars": {
+        "_return": 12
+      }
+    },
+    {
+      "step": 63,
+      "line": 12,
+      "type": "exit",
+      "func": "karatsuba",
+      "vars": {}
+    },
+    {
+      "step": 64,
+      "line": 30,
+      "type": "enter",
+      "func": "karatsuba",
+      "vars": {
+        "x": 6,
+        "y": 5
+      }
+    },
+    {
+      "step": 65,
+      "line": 12,
+      "type": "exec",
+      "vars": {
+        "_return": 30
+      }
+    },
+    {
+      "step": 66,
+      "line": 12,
+      "type": "exit",
+      "func": "karatsuba",
+      "vars": {}
+    },
+    {
+      "step": 67,
+      "line": 31,
+      "type": "enter",
+      "func": "karatsuba",
+      "vars": {
+        "x": 10,
+        "y": 8
+      }
+    },
+    {
+      "step": 68,
+      "line": 12,
+      "type": "exec",
+      "vars": {
+        "_return": 80
+      }
+    },
+    {
+      "step": 69,
+      "line": 12,
+      "type": "exit",
+      "func": "karatsuba",
+      "vars": {}
+    },
+    {
+      "step": 70,
+      "line": 34,
+      "type": "exec",
+      "vars": {
+        "_return": 1610
+      }
+    },
+    {
+      "step": 71,
+      "line": 34,
+      "type": "exit",
+      "func": "karatsuba",
+      "vars": {}
+    },
+    {
+      "step": 72,
+      "line": 34,
+      "type": "exec",
+      "vars": {
+        "_return": 6164
+      }
+    },
+    {
+      "step": 73,
+      "line": 34,
+      "type": "exit",
+      "func": "karatsuba",
+      "vars": {}
+    },
+    {
+      "step": 74,
+      "line": 34,
+      "type": "exec",
+      "vars": {
+        "_return": 7006652
+      }
+    },
+    {
+      "step": 75,
+      "line": 34,
+      "type": "exit",
+      "func": "karatsuba",
+      "vars": {}
+    },
+    {
+      "step": 76,
+      "line": 42,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 77,
+      "line": 42,
+      "type": "exit",
+      "func": "main",
+      "vars": {}
+    }
+  ],
+  "total_steps": 78
+}

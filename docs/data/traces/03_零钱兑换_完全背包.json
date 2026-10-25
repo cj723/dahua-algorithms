@@ -1,0 +1,1539 @@
+{
+  "meta": {
+    "algo": "03_零钱兑换_完全背包",
+    "source_lines": [
+      "#include <stdio.h>",
+      "#include <stdlib.h>",
+      "static int min_value(int a, int b) {",
+      "    return a < b ? a : b;",
+      "}",
+      "int coin_change(int* coins, int coinsSize, int amount) {",
+      "    if (amount < 0) return -1;",
+      "    if (amount == 0) return 0;",
+      "    if (coinsSize <= 0) return -1;",
+      "    int* dp = (int*)malloc((amount + 1) * sizeof(int));",
+      "    if (dp == NULL) return -1;",
+      "    /* amount + 1 是一个安全的“无穷大” */",
+      "    for (int i = 0; i <= amount; i++) {",
+      "        dp[i] = amount + 1;",
+      "    }",
+      "    dp[0] = 0;",
+      "    for (int j = 0; j < coinsSize; j++) {",
+      "        int coin = coins[j];",
+      "        if (coin <= 0) continue;  /* 防御非法面额 */",
+      "        for (int i = coin; i <= amount; i++) {",
+      "            dp[i] = min_value(dp[i], dp[i - coin] + 1);",
+      "        }",
+      "    }",
+      "    int result = dp[amount];",
+      "    free(dp);",
+      "    return result > amount ? -1 : result;",
+      "}",
+      "int main() {",
+      "    int coins1[] = {1, 2, 5};",
+      "    int amount1 = 11;",
+      "    printf(\"硬币[1,2,5] 凑 %d 元：%d（期望 3）\\n\",",
+      "           amount1, coin_change(coins1, 3, amount1));",
+      "    int coins2[] = {2};",
+      "    int amount2 = 3;",
+      "    printf(\"硬币[2] 凑 %d 元：%d（期望 -1）\\n\",",
+      "           amount2, coin_change(coins2, 1, amount2));",
+      "    int coins3[] = {1};",
+      "    int amount3 = 0;",
+      "    printf(\"硬币[1] 凑 %d 元：%d（期望 0）\\n\",",
+      "           amount3, coin_change(coins3, 1, amount3));",
+      "    return 0;",
+      "}"
+    ],
+    "track_vars": {
+      "primary": [
+        "a",
+        "i",
+        "j"
+      ],
+      "secondary": [
+        "_return",
+        "amount",
+        "b",
+        "coin",
+        "coinsSize"
+      ]
+    },
+    "var_classes": {
+      "_return": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "a": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "amount": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "b": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "coin": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "coinsSize": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "i": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "j": {
+        "category": "primary",
+        "type": "scalar"
+      }
+    },
+    "viz_type": "array",
+    "initial_data": {
+      "coins1": [
+        1,
+        2,
+        5
+      ],
+      "coins2": [
+        2
+      ],
+      "coins3": [
+        1
+      ]
+    },
+    "program_output": [
+      {
+        "after_step": 137,
+        "text": "硬币[1,2,5] 凑 11 元：3（期望 3）"
+      },
+      {
+        "after_step": 157,
+        "text": "硬币[2] 凑 3 元：-1（期望 -1） 硬币[1] 凑 0 元：0（期望 0）"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step": 0,
+      "line": 28,
+      "type": "enter",
+      "func": "main",
+      "vars": {}
+    },
+    {
+      "step": 1,
+      "line": 7,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "amount": 11
+      }
+    },
+    {
+      "step": 2,
+      "line": 8,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "amount": 11
+      }
+    },
+    {
+      "step": 3,
+      "line": 9,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "coinsSize": 3
+      }
+    },
+    {
+      "step": 4,
+      "line": 11,
+      "type": "cond",
+      "result": false,
+      "vars": {}
+    },
+    {
+      "step": 5,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 11,
+        "i": 0
+      }
+    },
+    {
+      "step": 6,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 11,
+        "i": 1
+      }
+    },
+    {
+      "step": 7,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 11,
+        "i": 2
+      }
+    },
+    {
+      "step": 8,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 11,
+        "i": 3
+      }
+    },
+    {
+      "step": 9,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 11,
+        "i": 4
+      }
+    },
+    {
+      "step": 10,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 11,
+        "i": 5
+      }
+    },
+    {
+      "step": 11,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 11,
+        "i": 6
+      }
+    },
+    {
+      "step": 12,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 11,
+        "i": 7
+      }
+    },
+    {
+      "step": 13,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 11,
+        "i": 8
+      }
+    },
+    {
+      "step": 14,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 11,
+        "i": 9
+      }
+    },
+    {
+      "step": 15,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 11,
+        "i": 10
+      }
+    },
+    {
+      "step": 16,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 11,
+        "i": 11
+      }
+    },
+    {
+      "step": 17,
+      "line": 17,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coinsSize": 3,
+        "j": 0
+      }
+    },
+    {
+      "step": 18,
+      "line": 19,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "coin": 1
+      }
+    },
+    {
+      "step": 19,
+      "line": 20,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 11,
+        "i": 1
+      }
+    },
+    {
+      "step": 20,
+      "line": 21,
+      "type": "enter",
+      "func": "min_value",
+      "vars": {
+        "a": 12,
+        "b": 1
+      }
+    },
+    {
+      "step": 21,
+      "line": 4,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 22,
+      "line": 4,
+      "type": "exit",
+      "func": "min_value",
+      "vars": {}
+    },
+    {
+      "step": 23,
+      "line": 20,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 11,
+        "i": 2
+      }
+    },
+    {
+      "step": 24,
+      "line": 21,
+      "type": "enter",
+      "func": "min_value",
+      "vars": {
+        "a": 12,
+        "b": 2
+      }
+    },
+    {
+      "step": 25,
+      "line": 4,
+      "type": "exec",
+      "vars": {
+        "_return": 2
+      }
+    },
+    {
+      "step": 26,
+      "line": 4,
+      "type": "exit",
+      "func": "min_value",
+      "vars": {}
+    },
+    {
+      "step": 27,
+      "line": 20,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 11,
+        "i": 3
+      }
+    },
+    {
+      "step": 28,
+      "line": 21,
+      "type": "enter",
+      "func": "min_value",
+      "vars": {
+        "a": 12,
+        "b": 3
+      }
+    },
+    {
+      "step": 29,
+      "line": 4,
+      "type": "exec",
+      "vars": {
+        "_return": 3
+      }
+    },
+    {
+      "step": 30,
+      "line": 4,
+      "type": "exit",
+      "func": "min_value",
+      "vars": {}
+    },
+    {
+      "step": 31,
+      "line": 20,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 11,
+        "i": 4
+      }
+    },
+    {
+      "step": 32,
+      "line": 21,
+      "type": "enter",
+      "func": "min_value",
+      "vars": {
+        "a": 12,
+        "b": 4
+      }
+    },
+    {
+      "step": 33,
+      "line": 4,
+      "type": "exec",
+      "vars": {
+        "_return": 4
+      }
+    },
+    {
+      "step": 34,
+      "line": 4,
+      "type": "exit",
+      "func": "min_value",
+      "vars": {}
+    },
+    {
+      "step": 35,
+      "line": 20,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 11,
+        "i": 5
+      }
+    },
+    {
+      "step": 36,
+      "line": 21,
+      "type": "enter",
+      "func": "min_value",
+      "vars": {
+        "a": 12,
+        "b": 5
+      }
+    },
+    {
+      "step": 37,
+      "line": 4,
+      "type": "exec",
+      "vars": {
+        "_return": 5
+      }
+    },
+    {
+      "step": 38,
+      "line": 4,
+      "type": "exit",
+      "func": "min_value",
+      "vars": {}
+    },
+    {
+      "step": 39,
+      "line": 20,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 11,
+        "i": 6
+      }
+    },
+    {
+      "step": 40,
+      "line": 21,
+      "type": "enter",
+      "func": "min_value",
+      "vars": {
+        "a": 12,
+        "b": 6
+      }
+    },
+    {
+      "step": 41,
+      "line": 4,
+      "type": "exec",
+      "vars": {
+        "_return": 6
+      }
+    },
+    {
+      "step": 42,
+      "line": 4,
+      "type": "exit",
+      "func": "min_value",
+      "vars": {}
+    },
+    {
+      "step": 43,
+      "line": 20,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 11,
+        "i": 7
+      }
+    },
+    {
+      "step": 44,
+      "line": 21,
+      "type": "enter",
+      "func": "min_value",
+      "vars": {
+        "a": 12,
+        "b": 7
+      }
+    },
+    {
+      "step": 45,
+      "line": 4,
+      "type": "exec",
+      "vars": {
+        "_return": 7
+      }
+    },
+    {
+      "step": 46,
+      "line": 4,
+      "type": "exit",
+      "func": "min_value",
+      "vars": {}
+    },
+    {
+      "step": 47,
+      "line": 20,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 11,
+        "i": 8
+      }
+    },
+    {
+      "step": 48,
+      "line": 21,
+      "type": "enter",
+      "func": "min_value",
+      "vars": {
+        "a": 12,
+        "b": 8
+      }
+    },
+    {
+      "step": 49,
+      "line": 4,
+      "type": "exec",
+      "vars": {
+        "_return": 8
+      }
+    },
+    {
+      "step": 50,
+      "line": 4,
+      "type": "exit",
+      "func": "min_value",
+      "vars": {}
+    },
+    {
+      "step": 51,
+      "line": 20,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 11,
+        "i": 9
+      }
+    },
+    {
+      "step": 52,
+      "line": 21,
+      "type": "enter",
+      "func": "min_value",
+      "vars": {
+        "a": 12,
+        "b": 9
+      }
+    },
+    {
+      "step": 53,
+      "line": 4,
+      "type": "exec",
+      "vars": {
+        "_return": 9
+      }
+    },
+    {
+      "step": 54,
+      "line": 4,
+      "type": "exit",
+      "func": "min_value",
+      "vars": {}
+    },
+    {
+      "step": 55,
+      "line": 20,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 11,
+        "i": 10
+      }
+    },
+    {
+      "step": 56,
+      "line": 21,
+      "type": "enter",
+      "func": "min_value",
+      "vars": {
+        "a": 12,
+        "b": 10
+      }
+    },
+    {
+      "step": 57,
+      "line": 4,
+      "type": "exec",
+      "vars": {
+        "_return": 10
+      }
+    },
+    {
+      "step": 58,
+      "line": 4,
+      "type": "exit",
+      "func": "min_value",
+      "vars": {}
+    },
+    {
+      "step": 59,
+      "line": 20,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 11,
+        "i": 11
+      }
+    },
+    {
+      "step": 60,
+      "line": 21,
+      "type": "enter",
+      "func": "min_value",
+      "vars": {
+        "a": 12,
+        "b": 11
+      }
+    },
+    {
+      "step": 61,
+      "line": 4,
+      "type": "exec",
+      "vars": {
+        "_return": 11
+      }
+    },
+    {
+      "step": 62,
+      "line": 4,
+      "type": "exit",
+      "func": "min_value",
+      "vars": {}
+    },
+    {
+      "step": 63,
+      "line": 17,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coinsSize": 3,
+        "j": 1
+      }
+    },
+    {
+      "step": 64,
+      "line": 19,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "coin": 2
+      }
+    },
+    {
+      "step": 65,
+      "line": 20,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 11,
+        "i": 2
+      }
+    },
+    {
+      "step": 66,
+      "line": 21,
+      "type": "enter",
+      "func": "min_value",
+      "vars": {
+        "a": 2,
+        "b": 1
+      }
+    },
+    {
+      "step": 67,
+      "line": 4,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 68,
+      "line": 4,
+      "type": "exit",
+      "func": "min_value",
+      "vars": {}
+    },
+    {
+      "step": 69,
+      "line": 20,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 11,
+        "i": 3
+      }
+    },
+    {
+      "step": 70,
+      "line": 21,
+      "type": "enter",
+      "func": "min_value",
+      "vars": {
+        "a": 3,
+        "b": 2
+      }
+    },
+    {
+      "step": 71,
+      "line": 4,
+      "type": "exec",
+      "vars": {
+        "_return": 2
+      }
+    },
+    {
+      "step": 72,
+      "line": 4,
+      "type": "exit",
+      "func": "min_value",
+      "vars": {}
+    },
+    {
+      "step": 73,
+      "line": 20,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 11,
+        "i": 4
+      }
+    },
+    {
+      "step": 74,
+      "line": 21,
+      "type": "enter",
+      "func": "min_value",
+      "vars": {
+        "a": 4,
+        "b": 2
+      }
+    },
+    {
+      "step": 75,
+      "line": 4,
+      "type": "exec",
+      "vars": {
+        "_return": 2
+      }
+    },
+    {
+      "step": 76,
+      "line": 4,
+      "type": "exit",
+      "func": "min_value",
+      "vars": {}
+    },
+    {
+      "step": 77,
+      "line": 20,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 11,
+        "i": 5
+      }
+    },
+    {
+      "step": 78,
+      "line": 21,
+      "type": "enter",
+      "func": "min_value",
+      "vars": {
+        "a": 5,
+        "b": 3
+      }
+    },
+    {
+      "step": 79,
+      "line": 4,
+      "type": "exec",
+      "vars": {
+        "_return": 3
+      }
+    },
+    {
+      "step": 80,
+      "line": 4,
+      "type": "exit",
+      "func": "min_value",
+      "vars": {}
+    },
+    {
+      "step": 81,
+      "line": 20,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 11,
+        "i": 6
+      }
+    },
+    {
+      "step": 82,
+      "line": 21,
+      "type": "enter",
+      "func": "min_value",
+      "vars": {
+        "a": 6,
+        "b": 3
+      }
+    },
+    {
+      "step": 83,
+      "line": 4,
+      "type": "exec",
+      "vars": {
+        "_return": 3
+      }
+    },
+    {
+      "step": 84,
+      "line": 4,
+      "type": "exit",
+      "func": "min_value",
+      "vars": {}
+    },
+    {
+      "step": 85,
+      "line": 20,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 11,
+        "i": 7
+      }
+    },
+    {
+      "step": 86,
+      "line": 21,
+      "type": "enter",
+      "func": "min_value",
+      "vars": {
+        "a": 7,
+        "b": 4
+      }
+    },
+    {
+      "step": 87,
+      "line": 4,
+      "type": "exec",
+      "vars": {
+        "_return": 4
+      }
+    },
+    {
+      "step": 88,
+      "line": 4,
+      "type": "exit",
+      "func": "min_value",
+      "vars": {}
+    },
+    {
+      "step": 89,
+      "line": 20,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 11,
+        "i": 8
+      }
+    },
+    {
+      "step": 90,
+      "line": 21,
+      "type": "enter",
+      "func": "min_value",
+      "vars": {
+        "a": 8,
+        "b": 4
+      }
+    },
+    {
+      "step": 91,
+      "line": 4,
+      "type": "exec",
+      "vars": {
+        "_return": 4
+      }
+    },
+    {
+      "step": 92,
+      "line": 4,
+      "type": "exit",
+      "func": "min_value",
+      "vars": {}
+    },
+    {
+      "step": 93,
+      "line": 20,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 11,
+        "i": 9
+      }
+    },
+    {
+      "step": 94,
+      "line": 21,
+      "type": "enter",
+      "func": "min_value",
+      "vars": {
+        "a": 9,
+        "b": 5
+      }
+    },
+    {
+      "step": 95,
+      "line": 4,
+      "type": "exec",
+      "vars": {
+        "_return": 5
+      }
+    },
+    {
+      "step": 96,
+      "line": 4,
+      "type": "exit",
+      "func": "min_value",
+      "vars": {}
+    },
+    {
+      "step": 97,
+      "line": 20,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 11,
+        "i": 10
+      }
+    },
+    {
+      "step": 98,
+      "line": 21,
+      "type": "enter",
+      "func": "min_value",
+      "vars": {
+        "a": 10,
+        "b": 5
+      }
+    },
+    {
+      "step": 99,
+      "line": 4,
+      "type": "exec",
+      "vars": {
+        "_return": 5
+      }
+    },
+    {
+      "step": 100,
+      "line": 4,
+      "type": "exit",
+      "func": "min_value",
+      "vars": {}
+    },
+    {
+      "step": 101,
+      "line": 20,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 11,
+        "i": 11
+      }
+    },
+    {
+      "step": 102,
+      "line": 21,
+      "type": "enter",
+      "func": "min_value",
+      "vars": {
+        "a": 11,
+        "b": 6
+      }
+    },
+    {
+      "step": 103,
+      "line": 4,
+      "type": "exec",
+      "vars": {
+        "_return": 6
+      }
+    },
+    {
+      "step": 104,
+      "line": 4,
+      "type": "exit",
+      "func": "min_value",
+      "vars": {}
+    },
+    {
+      "step": 105,
+      "line": 17,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coinsSize": 3,
+        "j": 2
+      }
+    },
+    {
+      "step": 106,
+      "line": 19,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "coin": 5
+      }
+    },
+    {
+      "step": 107,
+      "line": 20,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 11,
+        "i": 5
+      }
+    },
+    {
+      "step": 108,
+      "line": 21,
+      "type": "enter",
+      "func": "min_value",
+      "vars": {
+        "a": 3,
+        "b": 1
+      }
+    },
+    {
+      "step": 109,
+      "line": 4,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 110,
+      "line": 4,
+      "type": "exit",
+      "func": "min_value",
+      "vars": {}
+    },
+    {
+      "step": 111,
+      "line": 20,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 11,
+        "i": 6
+      }
+    },
+    {
+      "step": 112,
+      "line": 21,
+      "type": "enter",
+      "func": "min_value",
+      "vars": {
+        "a": 3,
+        "b": 2
+      }
+    },
+    {
+      "step": 113,
+      "line": 4,
+      "type": "exec",
+      "vars": {
+        "_return": 2
+      }
+    },
+    {
+      "step": 114,
+      "line": 4,
+      "type": "exit",
+      "func": "min_value",
+      "vars": {}
+    },
+    {
+      "step": 115,
+      "line": 20,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 11,
+        "i": 7
+      }
+    },
+    {
+      "step": 116,
+      "line": 21,
+      "type": "enter",
+      "func": "min_value",
+      "vars": {
+        "a": 4,
+        "b": 2
+      }
+    },
+    {
+      "step": 117,
+      "line": 4,
+      "type": "exec",
+      "vars": {
+        "_return": 2
+      }
+    },
+    {
+      "step": 118,
+      "line": 4,
+      "type": "exit",
+      "func": "min_value",
+      "vars": {}
+    },
+    {
+      "step": 119,
+      "line": 20,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 11,
+        "i": 8
+      }
+    },
+    {
+      "step": 120,
+      "line": 21,
+      "type": "enter",
+      "func": "min_value",
+      "vars": {
+        "a": 4,
+        "b": 3
+      }
+    },
+    {
+      "step": 121,
+      "line": 4,
+      "type": "exec",
+      "vars": {
+        "_return": 3
+      }
+    },
+    {
+      "step": 122,
+      "line": 4,
+      "type": "exit",
+      "func": "min_value",
+      "vars": {}
+    },
+    {
+      "step": 123,
+      "line": 20,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 11,
+        "i": 9
+      }
+    },
+    {
+      "step": 124,
+      "line": 21,
+      "type": "enter",
+      "func": "min_value",
+      "vars": {
+        "a": 5,
+        "b": 3
+      }
+    },
+    {
+      "step": 125,
+      "line": 4,
+      "type": "exec",
+      "vars": {
+        "_return": 3
+      }
+    },
+    {
+      "step": 126,
+      "line": 4,
+      "type": "exit",
+      "func": "min_value",
+      "vars": {}
+    },
+    {
+      "step": 127,
+      "line": 20,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 11,
+        "i": 10
+      }
+    },
+    {
+      "step": 128,
+      "line": 21,
+      "type": "enter",
+      "func": "min_value",
+      "vars": {
+        "a": 5,
+        "b": 2
+      }
+    },
+    {
+      "step": 129,
+      "line": 4,
+      "type": "exec",
+      "vars": {
+        "_return": 2
+      }
+    },
+    {
+      "step": 130,
+      "line": 4,
+      "type": "exit",
+      "func": "min_value",
+      "vars": {}
+    },
+    {
+      "step": 131,
+      "line": 20,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 11,
+        "i": 11
+      }
+    },
+    {
+      "step": 132,
+      "line": 21,
+      "type": "enter",
+      "func": "min_value",
+      "vars": {
+        "a": 6,
+        "b": 3
+      }
+    },
+    {
+      "step": 133,
+      "line": 4,
+      "type": "exec",
+      "vars": {
+        "_return": 3
+      }
+    },
+    {
+      "step": 134,
+      "line": 4,
+      "type": "exit",
+      "func": "min_value",
+      "vars": {}
+    },
+    {
+      "step": 135,
+      "line": 26,
+      "type": "exec",
+      "vars": {
+        "_return": 3
+      }
+    },
+    {
+      "step": 136,
+      "line": 26,
+      "type": "exit",
+      "func": "coin_change",
+      "vars": {}
+    },
+    {
+      "step": 137,
+      "line": 7,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "amount": 3
+      }
+    },
+    {
+      "step": 138,
+      "line": 8,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "amount": 3
+      }
+    },
+    {
+      "step": 139,
+      "line": 9,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "coinsSize": 1
+      }
+    },
+    {
+      "step": 140,
+      "line": 11,
+      "type": "cond",
+      "result": false,
+      "vars": {}
+    },
+    {
+      "step": 141,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 3,
+        "i": 0
+      }
+    },
+    {
+      "step": 142,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 3,
+        "i": 1
+      }
+    },
+    {
+      "step": 143,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 3,
+        "i": 2
+      }
+    },
+    {
+      "step": 144,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 3,
+        "i": 3
+      }
+    },
+    {
+      "step": 145,
+      "line": 17,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coinsSize": 1,
+        "j": 0
+      }
+    },
+    {
+      "step": 146,
+      "line": 19,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "coin": 2
+      }
+    },
+    {
+      "step": 147,
+      "line": 20,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 3,
+        "i": 2
+      }
+    },
+    {
+      "step": 148,
+      "line": 21,
+      "type": "enter",
+      "func": "min_value",
+      "vars": {
+        "a": 4,
+        "b": 1
+      }
+    },
+    {
+      "step": 149,
+      "line": 4,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 150,
+      "line": 4,
+      "type": "exit",
+      "func": "min_value",
+      "vars": {}
+    },
+    {
+      "step": 151,
+      "line": 20,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 3,
+        "i": 3
+      }
+    },
+    {
+      "step": 152,
+      "line": 21,
+      "type": "enter",
+      "func": "min_value",
+      "vars": {
+        "a": 4,
+        "b": 5
+      }
+    },
+    {
+      "step": 153,
+      "line": 4,
+      "type": "exec",
+      "vars": {
+        "_return": 4
+      }
+    },
+    {
+      "step": 154,
+      "line": 4,
+      "type": "exit",
+      "func": "min_value",
+      "vars": {}
+    },
+    {
+      "step": 155,
+      "line": 26,
+      "type": "exec",
+      "vars": {
+        "_return": -1
+      }
+    },
+    {
+      "step": 156,
+      "line": 26,
+      "type": "exit",
+      "func": "coin_change",
+      "vars": {}
+    },
+    {
+      "step": 157,
+      "line": 7,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "amount": 0
+      }
+    },
+    {
+      "step": 158,
+      "line": 41,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 159,
+      "line": 41,
+      "type": "exit",
+      "func": "main",
+      "vars": {}
+    }
+  ],
+  "total_steps": 160
+}

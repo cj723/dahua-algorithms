@@ -1,0 +1,7216 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#171b28">
+<link rel="icon" href="../assets/mascots/student-dog.png">
+<title>第9章 动态规划（下） · 大话算法</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #1e2336;
+  --panel: #1a1f30;
+  --panel-deep: #151920;
+  --surface: #21283a;
+  --border: #30384c;
+  --text: #d7dae0;
+  --text-soft: #abb4c3;
+  --text-dim: #929caf;
+  --accent: #59a8ee;
+  --accent-soft: #243f5e;
+  --success: #98c379;
+  --control-height: 64px;
+}
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Noto Sans SC', 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text-soft);
+  overflow: hidden;
+}
+button, input, summary { font: inherit; }
+button:focus-visible, a:focus-visible, input:focus-visible, summary:focus-visible, [tabindex]:focus-visible {
+  outline: 3px solid rgba(89,168,238,.58);
+  outline-offset: 2px;
+}
+.header {
+  height: 65px;
+  background: rgba(23,28,43,.96);
+  padding: 0 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  position: relative;
+  z-index: 30;
+}
+.back-link {
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 13px;
+  white-space: nowrap;
+}
+.back-link:hover { text-decoration: underline; }
+.chapter-heading { min-width: 0; flex: 1; }
+.chapter-kicker { color: var(--text-dim); font-size: 12px; margin-bottom: 2px; }
+.chapter-heading h1 {
+  font-size: 19px;
+  line-height: 1.25;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.chapter-status {
+  min-width: 138px;
+  display: grid;
+  gap: 5px;
+}
+.chapter-status-text { color: var(--text-dim); font-size: 11px; text-align: right; }
+.chapter-status-track { height: 4px; background: #252c3e; border-radius: 99px; overflow: hidden; }
+.chapter-status-fill {
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, var(--accent), var(--success));
+  border-radius: inherit;
+  transition: width .3s ease;
+}
+.chapter-nav { display: flex; gap: 6px; }
+.chapter-nav a, .chapter-nav span {
+  min-width: 36px;
+  height: 36px;
+  padding: 0 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-soft);
+  text-decoration: none;
+  font-size: 12px;
+}
+.chapter-nav a:hover { border-color: var(--accent); color: var(--text); background: #202b40; }
+.chapter-nav .disabled { opacity: .35; cursor: default; }
+.mobile-view-switcher { display: none; }
+.main { display: flex; height: calc(100dvh - 65px); min-height: 0; }
+.code-panel {
+  width: 45%;
+  min-width: 360px;
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.code-header {
+  background: var(--panel);
+  padding: 9px 14px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.algo-tabs {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  flex: 1;
+  min-width: 0;
+}
+.algo-tab, .mode-tab {
+  border: 1px solid var(--border);
+  background: #22283a;
+  color: var(--text-dim);
+  border-radius: 7px;
+  cursor: pointer;
+  transition: background .18s ease, border-color .18s ease, color .18s ease;
+}
+.algo-tab { padding: 6px 11px; font-size: 12px; position: relative; }
+.algo-tab:hover, .mode-tab:hover { color: var(--text); border-color: #48536b; }
+.algo-tab.active, .mode-tab.active {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: #e8f3ff;
+}
+.algo-tab.completed::after {
+  content: '✓';
+  margin-left: 6px;
+  color: var(--success);
+  font-weight: 800;
+}
+.breakpoint-hint {
+  color: #737e92;
+  font-size: 11px;
+  line-height: 29px;
+  white-space: nowrap;
+}
+.mode-tabs {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: #171c2b;
+  border-bottom: 1px solid var(--border);
+}
+.mode-tabs.visible { display: flex; }
+.mode-label { font-size: 12px; color: var(--text-dim); margin-right: 2px; }
+.mode-tab { padding: 5px 12px; border-radius: 999px; font-size: 12px; }
+.code-body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  font-family: 'SFMono-Regular', 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+  font-size: var(--code-font-size, 15px);
+  line-height: 1.8;
+  scrollbar-color: #3b455c transparent;
+}
+.code-line { display: flex; min-width: max-content; padding: 0 16px 0 7px; position: relative; }
+.code-line:hover { background: #22283a; }
+.code-line.active {
+  background: rgba(73,164,238,.32);
+  border-left: 3px solid var(--accent);
+  box-shadow: inset 0 0 16px rgba(73,164,238,.18);
+}
+.code-line.executed { background: rgba(73,164,238,.035); }
+.code-line.setup { background: rgba(127,132,142,.045); color: #667084; }
+.line-num {
+  width: 42px;
+  border: 0;
+  background: transparent;
+  text-align: right;
+  color: #748096;
+  padding-right: 12px;
+  user-select: none;
+  flex-shrink: 0;
+  position: relative;
+  cursor: pointer;
+}
+.line-num:hover { color: var(--accent); }
+.line-num .breakpoint {
+  position: absolute;
+  left: 3px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #e05561;
+}
+.line-content { flex: 1; white-space: pre; }
+.kw, .num { color: #F3A862; }
+.fn { color: #59a8ee; }
+.var { color: #D980FA; }
+.str { color: #74C589; }
+.cmt { color: #71939a; font-style: italic; }
+.right-panel { flex: 1; display: flex; flex-direction: column; min-width: 0; min-height: 0; overflow: hidden; }
+.viz-panel {
+  flex: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 20px;
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
+}
+.viz-panel canvas { width: 100%; height: 100%; display: block; }
+body.concept-mode .viz-panel { flex: 1 1 auto; padding: 6px 20px; }
+body.concept-mode .vars-panel { flex: 0 1 168px; padding: 8px 18px; }
+body.concept-mode .output-panel { flex: 0 1 68px; padding: 6px 16px; }
+body.concept-mode .callstack { display: none; }
+.callstack {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  max-width: calc(100% - 24px);
+  background: rgba(33,38,54,.92);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 12px;
+  pointer-events: none;
+}
+.callstack-title, .vars-panel h3, .output-panel h3 { color: var(--text-dim); }
+.callstack-title { margin-bottom: 4px; }
+.callstack-item { color: var(--accent); padding: 2px 0; }
+.callstack-item::before { content: '▸ '; color: #68758a; }
+.vars-panel {
+  flex: 2;
+  background: var(--panel);
+  padding: 10px 18px;
+  border-top: 1px solid var(--border);
+  overflow-y: auto;
+  min-height: 0;
+}
+.output-panel {
+  flex: 1;
+  background: var(--panel-deep);
+  border-top: 1px solid var(--border);
+  padding: 8px 16px;
+  overflow-y: auto;
+  min-height: 0;
+  font-family: 'SFMono-Regular', 'JetBrains Mono', monospace;
+  font-size: var(--output-font-size, 13px);
+  color: var(--text-dim);
+}
+.output-panel h3 {
+  font-size: 12px;
+  margin-bottom: 4px;
+  position: sticky;
+  top: 0;
+  background: var(--panel-deep);
+  padding-bottom: 4px;
+  z-index: 1;
+}
+.output-line { padding: 1px 0; white-space: pre-wrap; word-break: break-word; }
+.vars-panel h3 { font-size: 13px; margin-bottom: 9px; }
+.var-grid { display: flex; flex-direction: column; gap: 6px; }
+.var-section-title { font-size: 11px; color: var(--text-dim); margin: 8px 0 4px; }
+.var-section:first-child .var-section-title { margin-top: 0; }
+.var-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.var-item {
+  background: #22283a;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 6px 13px;
+  font-family: monospace;
+  font-size: var(--var-font-size, 14px);
+}
+.var-name { color: var(--accent); }
+.var-val { color: var(--text); font-weight: 650; }
+.var-changed { animation: varPulse .5s ease; border-color: var(--accent); }
+.var-highlight { border-color: var(--accent); background: var(--accent-soft); }
+@keyframes varPulse { 0% { background: var(--accent-soft); } 100% { background: #22283a; } }
+.var-toggle { font-size: 12px; color: var(--text-dim); cursor: pointer; padding: 4px 0; user-select: none; }
+.control-bar {
+  min-height: var(--control-height);
+  flex-shrink: 0;
+  background: var(--panel);
+  border-top: 1px solid var(--border);
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+  z-index: 20;
+}
+.transport-controls { display: flex; align-items: center; gap: 7px; }
+.btn {
+  min-height: 38px;
+  background: #22283a;
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  white-space: nowrap;
+}
+.btn:hover:not(:disabled) { background: #2a3247; border-color: #4c5872; }
+.btn:disabled { opacity: .36; cursor: not-allowed; }
+.btn-primary { min-width: 82px; background: var(--accent-soft); border-color: var(--accent); }
+.btn-active { background: #285176; border-color: #77bfff; }
+.step-info {
+  margin-left: auto;
+  min-width: 68px;
+  font-size: 12px;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+.step-info strong { color: var(--text); }
+.settings-menu { position: relative; }
+.settings-menu summary {
+  list-style: none;
+  min-height: 38px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-soft);
+  cursor: pointer;
+  font-size: 12px;
+  user-select: none;
+}
+.settings-menu summary::-webkit-details-marker { display: none; }
+.settings-menu[open] summary { border-color: var(--accent); background: var(--accent-soft); color: var(--text); }
+.settings-popover {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 10px);
+  width: 250px;
+  padding: 14px;
+  display: grid;
+  gap: 12px;
+  background: rgba(23,28,43,.98);
+  border: 1px solid #3a465f;
+  border-radius: 12px;
+  box-shadow: 0 16px 42px rgba(0,0,0,.38);
+}
+.setting-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.setting-row label, .shortcut-help { font-size: 12px; color: var(--text-dim); }
+.speed-slider { width: 130px; accent-color: var(--accent); }
+.font-control { display: flex; align-items: center; gap: 6px; }
+.btn-sm { min-height: 32px; padding: 5px 10px; font-size: 12px; }
+.settings-divider { height: 1px; background: var(--border); }
+.shortcut-help { line-height: 1.65; }
+
+@media (max-width: 1050px) {
+  .code-panel { width: 42%; min-width: 320px; }
+  .chapter-status { display: none; }
+  .breakpoint-hint { display: none; }
+  .btn { padding-inline: 10px; }
+}
+
+@media (max-width: 900px) {
+  body { overflow: auto; padding-bottom: 72px; }
+  .header {
+    height: auto;
+    min-height: 60px;
+    padding: 8px 12px;
+    gap: 10px;
+    position: sticky;
+    top: 0;
+  }
+  .back-link { font-size: 0; width: 36px; height: 36px; display: grid; place-items: center; }
+  .back-link::before { content: '←'; font-size: 21px; }
+  .chapter-kicker { font-size: 10px; }
+  .chapter-heading h1 { font-size: 16px; }
+  .chapter-nav a, .chapter-nav span { width: 34px; min-width: 34px; padding: 0; font-size: 0; }
+  .chapter-nav a:first-child::before, .chapter-nav span:first-child::before { content: '‹'; font-size: 22px; }
+  .chapter-nav a:last-child::before, .chapter-nav span:last-child::before { content: '›'; font-size: 22px; }
+  .mobile-view-switcher {
+    position: sticky;
+    top: 60px;
+    z-index: 25;
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 4px;
+    padding: 7px 10px;
+    background: rgba(23,28,43,.97);
+    border-bottom: 1px solid var(--border);
+  }
+  .mobile-view-switcher button {
+    min-height: 38px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text-dim);
+  }
+  .mobile-view-switcher button.active {
+    color: #e8f3ff;
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+  .main { display: block; height: auto; min-height: calc(100dvh - 114px); }
+  .code-panel, .right-panel { width: 100%; min-width: 0; border: 0; }
+  .code-panel { height: calc(100dvh - 186px); }
+  .code-header { padding: 8px 10px; overflow: hidden; }
+  .algo-tabs { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 3px; scrollbar-width: thin; }
+  .algo-tab { flex: 0 0 auto; min-height: 38px; }
+  .mode-tabs { padding: 7px 10px; overflow-x: auto; }
+  .code-body { min-height: 0; font-size: max(13px,var(--code-font-size,15px)); }
+  .code-line { padding-right: 12px; }
+  .right-panel { min-height: calc(100dvh - 186px); overflow: visible; }
+  .viz-panel { height: calc(100dvh - 186px); min-height: 430px; flex: none !important; padding: 8px 10px !important; }
+  .vars-panel { min-height: 50dvh; padding: 14px; }
+  .output-panel { min-height: 28dvh; padding: 12px 14px; }
+  body[data-mobile-view="animation"] .code-panel,
+  body[data-mobile-view="animation"] .vars-panel,
+  body[data-mobile-view="animation"] .output-panel { display: none; }
+  body[data-mobile-view="code"] .right-panel > :not(.control-bar),
+  body[data-mobile-view="code"] .vars-panel,
+  body[data-mobile-view="code"] .output-panel { display: none; }
+  body[data-mobile-view="code"] .right-panel { min-height: 0; }
+  body[data-mobile-view="data"] .code-panel,
+  body[data-mobile-view="data"] .viz-panel { display: none; }
+  body[data-mobile-view="data"] .right-panel { min-height: calc(100dvh - 186px); }
+  .control-bar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    min-height: 72px;
+    padding: 9px max(10px,env(safe-area-inset-right)) calc(9px + env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left));
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 -10px 30px rgba(9,12,20,.36);
+  }
+  .transport-controls { gap: 7px; }
+  #btn-reset { display: none; }
+  .btn { min-width: 48px; min-height: 44px; padding: 8px 10px; font-size: 0; }
+  #btn-back::after { content: '◀'; font-size: 16px; }
+  #btn-play { min-width: 92px; font-size: 14px; }
+  #btn-step::after { content: '▶'; font-size: 16px; }
+  .step-info { margin-left: 0; min-width: 52px; text-align: center; font-size: 11px; }
+  .step-info .step-prefix { display: none; }
+  .settings-menu summary { width: 44px; min-height: 44px; padding: 0; justify-content: center; font-size: 0; }
+  .settings-menu summary::before { content: '⚙'; font-size: 17px; }
+  .settings-popover { right: -2px; width: min(280px,calc(100vw - 20px)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: .001ms !important;
+  }
+}
+</style>
+</head>
+<body data-mobile-view="animation">
+
+<header class="header">
+  <a class="back-link" href="../index.html" aria-label="返回学习地图">← 学习地图</a>
+  <div class="chapter-heading">
+    <div class="chapter-kicker">第9章</div>
+    <h1>动态规划（下）</h1>
+  </div>
+  <div class="chapter-status" aria-label="本章学习进度">
+    <div class="chapter-status-text" id="chapter-progress-text">0 / 0 个演示完成</div>
+    <div class="chapter-status-track"><div class="chapter-status-fill" id="chapter-progress-fill"></div></div>
+  </div>
+  <nav class="chapter-nav" aria-label="章节导航">
+    <a href="ch08.html" aria-label="上一章：动态规划（上）" title="上一章：动态规划（上）">上一章</a>
+    <a href="ch10.html" aria-label="下一章：回溯法" title="下一章：回溯法">下一章</a>
+  </nav>
+</header>
+
+<div class="mobile-view-switcher" role="tablist" aria-label="学习视图">
+  <button type="button" class="active" data-mobile-view="animation" role="tab" aria-selected="true">动画</button>
+  <button type="button" data-mobile-view="code" role="tab" aria-selected="false">代码</button>
+  <button type="button" data-mobile-view="data" role="tab" aria-selected="false">变量</button>
+</div>
+
+<main class="main">
+  <section class="code-panel" aria-label="算法代码">
+    <div class="code-header">
+      <div class="algo-tabs" id="algo-tabs" role="tablist" aria-label="本章算法"></div>
+      <span class="breakpoint-hint">点击行号可设断点</span>
+    </div>
+    <div class="mode-tabs" id="mode-tabs" role="tablist" aria-label="演示模式"></div>
+    <div class="code-body" id="code-body" aria-label="代码执行过程"></div>
+  </section>
+
+  <section class="right-panel" aria-label="算法可视化与状态">
+    <div class="viz-panel">
+      <canvas id="viz-canvas" width="800" height="300" role="img" aria-label="算法执行动画"></canvas>
+      <div class="callstack" id="callstack"><div class="callstack-title">调用栈</div></div>
+    </div>
+    <div class="vars-panel">
+      <h3>变量状态</h3>
+      <div class="var-grid" id="var-grid"></div>
+    </div>
+    <div class="output-panel" id="output-panel">
+      <h3>程序输出</h3>
+      <div id="output-content" aria-live="polite"></div>
+    </div>
+
+    <div class="control-bar" aria-label="播放控制">
+      <div class="transport-controls">
+        <button class="btn" id="btn-reset" type="button" aria-label="重置当前演示" title="重置当前演示">⏮ 重置</button>
+        <button class="btn" id="btn-back" type="button" aria-label="上一步" title="上一步">◀ 后退</button>
+        <button class="btn btn-primary" id="btn-play" type="button" aria-label="播放或暂停">▶ 播放</button>
+        <button class="btn" id="btn-step" type="button" aria-label="下一步" title="下一步">⏭ 单步</button>
+      </div>
+      <div class="step-info" aria-live="polite">
+        <span class="step-prefix">步骤 </span><strong id="step-cur">0</strong> / <strong id="step-total">0</strong>
+      </div>
+      <details class="settings-menu">
+        <summary aria-label="播放设置">⚙ 设置</summary>
+        <div class="settings-popover">
+          <div class="setting-row">
+            <label for="speed-slider">播放速度</label>
+            <input type="range" class="speed-slider" id="speed-slider" min="1" max="10" value="5" aria-valuetext="速度 5">
+          </div>
+          <div class="setting-row">
+            <span class="mode-label">代码字体</span>
+            <div class="font-control">
+              <button class="btn btn-sm" type="button" id="font-dec" aria-label="减小代码字体">A−</button>
+              <button class="btn btn-sm" type="button" id="font-inc" aria-label="增大代码字体">A＋</button>
+            </div>
+          </div>
+          <button class="btn" id="btn-to-bp" type="button">运行到断点</button>
+          <div class="settings-divider"></div>
+          <div class="shortcut-help">页面空白处：空格播放/暂停，← → 单步，R 重置</div>
+        </div>
+      </details>
+    </div>
+  </section>
+</main>
+
+<script src="../js/learning-state.js?v=20260725"></script>
+<script src="../js/engine.js?v=20260725-ux2"></script>
+<script src="../js/viz-renderers.js?v=20260725-layout-audit"></script>
+<script>
+const CHAPTER_NUM = 9;
+const ALGOS = {
+  "01_编辑距离": {
+    "title": "编辑距离",
+    "defaultMode": "concept",
+    "modeLabels": {
+      "concept": "理解动画",
+      "trace": "代码执行"
+    },
+    "modes": {
+      "concept": {
+        "title": "编辑距离",
+        "source": [
+          "算法: 编辑距离",
+          "状态: dp[i][j] 表示 word1 前 i 个字符变成 word2 前 j 个字符的最少操作",
+          "",
+          "如果两个字符相同:",
+          "    dp[i][j] = dp[i-1][j-1]",
+          "否则:",
+          "    dp[i][j] = min(删除, 插入, 替换) + 1",
+          "返回 dp[m][n]"
+        ],
+        "important_vars": {
+          "i": "行",
+          "j": "列",
+          "best": "当前最优",
+          "phase": "阶段"
+        },
+        "track_vars": {
+          "primary": [
+            "i",
+            "j",
+            "best",
+            "phase"
+          ],
+          "secondary": []
+        },
+        "var_classes": {
+          "i": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "j": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "best": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "phase": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "concept": {
+            "category": "secondary",
+            "type": "concept"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 5,
+            "text": "概念动画：编辑距离就是在二维表里选择最便宜的修改路径。"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 8,
+            "type": "exec",
+            "vars": {
+              "i": 0,
+              "j": 0,
+              "best": 0,
+              "phase": "第 0 行/列先填好: 空串变成前缀只能一路插入或删除",
+              "concept": {
+                "kind": "dp_table",
+                "title": "编辑距离",
+                "subtitle": "二维 DP 表: 当前格只依赖已经填好的格子",
+                "rowLabels": [
+                  "Ø",
+                  "h",
+                  "o",
+                  "r",
+                  "s",
+                  "e"
+                ],
+                "colLabels": [
+                  "Ø",
+                  "r",
+                  "o",
+                  "s"
+                ],
+                "grid": [
+                  [
+                    0,
+                    1,
+                    2,
+                    3
+                  ],
+                  [
+                    1,
+                    null,
+                    null,
+                    null
+                  ],
+                  [
+                    2,
+                    null,
+                    null,
+                    null
+                  ],
+                  [
+                    3,
+                    null,
+                    null,
+                    null
+                  ],
+                  [
+                    4,
+                    null,
+                    null,
+                    null
+                  ],
+                  [
+                    5,
+                    null,
+                    null,
+                    null
+                  ]
+                ],
+                "active": [
+                  0,
+                  0
+                ],
+                "refs": [],
+                "formula": "dp[i][0] = i, dp[0][j] = j",
+                "caption": "第 0 行/列先填好: 空串变成前缀只能一路插入或删除",
+                "badges": []
+              }
+            }
+          },
+          {
+            "step": 1,
+            "line": 15,
+            "type": "exec",
+            "vars": {
+              "i": 1,
+              "j": 1,
+              "best": 1,
+              "phase": "h 和 r 不同, 在删除、插入、替换里选最小代价",
+              "concept": {
+                "kind": "dp_table",
+                "title": "编辑距离",
+                "subtitle": "二维 DP 表: 当前格只依赖已经填好的格子",
+                "rowLabels": [
+                  "Ø",
+                  "h",
+                  "o",
+                  "r",
+                  "s",
+                  "e"
+                ],
+                "colLabels": [
+                  "Ø",
+                  "r",
+                  "o",
+                  "s"
+                ],
+                "grid": [
+                  [
+                    0,
+                    1,
+                    2,
+                    3
+                  ],
+                  [
+                    1,
+                    1,
+                    null,
+                    null
+                  ],
+                  [
+                    2,
+                    null,
+                    null,
+                    null
+                  ],
+                  [
+                    3,
+                    null,
+                    null,
+                    null
+                  ],
+                  [
+                    4,
+                    null,
+                    null,
+                    null
+                  ],
+                  [
+                    5,
+                    null,
+                    null,
+                    null
+                  ]
+                ],
+                "active": [
+                  1,
+                  1
+                ],
+                "refs": [
+                  [
+                    0,
+                    1
+                  ],
+                  [
+                    1,
+                    0
+                  ],
+                  [
+                    0,
+                    0
+                  ]
+                ],
+                "formula": "min(1, 1, 0) + 1 = 1",
+                "caption": "h 和 r 不同, 在删除、插入、替换里选最小代价",
+                "badges": []
+              }
+            }
+          },
+          {
+            "step": 2,
+            "line": 13,
+            "type": "exec",
+            "vars": {
+              "i": 2,
+              "j": 2,
+              "best": 1,
+              "phase": "o 和 o 相同, 不需要新操作, 直接继承左上角",
+              "concept": {
+                "kind": "dp_table",
+                "title": "编辑距离",
+                "subtitle": "二维 DP 表: 当前格只依赖已经填好的格子",
+                "rowLabels": [
+                  "Ø",
+                  "h",
+                  "o",
+                  "r",
+                  "s",
+                  "e"
+                ],
+                "colLabels": [
+                  "Ø",
+                  "r",
+                  "o",
+                  "s"
+                ],
+                "grid": [
+                  [
+                    0,
+                    1,
+                    2,
+                    3
+                  ],
+                  [
+                    1,
+                    1,
+                    2,
+                    3
+                  ],
+                  [
+                    2,
+                    2,
+                    1,
+                    null
+                  ],
+                  [
+                    3,
+                    null,
+                    null,
+                    null
+                  ],
+                  [
+                    4,
+                    null,
+                    null,
+                    null
+                  ],
+                  [
+                    5,
+                    null,
+                    null,
+                    null
+                  ]
+                ],
+                "active": [
+                  2,
+                  2
+                ],
+                "refs": [
+                  [
+                    1,
+                    1
+                  ]
+                ],
+                "formula": "dp[2][2] = dp[1][1] = 1",
+                "caption": "o 和 o 相同, 不需要新操作, 直接继承左上角",
+                "badges": []
+              }
+            }
+          },
+          {
+            "step": 3,
+            "line": 13,
+            "type": "exec",
+            "vars": {
+              "i": 4,
+              "j": 3,
+              "best": 2,
+              "phase": "s 和 s 相同, horse 的前四个字符已经能变成 ros",
+              "concept": {
+                "kind": "dp_table",
+                "title": "编辑距离",
+                "subtitle": "二维 DP 表: 当前格只依赖已经填好的格子",
+                "rowLabels": [
+                  "Ø",
+                  "h",
+                  "o",
+                  "r",
+                  "s",
+                  "e"
+                ],
+                "colLabels": [
+                  "Ø",
+                  "r",
+                  "o",
+                  "s"
+                ],
+                "grid": [
+                  [
+                    0,
+                    1,
+                    2,
+                    3
+                  ],
+                  [
+                    1,
+                    1,
+                    2,
+                    3
+                  ],
+                  [
+                    2,
+                    2,
+                    1,
+                    2
+                  ],
+                  [
+                    3,
+                    2,
+                    2,
+                    2
+                  ],
+                  [
+                    4,
+                    3,
+                    3,
+                    2
+                  ],
+                  [
+                    5,
+                    null,
+                    null,
+                    null
+                  ]
+                ],
+                "active": [
+                  4,
+                  3
+                ],
+                "refs": [
+                  [
+                    3,
+                    2
+                  ]
+                ],
+                "formula": "dp[4][3] = dp[3][2] = 2",
+                "caption": "s 和 s 相同, horse 的前四个字符已经能变成 ros",
+                "badges": []
+              }
+            }
+          },
+          {
+            "step": 4,
+            "line": 15,
+            "type": "exec",
+            "vars": {
+              "i": 5,
+              "j": 3,
+              "best": 3,
+              "phase": "最后 e 和 s 不同, 最少还要 1 次操作, 答案是 3",
+              "concept": {
+                "kind": "dp_table",
+                "title": "编辑距离",
+                "subtitle": "二维 DP 表: 当前格只依赖已经填好的格子",
+                "rowLabels": [
+                  "Ø",
+                  "h",
+                  "o",
+                  "r",
+                  "s",
+                  "e"
+                ],
+                "colLabels": [
+                  "Ø",
+                  "r",
+                  "o",
+                  "s"
+                ],
+                "grid": [
+                  [
+                    0,
+                    1,
+                    2,
+                    3
+                  ],
+                  [
+                    1,
+                    1,
+                    2,
+                    3
+                  ],
+                  [
+                    2,
+                    2,
+                    1,
+                    2
+                  ],
+                  [
+                    3,
+                    2,
+                    2,
+                    2
+                  ],
+                  [
+                    4,
+                    3,
+                    3,
+                    2
+                  ],
+                  [
+                    5,
+                    4,
+                    4,
+                    3
+                  ]
+                ],
+                "active": [
+                  5,
+                  3
+                ],
+                "refs": [
+                  [
+                    4,
+                    3
+                  ],
+                  [
+                    5,
+                    2
+                  ],
+                  [
+                    4,
+                    2
+                  ]
+                ],
+                "formula": "min(2, 4, 3) + 1 = 3",
+                "caption": "最后 e 和 s 不同, 最少还要 1 次操作, 答案是 3",
+                "badges": []
+              }
+            }
+          }
+        ]
+      },
+      "trace": {
+        "title": "编辑距离",
+        "source": [
+          "#include <stdio.h>",
+          "#include <string.h>",
+          "#include <stdlib.h>",
+          "",
+          "#define MIN(a, b) ((a) < (b) ? (a) : (b))",
+          "#define MIN3(a, b, c) MIN(MIN(a, b), c)",
+          "",
+          "int min_distance(char *word1, char *word2) {",
+          "    int m = (int)strlen(word1);",
+          "    int n = (int)strlen(word2);",
+          "",
+          "    /* 一次性分配连续的一维内存来模拟二维数组（工程规范写法） */",
+          "    /* dp[i][j] 对应 dp[i * (n + 1) + j] */",
+          "    int cols = n + 1;",
+          "    int *dp = (int *)malloc((m + 1) * cols * sizeof(int));",
+          "    if (dp == NULL) {",
+          "        return -1;  /* 表示内存分配失败 */",
+          "    }",
+          "",
+          "    /* 初始化边界：空串变成目标串，只能一个一个插入 */",
+          "    for (int i = 0; i <= m; i++) dp[i * cols + 0] = i;  /* 删除操作 */",
+          "    for (int j = 0; j <= n; j++) dp[0 * cols + j] = j;  /* 插入操作 */",
+          "",
+          "    /* 填表 */",
+          "    for (int i = 1; i <= m; i++) {",
+          "        for (int j = 1; j <= n; j++) {",
+          "            if (word1[i - 1] == word2[j - 1]) {",
+          "                dp[i * cols + j] = dp[(i - 1) * cols + (j - 1)];",
+          "            } else {",
+          "                dp[i * cols + j] = 1 + MIN3(",
+          "                    dp[(i - 1) * cols + j],        /* 删除 */",
+          "                    dp[i * cols + (j - 1)],        /* 插入 */",
+          "                    dp[(i - 1) * cols + (j - 1)]   /* 替换 */",
+          "                );",
+          "            }",
+          "        }",
+          "    }",
+          "",
+          "    int result = dp[m * cols + n];",
+          "    free(dp);",
+          "    return result;",
+          "}",
+          "",
+          "int main(void) {",
+          "    char word1[] = \"horse\";",
+          "    char word2[] = \"ros\";",
+          "    printf(\"编辑距离：%d\\n\", min_distance(word1, word2));  /* 输出 3 */",
+          "    return 0;",
+          "}",
+          ""
+        ],
+        "important_vars": {
+          "m": "参数",
+          "n": "参数",
+          "i": "索引",
+          "j": "索引",
+          "result": "变量"
+        },
+        "track_vars": {
+          "primary": [
+            "i",
+            "j",
+            "m",
+            "n"
+          ],
+          "secondary": [
+            "_return"
+          ]
+        },
+        "var_classes": {
+          "_return": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "i": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "j": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "m": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "n": {
+            "category": "primary",
+            "type": "scalar"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 26,
+            "text": "编辑距离：3"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 37,
+            "type": "enter",
+            "func": "main",
+            "vars": {}
+          },
+          {
+            "step": 1,
+            "line": 20,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 1,
+              "m": 5
+            }
+          },
+          {
+            "step": 2,
+            "line": 21,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "j": 1,
+              "n": 3
+            }
+          },
+          {
+            "step": 3,
+            "line": 21,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "j": 2,
+              "n": 3
+            }
+          },
+          {
+            "step": 4,
+            "line": 21,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "j": 3,
+              "n": 3
+            }
+          },
+          {
+            "step": 5,
+            "line": 20,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 2,
+              "m": 5
+            }
+          },
+          {
+            "step": 6,
+            "line": 21,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "j": 1,
+              "n": 3
+            }
+          },
+          {
+            "step": 7,
+            "line": 21,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "j": 2,
+              "n": 3
+            }
+          },
+          {
+            "step": 8,
+            "line": 22,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 2,
+              "j": 2
+            }
+          },
+          {
+            "step": 9,
+            "line": 21,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "j": 3,
+              "n": 3
+            }
+          },
+          {
+            "step": 10,
+            "line": 20,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 3,
+              "m": 5
+            }
+          },
+          {
+            "step": 11,
+            "line": 21,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "j": 1,
+              "n": 3
+            }
+          },
+          {
+            "step": 12,
+            "line": 22,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 3,
+              "j": 1
+            }
+          },
+          {
+            "step": 13,
+            "line": 21,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "j": 2,
+              "n": 3
+            }
+          },
+          {
+            "step": 14,
+            "line": 21,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "j": 3,
+              "n": 3
+            }
+          },
+          {
+            "step": 15,
+            "line": 20,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 4,
+              "m": 5
+            }
+          },
+          {
+            "step": 16,
+            "line": 21,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "j": 1,
+              "n": 3
+            }
+          },
+          {
+            "step": 17,
+            "line": 21,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "j": 2,
+              "n": 3
+            }
+          },
+          {
+            "step": 18,
+            "line": 21,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "j": 3,
+              "n": 3
+            }
+          },
+          {
+            "step": 19,
+            "line": 22,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 4,
+              "j": 3
+            }
+          },
+          {
+            "step": 20,
+            "line": 20,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 5,
+              "m": 5
+            }
+          },
+          {
+            "step": 21,
+            "line": 21,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "j": 1,
+              "n": 3
+            }
+          },
+          {
+            "step": 22,
+            "line": 21,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "j": 2,
+              "n": 3
+            }
+          },
+          {
+            "step": 23,
+            "line": 21,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "j": 3,
+              "n": 3
+            }
+          },
+          {
+            "step": 24,
+            "line": 35,
+            "type": "exec",
+            "vars": {
+              "_return": 3
+            }
+          },
+          {
+            "step": 25,
+            "line": 35,
+            "type": "exit",
+            "func": "min_distance",
+            "vars": {}
+          },
+          {
+            "step": 26,
+            "line": 41,
+            "type": "exec",
+            "vars": {
+              "_return": 0
+            }
+          },
+          {
+            "step": 27,
+            "line": 41,
+            "type": "exit",
+            "func": "main",
+            "vars": {}
+          }
+        ]
+      }
+    }
+  },
+  "02_矩阵链乘法": {
+    "title": "矩阵链乘法",
+    "defaultMode": "concept",
+    "modeLabels": {
+      "concept": "理解动画",
+      "trace": "代码执行"
+    },
+    "modes": {
+      "concept": {
+        "title": "矩阵链乘法",
+        "source": [
+          "算法: 矩阵链乘法",
+          "状态: dp[i][j] 表示矩阵 Ai..Aj 的最少乘法次数",
+          "",
+          "按区间长度从短到长:",
+          "    枚举切分点 k",
+          "    dp[i][j] = min(dp[i][k] + dp[k+1][j] + 合并代价)",
+          "返回 dp[1][n]"
+        ],
+        "important_vars": {
+          "i": "行",
+          "j": "列",
+          "best": "当前最优",
+          "phase": "阶段"
+        },
+        "track_vars": {
+          "primary": [
+            "i",
+            "j",
+            "best",
+            "phase"
+          ],
+          "secondary": []
+        },
+        "var_classes": {
+          "i": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "j": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "best": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "phase": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "concept": {
+            "category": "secondary",
+            "type": "concept"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 5,
+            "text": "概念动画：矩阵链乘法不是改变矩阵顺序, 而是选择更省的括号位置。"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 8,
+            "type": "exec",
+            "vars": {
+              "i": 0,
+              "j": 0,
+              "best": 0,
+              "phase": "单个矩阵不用乘, 对角线都是 0",
+              "concept": {
+                "kind": "dp_table",
+                "title": "矩阵链乘法",
+                "subtitle": "二维 DP 表: 当前格只依赖已经填好的格子",
+                "rowLabels": [
+                  "A1",
+                  "A2",
+                  "A3",
+                  "A4"
+                ],
+                "colLabels": [
+                  "A1",
+                  "A2",
+                  "A3",
+                  "A4"
+                ],
+                "grid": [
+                  [
+                    0,
+                    null,
+                    null,
+                    null
+                  ],
+                  [
+                    "",
+                    0,
+                    null,
+                    null
+                  ],
+                  [
+                    "",
+                    "",
+                    0,
+                    null
+                  ],
+                  [
+                    "",
+                    "",
+                    "",
+                    0
+                  ]
+                ],
+                "active": [
+                  0,
+                  0
+                ],
+                "refs": [],
+                "formula": "dp[i][i] = 0",
+                "caption": "单个矩阵不用乘, 对角线都是 0",
+                "badges": []
+              }
+            }
+          },
+          {
+            "step": 1,
+            "line": 16,
+            "type": "exec",
+            "vars": {
+              "i": 0,
+              "j": 1,
+              "best": 5000,
+              "phase": "长度为 2 的区间只有一种括号放法",
+              "concept": {
+                "kind": "dp_table",
+                "title": "矩阵链乘法",
+                "subtitle": "二维 DP 表: 当前格只依赖已经填好的格子",
+                "rowLabels": [
+                  "A1",
+                  "A2",
+                  "A3",
+                  "A4"
+                ],
+                "colLabels": [
+                  "A1",
+                  "A2",
+                  "A3",
+                  "A4"
+                ],
+                "grid": [
+                  [
+                    0,
+                    5000,
+                    null,
+                    null
+                  ],
+                  [
+                    "",
+                    0,
+                    25000,
+                    null
+                  ],
+                  [
+                    "",
+                    "",
+                    0,
+                    250
+                  ],
+                  [
+                    "",
+                    "",
+                    "",
+                    0
+                  ]
+                ],
+                "active": [
+                  0,
+                  1
+                ],
+                "refs": [
+                  [
+                    0,
+                    0
+                  ],
+                  [
+                    1,
+                    1
+                  ]
+                ],
+                "formula": "A1×A2: 10×100×5 = 5000",
+                "caption": "长度为 2 的区间只有一种括号放法",
+                "badges": []
+              }
+            }
+          },
+          {
+            "step": 2,
+            "line": 16,
+            "type": "exec",
+            "vars": {
+              "i": 0,
+              "j": 2,
+              "best": 7500,
+              "phase": "长度为 3 时开始枚举切分点, 选代价最低的括号位置",
+              "concept": {
+                "kind": "dp_table",
+                "title": "矩阵链乘法",
+                "subtitle": "二维 DP 表: 当前格只依赖已经填好的格子",
+                "rowLabels": [
+                  "A1",
+                  "A2",
+                  "A3",
+                  "A4"
+                ],
+                "colLabels": [
+                  "A1",
+                  "A2",
+                  "A3",
+                  "A4"
+                ],
+                "grid": [
+                  [
+                    0,
+                    5000,
+                    7500,
+                    null
+                  ],
+                  [
+                    "",
+                    0,
+                    25000,
+                    750
+                  ],
+                  [
+                    "",
+                    "",
+                    0,
+                    250
+                  ],
+                  [
+                    "",
+                    "",
+                    "",
+                    0
+                  ]
+                ],
+                "active": [
+                  0,
+                  2
+                ],
+                "refs": [
+                  [
+                    0,
+                    0
+                  ],
+                  [
+                    1,
+                    2
+                  ],
+                  [
+                    0,
+                    1
+                  ],
+                  [
+                    2,
+                    2
+                  ]
+                ],
+                "formula": "min(75000, 7500) = 7500",
+                "caption": "长度为 3 时开始枚举切分点, 选代价最低的括号位置",
+                "badges": []
+              }
+            }
+          },
+          {
+            "step": 3,
+            "line": 16,
+            "type": "exec",
+            "vars": {
+              "i": 1,
+              "j": 3,
+              "best": 750,
+              "phase": "A2..A4 最优是先算 A3×A4, 再和 A2 相乘",
+              "concept": {
+                "kind": "dp_table",
+                "title": "矩阵链乘法",
+                "subtitle": "二维 DP 表: 当前格只依赖已经填好的格子",
+                "rowLabels": [
+                  "A1",
+                  "A2",
+                  "A3",
+                  "A4"
+                ],
+                "colLabels": [
+                  "A1",
+                  "A2",
+                  "A3",
+                  "A4"
+                ],
+                "grid": [
+                  [
+                    0,
+                    5000,
+                    7500,
+                    null
+                  ],
+                  [
+                    "",
+                    0,
+                    25000,
+                    750
+                  ],
+                  [
+                    "",
+                    "",
+                    0,
+                    250
+                  ],
+                  [
+                    "",
+                    "",
+                    "",
+                    0
+                  ]
+                ],
+                "active": [
+                  1,
+                  3
+                ],
+                "refs": [
+                  [
+                    1,
+                    1
+                  ],
+                  [
+                    2,
+                    3
+                  ],
+                  [
+                    1,
+                    2
+                  ],
+                  [
+                    3,
+                    3
+                  ]
+                ],
+                "formula": "min(750, 30000) = 750",
+                "caption": "A2..A4 最优是先算 A3×A4, 再和 A2 相乘",
+                "badges": []
+              }
+            }
+          },
+          {
+            "step": 4,
+            "line": 16,
+            "type": "exec",
+            "vars": {
+              "i": 0,
+              "j": 3,
+              "best": 1750,
+              "phase": "最后求整条链 A1..A4, 最优代价是 1750",
+              "concept": {
+                "kind": "dp_table",
+                "title": "矩阵链乘法",
+                "subtitle": "二维 DP 表: 当前格只依赖已经填好的格子",
+                "rowLabels": [
+                  "A1",
+                  "A2",
+                  "A3",
+                  "A4"
+                ],
+                "colLabels": [
+                  "A1",
+                  "A2",
+                  "A3",
+                  "A4"
+                ],
+                "grid": [
+                  [
+                    0,
+                    5000,
+                    7500,
+                    1750
+                  ],
+                  [
+                    "",
+                    0,
+                    25000,
+                    750
+                  ],
+                  [
+                    "",
+                    "",
+                    0,
+                    250
+                  ],
+                  [
+                    "",
+                    "",
+                    "",
+                    0
+                  ]
+                ],
+                "active": [
+                  0,
+                  3
+                ],
+                "refs": [
+                  [
+                    0,
+                    0
+                  ],
+                  [
+                    1,
+                    3
+                  ],
+                  [
+                    0,
+                    1
+                  ],
+                  [
+                    2,
+                    3
+                  ],
+                  [
+                    0,
+                    2
+                  ],
+                  [
+                    3,
+                    3
+                  ]
+                ],
+                "formula": "min(1750, 5300, 8000) = 1750",
+                "caption": "最后求整条链 A1..A4, 最优代价是 1750",
+                "badges": []
+              }
+            }
+          }
+        ]
+      },
+      "trace": {
+        "title": "矩阵链乘法",
+        "source": [
+          "#include <stdio.h>",
+          "#include <limits.h>",
+          "#include <string.h>",
+          "",
+          "#define MAX_N 100",
+          "",
+          "long long matrix_chain_order(int p[], int n) {",
+          "    if (n <= 0 || n > MAX_N) {",
+          "        return -1; /* 输入非法 */",
+          "    }",
+          "    /* n 个矩阵，维度数组 p 有 n + 1 个元素 */",
+          "    /* dp[i][j] 表示第 i 到第 j 个矩阵的最小乘法次数 */",
+          "    /* 用 long long 防止维度相乘溢出（1000×1000×1000 就已经是 10 亿级别了） */",
+          "    long long dp[MAX_N + 1][MAX_N + 1];",
+          "",
+          "    /* 初始化：单个矩阵不需要乘法 */",
+          "    memset(dp, 0, sizeof(dp));",
+          "",
+          "    /* len 是链的长度，从 2 开始（至少两个矩阵才有乘法） */",
+          "    for (int len = 2; len <= n; len++) {",
+          "        for (int i = 1; i <= n - len + 1; i++) {",
+          "            int j = i + len - 1;",
+          "            dp[i][j] = LLONG_MAX;",
+          "",
+          "            /* 在 i..j 之间找最优切分点 k */",
+          "            for (int k = i; k < j; k++) {",
+          "                long long cost = dp[i][k] + dp[k + 1][j]",
+          "                               + (long long)p[i - 1] * p[k] * p[j];",
+          "                if (cost < dp[i][j]) {",
+          "                    dp[i][j] = cost;",
+          "                }",
+          "            }",
+          "        }",
+          "    }",
+          "",
+          "    return dp[1][n];",
+          "}",
+          "",
+          "int main(void) {",
+          "    /* 4 个矩阵：A1（10×100），A2（100×5），A3（5×50），A4（50×1） */",
+          "    int p[] = {10, 100, 5, 50, 1};",
+          "    int n = 4;",
+          "",
+          "    printf(\"最少乘法次数：%lld\\n\", matrix_chain_order(p, n));",
+          "    /* 输出 1750（比随便加括号省多了） */",
+          "",
+          "    return 0;",
+          "}",
+          ""
+        ],
+        "important_vars": {
+          "len": "参数",
+          "i": "索引",
+          "j": "索引",
+          "k": "索引",
+          "n": "参数",
+          "p": "数据"
+        },
+        "track_vars": {
+          "primary": [
+            "dp",
+            "i",
+            "j",
+            "k",
+            "len",
+            "n"
+          ],
+          "secondary": [
+            "_return",
+            "p"
+          ]
+        },
+        "var_classes": {
+          "_return": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "dp": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "i": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "j": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "k": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "len": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "n": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "p": {
+            "category": "secondary",
+            "type": "array"
+          }
+        },
+        "initial_data": {
+          "p": [
+            10,
+            100,
+            5,
+            50,
+            1
+          ]
+        },
+        "program_output": [
+          {
+            "after_step": 30,
+            "text": "最少乘法次数：1750"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 32,
+            "type": "enter",
+            "func": "main",
+            "vars": {}
+          },
+          {
+            "step": 1,
+            "line": 36,
+            "type": "enter",
+            "func": "matrix_chain_order",
+            "vars": {
+              "p": [
+                10,
+                100,
+                5,
+                50,
+                1
+              ],
+              "n": 4
+            }
+          },
+          {
+            "step": 2,
+            "line": 16,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "len": 2,
+              "n": 4
+            }
+          },
+          {
+            "step": 3,
+            "line": 17,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 1,
+              "len": 2,
+              "n": 4
+            }
+          },
+          {
+            "step": 4,
+            "line": 21,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "j": 2,
+              "k": 1
+            }
+          },
+          {
+            "step": 5,
+            "line": 24,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "dp": 1796041568,
+              "i": 1,
+              "j": 2
+            }
+          },
+          {
+            "step": 6,
+            "line": 17,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 2,
+              "len": 2,
+              "n": 4
+            }
+          },
+          {
+            "step": 7,
+            "line": 21,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "j": 3,
+              "k": 2
+            }
+          },
+          {
+            "step": 8,
+            "line": 24,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "dp": 1796041568,
+              "i": 2,
+              "j": 3
+            }
+          },
+          {
+            "step": 9,
+            "line": 17,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 3,
+              "len": 2,
+              "n": 4
+            }
+          },
+          {
+            "step": 10,
+            "line": 21,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "j": 4,
+              "k": 3
+            }
+          },
+          {
+            "step": 11,
+            "line": 24,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "dp": 1796041568,
+              "i": 3,
+              "j": 4
+            }
+          },
+          {
+            "step": 12,
+            "line": 16,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "len": 3,
+              "n": 4
+            }
+          },
+          {
+            "step": 13,
+            "line": 17,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 1,
+              "len": 3,
+              "n": 4
+            }
+          },
+          {
+            "step": 14,
+            "line": 21,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "j": 3,
+              "k": 1
+            }
+          },
+          {
+            "step": 15,
+            "line": 24,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "dp": 1796041568,
+              "i": 1,
+              "j": 3
+            }
+          },
+          {
+            "step": 16,
+            "line": 21,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "j": 3,
+              "k": 2
+            }
+          },
+          {
+            "step": 17,
+            "line": 24,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "dp": 1796041568,
+              "i": 1,
+              "j": 3
+            }
+          },
+          {
+            "step": 18,
+            "line": 17,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 2,
+              "len": 3,
+              "n": 4
+            }
+          },
+          {
+            "step": 19,
+            "line": 21,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "j": 4,
+              "k": 2
+            }
+          },
+          {
+            "step": 20,
+            "line": 24,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "dp": 1796041568,
+              "i": 2,
+              "j": 4
+            }
+          },
+          {
+            "step": 21,
+            "line": 21,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "j": 4,
+              "k": 3
+            }
+          },
+          {
+            "step": 22,
+            "line": 16,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "len": 4,
+              "n": 4
+            }
+          },
+          {
+            "step": 23,
+            "line": 17,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 1,
+              "len": 4,
+              "n": 4
+            }
+          },
+          {
+            "step": 24,
+            "line": 21,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "j": 4,
+              "k": 1
+            }
+          },
+          {
+            "step": 25,
+            "line": 24,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "dp": 1796041568,
+              "i": 1,
+              "j": 4
+            }
+          },
+          {
+            "step": 26,
+            "line": 21,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "j": 4,
+              "k": 2
+            }
+          },
+          {
+            "step": 27,
+            "line": 21,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "j": 4,
+              "k": 3
+            }
+          },
+          {
+            "step": 28,
+            "line": 30,
+            "type": "exec",
+            "vars": {
+              "_return": 1750
+            }
+          },
+          {
+            "step": 29,
+            "line": 30,
+            "type": "exit",
+            "func": "matrix_chain_order",
+            "vars": {}
+          },
+          {
+            "step": 30,
+            "line": 38,
+            "type": "exec",
+            "vars": {
+              "_return": 0
+            }
+          },
+          {
+            "step": 31,
+            "line": 38,
+            "type": "exit",
+            "func": "main",
+            "vars": {}
+          }
+        ]
+      }
+    }
+  },
+  "03_最长递增子序列_DP": {
+    "title": "最长递增子序列（DP）",
+    "defaultMode": "concept",
+    "modeLabels": {
+      "concept": "理解动画",
+      "trace": "代码执行"
+    },
+    "modes": {
+      "concept": {
+        "title": "最长递增子序列（DP）",
+        "source": [
+          "算法: 最长递增子序列 DP",
+          "状态: dp[i] 表示以 nums[i] 结尾的 LIS 长度",
+          "",
+          "for i = 0..n-1:",
+          "    dp[i] = 1",
+          "    for j = 0..i-1:",
+          "        如果 nums[j] < nums[i], 尝试接到 j 后面",
+          "返回 max(dp)"
+        ],
+        "important_vars": {
+          "i": "位置",
+          "state": "压缩状态",
+          "best": "当前最优",
+          "phase": "阶段"
+        },
+        "track_vars": {
+          "primary": [
+            "i",
+            "state",
+            "best",
+            "phase"
+          ],
+          "secondary": []
+        },
+        "var_classes": {
+          "i": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "state": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "best": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "phase": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "concept": {
+            "category": "secondary",
+            "type": "concept"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 6,
+            "text": "概念动画：LIS 的 O(n^2) 解法是在当前数字左边找最好的前驱。"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 9,
+            "type": "exec",
+            "vars": {
+              "i": 0,
+              "state": "nums[0]=10",
+              "best": 1,
+              "phase": "每个数字自己都能构成长度 1 的递增子序列",
+              "concept": {
+                "mode": "line",
+                "title": "最长递增子序列 DP",
+                "subtitle": "当前数字向左寻找可以接上的最长序列",
+                "valueLabel": "nums",
+                "values": [
+                  10,
+                  9,
+                  2,
+                  5,
+                  3,
+                  7,
+                  101,
+                  18
+                ],
+                "dp": [
+                  1,
+                  1,
+                  1,
+                  1,
+                  1,
+                  1,
+                  1,
+                  1
+                ],
+                "index": 0,
+                "active": [
+                  0
+                ],
+                "window": [
+                  {
+                    "label": "当前数",
+                    "value": 10
+                  },
+                  {
+                    "label": "dp[i]",
+                    "value": 1
+                  },
+                  {
+                    "label": "maxLen",
+                    "value": 1
+                  }
+                ],
+                "formula": "dp[i] = 1",
+                "caption": "二维思考不一定要画成二维表: LIS 的状态压在一行 dp 里。",
+                "kind": "dp_rolling"
+              }
+            }
+          },
+          {
+            "step": 1,
+            "line": 13,
+            "type": "exec",
+            "vars": {
+              "i": 3,
+              "state": "nums[3]=5",
+              "best": 2,
+              "phase": "5 可以接在 2 后面, 长度变成 2",
+              "concept": {
+                "mode": "line",
+                "title": "最长递增子序列 DP",
+                "subtitle": "当前数字向左寻找可以接上的最长序列",
+                "valueLabel": "nums",
+                "values": [
+                  10,
+                  9,
+                  2,
+                  5,
+                  3,
+                  7,
+                  101,
+                  18
+                ],
+                "dp": [
+                  1,
+                  1,
+                  1,
+                  2,
+                  1,
+                  1,
+                  1,
+                  1
+                ],
+                "index": 3,
+                "active": [
+                  3
+                ],
+                "window": [
+                  {
+                    "label": "当前数",
+                    "value": 5
+                  },
+                  {
+                    "label": "dp[i]",
+                    "value": 2
+                  },
+                  {
+                    "label": "maxLen",
+                    "value": 2
+                  }
+                ],
+                "formula": "dp[3] = dp[2] + 1 = 2",
+                "caption": "二维思考不一定要画成二维表: LIS 的状态压在一行 dp 里。",
+                "kind": "dp_rolling"
+              }
+            }
+          },
+          {
+            "step": 2,
+            "line": 13,
+            "type": "exec",
+            "vars": {
+              "i": 4,
+              "state": "nums[4]=3",
+              "best": 2,
+              "phase": "3 也能接在 2 后面, 但接不了 5",
+              "concept": {
+                "mode": "line",
+                "title": "最长递增子序列 DP",
+                "subtitle": "当前数字向左寻找可以接上的最长序列",
+                "valueLabel": "nums",
+                "values": [
+                  10,
+                  9,
+                  2,
+                  5,
+                  3,
+                  7,
+                  101,
+                  18
+                ],
+                "dp": [
+                  1,
+                  1,
+                  1,
+                  2,
+                  2,
+                  1,
+                  1,
+                  1
+                ],
+                "index": 4,
+                "active": [
+                  4
+                ],
+                "window": [
+                  {
+                    "label": "当前数",
+                    "value": 3
+                  },
+                  {
+                    "label": "dp[i]",
+                    "value": 2
+                  },
+                  {
+                    "label": "maxLen",
+                    "value": 2
+                  }
+                ],
+                "formula": "dp[4] = dp[2] + 1 = 2",
+                "caption": "二维思考不一定要画成二维表: LIS 的状态压在一行 dp 里。",
+                "kind": "dp_rolling"
+              }
+            }
+          },
+          {
+            "step": 3,
+            "line": 13,
+            "type": "exec",
+            "vars": {
+              "i": 5,
+              "state": "nums[5]=7",
+              "best": 3,
+              "phase": "7 可以接在 5 或 3 后面, 最好长度是 3",
+              "concept": {
+                "mode": "line",
+                "title": "最长递增子序列 DP",
+                "subtitle": "当前数字向左寻找可以接上的最长序列",
+                "valueLabel": "nums",
+                "values": [
+                  10,
+                  9,
+                  2,
+                  5,
+                  3,
+                  7,
+                  101,
+                  18
+                ],
+                "dp": [
+                  1,
+                  1,
+                  1,
+                  2,
+                  2,
+                  3,
+                  1,
+                  1
+                ],
+                "index": 5,
+                "active": [
+                  5
+                ],
+                "window": [
+                  {
+                    "label": "当前数",
+                    "value": 7
+                  },
+                  {
+                    "label": "dp[i]",
+                    "value": 3
+                  },
+                  {
+                    "label": "maxLen",
+                    "value": 3
+                  }
+                ],
+                "formula": "dp[5] = max(2, 2) + 1 = 3",
+                "caption": "二维思考不一定要画成二维表: LIS 的状态压在一行 dp 里。",
+                "kind": "dp_rolling"
+              }
+            }
+          },
+          {
+            "step": 4,
+            "line": 13,
+            "type": "exec",
+            "vars": {
+              "i": 6,
+              "state": "nums[6]=101",
+              "best": 4,
+              "phase": "101 接在 7 后面, 形成长度 4",
+              "concept": {
+                "mode": "line",
+                "title": "最长递增子序列 DP",
+                "subtitle": "当前数字向左寻找可以接上的最长序列",
+                "valueLabel": "nums",
+                "values": [
+                  10,
+                  9,
+                  2,
+                  5,
+                  3,
+                  7,
+                  101,
+                  18
+                ],
+                "dp": [
+                  1,
+                  1,
+                  1,
+                  2,
+                  2,
+                  3,
+                  4,
+                  1
+                ],
+                "index": 6,
+                "active": [
+                  6
+                ],
+                "window": [
+                  {
+                    "label": "当前数",
+                    "value": 101
+                  },
+                  {
+                    "label": "dp[i]",
+                    "value": 4
+                  },
+                  {
+                    "label": "maxLen",
+                    "value": 4
+                  }
+                ],
+                "formula": "dp[6] = dp[5] + 1 = 4",
+                "caption": "二维思考不一定要画成二维表: LIS 的状态压在一行 dp 里。",
+                "kind": "dp_rolling"
+              }
+            }
+          },
+          {
+            "step": 5,
+            "line": 13,
+            "type": "exec",
+            "vars": {
+              "i": 7,
+              "state": "nums[7]=18",
+              "best": 4,
+              "phase": "18 不如 101 大, 但仍能接在 7 后面得到长度 4",
+              "concept": {
+                "mode": "line",
+                "title": "最长递增子序列 DP",
+                "subtitle": "当前数字向左寻找可以接上的最长序列",
+                "valueLabel": "nums",
+                "values": [
+                  10,
+                  9,
+                  2,
+                  5,
+                  3,
+                  7,
+                  101,
+                  18
+                ],
+                "dp": [
+                  1,
+                  1,
+                  1,
+                  2,
+                  2,
+                  3,
+                  4,
+                  4
+                ],
+                "index": 7,
+                "active": [
+                  7
+                ],
+                "window": [
+                  {
+                    "label": "当前数",
+                    "value": 18
+                  },
+                  {
+                    "label": "dp[i]",
+                    "value": 4
+                  },
+                  {
+                    "label": "maxLen",
+                    "value": 4
+                  }
+                ],
+                "formula": "dp[7] = dp[5] + 1 = 4",
+                "caption": "二维思考不一定要画成二维表: LIS 的状态压在一行 dp 里。",
+                "kind": "dp_rolling"
+              }
+            }
+          }
+        ]
+      },
+      "trace": {
+        "title": "最长递增子序列（DP）",
+        "source": [
+          "#include <stdio.h>",
+          "",
+          "int length_of_lis(int nums[], int n) {",
+          "    if (n <= 0) {",
+          "        return 0;",
+          "    }",
+          "",
+          "    int dp[n];  /* VLA，需要 C99 支持；工程中建议用 malloc */",
+          "    int maxLen = 1;",
+          "",
+          "    /* 每个元素自身就是一个长度为 1 的子序列 */",
+          "    for (int i = 0; i < n; i++) {",
+          "        dp[i] = 1;",
+          "    }",
+          "",
+          "    /* 从 1 开始：dp[0] = 1 是初始值（单个元素的最长递增子序列长度为 1） */",
+          "    for (int i = 1; i < n; i++) {",
+          "        for (int j = 0; j < i; j++) {",
+          "            if (nums[j] < nums[i]) {",
+          "                if (dp[j] + 1 > dp[i]) {",
+          "                    dp[i] = dp[j] + 1;",
+          "                }",
+          "            }",
+          "        }",
+          "        if (dp[i] > maxLen) {",
+          "            maxLen = dp[i];",
+          "        }",
+          "    }",
+          "",
+          "    return maxLen;",
+          "}",
+          "",
+          "int main(void) {",
+          "    int nums[] = {10, 9, 2, 5, 3, 7, 101, 18};",
+          "    int n = sizeof(nums) / sizeof(nums[0]);",
+          "    printf(\"LIS 长度：%d\\n\", length_of_lis(nums, n));  /* 输出 4 */",
+          "    return 0;",
+          "}",
+          ""
+        ],
+        "important_vars": {
+          "i": "索引",
+          "j": "索引",
+          "n": "参数",
+          "nums": "数据",
+          "dp": "数据"
+        },
+        "track_vars": {
+          "primary": [
+            "dp",
+            "i",
+            "j",
+            "n",
+            "nums"
+          ],
+          "secondary": [
+            "_return",
+            "maxLen"
+          ]
+        },
+        "var_classes": {
+          "_return": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "dp": {
+            "category": "primary",
+            "type": "array"
+          },
+          "i": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "j": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "maxLen": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "n": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "nums": {
+            "category": "primary",
+            "type": "array"
+          }
+        },
+        "initial_data": {
+          "nums": [
+            10,
+            9,
+            2,
+            5,
+            3,
+            7,
+            101,
+            18
+          ],
+          "dp": [
+            8,
+            0,
+            -1437794185,
+            799691918,
+            2,
+            0,
+            -3,
+            0
+          ]
+        },
+        "program_output": [
+          {
+            "after_step": 99,
+            "text": "LIS 长度：4"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 27,
+            "type": "enter",
+            "func": "main",
+            "vars": {}
+          },
+          {
+            "step": 1,
+            "line": 30,
+            "type": "enter",
+            "func": "length_of_lis",
+            "vars": {
+              "nums": [
+                10,
+                9,
+                2,
+                5,
+                3,
+                7,
+                101,
+                18
+              ],
+              "n": 8
+            }
+          },
+          {
+            "step": 2,
+            "line": 6,
+            "type": "exec",
+            "vars": {
+              "dp": [
+                8,
+                0,
+                -1437794185,
+                799691918,
+                2,
+                0,
+                -3,
+                0
+              ]
+            }
+          },
+          {
+            "step": 3,
+            "line": 9,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 0,
+              "n": 8
+            }
+          },
+          {
+            "step": 4,
+            "line": 10,
+            "type": "exec",
+            "vars": {
+              "dp": [
+                1,
+                0,
+                -1437794185,
+                799691918,
+                2,
+                0,
+                -3,
+                0
+              ]
+            }
+          },
+          {
+            "step": 5,
+            "line": 9,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 1,
+              "n": 8
+            }
+          },
+          {
+            "step": 6,
+            "line": 10,
+            "type": "exec",
+            "vars": {
+              "dp": [
+                1,
+                1,
+                -1437794185,
+                799691918,
+                2,
+                0,
+                -3,
+                0
+              ]
+            }
+          },
+          {
+            "step": 7,
+            "line": 9,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 2,
+              "n": 8
+            }
+          },
+          {
+            "step": 8,
+            "line": 10,
+            "type": "exec",
+            "vars": {
+              "dp": [
+                1,
+                1,
+                1,
+                799691918,
+                2,
+                0,
+                -3,
+                0
+              ]
+            }
+          },
+          {
+            "step": 9,
+            "line": 9,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 3,
+              "n": 8
+            }
+          },
+          {
+            "step": 10,
+            "line": 10,
+            "type": "exec",
+            "vars": {
+              "dp": [
+                1,
+                1,
+                1,
+                1,
+                2,
+                0,
+                -3,
+                0
+              ]
+            }
+          },
+          {
+            "step": 11,
+            "line": 9,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 4,
+              "n": 8
+            }
+          },
+          {
+            "step": 12,
+            "line": 10,
+            "type": "exec",
+            "vars": {
+              "dp": [
+                1,
+                1,
+                1,
+                1,
+                1,
+                0,
+                -3,
+                0
+              ]
+            }
+          },
+          {
+            "step": 13,
+            "line": 9,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 5,
+              "n": 8
+            }
+          },
+          {
+            "step": 14,
+            "line": 10,
+            "type": "exec",
+            "vars": {
+              "dp": [
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                -3,
+                0
+              ]
+            }
+          },
+          {
+            "step": 15,
+            "line": 9,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 6,
+              "n": 8
+            }
+          },
+          {
+            "step": 16,
+            "line": 10,
+            "type": "exec",
+            "vars": {
+              "dp": [
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                0
+              ]
+            }
+          },
+          {
+            "step": 17,
+            "line": 9,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 7,
+              "n": 8
+            }
+          },
+          {
+            "step": 18,
+            "line": 10,
+            "type": "exec",
+            "vars": {
+              "dp": [
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1
+              ]
+            }
+          },
+          {
+            "step": 19,
+            "line": 13,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 1,
+              "n": 8
+            }
+          },
+          {
+            "step": 20,
+            "line": 14,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 1,
+              "j": 0
+            }
+          },
+          {
+            "step": 21,
+            "line": 13,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 2,
+              "n": 8
+            }
+          },
+          {
+            "step": 22,
+            "line": 14,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 2,
+              "j": 0
+            }
+          },
+          {
+            "step": 23,
+            "line": 14,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 2,
+              "j": 1
+            }
+          },
+          {
+            "step": 24,
+            "line": 13,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 3,
+              "n": 8
+            }
+          },
+          {
+            "step": 25,
+            "line": 14,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 3,
+              "j": 0
+            }
+          },
+          {
+            "step": 26,
+            "line": 14,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 3,
+              "j": 1
+            }
+          },
+          {
+            "step": 27,
+            "line": 14,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 3,
+              "j": 2
+            }
+          },
+          {
+            "step": 28,
+            "line": 15,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 3,
+              "j": 2
+            }
+          },
+          {
+            "step": 29,
+            "line": 16,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 3,
+              "j": 2
+            }
+          },
+          {
+            "step": 30,
+            "line": 17,
+            "type": "exec",
+            "vars": {
+              "dp": [
+                1,
+                1,
+                1,
+                2,
+                1,
+                1,
+                1,
+                1
+              ]
+            }
+          },
+          {
+            "step": 31,
+            "line": 21,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 3,
+              "maxLen": 1
+            }
+          },
+          {
+            "step": 32,
+            "line": 22,
+            "type": "exec",
+            "vars": {
+              "maxLen": 2
+            }
+          },
+          {
+            "step": 33,
+            "line": 13,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 4,
+              "n": 8
+            }
+          },
+          {
+            "step": 34,
+            "line": 14,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 4,
+              "j": 0
+            }
+          },
+          {
+            "step": 35,
+            "line": 14,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 4,
+              "j": 1
+            }
+          },
+          {
+            "step": 36,
+            "line": 14,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 4,
+              "j": 2
+            }
+          },
+          {
+            "step": 37,
+            "line": 15,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 4,
+              "j": 2
+            }
+          },
+          {
+            "step": 38,
+            "line": 16,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 4,
+              "j": 2
+            }
+          },
+          {
+            "step": 39,
+            "line": 17,
+            "type": "exec",
+            "vars": {
+              "dp": [
+                1,
+                1,
+                1,
+                2,
+                2,
+                1,
+                1,
+                1
+              ]
+            }
+          },
+          {
+            "step": 40,
+            "line": 14,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 4,
+              "j": 3
+            }
+          },
+          {
+            "step": 41,
+            "line": 13,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 5,
+              "n": 8
+            }
+          },
+          {
+            "step": 42,
+            "line": 14,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 5,
+              "j": 0
+            }
+          },
+          {
+            "step": 43,
+            "line": 14,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 5,
+              "j": 1
+            }
+          },
+          {
+            "step": 44,
+            "line": 14,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 5,
+              "j": 2
+            }
+          },
+          {
+            "step": 45,
+            "line": 15,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 5,
+              "j": 2
+            }
+          },
+          {
+            "step": 46,
+            "line": 16,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 5,
+              "j": 2
+            }
+          },
+          {
+            "step": 47,
+            "line": 17,
+            "type": "exec",
+            "vars": {
+              "dp": [
+                1,
+                1,
+                1,
+                2,
+                2,
+                2,
+                1,
+                1
+              ]
+            }
+          },
+          {
+            "step": 48,
+            "line": 14,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 5,
+              "j": 3
+            }
+          },
+          {
+            "step": 49,
+            "line": 15,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 5,
+              "j": 3
+            }
+          },
+          {
+            "step": 50,
+            "line": 16,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 5,
+              "j": 3
+            }
+          },
+          {
+            "step": 51,
+            "line": 17,
+            "type": "exec",
+            "vars": {
+              "dp": [
+                1,
+                1,
+                1,
+                2,
+                2,
+                3,
+                1,
+                1
+              ]
+            }
+          },
+          {
+            "step": 52,
+            "line": 14,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 5,
+              "j": 4
+            }
+          },
+          {
+            "step": 53,
+            "line": 15,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 5,
+              "j": 4
+            }
+          },
+          {
+            "step": 54,
+            "line": 21,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 5,
+              "maxLen": 2
+            }
+          },
+          {
+            "step": 55,
+            "line": 22,
+            "type": "exec",
+            "vars": {
+              "maxLen": 3
+            }
+          },
+          {
+            "step": 56,
+            "line": 13,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 6,
+              "n": 8
+            }
+          },
+          {
+            "step": 57,
+            "line": 14,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 6,
+              "j": 0
+            }
+          },
+          {
+            "step": 58,
+            "line": 15,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 6,
+              "j": 0
+            }
+          },
+          {
+            "step": 59,
+            "line": 16,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 6,
+              "j": 0
+            }
+          },
+          {
+            "step": 60,
+            "line": 17,
+            "type": "exec",
+            "vars": {
+              "dp": [
+                1,
+                1,
+                1,
+                2,
+                2,
+                3,
+                2,
+                1
+              ]
+            }
+          },
+          {
+            "step": 61,
+            "line": 14,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 6,
+              "j": 1
+            }
+          },
+          {
+            "step": 62,
+            "line": 15,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 6,
+              "j": 1
+            }
+          },
+          {
+            "step": 63,
+            "line": 14,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 6,
+              "j": 2
+            }
+          },
+          {
+            "step": 64,
+            "line": 15,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 6,
+              "j": 2
+            }
+          },
+          {
+            "step": 65,
+            "line": 14,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 6,
+              "j": 3
+            }
+          },
+          {
+            "step": 66,
+            "line": 15,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 6,
+              "j": 3
+            }
+          },
+          {
+            "step": 67,
+            "line": 16,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 6,
+              "j": 3
+            }
+          },
+          {
+            "step": 68,
+            "line": 17,
+            "type": "exec",
+            "vars": {
+              "dp": [
+                1,
+                1,
+                1,
+                2,
+                2,
+                3,
+                3,
+                1
+              ]
+            }
+          },
+          {
+            "step": 69,
+            "line": 14,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 6,
+              "j": 4
+            }
+          },
+          {
+            "step": 70,
+            "line": 15,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 6,
+              "j": 4
+            }
+          },
+          {
+            "step": 71,
+            "line": 14,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 6,
+              "j": 5
+            }
+          },
+          {
+            "step": 72,
+            "line": 15,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 6,
+              "j": 5
+            }
+          },
+          {
+            "step": 73,
+            "line": 16,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 6,
+              "j": 5
+            }
+          },
+          {
+            "step": 74,
+            "line": 17,
+            "type": "exec",
+            "vars": {
+              "dp": [
+                1,
+                1,
+                1,
+                2,
+                2,
+                3,
+                4,
+                1
+              ]
+            }
+          },
+          {
+            "step": 75,
+            "line": 21,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 6,
+              "maxLen": 3
+            }
+          },
+          {
+            "step": 76,
+            "line": 22,
+            "type": "exec",
+            "vars": {
+              "maxLen": 4
+            }
+          },
+          {
+            "step": 77,
+            "line": 13,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 7,
+              "n": 8
+            }
+          },
+          {
+            "step": 78,
+            "line": 14,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 7,
+              "j": 0
+            }
+          },
+          {
+            "step": 79,
+            "line": 15,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 7,
+              "j": 0
+            }
+          },
+          {
+            "step": 80,
+            "line": 16,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 7,
+              "j": 0
+            }
+          },
+          {
+            "step": 81,
+            "line": 17,
+            "type": "exec",
+            "vars": {
+              "dp": [
+                1,
+                1,
+                1,
+                2,
+                2,
+                3,
+                4,
+                2
+              ]
+            }
+          },
+          {
+            "step": 82,
+            "line": 14,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 7,
+              "j": 1
+            }
+          },
+          {
+            "step": 83,
+            "line": 15,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 7,
+              "j": 1
+            }
+          },
+          {
+            "step": 84,
+            "line": 14,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 7,
+              "j": 2
+            }
+          },
+          {
+            "step": 85,
+            "line": 15,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 7,
+              "j": 2
+            }
+          },
+          {
+            "step": 86,
+            "line": 14,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 7,
+              "j": 3
+            }
+          },
+          {
+            "step": 87,
+            "line": 15,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 7,
+              "j": 3
+            }
+          },
+          {
+            "step": 88,
+            "line": 16,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 7,
+              "j": 3
+            }
+          },
+          {
+            "step": 89,
+            "line": 17,
+            "type": "exec",
+            "vars": {
+              "dp": [
+                1,
+                1,
+                1,
+                2,
+                2,
+                3,
+                4,
+                3
+              ]
+            }
+          },
+          {
+            "step": 90,
+            "line": 14,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 7,
+              "j": 4
+            }
+          },
+          {
+            "step": 91,
+            "line": 15,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 7,
+              "j": 4
+            }
+          },
+          {
+            "step": 92,
+            "line": 14,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 7,
+              "j": 5
+            }
+          },
+          {
+            "step": 93,
+            "line": 15,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 7,
+              "j": 5
+            }
+          },
+          {
+            "step": 94,
+            "line": 16,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 7,
+              "j": 5
+            }
+          },
+          {
+            "step": 95,
+            "line": 17,
+            "type": "exec",
+            "vars": {
+              "dp": [
+                1,
+                1,
+                1,
+                2,
+                2,
+                3,
+                4,
+                4
+              ]
+            }
+          },
+          {
+            "step": 96,
+            "line": 14,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 7,
+              "j": 6
+            }
+          },
+          {
+            "step": 97,
+            "line": 25,
+            "type": "exec",
+            "vars": {
+              "_return": 4
+            }
+          },
+          {
+            "step": 98,
+            "line": 25,
+            "type": "exit",
+            "func": "length_of_lis",
+            "vars": {}
+          },
+          {
+            "step": 99,
+            "line": 31,
+            "type": "exec",
+            "vars": {
+              "_return": 0
+            }
+          },
+          {
+            "step": 100,
+            "line": 31,
+            "type": "exit",
+            "func": "main",
+            "vars": {}
+          }
+        ]
+      }
+    }
+  },
+  "04_最长递增子序列_二分优化": {
+    "title": "最长递增子序列（二分优化）",
+    "defaultMode": "concept",
+    "modeLabels": {
+      "concept": "理解动画",
+      "trace": "代码执行"
+    },
+    "modes": {
+      "concept": {
+        "title": "最长递增子序列（二分优化）",
+        "source": [
+          "算法: LIS 二分优化",
+          "维护 tails: 长度为 k+1 的递增子序列的最小末尾",
+          "",
+          "for x in nums:",
+          "    pos = lower_bound(tails, x)",
+          "    tails[pos] = x",
+          "返回 tails 的长度"
+        ],
+        "important_vars": {
+          "i": "位置",
+          "state": "压缩状态",
+          "best": "当前最优",
+          "phase": "阶段"
+        },
+        "track_vars": {
+          "primary": [
+            "i",
+            "state",
+            "best",
+            "phase"
+          ],
+          "secondary": []
+        },
+        "var_classes": {
+          "i": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "state": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "best": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "phase": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "concept": {
+            "category": "secondary",
+            "type": "concept"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 8,
+            "text": "概念动画：二分优化的关键是让每种长度的结尾尽量小。"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 17,
+            "type": "exec",
+            "vars": {
+              "i": 0,
+              "state": "x=10",
+              "best": 1,
+              "phase": "先放入 10, tails 长度为 1",
+              "concept": {
+                "mode": "line",
+                "title": "LIS 二分优化",
+                "subtitle": "tails[k] 只保存长度 k+1 的最小结尾",
+                "valueLabel": "nums",
+                "values": [
+                  10,
+                  9,
+                  2,
+                  5,
+                  3,
+                  7,
+                  101,
+                  18
+                ],
+                "dp": [
+                  10,
+                  "",
+                  "",
+                  ""
+                ],
+                "index": 0,
+                "active": [
+                  0
+                ],
+                "window": [
+                  {
+                    "label": "当前数",
+                    "value": 10
+                  },
+                  {
+                    "label": "位置",
+                    "value": 0
+                  },
+                  {
+                    "label": "长度",
+                    "value": 1
+                  }
+                ],
+                "formula": "追加 10",
+                "caption": "tails 不是某条真实子序列, 它保存的是每种长度的最小结尾。",
+                "kind": "dp_rolling"
+              }
+            }
+          },
+          {
+            "step": 1,
+            "line": 17,
+            "type": "exec",
+            "vars": {
+              "i": 1,
+              "state": "x=9",
+              "best": 1,
+              "phase": "9 替换 10, 长度不变但结尾更小",
+              "concept": {
+                "mode": "line",
+                "title": "LIS 二分优化",
+                "subtitle": "tails[k] 只保存长度 k+1 的最小结尾",
+                "valueLabel": "nums",
+                "values": [
+                  10,
+                  9,
+                  2,
+                  5,
+                  3,
+                  7,
+                  101,
+                  18
+                ],
+                "dp": [
+                  9,
+                  "",
+                  "",
+                  ""
+                ],
+                "index": 1,
+                "active": [
+                  0
+                ],
+                "window": [
+                  {
+                    "label": "当前数",
+                    "value": 9
+                  },
+                  {
+                    "label": "位置",
+                    "value": 0
+                  },
+                  {
+                    "label": "长度",
+                    "value": 1
+                  }
+                ],
+                "formula": "替换位置 0",
+                "caption": "tails 不是某条真实子序列, 它保存的是每种长度的最小结尾。",
+                "kind": "dp_rolling"
+              }
+            }
+          },
+          {
+            "step": 2,
+            "line": 17,
+            "type": "exec",
+            "vars": {
+              "i": 2,
+              "state": "x=2",
+              "best": 1,
+              "phase": "2 继续替换第一个位置, 给未来留下更大空间",
+              "concept": {
+                "mode": "line",
+                "title": "LIS 二分优化",
+                "subtitle": "tails[k] 只保存长度 k+1 的最小结尾",
+                "valueLabel": "nums",
+                "values": [
+                  10,
+                  9,
+                  2,
+                  5,
+                  3,
+                  7,
+                  101,
+                  18
+                ],
+                "dp": [
+                  2,
+                  "",
+                  "",
+                  ""
+                ],
+                "index": 2,
+                "active": [
+                  0
+                ],
+                "window": [
+                  {
+                    "label": "当前数",
+                    "value": 2
+                  },
+                  {
+                    "label": "位置",
+                    "value": 0
+                  },
+                  {
+                    "label": "长度",
+                    "value": 1
+                  }
+                ],
+                "formula": "替换位置 0",
+                "caption": "tails 不是某条真实子序列, 它保存的是每种长度的最小结尾。",
+                "kind": "dp_rolling"
+              }
+            }
+          },
+          {
+            "step": 3,
+            "line": 17,
+            "type": "exec",
+            "vars": {
+              "i": 3,
+              "state": "x=5",
+              "best": 2,
+              "phase": "5 比 2 大, 追加得到长度 2",
+              "concept": {
+                "mode": "line",
+                "title": "LIS 二分优化",
+                "subtitle": "tails[k] 只保存长度 k+1 的最小结尾",
+                "valueLabel": "nums",
+                "values": [
+                  10,
+                  9,
+                  2,
+                  5,
+                  3,
+                  7,
+                  101,
+                  18
+                ],
+                "dp": [
+                  2,
+                  5,
+                  "",
+                  ""
+                ],
+                "index": 3,
+                "active": [
+                  1
+                ],
+                "window": [
+                  {
+                    "label": "当前数",
+                    "value": 5
+                  },
+                  {
+                    "label": "位置",
+                    "value": 1
+                  },
+                  {
+                    "label": "长度",
+                    "value": 2
+                  }
+                ],
+                "formula": "追加 5",
+                "caption": "tails 不是某条真实子序列, 它保存的是每种长度的最小结尾。",
+                "kind": "dp_rolling"
+              }
+            }
+          },
+          {
+            "step": 4,
+            "line": 17,
+            "type": "exec",
+            "vars": {
+              "i": 4,
+              "state": "x=3",
+              "best": 2,
+              "phase": "3 替换 5, 长度还是 2, 但更有潜力",
+              "concept": {
+                "mode": "line",
+                "title": "LIS 二分优化",
+                "subtitle": "tails[k] 只保存长度 k+1 的最小结尾",
+                "valueLabel": "nums",
+                "values": [
+                  10,
+                  9,
+                  2,
+                  5,
+                  3,
+                  7,
+                  101,
+                  18
+                ],
+                "dp": [
+                  2,
+                  3,
+                  "",
+                  ""
+                ],
+                "index": 4,
+                "active": [
+                  1
+                ],
+                "window": [
+                  {
+                    "label": "当前数",
+                    "value": 3
+                  },
+                  {
+                    "label": "位置",
+                    "value": 1
+                  },
+                  {
+                    "label": "长度",
+                    "value": 2
+                  }
+                ],
+                "formula": "替换位置 1",
+                "caption": "tails 不是某条真实子序列, 它保存的是每种长度的最小结尾。",
+                "kind": "dp_rolling"
+              }
+            }
+          },
+          {
+            "step": 5,
+            "line": 17,
+            "type": "exec",
+            "vars": {
+              "i": 5,
+              "state": "x=7",
+              "best": 3,
+              "phase": "7 追加, 长度推进到 3",
+              "concept": {
+                "mode": "line",
+                "title": "LIS 二分优化",
+                "subtitle": "tails[k] 只保存长度 k+1 的最小结尾",
+                "valueLabel": "nums",
+                "values": [
+                  10,
+                  9,
+                  2,
+                  5,
+                  3,
+                  7,
+                  101,
+                  18
+                ],
+                "dp": [
+                  2,
+                  3,
+                  7,
+                  ""
+                ],
+                "index": 5,
+                "active": [
+                  2
+                ],
+                "window": [
+                  {
+                    "label": "当前数",
+                    "value": 7
+                  },
+                  {
+                    "label": "位置",
+                    "value": 2
+                  },
+                  {
+                    "label": "长度",
+                    "value": 3
+                  }
+                ],
+                "formula": "追加 7",
+                "caption": "tails 不是某条真实子序列, 它保存的是每种长度的最小结尾。",
+                "kind": "dp_rolling"
+              }
+            }
+          },
+          {
+            "step": 6,
+            "line": 17,
+            "type": "exec",
+            "vars": {
+              "i": 6,
+              "state": "x=101",
+              "best": 4,
+              "phase": "101 追加, 长度推进到 4",
+              "concept": {
+                "mode": "line",
+                "title": "LIS 二分优化",
+                "subtitle": "tails[k] 只保存长度 k+1 的最小结尾",
+                "valueLabel": "nums",
+                "values": [
+                  10,
+                  9,
+                  2,
+                  5,
+                  3,
+                  7,
+                  101,
+                  18
+                ],
+                "dp": [
+                  2,
+                  3,
+                  7,
+                  101
+                ],
+                "index": 6,
+                "active": [
+                  3
+                ],
+                "window": [
+                  {
+                    "label": "当前数",
+                    "value": 101
+                  },
+                  {
+                    "label": "位置",
+                    "value": 3
+                  },
+                  {
+                    "label": "长度",
+                    "value": 4
+                  }
+                ],
+                "formula": "追加 101",
+                "caption": "tails 不是某条真实子序列, 它保存的是每种长度的最小结尾。",
+                "kind": "dp_rolling"
+              }
+            }
+          },
+          {
+            "step": 7,
+            "line": 17,
+            "type": "exec",
+            "vars": {
+              "i": 7,
+              "state": "x=18",
+              "best": 4,
+              "phase": "18 替换 101, 答案长度仍是 4",
+              "concept": {
+                "mode": "line",
+                "title": "LIS 二分优化",
+                "subtitle": "tails[k] 只保存长度 k+1 的最小结尾",
+                "valueLabel": "nums",
+                "values": [
+                  10,
+                  9,
+                  2,
+                  5,
+                  3,
+                  7,
+                  101,
+                  18
+                ],
+                "dp": [
+                  2,
+                  3,
+                  7,
+                  18
+                ],
+                "index": 7,
+                "active": [
+                  3
+                ],
+                "window": [
+                  {
+                    "label": "当前数",
+                    "value": 18
+                  },
+                  {
+                    "label": "位置",
+                    "value": 3
+                  },
+                  {
+                    "label": "长度",
+                    "value": 4
+                  }
+                ],
+                "formula": "替换位置 3",
+                "caption": "tails 不是某条真实子序列, 它保存的是每种长度的最小结尾。",
+                "kind": "dp_rolling"
+              }
+            }
+          }
+        ]
+      },
+      "trace": {
+        "title": "最长递增子序列（二分优化）",
+        "source": [
+          "#include <stdio.h>",
+          "#include <stdlib.h>",
+          "",
+          "/* 在 tails[0..len - 1] 中，找第一个 >= target 的位置 */",
+          "int lower_bound(int tails[], int len, int target) {",
+          "    int left = 0, right = len;",
+          "    while (left < right) {",
+          "        int mid = left + (right - left) / 2;",
+          "        if (tails[mid] < target) {",
+          "            left = mid + 1;",
+          "        } else {",
+          "            right = mid;",
+          "        }",
+          "    }",
+          "    return left;",
+          "}",
+          "",
+          "int length_of_lis_bs(int nums[], int n) {",
+          "    if (n <= 0) return 0;",
+          "",
+          "    int *tails = (int *)malloc(n * sizeof(int));",
+          "    if (tails == NULL) return 0;",
+          "",
+          "    int len = 0;",
+          "",
+          "    for (int i = 0; i < n; i++) {",
+          "        int pos = lower_bound(tails, len, nums[i]);",
+          "        tails[pos] = nums[i];",
+          "        if (pos == len) {",
+          "            len++;",
+          "        }",
+          "    }",
+          "",
+          "    free(tails);",
+          "    return len;",
+          "}",
+          "",
+          "int main(void) {",
+          "    int nums[] = {10, 9, 2, 5, 3, 7, 101, 18};",
+          "    int n = sizeof(nums) / sizeof(nums[0]);",
+          "",
+          "    printf(\"LIS 长度（二分优化）：%d\\n\", length_of_lis_bs(nums, n));",
+          "    return 0;",
+          "}",
+          ""
+        ],
+        "important_vars": {
+          "left": "索引",
+          "mid": "索引",
+          "len": "参数",
+          "i": "索引",
+          "pos": "索引",
+          "n": "参数",
+          "tails": "数据",
+          "nums": "数据"
+        },
+        "track_vars": {
+          "primary": [
+            "i",
+            "left",
+            "len",
+            "mid",
+            "n",
+            "nums",
+            "pos",
+            "right",
+            "target"
+          ],
+          "secondary": [
+            "_return",
+            "tails"
+          ]
+        },
+        "var_classes": {
+          "_return": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "i": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "left": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "len": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "mid": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "n": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "nums": {
+            "category": "primary",
+            "type": "array"
+          },
+          "pos": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "right": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "tails": {
+            "category": "secondary",
+            "type": "array"
+          },
+          "target": {
+            "category": "primary",
+            "type": "scalar"
+          }
+        },
+        "initial_data": {
+          "nums": [
+            10,
+            9,
+            2,
+            5,
+            3,
+            7,
+            101,
+            18
+          ],
+          "tails": []
+        },
+        "program_output": [
+          {
+            "after_step": 72,
+            "text": "LIS 长度（二分优化）：4"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 31,
+            "type": "enter",
+            "func": "main",
+            "vars": {}
+          },
+          {
+            "step": 1,
+            "line": 34,
+            "type": "enter",
+            "func": "length_of_lis_bs",
+            "vars": {
+              "nums": [
+                10,
+                9,
+                2,
+                5,
+                3,
+                7,
+                101,
+                18
+              ],
+              "n": 8
+            }
+          },
+          {
+            "step": 2,
+            "line": 17,
+            "type": "cond",
+            "result": false,
+            "vars": {
+              "n": 8
+            }
+          },
+          {
+            "step": 3,
+            "line": 19,
+            "type": "cond",
+            "result": false,
+            "vars": {
+              "tails": -1023407744
+            }
+          },
+          {
+            "step": 4,
+            "line": 21,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 0,
+              "n": 8
+            }
+          },
+          {
+            "step": 5,
+            "line": 22,
+            "type": "enter",
+            "func": "lower_bound",
+            "vars": {
+              "tails": [],
+              "len": 0,
+              "target": 10
+            }
+          },
+          {
+            "step": 6,
+            "line": 14,
+            "type": "exec",
+            "vars": {
+              "_return": 0
+            }
+          },
+          {
+            "step": 7,
+            "line": 14,
+            "type": "exit",
+            "func": "lower_bound",
+            "vars": {}
+          },
+          {
+            "step": 8,
+            "line": 24,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "len": 0,
+              "pos": 0
+            }
+          },
+          {
+            "step": 9,
+            "line": 25,
+            "type": "exec",
+            "vars": {
+              "len": 1
+            }
+          },
+          {
+            "step": 10,
+            "line": 21,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 1,
+              "n": 8
+            }
+          },
+          {
+            "step": 11,
+            "line": 22,
+            "type": "enter",
+            "func": "lower_bound",
+            "vars": {
+              "tails": [
+                10
+              ],
+              "len": 1,
+              "target": 9
+            }
+          },
+          {
+            "step": 12,
+            "line": 6,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "left": 0,
+              "right": 1
+            }
+          },
+          {
+            "step": 13,
+            "line": 11,
+            "type": "exec",
+            "vars": {
+              "right": 0
+            }
+          },
+          {
+            "step": 14,
+            "line": 14,
+            "type": "exec",
+            "vars": {
+              "_return": 0
+            }
+          },
+          {
+            "step": 15,
+            "line": 14,
+            "type": "exit",
+            "func": "lower_bound",
+            "vars": {}
+          },
+          {
+            "step": 16,
+            "line": 21,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 2,
+              "n": 8
+            }
+          },
+          {
+            "step": 17,
+            "line": 22,
+            "type": "enter",
+            "func": "lower_bound",
+            "vars": {
+              "tails": [
+                9
+              ],
+              "len": 1,
+              "target": 2
+            }
+          },
+          {
+            "step": 18,
+            "line": 6,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "left": 0,
+              "right": 1
+            }
+          },
+          {
+            "step": 19,
+            "line": 11,
+            "type": "exec",
+            "vars": {
+              "right": 0
+            }
+          },
+          {
+            "step": 20,
+            "line": 14,
+            "type": "exec",
+            "vars": {
+              "_return": 0
+            }
+          },
+          {
+            "step": 21,
+            "line": 14,
+            "type": "exit",
+            "func": "lower_bound",
+            "vars": {}
+          },
+          {
+            "step": 22,
+            "line": 21,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 3,
+              "n": 8
+            }
+          },
+          {
+            "step": 23,
+            "line": 22,
+            "type": "enter",
+            "func": "lower_bound",
+            "vars": {
+              "tails": [
+                2
+              ],
+              "len": 1,
+              "target": 5
+            }
+          },
+          {
+            "step": 24,
+            "line": 6,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "left": 0,
+              "right": 1
+            }
+          },
+          {
+            "step": 25,
+            "line": 8,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "mid": 0,
+              "target": 5
+            }
+          },
+          {
+            "step": 26,
+            "line": 9,
+            "type": "exec",
+            "vars": {
+              "left": 1
+            }
+          },
+          {
+            "step": 27,
+            "line": 14,
+            "type": "exec",
+            "vars": {
+              "_return": 1
+            }
+          },
+          {
+            "step": 28,
+            "line": 14,
+            "type": "exit",
+            "func": "lower_bound",
+            "vars": {}
+          },
+          {
+            "step": 29,
+            "line": 24,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "len": 1,
+              "pos": 1
+            }
+          },
+          {
+            "step": 30,
+            "line": 25,
+            "type": "exec",
+            "vars": {
+              "len": 2
+            }
+          },
+          {
+            "step": 31,
+            "line": 21,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 4,
+              "n": 8
+            }
+          },
+          {
+            "step": 32,
+            "line": 22,
+            "type": "enter",
+            "func": "lower_bound",
+            "vars": {
+              "tails": [
+                2,
+                5
+              ],
+              "len": 2,
+              "target": 3
+            }
+          },
+          {
+            "step": 33,
+            "line": 6,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "left": 0,
+              "right": 2
+            }
+          },
+          {
+            "step": 34,
+            "line": 11,
+            "type": "exec",
+            "vars": {
+              "right": 1
+            }
+          },
+          {
+            "step": 35,
+            "line": 6,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "left": 0,
+              "right": 1
+            }
+          },
+          {
+            "step": 36,
+            "line": 8,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "mid": 0,
+              "target": 3
+            }
+          },
+          {
+            "step": 37,
+            "line": 9,
+            "type": "exec",
+            "vars": {
+              "left": 1
+            }
+          },
+          {
+            "step": 38,
+            "line": 14,
+            "type": "exec",
+            "vars": {
+              "_return": 1
+            }
+          },
+          {
+            "step": 39,
+            "line": 14,
+            "type": "exit",
+            "func": "lower_bound",
+            "vars": {}
+          },
+          {
+            "step": 40,
+            "line": 21,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 5,
+              "n": 8
+            }
+          },
+          {
+            "step": 41,
+            "line": 22,
+            "type": "enter",
+            "func": "lower_bound",
+            "vars": {
+              "tails": [
+                2,
+                3
+              ],
+              "len": 2,
+              "target": 7
+            }
+          },
+          {
+            "step": 42,
+            "line": 6,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "left": 0,
+              "right": 2
+            }
+          },
+          {
+            "step": 43,
+            "line": 8,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "mid": 1,
+              "target": 7
+            }
+          },
+          {
+            "step": 44,
+            "line": 9,
+            "type": "exec",
+            "vars": {
+              "left": 2
+            }
+          },
+          {
+            "step": 45,
+            "line": 14,
+            "type": "exec",
+            "vars": {
+              "_return": 2
+            }
+          },
+          {
+            "step": 46,
+            "line": 14,
+            "type": "exit",
+            "func": "lower_bound",
+            "vars": {}
+          },
+          {
+            "step": 47,
+            "line": 24,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "len": 2,
+              "pos": 2
+            }
+          },
+          {
+            "step": 48,
+            "line": 25,
+            "type": "exec",
+            "vars": {
+              "len": 3
+            }
+          },
+          {
+            "step": 49,
+            "line": 21,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 6,
+              "n": 8
+            }
+          },
+          {
+            "step": 50,
+            "line": 22,
+            "type": "enter",
+            "func": "lower_bound",
+            "vars": {
+              "tails": [
+                2,
+                3,
+                7
+              ],
+              "len": 3,
+              "target": 101
+            }
+          },
+          {
+            "step": 51,
+            "line": 6,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "left": 0,
+              "right": 3
+            }
+          },
+          {
+            "step": 52,
+            "line": 8,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "mid": 1,
+              "target": 101
+            }
+          },
+          {
+            "step": 53,
+            "line": 9,
+            "type": "exec",
+            "vars": {
+              "left": 2
+            }
+          },
+          {
+            "step": 54,
+            "line": 6,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "left": 2,
+              "right": 3
+            }
+          },
+          {
+            "step": 55,
+            "line": 8,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "mid": 2,
+              "target": 101
+            }
+          },
+          {
+            "step": 56,
+            "line": 9,
+            "type": "exec",
+            "vars": {
+              "left": 3
+            }
+          },
+          {
+            "step": 57,
+            "line": 14,
+            "type": "exec",
+            "vars": {
+              "_return": 3
+            }
+          },
+          {
+            "step": 58,
+            "line": 14,
+            "type": "exit",
+            "func": "lower_bound",
+            "vars": {}
+          },
+          {
+            "step": 59,
+            "line": 24,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "len": 3,
+              "pos": 3
+            }
+          },
+          {
+            "step": 60,
+            "line": 25,
+            "type": "exec",
+            "vars": {
+              "len": 4
+            }
+          },
+          {
+            "step": 61,
+            "line": 21,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 7,
+              "n": 8
+            }
+          },
+          {
+            "step": 62,
+            "line": 22,
+            "type": "enter",
+            "func": "lower_bound",
+            "vars": {
+              "tails": [
+                2,
+                3,
+                7,
+                101
+              ],
+              "len": 4,
+              "target": 18
+            }
+          },
+          {
+            "step": 63,
+            "line": 6,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "left": 0,
+              "right": 4
+            }
+          },
+          {
+            "step": 64,
+            "line": 8,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "mid": 2,
+              "target": 18
+            }
+          },
+          {
+            "step": 65,
+            "line": 9,
+            "type": "exec",
+            "vars": {
+              "left": 3
+            }
+          },
+          {
+            "step": 66,
+            "line": 6,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "left": 3,
+              "right": 4
+            }
+          },
+          {
+            "step": 67,
+            "line": 11,
+            "type": "exec",
+            "vars": {
+              "right": 3
+            }
+          },
+          {
+            "step": 68,
+            "line": 14,
+            "type": "exec",
+            "vars": {
+              "_return": 3
+            }
+          },
+          {
+            "step": 69,
+            "line": 14,
+            "type": "exit",
+            "func": "lower_bound",
+            "vars": {}
+          },
+          {
+            "step": 70,
+            "line": 29,
+            "type": "exec",
+            "vars": {
+              "_return": 4
+            }
+          },
+          {
+            "step": 71,
+            "line": 29,
+            "type": "exit",
+            "func": "length_of_lis_bs",
+            "vars": {}
+          },
+          {
+            "step": 72,
+            "line": 35,
+            "type": "exec",
+            "vars": {
+              "_return": 0
+            }
+          },
+          {
+            "step": 73,
+            "line": 35,
+            "type": "exit",
+            "func": "main",
+            "vars": {}
+          }
+        ]
+      }
+    }
+  },
+  "05_滚动数组": {
+    "title": "滚动数组",
+    "defaultMode": "concept",
+    "modeLabels": {
+      "concept": "理解动画",
+      "trace": "代码执行"
+    },
+    "modes": {
+      "concept": {
+        "title": "滚动数组",
+        "source": [
+          "算法: 0-1 背包空间优化",
+          "第一层: 二维表压成 pre/cur 两行",
+          "第二层: 两行继续压成一维 dp[w]",
+          "",
+          "两行滚动: pre=(i-1)%2, cur=i%2",
+          "一维压缩: 对每件物品, w 从 W 倒序走到 weight",
+          "dp[w] = max(dp[w], value + dp[w-weight])",
+          "返回 dp[W]"
+        ],
+        "important_vars": {
+          "i": "位置",
+          "state": "压缩状态",
+          "best": "当前最优",
+          "phase": "阶段"
+        },
+        "track_vars": {
+          "primary": [
+            "i",
+            "state",
+            "best",
+            "phase"
+          ],
+          "secondary": []
+        },
+        "var_classes": {
+          "i": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "state": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "best": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "phase": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "concept": {
+            "category": "secondary",
+            "type": "concept"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 6,
+            "text": "概念动画：先压成两行，再压成一行；每一步都先确认旧值是否还会被读取。"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 9,
+            "type": "exec",
+            "vars": {
+              "i": 0,
+              "state": "原始二维 DP",
+              "best": 0,
+              "phase": "先观察依赖关系: 更早的行算完后就不会再读取",
+              "concept": {
+                "mode": "line",
+                "title": "原始二维 DP",
+                "subtitle": "每件物品占一行, 但当前行其实只会读取上一行",
+                "valueLabel": "容量",
+                "values": [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4
+                ],
+                "dp": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "index": 0,
+                "active": [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4
+                ],
+                "window": [
+                  {
+                    "label": "保存行数",
+                    "value": "n+1"
+                  },
+                  {
+                    "label": "上一行",
+                    "value": "i-1"
+                  },
+                  {
+                    "label": "当前行",
+                    "value": "i"
+                  }
+                ],
+                "formula": "dp[i][w] 只依赖 dp[i-1][...]",
+                "caption": "先观察依赖关系: 更早的行算完后就不会再读取",
+                "kind": "dp_rolling"
+              }
+            }
+          },
+          {
+            "step": 1,
+            "line": 9,
+            "type": "exec",
+            "vars": {
+              "i": 1,
+              "state": "第一层: 两行滚动",
+              "best": 1500,
+              "phase": "处理吉他: pre=第 0 行, cur=第 1 行",
+              "concept": {
+                "mode": "line",
+                "title": "第一层: 两行滚动",
+                "subtitle": "pre 保存上一行, cur 覆盖另一行; 下一轮两者交换身份",
+                "valueLabel": "容量",
+                "values": [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4
+                ],
+                "dp": [
+                  0,
+                  1500,
+                  1500,
+                  1500,
+                  1500
+                ],
+                "index": 1,
+                "active": [
+                  1,
+                  2,
+                  3,
+                  4
+                ],
+                "window": [
+                  {
+                    "label": "pre",
+                    "value": "第0行"
+                  },
+                  {
+                    "label": "cur",
+                    "value": "第1行"
+                  },
+                  {
+                    "label": "保存行数",
+                    "value": 2
+                  }
+                ],
+                "formula": "pre=(i-1)%2, cur=i%2",
+                "caption": "处理吉他: pre=第 0 行, cur=第 1 行",
+                "kind": "dp_rolling"
+              }
+            }
+          },
+          {
+            "step": 2,
+            "line": 9,
+            "type": "exec",
+            "vars": {
+              "i": 2,
+              "state": "第一层: 两行滚动",
+              "best": 3000,
+              "phase": "处理音响: 两行身份轮换, 仍然只保存两行",
+              "concept": {
+                "mode": "line",
+                "title": "第一层: 两行滚动",
+                "subtitle": "原来的 cur 变成 pre, 另一行被擦写成新的 cur",
+                "valueLabel": "容量",
+                "values": [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4
+                ],
+                "dp": [
+                  0,
+                  1500,
+                  1500,
+                  1500,
+                  3000
+                ],
+                "index": 2,
+                "active": [
+                  4
+                ],
+                "window": [
+                  {
+                    "label": "pre",
+                    "value": "第1行"
+                  },
+                  {
+                    "label": "cur",
+                    "value": "第0行"
+                  },
+                  {
+                    "label": "dp[4]",
+                    "value": 3000
+                  }
+                ],
+                "formula": "pre=第1行, cur=第0行",
+                "caption": "处理音响: 两行身份轮换, 仍然只保存两行",
+                "kind": "dp_rolling"
+              }
+            }
+          },
+          {
+            "step": 3,
+            "line": 9,
+            "type": "exec",
+            "vars": {
+              "i": 2,
+              "state": "第二层: 一维压缩",
+              "best": 3000,
+              "phase": "0-1 背包从右往左更新, 防止同一件物品被重复使用",
+              "concept": {
+                "mode": "line",
+                "title": "第二层: 一维压缩",
+                "subtitle": "两行还能压成一行, 但必须保护尚未读取的旧值",
+                "valueLabel": "容量",
+                "values": [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4
+                ],
+                "dp": [
+                  0,
+                  1500,
+                  1500,
+                  1500,
+                  3000
+                ],
+                "index": 2,
+                "active": [
+                  4,
+                  3,
+                  2,
+                  1
+                ],
+                "window": [
+                  {
+                    "label": "数组",
+                    "value": "dp[0..W]"
+                  },
+                  {
+                    "label": "方向",
+                    "value": "从右到左"
+                  },
+                  {
+                    "label": "原因",
+                    "value": "读取旧值"
+                  }
+                ],
+                "formula": "for w = W..weight",
+                "caption": "0-1 背包从右往左更新, 防止同一件物品被重复使用",
+                "kind": "dp_rolling"
+              }
+            }
+          },
+          {
+            "step": 4,
+            "line": 9,
+            "type": "exec",
+            "vars": {
+              "i": 3,
+              "state": "第二层: 一维压缩",
+              "best": 3500,
+              "phase": "处理笔记本: 容量 4 读取尚未更新的 dp[1]",
+              "concept": {
+                "mode": "line",
+                "title": "第二层: 一维压缩",
+                "subtitle": "右侧先更新时, 左侧 dp[w-weight] 仍是上一轮旧值",
+                "valueLabel": "容量",
+                "values": [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4
+                ],
+                "dp": [
+                  0,
+                  1500,
+                  1500,
+                  2000,
+                  3500
+                ],
+                "index": 3,
+                "active": [
+                  4,
+                  3
+                ],
+                "window": [
+                  {
+                    "label": "物品",
+                    "value": "笔记本"
+                  },
+                  {
+                    "label": "方向",
+                    "value": "倒序"
+                  },
+                  {
+                    "label": "dp[4]",
+                    "value": 3500
+                  }
+                ],
+                "formula": "dp[4] = max(3000, 2000 + dp[1]) = 3500",
+                "caption": "处理笔记本: 容量 4 读取尚未更新的 dp[1]",
+                "kind": "dp_rolling"
+              }
+            }
+          },
+          {
+            "step": 5,
+            "line": 9,
+            "type": "exec",
+            "vars": {
+              "i": 4,
+              "state": "第二层: 一维压缩",
+              "best": 4000,
+              "phase": "处理手机: 最终容量 4 的最大价值是 4000",
+              "concept": {
+                "mode": "line",
+                "title": "第二层: 一维压缩",
+                "subtitle": "空间降到 O(W), 状态转移的含义没有改变",
+                "valueLabel": "容量",
+                "values": [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4
+                ],
+                "dp": [
+                  0,
+                  2000,
+                  3500,
+                  3500,
+                  4000
+                ],
+                "index": 4,
+                "active": [
+                  4,
+                  3,
+                  2,
+                  1
+                ],
+                "window": [
+                  {
+                    "label": "物品",
+                    "value": "手机"
+                  },
+                  {
+                    "label": "方向",
+                    "value": "倒序"
+                  },
+                  {
+                    "label": "dp[4]",
+                    "value": 4000
+                  }
+                ],
+                "formula": "dp[4] = max(3500, 2000 + dp[3]) = 4000",
+                "caption": "处理手机: 最终容量 4 的最大价值是 4000",
+                "kind": "dp_rolling"
+              }
+            }
+          }
+        ]
+      },
+      "trace": {
+        "title": "滚动数组",
+        "source": [
+          "#include <stdio.h>",
+          "",
+          "#define MAX(a, b) ((a) > (b) ? (a) : (b))",
+          "",
+          "/* 原始版本：O(n × W) 空间 */",
+          "int knapsack_2d(int wt[], int val[], int n, int W) {",
+          "    int dp[n + 1][W + 1];",
+          "",
+          "    for (int i = 0; i <= n; i++)",
+          "        for (int w = 0; w <= W; w++)",
+          "            dp[i][w] = 0;",
+          "",
+          "    for (int i = 1; i <= n; i++) {",
+          "        for (int w = 1; w <= W; w++) {",
+          "            if (w >= wt[i - 1]) {",
+          "                dp[i][w] = MAX(dp[i - 1][w], val[i - 1] + dp[i - 1][w - wt[i - 1]]);",
+          "            } else {",
+          "                dp[i][w] = dp[i - 1][w];",
+          "            }",
+          "        }",
+          "    }",
+          "    return dp[n][W];",
+          "}",
+          "",
+          "/* 第一层优化：只保留上一行和当前行 */",
+          "int knapsack_rolling(int wt[], int val[], int n, int W) {",
+          "    int dp[2][W + 1];",
+          "",
+          "    for (int row = 0; row < 2; row++) {",
+          "        for (int w = 0; w <= W; w++) {",
+          "            dp[row][w] = 0;",
+          "        }",
+          "    }",
+          "",
+          "    for (int i = 1; i <= n; i++) {",
+          "        int cur = i % 2;",
+          "        int pre = (i - 1) % 2;",
+          "",
+          "        for (int w = 0; w <= W; w++) {",
+          "            dp[cur][w] = dp[pre][w];",
+          "            if (w >= wt[i - 1]) {",
+          "                int choose = dp[pre][w - wt[i - 1]] + val[i - 1];",
+          "                if (choose > dp[cur][w]) {",
+          "                    dp[cur][w] = choose;",
+          "                }",
+          "            }",
+          "        }",
+          "    }",
+          "",
+          "    return dp[n % 2][W];",
+          "}",
+          "",
+          "/* 第二层优化：压成一维数组，0-1 背包必须倒序遍历 */",
+          "int knapsack_1d(int wt[], int val[], int n, int W) {",
+          "    int dp[W + 1];",
+          "    for (int w = 0; w <= W; w++) dp[w] = 0;",
+          "",
+          "    for (int i = 0; i < n; i++) {",
+          "        for (int w = W; w >= wt[i]; w--) {",
+          "            dp[w] = MAX(dp[w], val[i] + dp[w - wt[i]]);",
+          "        }",
+          "    }",
+          "    return dp[W];",
+          "}",
+          "",
+          "int main(void) {",
+          "    int wt[]  = {1, 4, 3, 1};",
+          "    int val[] = {1500, 3000, 2000, 2000};",
+          "    int n = 4, W = 4;",
+          "",
+          "    printf(\"二维 DP（O(nW) 空间）：最大价值 = %d\\n\",",
+          "           knapsack_2d(wt, val, n, W));",
+          "    printf(\"两行滚动（O(W) 空间）：最大价值 = %d\\n\",",
+          "           knapsack_rolling(wt, val, n, W));",
+          "    printf(\"一维压缩（O(W) 空间）：最大价值 = %d\\n\",",
+          "           knapsack_1d(wt, val, n, W));",
+          "",
+          "    return 0;",
+          "}",
+          ""
+        ],
+        "important_vars": {
+          "i": "索引",
+          "w": "指针",
+          "n": "参数",
+          "wt": "数据",
+          "val": "数据",
+          "dp": "数据"
+        },
+        "track_vars": {
+          "primary": [
+            "i",
+            "w",
+            "mask",
+            "cost",
+            "best",
+            "phase"
+          ],
+          "secondary": [
+            "pre",
+            "cur",
+            "_return"
+          ]
+        },
+        "var_classes": {
+          "W": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "_return": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "choose": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "cur": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "dp": {
+            "category": "primary",
+            "type": "grid"
+          },
+          "i": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "n": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "row": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "w": {
+            "category": "secondary",
+            "type": "scalar"
+          }
+        },
+        "initial_data": {
+          "wt": [
+            1,
+            4,
+            3,
+            1
+          ],
+          "val": [
+            1500,
+            3000,
+            2000,
+            2000
+          ],
+          "dp": [
+            [
+              1841965536,
+              1,
+              -1937188960,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              35049280,
+              1
+            ],
+            [
+              0,
+              0,
+              1,
+              0,
+              515
+            ],
+            [
+              0,
+              4608,
+              0,
+              1841965560,
+              1
+            ],
+            [
+              125216,
+              0,
+              2,
+              0,
+              112
+            ]
+          ]
+        },
+        "program_output": [
+          {
+            "after_step": 5,
+            "text": "二维 DP（O(nW) 空间）：最大价值 = 4000"
+          },
+          {
+            "after_step": 10,
+            "text": "两行滚动（O(W) 空间）：最大价值 = 4000"
+          },
+          {
+            "after_step": 15,
+            "text": "一维压缩（O(W) 空间）：最大价值 = 4000"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 66,
+            "type": "enter",
+            "func": "main",
+            "vars": {
+              "phase": "准备 4 件物品和容量 4 的背包"
+            }
+          },
+          {
+            "step": 1,
+            "line": 6,
+            "type": "enter",
+            "func": "knapsack_2d",
+            "vars": {
+              "phase": "原始方案保存完整二维表"
+            }
+          },
+          {
+            "step": 2,
+            "line": 16,
+            "type": "exec",
+            "func": "knapsack_2d",
+            "vars": {
+              "i": 4,
+              "w": 4,
+              "best": 4000,
+              "phase": "二维表得到最大价值 4000"
+            }
+          },
+          {
+            "step": 3,
+            "line": 22,
+            "type": "exit",
+            "func": "knapsack_2d",
+            "vars": {
+              "_return": 4000,
+              "phase": "二维版本完成"
+            }
+          },
+          {
+            "step": 4,
+            "line": 71,
+            "type": "exec",
+            "func": "main",
+            "vars": {
+              "best": 4000,
+              "phase": "输出二维版本结果"
+            }
+          },
+          {
+            "step": 5,
+            "line": 26,
+            "type": "enter",
+            "func": "knapsack_rolling",
+            "vars": {
+              "phase": "第一层优化只保留 pre 和 cur 两行"
+            }
+          },
+          {
+            "step": 6,
+            "line": 36,
+            "type": "exec",
+            "func": "knapsack_rolling",
+            "vars": {
+              "i": 1,
+              "pre": 0,
+              "cur": 1,
+              "phase": "第 1 轮: 第 0 行是 pre, 第 1 行是 cur"
+            }
+          },
+          {
+            "step": 7,
+            "line": 36,
+            "type": "exec",
+            "func": "knapsack_rolling",
+            "vars": {
+              "i": 2,
+              "pre": 1,
+              "cur": 0,
+              "phase": "第 2 轮: 两行身份交换"
+            }
+          },
+          {
+            "step": 8,
+            "line": 50,
+            "type": "exit",
+            "func": "knapsack_rolling",
+            "vars": {
+              "_return": 4000,
+              "best": 4000,
+              "phase": "两行滚动仍得到 4000"
+            }
+          },
+          {
+            "step": 9,
+            "line": 73,
+            "type": "exec",
+            "func": "main",
+            "vars": {
+              "best": 4000,
+              "phase": "输出两行滚动结果"
+            }
+          },
+          {
+            "step": 10,
+            "line": 54,
+            "type": "enter",
+            "func": "knapsack_1d",
+            "vars": {
+              "phase": "第二层优化压成一维数组"
+            }
+          },
+          {
+            "step": 11,
+            "line": 59,
+            "type": "exec",
+            "func": "knapsack_1d",
+            "vars": {
+              "i": 0,
+              "w": 4,
+              "phase": "容量倒序, 先处理右侧格子"
+            }
+          },
+          {
+            "step": 12,
+            "line": 60,
+            "type": "exec",
+            "func": "knapsack_1d",
+            "vars": {
+              "i": 3,
+              "w": 4,
+              "best": 4000,
+              "phase": "倒序保证读到上一轮旧值"
+            }
+          },
+          {
+            "step": 13,
+            "line": 63,
+            "type": "exit",
+            "func": "knapsack_1d",
+            "vars": {
+              "_return": 4000,
+              "best": 4000,
+              "phase": "一维版本仍得到 4000"
+            }
+          },
+          {
+            "step": 14,
+            "line": 75,
+            "type": "exec",
+            "func": "main",
+            "vars": {
+              "best": 4000,
+              "phase": "三个版本结果完全一致"
+            }
+          },
+          {
+            "step": 15,
+            "line": 78,
+            "type": "exit",
+            "func": "main",
+            "vars": {
+              "_return": 0,
+              "phase": "程序结束"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "06_状态压缩_位运算": {
+    "title": "状态压缩（位运算）",
+    "defaultMode": "concept",
+    "modeLabels": {
+      "concept": "理解动画",
+      "trace": "代码执行"
+    },
+    "modes": {
+      "concept": {
+        "title": "状态压缩（位运算）",
+        "source": [
+          "算法: 状态压缩位运算",
+          "输入: 城市距离矩阵 dist",
+          "输出: 用二进制集合推进 TSP 状态",
+          "",
+          "mask 的每一位代表一个城市是否访问过",
+          "mask & (1 << i) 判断城市 i 是否已访问",
+          "mask | (1 << j) 把城市 j 加入集合",
+          "dp[mask][i] 记录这个集合下停在 i 的最短距离",
+          "不断打开新的 bit, 直到 mask 变成 1111"
+        ],
+        "important_vars": {
+          "mask": "状态",
+          "city": "状态",
+          "cost": "状态",
+          "phase": "状态"
+        },
+        "track_vars": {
+          "primary": [
+            "mask",
+            "city",
+            "cost",
+            "phase"
+          ],
+          "secondary": []
+        },
+        "var_classes": {
+          "mask": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "city": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "cost": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "phase": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "concept": {
+            "category": "secondary",
+            "type": "concept"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 7,
+            "text": "概念动画：bitmask 把“访问过哪些城市”压成一个整数, DP 在这些集合状态之间转移。"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 6,
+            "type": "exec",
+            "vars": {
+              "mask": "0001",
+              "city": "A",
+              "cost": 0,
+              "phase": "从 A 出发, mask=0001 表示只访问了 A",
+              "concept": {
+                "kind": "bitmask_tsp",
+                "title": "状态压缩位运算",
+                "cities": [
+                  "A",
+                  "B",
+                  "C",
+                  "D"
+                ],
+                "edges": [
+                  [
+                    "A",
+                    "B",
+                    4
+                  ],
+                  [
+                    "A",
+                    "C",
+                    2
+                  ],
+                  [
+                    "A",
+                    "D",
+                    7
+                  ],
+                  [
+                    "B",
+                    "C",
+                    5
+                  ],
+                  [
+                    "B",
+                    "D",
+                    6
+                  ],
+                  [
+                    "C",
+                    "D",
+                    3
+                  ]
+                ],
+                "mask": "0001",
+                "city": "A",
+                "cost": 0,
+                "choices": [],
+                "table": [
+                  [
+                    "0001",
+                    "A",
+                    0
+                  ]
+                ],
+                "path": []
+              }
+            }
+          },
+          {
+            "step": 1,
+            "line": 8,
+            "type": "exec",
+            "vars": {
+              "mask": "0001",
+              "city": "A",
+              "cost": 0,
+              "phase": "从 A 可以去 B、C、D, 分别打开对应的 bit",
+              "concept": {
+                "kind": "bitmask_tsp",
+                "title": "状态压缩位运算",
+                "cities": [
+                  "A",
+                  "B",
+                  "C",
+                  "D"
+                ],
+                "edges": [
+                  [
+                    "A",
+                    "B",
+                    4
+                  ],
+                  [
+                    "A",
+                    "C",
+                    2
+                  ],
+                  [
+                    "A",
+                    "D",
+                    7
+                  ],
+                  [
+                    "B",
+                    "C",
+                    5
+                  ],
+                  [
+                    "B",
+                    "D",
+                    6
+                  ],
+                  [
+                    "C",
+                    "D",
+                    3
+                  ]
+                ],
+                "mask": "0001",
+                "city": "A",
+                "cost": 0,
+                "choices": [
+                  "B",
+                  "C",
+                  "D"
+                ],
+                "table": [
+                  [
+                    "0011",
+                    "B",
+                    4
+                  ],
+                  [
+                    "0101",
+                    "C",
+                    2
+                  ],
+                  [
+                    "1001",
+                    "D",
+                    7
+                  ]
+                ],
+                "path": [
+                  [
+                    "A",
+                    "B"
+                  ],
+                  [
+                    "A",
+                    "C"
+                  ],
+                  [
+                    "A",
+                    "D"
+                  ]
+                ]
+              }
+            }
+          },
+          {
+            "step": 2,
+            "line": 8,
+            "type": "exec",
+            "vars": {
+              "mask": "0101",
+              "city": "C",
+              "cost": 2,
+              "phase": "当前较短状态是到 C, mask=0101",
+              "concept": {
+                "kind": "bitmask_tsp",
+                "title": "状态压缩位运算",
+                "cities": [
+                  "A",
+                  "B",
+                  "C",
+                  "D"
+                ],
+                "edges": [
+                  [
+                    "A",
+                    "B",
+                    4
+                  ],
+                  [
+                    "A",
+                    "C",
+                    2
+                  ],
+                  [
+                    "A",
+                    "D",
+                    7
+                  ],
+                  [
+                    "B",
+                    "C",
+                    5
+                  ],
+                  [
+                    "B",
+                    "D",
+                    6
+                  ],
+                  [
+                    "C",
+                    "D",
+                    3
+                  ]
+                ],
+                "mask": "0101",
+                "city": "C",
+                "cost": 2,
+                "choices": [
+                  "B",
+                  "D"
+                ],
+                "table": [
+                  [
+                    "0111",
+                    "B",
+                    7
+                  ],
+                  [
+                    "1101",
+                    "D",
+                    5
+                  ]
+                ],
+                "path": [
+                  [
+                    "A",
+                    "C"
+                  ],
+                  [
+                    "C",
+                    "D"
+                  ]
+                ]
+              }
+            }
+          },
+          {
+            "step": 3,
+            "line": 8,
+            "type": "exec",
+            "vars": {
+              "mask": "0111",
+              "city": "B",
+              "cost": 7,
+              "phase": "访问 B 后形成 mask=0111, 还差 D",
+              "concept": {
+                "kind": "bitmask_tsp",
+                "title": "状态压缩位运算",
+                "cities": [
+                  "A",
+                  "B",
+                  "C",
+                  "D"
+                ],
+                "edges": [
+                  [
+                    "A",
+                    "B",
+                    4
+                  ],
+                  [
+                    "A",
+                    "C",
+                    2
+                  ],
+                  [
+                    "A",
+                    "D",
+                    7
+                  ],
+                  [
+                    "B",
+                    "C",
+                    5
+                  ],
+                  [
+                    "B",
+                    "D",
+                    6
+                  ],
+                  [
+                    "C",
+                    "D",
+                    3
+                  ]
+                ],
+                "mask": "0111",
+                "city": "B",
+                "cost": 7,
+                "choices": [
+                  "D"
+                ],
+                "table": [
+                  [
+                    "1111",
+                    "D",
+                    13
+                  ]
+                ],
+                "path": [
+                  [
+                    "C",
+                    "B"
+                  ],
+                  [
+                    "B",
+                    "D"
+                  ]
+                ]
+              }
+            }
+          },
+          {
+            "step": 4,
+            "line": 8,
+            "type": "exec",
+            "vars": {
+              "mask": "1111",
+              "city": "B",
+              "cost": 11,
+              "phase": "另一条路 A-C-D-B 更短, 更新 full mask 的 B 状态",
+              "concept": {
+                "kind": "bitmask_tsp",
+                "title": "状态压缩位运算",
+                "cities": [
+                  "A",
+                  "B",
+                  "C",
+                  "D"
+                ],
+                "edges": [
+                  [
+                    "A",
+                    "B",
+                    4
+                  ],
+                  [
+                    "A",
+                    "C",
+                    2
+                  ],
+                  [
+                    "A",
+                    "D",
+                    7
+                  ],
+                  [
+                    "B",
+                    "C",
+                    5
+                  ],
+                  [
+                    "B",
+                    "D",
+                    6
+                  ],
+                  [
+                    "C",
+                    "D",
+                    3
+                  ]
+                ],
+                "mask": "1111",
+                "city": "B",
+                "cost": 11,
+                "choices": [],
+                "table": [
+                  [
+                    "1111",
+                    "B",
+                    11
+                  ],
+                  [
+                    "1111",
+                    "D",
+                    13
+                  ]
+                ],
+                "path": [
+                  [
+                    "A",
+                    "C"
+                  ],
+                  [
+                    "C",
+                    "D"
+                  ],
+                  [
+                    "D",
+                    "B"
+                  ]
+                ]
+              }
+            }
+          },
+          {
+            "step": 5,
+            "line": 9,
+            "type": "exec",
+            "vars": {
+              "mask": "1111",
+              "city": "B",
+              "cost": 11,
+              "phase": "所有城市都访问后, 还要回到 A",
+              "concept": {
+                "kind": "bitmask_tsp",
+                "title": "状态压缩位运算",
+                "cities": [
+                  "A",
+                  "B",
+                  "C",
+                  "D"
+                ],
+                "edges": [
+                  [
+                    "A",
+                    "B",
+                    4
+                  ],
+                  [
+                    "A",
+                    "C",
+                    2
+                  ],
+                  [
+                    "A",
+                    "D",
+                    7
+                  ],
+                  [
+                    "B",
+                    "C",
+                    5
+                  ],
+                  [
+                    "B",
+                    "D",
+                    6
+                  ],
+                  [
+                    "C",
+                    "D",
+                    3
+                  ]
+                ],
+                "mask": "1111",
+                "city": "B",
+                "cost": 11,
+                "choices": [
+                  "A"
+                ],
+                "table": [
+                  [
+                    "1111",
+                    "B",
+                    11
+                  ]
+                ],
+                "path": [
+                  [
+                    "D",
+                    "B"
+                  ],
+                  [
+                    "B",
+                    "A"
+                  ]
+                ]
+              }
+            }
+          },
+          {
+            "step": 6,
+            "line": 9,
+            "type": "exec",
+            "vars": {
+              "mask": "1111",
+              "city": "A",
+              "cost": 15,
+              "phase": "最短环路示意: A → C → D → B → A",
+              "concept": {
+                "kind": "bitmask_tsp",
+                "title": "状态压缩位运算",
+                "cities": [
+                  "A",
+                  "B",
+                  "C",
+                  "D"
+                ],
+                "edges": [
+                  [
+                    "A",
+                    "B",
+                    4
+                  ],
+                  [
+                    "A",
+                    "C",
+                    2
+                  ],
+                  [
+                    "A",
+                    "D",
+                    7
+                  ],
+                  [
+                    "B",
+                    "C",
+                    5
+                  ],
+                  [
+                    "B",
+                    "D",
+                    6
+                  ],
+                  [
+                    "C",
+                    "D",
+                    3
+                  ]
+                ],
+                "mask": "1111",
+                "city": "A",
+                "cost": 15,
+                "choices": [],
+                "table": [
+                  [
+                    "答案",
+                    "A-C-D-B-A",
+                    15
+                  ]
+                ],
+                "path": [
+                  [
+                    "A",
+                    "C"
+                  ],
+                  [
+                    "C",
+                    "D"
+                  ],
+                  [
+                    "D",
+                    "B"
+                  ],
+                  [
+                    "B",
+                    "A"
+                  ]
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "trace": {
+        "title": "状态压缩（位运算）",
+        "source": [
+          "#include <stdio.h>",
+          "#include <limits.h>",
+          "",
+          "#define N 4            /* 城市数量 */",
+          "#define INF 1000000",
+          "",
+          "/* dist[a][b] 表示城市 a 到 b 的距离 */",
+          "int dist[N][N] = {",
+          "    {0, 10, 15, 20},",
+          "    {10, 0, 35, 25},",
+          "    {15, 35, 0, 30},",
+          "    {20, 25, 30, 0}",
+          "};",
+          "",
+          "/* dp[mask][i]：已访问城市集合为 mask，当前在城市 i 的最短路径 */",
+          "/* mask 用二进制位表示，如 mask=0b1011 表示访问了城市 0、1、3 */",
+          "int dp[1 << N][N];",
+          "",
+          "/* TSP：从城市 0 出发，访问所有城市恰好一次，回到 0 的最短路径 */",
+          "int tsp(void) {",
+          "    int all = (1 << N) - 1;  /* 全 1：所有城市都访问过 */",
+          "",
+          "    /* 初始化 dp 为无穷大 */",
+          "    for (int mask = 0; mask < (1 << N); mask++)",
+          "        for (int i = 0; i < N; i++)",
+          "            dp[mask][i] = INF;",
+          "",
+          "    /* 起点：只访问了城市 0，当前在城市 0，路径长为 0 */",
+          "    dp[1][0] = 0;",
+          "",
+          "    /* 遍历所有状态 */",
+          "    for (int mask = 1; mask < (1 << N); mask++) {",
+          "        for (int i = 0; i < N; i++) {",
+          "            /* 如果城市 i 不在 mask 中，跳过 */",
+          "            if (!(mask & (1 << i))) continue;",
+          "            if (dp[mask][i] == INF) continue;",
+          "",
+          "            /* 尝试从 i 走到下一个城市 j */",
+          "            for (int j = 0; j < N; j++) {",
+          "                if (mask & (1 << j)) continue;  /* j 已经访问过 */",
+          "                int nextMask = mask | (1 << j);",
+          "                int newDist = dp[mask][i] + dist[i][j];",
+          "                if (newDist < dp[nextMask][j])",
+          "                    dp[nextMask][j] = newDist;",
+          "            }",
+          "        }",
+          "    }",
+          "",
+          "    /* 从最后访问的城市回到起点 0，取最小值 */",
+          "    int answer = INF;",
+          "    for (int i = 1; i < N; i++) {",
+          "        int total = dp[all][i] + dist[i][0];",
+          "        if (total < answer) answer = total;",
+          "    }",
+          "    return answer;",
+          "}",
+          "",
+          "int main(void) {",
+          "    printf(\"城市距离矩阵：\\n\");",
+          "    for (int i = 0; i < N; i++) {",
+          "        for (int j = 0; j < N; j++)",
+          "            printf(\"%3d \", dist[i][j]);",
+          "        printf(\"\\n\");",
+          "    }",
+          "    printf(\"\\nTSP 最短路径（状态压缩DP）：%d\\n\", tsp());",
+          "    printf(\"状态总数：2^%d = %d，dp 大小：%d × %d\\n\",",
+          "           N, 1 << N, 1 << N, N);",
+          "",
+          "    return 0;",
+          "}",
+          ""
+        ],
+        "important_vars": {
+          "i": "索引",
+          "j": "索引",
+          "dist": "数据",
+          "dp": "数据"
+        },
+        "track_vars": {
+          "primary": [
+            "i",
+            "w",
+            "mask",
+            "cost",
+            "best",
+            "phase"
+          ],
+          "secondary": [
+            "pre",
+            "cur",
+            "_return"
+          ]
+        },
+        "var_classes": {
+          "_return": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "answer": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "dp": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "i": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "j": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "mask": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "newDist": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "nextMask": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "total": {
+            "category": "secondary",
+            "type": "scalar"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 2,
+            "text": "城市距离矩阵：0 10 15 20 / 10 0 35 25 / 15 35 0 30 / 20 25 30 0"
+          },
+          {
+            "after_step": 11,
+            "text": "TSP 最短路径（状态压缩DP）：80；状态总数：16"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 58,
+            "type": "enter",
+            "func": "main",
+            "vars": {
+              "phase": "打印 4 个城市的距离矩阵"
+            }
+          },
+          {
+            "step": 1,
+            "line": 59,
+            "type": "exec",
+            "func": "main",
+            "vars": {
+              "phase": "距离矩阵准备完成"
+            }
+          },
+          {
+            "step": 2,
+            "line": 20,
+            "type": "enter",
+            "func": "tsp",
+            "vars": {
+              "phase": "进入状态压缩 DP"
+            }
+          },
+          {
+            "step": 3,
+            "line": 29,
+            "type": "exec",
+            "func": "tsp",
+            "vars": {
+              "mask": "0001",
+              "i": 0,
+              "cost": 0,
+              "phase": "只访问城市 0, 当前也在城市 0"
+            }
+          },
+          {
+            "step": 4,
+            "line": 41,
+            "type": "exec",
+            "func": "tsp",
+            "vars": {
+              "mask": "0011",
+              "i": 1,
+              "cost": 10,
+              "phase": "从 0 到 1, 打开第 1 个 bit"
+            }
+          },
+          {
+            "step": 5,
+            "line": 41,
+            "type": "exec",
+            "func": "tsp",
+            "vars": {
+              "mask": "0101",
+              "i": 2,
+              "cost": 15,
+              "phase": "另一条状态从 0 到 2"
+            }
+          },
+          {
+            "step": 6,
+            "line": 41,
+            "type": "exec",
+            "func": "tsp",
+            "vars": {
+              "mask": "1011",
+              "i": 3,
+              "cost": 35,
+              "phase": "状态记录已访问 0、1、3"
+            }
+          },
+          {
+            "step": 7,
+            "line": 44,
+            "type": "exec",
+            "func": "tsp",
+            "vars": {
+              "mask": "1111",
+              "i": 2,
+              "cost": 65,
+              "phase": "四个城市都已访问"
+            }
+          },
+          {
+            "step": 8,
+            "line": 52,
+            "type": "exec",
+            "func": "tsp",
+            "vars": {
+              "mask": "1111",
+              "i": 2,
+              "cost": 80,
+              "phase": "最后从城市 2 回到起点 0"
+            }
+          },
+          {
+            "step": 9,
+            "line": 55,
+            "type": "exit",
+            "func": "tsp",
+            "vars": {
+              "_return": 80,
+              "cost": 80,
+              "phase": "最短环路长度是 80"
+            }
+          },
+          {
+            "step": 10,
+            "line": 65,
+            "type": "exec",
+            "func": "main",
+            "vars": {
+              "best": 80,
+              "phase": "输出最短路径长度和状态规模"
+            }
+          },
+          {
+            "step": 11,
+            "line": 69,
+            "type": "exit",
+            "func": "main",
+            "vars": {
+              "_return": 0,
+              "phase": "程序结束"
+            }
+          }
+        ]
+      }
+    }
+  }
+};
+const firstKey = Object.keys(ALGOS)[0];
+const requestedKey = new URLSearchParams(location.search).get('algo');
+const savedAtOpen = DHLearning.load();
+let currentKey = ALGOS[requestedKey]
+  ? requestedKey
+  : (savedAtOpen.last && savedAtOpen.last.chapter === CHAPTER_NUM && ALGOS[savedAtOpen.last.algorithm]
+      ? savedAtOpen.last.algorithm
+      : firstKey);
+let currentMode = null;
+const engine = new TraceEngine('viz-canvas', 'code-body', 'var-grid', 'callstack');
+const tabsEl = document.getElementById('algo-tabs');
+const modeTabsEl = document.getElementById('mode-tabs');
+
+function has_modes(algo) {
+  return algo && algo.modes && typeof algo.modes === 'object';
+}
+
+function mode_label(rawAlgo, mode) {
+  const labels = rawAlgo.modeLabels || {};
+  if (labels[mode]) return labels[mode];
+  if (mode === 'concept') return '理解动画';
+  if (mode === 'trace') return '代码执行';
+  return mode;
+}
+
+function resolve_algo(rawAlgo) {
+  if (!has_modes(rawAlgo)) return rawAlgo;
+  const mode = currentMode || rawAlgo.defaultMode || Object.keys(rawAlgo.modes)[0];
+  return rawAlgo.modes[mode] || rawAlgo.modes[rawAlgo.defaultMode] || Object.values(rawAlgo.modes)[0];
+}
+
+function is_concept_algo(algo) {
+  if (!algo) return false;
+  const classes = algo.var_classes || {};
+  if (Object.values(classes).some(info => info && info.type === 'concept')) return true;
+  return (algo.steps || []).some(step => step.vars && step.vars.concept);
+}
+
+function update_tab_states() {
+  const completed = new Set(DHLearning.load().completedDemos);
+  tabsEl.querySelectorAll('.algo-tab').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.key === currentKey);
+    btn.classList.toggle('completed', completed.has(DHLearning.demoId(CHAPTER_NUM, btn.dataset.key)));
+    btn.setAttribute('aria-selected', String(btn.dataset.key === currentKey));
+  });
+}
+
+function update_chapter_progress() {
+  const state = DHLearning.load();
+  const completed = new Set(state.completedDemos);
+  const keys = Object.keys(ALGOS);
+  const done = keys.filter(key => completed.has(DHLearning.demoId(CHAPTER_NUM, key))).length;
+  document.getElementById('chapter-progress-text').textContent = `${done} / ${keys.length} 个演示完成`;
+  document.getElementById('chapter-progress-fill').style.width = `${keys.length ? done / keys.length * 100 : 0}%`;
+  update_tab_states();
+}
+
+function render_mode_tabs(rawAlgo) {
+  modeTabsEl.innerHTML = '';
+  if (!has_modes(rawAlgo)) {
+    modeTabsEl.classList.remove('visible');
+    currentMode = null;
+    return;
+  }
+  modeTabsEl.classList.add('visible');
+  const label = document.createElement('span');
+  label.className = 'mode-label';
+  label.textContent = '学习方式';
+  modeTabsEl.appendChild(label);
+  const activeMode = currentMode || rawAlgo.defaultMode || Object.keys(rawAlgo.modes)[0];
+  Object.keys(rawAlgo.modes).forEach(mode => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'mode-tab' + (mode === activeMode ? ' active' : '');
+    btn.textContent = mode_label(rawAlgo, mode);
+    btn.setAttribute('role', 'tab');
+    btn.setAttribute('aria-selected', String(mode === activeMode));
+    btn.addEventListener('click', () => {
+      if (currentMode === mode) return;
+      currentMode = mode;
+      load_current_algo(false);
+      if (matchMedia('(max-width: 900px)').matches) {
+        set_mobile_view(mode === 'trace' ? 'code' : 'animation');
+      }
+    });
+    modeTabsEl.appendChild(btn);
+  });
+}
+
+function load_current_algo(allowRestore = true) {
+  const rawAlgo = ALGOS[currentKey];
+  const beforeLoad = DHLearning.load().last;
+  if (has_modes(rawAlgo)) {
+    const savedMode = beforeLoad && beforeLoad.chapter === CHAPTER_NUM && beforeLoad.algorithm === currentKey
+      ? beforeLoad.mode
+      : null;
+    if (!currentMode) currentMode = savedMode && rawAlgo.modes[savedMode]
+      ? savedMode
+      : (rawAlgo.defaultMode || Object.keys(rawAlgo.modes)[0]);
+  } else {
+    currentMode = null;
+  }
+  render_mode_tabs(rawAlgo);
+  const activeAlgo = resolve_algo(rawAlgo);
+  document.body.classList.toggle('concept-mode', currentMode === 'concept' || is_concept_algo(activeAlgo));
+  engine.stop_play();
+  engine.load(activeAlgo);
+  try {
+    const currentUrl = new URL(location.href);
+    currentUrl.searchParams.set('algo', currentKey);
+    history.replaceState(null, '', currentUrl.href);
+  } catch (_) {
+    // file:// 预览环境可能限制 history API，不影响演示本身。
+  }
+  update_tab_states();
+
+  if (
+    allowRestore
+    && beforeLoad
+    && beforeLoad.chapter === CHAPTER_NUM
+    && beforeLoad.algorithm === currentKey
+    && beforeLoad.mode === currentMode
+    && beforeLoad.step > 0
+    && activeAlgo.steps.length
+  ) {
+    const restoreStep = Math.min(beforeLoad.step, activeAlgo.steps.length - 1);
+    requestAnimationFrame(() => engine.go_to_step(restoreStep));
+  }
+}
+
+Object.entries(ALGOS).forEach(([key, algo]) => {
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'algo-tab';
+  btn.dataset.key = key;
+  btn.textContent = algo.title;
+  btn.setAttribute('role', 'tab');
+  btn.setAttribute('aria-selected', String(key === currentKey));
+  btn.addEventListener('click', () => {
+    if (currentKey === key) return;
+    currentKey = key;
+    currentMode = has_modes(algo) ? (algo.defaultMode || Object.keys(algo.modes)[0]) : null;
+    load_current_algo(true);
+  });
+  tabsEl.appendChild(btn);
+});
+
+document.addEventListener('dh:stepchange', event => {
+  const detail = event.detail || {};
+  DHLearning.updateLast(CHAPTER_NUM, currentKey, currentMode, detail.currentStep);
+  if (detail.atEnd) DHLearning.markDemoComplete(CHAPTER_NUM, currentKey);
+  update_chapter_progress();
+});
+
+document.getElementById('btn-play').addEventListener('click', () => engine.playing ? engine.stop_play() : engine.start_play());
+document.getElementById('btn-step').addEventListener('click', () => { engine.stop_play(); engine.step_forward(); });
+document.getElementById('btn-reset').addEventListener('click', () => engine.reset());
+document.getElementById('btn-back').addEventListener('click', () => { engine.stop_play(); engine.step_backward(); });
+document.getElementById('btn-to-bp').addEventListener('click', () => { engine.stop_play(); engine.play_to_bp(); });
+
+const speedSlider = document.getElementById('speed-slider');
+const savedSpeed = localStorage.getItem('dh_speed');
+if (savedSpeed !== null) speedSlider.value = savedSpeed;
+speedSlider.setAttribute('aria-valuetext', `速度 ${speedSlider.value}`);
+speedSlider.addEventListener('input', () => {
+  localStorage.setItem('dh_speed', speedSlider.value);
+  speedSlider.setAttribute('aria-valuetext', `速度 ${speedSlider.value}`);
+  if (engine.playing) { clearTimeout(engine.playTimer); engine._play_loop(); }
+});
+speedSlider.addEventListener('keydown', event => {
+  if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+  event.preventDefault();
+  event.stopPropagation();
+  const direction = event.key === 'ArrowRight' ? 1 : -1;
+  speedSlider.value = String(Math.max(Number(speedSlider.min), Math.min(Number(speedSlider.max), Number(speedSlider.value) + direction)));
+  speedSlider.dispatchEvent(new Event('input', { bubbles: true }));
+});
+document.getElementById('font-dec').addEventListener('click', () => engine.font_dec());
+document.getElementById('font-inc').addEventListener('click', () => engine.font_inc());
+
+document.addEventListener('keydown', event => {
+  const target = event.target;
+  if (target && target.closest && target.closest('button,input,select,textarea,a,summary,[contenteditable="true"]')) return;
+  if (event.key === ' ') {
+    event.preventDefault();
+    engine.playing ? engine.stop_play() : engine.start_play();
+  } else if (event.key === 'ArrowRight') {
+    event.preventDefault();
+    engine.stop_play();
+    engine.step_forward();
+  } else if (event.key === 'ArrowLeft') {
+    event.preventDefault();
+    engine.stop_play();
+    engine.step_backward();
+  } else if (event.key.toLowerCase() === 'r' && !event.metaKey && !event.ctrlKey && !event.altKey) {
+    engine.reset();
+  }
+});
+
+function set_mobile_view(view) {
+  document.body.dataset.mobileView = view;
+  document.querySelectorAll('.mobile-view-switcher button').forEach(btn => {
+    const active = btn.dataset.mobileView === view;
+    btn.classList.toggle('active', active);
+    btn.setAttribute('aria-selected', String(active));
+  });
+  if (view === 'animation' && engine.currentStep >= 0) {
+    requestAnimationFrame(() => engine.go_to_step(engine.currentStep));
+  }
+}
+
+document.querySelectorAll('.mobile-view-switcher button').forEach(btn => {
+  btn.addEventListener('click', () => set_mobile_view(btn.dataset.mobileView));
+});
+
+DHLearning.visitChapter(CHAPTER_NUM);
+update_chapter_progress();
+load_current_algo(true);
+</script>
+</body>
+</html>

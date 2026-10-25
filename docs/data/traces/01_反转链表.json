@@ -1,0 +1,704 @@
+{
+  "meta": {
+    "algo": "01_反转链表",
+    "source_lines": [
+      "#include <stdio.h>",
+      "#include <stdlib.h>",
+      "struct ListNode {",
+      "    int val;",
+      "    struct ListNode *next;",
+      "};",
+      "struct ListNode* reverse_list(struct ListNode* head) {",
+      "    struct ListNode* prev = NULL;       /* 前一个节点（最初没有前驱，所以是 NULL） */",
+      "    struct ListNode* curr = head;       /* 当前节点 */",
+      "    struct ListNode* nextTemp = NULL;   /* 临时工，用来保存下一个节点 */",
+      "    while (curr != NULL) {",
+      "        nextTemp = curr->next;  /* 1. 留后路：临时工先抱住下一个节点 */",
+      "        curr->next = prev;      /* 2. 向后转：当前节点指针反转，指向前一个节点 */",
+      "        prev = curr;            /* 3. prev 跟上：prev 移至当前节点（为下一轮做前驱） */",
+      "        curr = nextTemp;        /* 4. curr 前进：curr 移至下一个节点（继续迭代） */",
+      "    }",
+      "    /* 循环结束时，curr 变成了 NULL，prev 刚好停在原来链表的最后一个节点 */",
+      "    return prev;",
+      "}",
+      "/* 辅助：创建节点 */",
+      "struct ListNode* make_node(int val) {",
+      "    struct ListNode* n = (struct ListNode*)malloc(sizeof(struct ListNode));",
+      "    n->val = val; n->next = NULL;",
+      "    return n;",
+      "}",
+      "/* 辅助：释放链表 */",
+      "void free_list(struct ListNode* head) {",
+      "    while (head != NULL) {",
+      "        struct ListNode* next = head->next;",
+      "        free(head);",
+      "        head = next;",
+      "    }",
+      "}",
+      "/* 测试：反转链表 */",
+      "int main() {",
+      "    /* 构建链表 1 → 2 → 3 → 4 → 5 → NULL */",
+      "    struct ListNode* head = make_node(1);",
+      "    head->next = make_node(2);",
+      "    head->next->next = make_node(3);",
+      "    head->next->next->next = make_node(4);",
+      "    head->next->next->next->next = make_node(5);",
+      "    printf(\"原链表：\");",
+      "    for (struct ListNode* p = head; p; p = p->next)",
+      "        printf(\"%d \", p->val);",
+      "    printf(\"\\n\");",
+      "    head = reverse_list(head);",
+      "    printf(\"反转后：\");",
+      "    for (struct ListNode* p = head; p; p = p->next)",
+      "        printf(\"%d \", p->val);",
+      "    printf(\"\\n\");",
+      "    free_list(head);",
+      "    return 0;",
+      "}"
+    ],
+    "track_vars": {
+      "primary": [
+        "curr",
+        "head",
+        "prev",
+        "val"
+      ],
+      "secondary": [
+        "_return",
+        "nextTemp"
+      ]
+    },
+    "var_classes": {
+      "_return": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "curr": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "head": {
+        "category": "primary",
+        "type": "list"
+      },
+      "nextTemp": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "prev": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "val": {
+        "category": "primary",
+        "type": "scalar"
+      }
+    },
+    "viz_type": "array",
+    "initial_data": {
+      "head": [
+        1
+      ]
+    },
+    "program_output": [
+      {
+        "after_step": 16,
+        "text": "原链表：1 2 3 4 5"
+      },
+      {
+        "after_step": 49,
+        "text": "反转后：5 4 3 2 1"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step": 0,
+      "line": 37,
+      "type": "enter",
+      "func": "make_node",
+      "vars": {
+        "val": 1
+      }
+    },
+    {
+      "step": 1,
+      "line": 24,
+      "type": "exit",
+      "func": "make_node",
+      "vars": {}
+    },
+    {
+      "step": 2,
+      "line": 35,
+      "type": "enter",
+      "func": "main",
+      "vars": {}
+    },
+    {
+      "step": 3,
+      "line": 35,
+      "type": "exec",
+      "vars": {
+        "head": [
+          1
+        ]
+      }
+    },
+    {
+      "step": 4,
+      "line": 38,
+      "type": "enter",
+      "func": "make_node",
+      "vars": {
+        "val": 2
+      }
+    },
+    {
+      "step": 5,
+      "line": 24,
+      "type": "exit",
+      "func": "make_node",
+      "vars": {}
+    },
+    {
+      "step": 6,
+      "line": 38,
+      "type": "exec",
+      "vars": {
+        "head": [
+          1,
+          2
+        ]
+      }
+    },
+    {
+      "step": 7,
+      "line": 39,
+      "type": "enter",
+      "func": "make_node",
+      "vars": {
+        "val": 3
+      }
+    },
+    {
+      "step": 8,
+      "line": 24,
+      "type": "exit",
+      "func": "make_node",
+      "vars": {}
+    },
+    {
+      "step": 9,
+      "line": 39,
+      "type": "exec",
+      "vars": {
+        "head": [
+          1,
+          2,
+          3
+        ]
+      }
+    },
+    {
+      "step": 10,
+      "line": 40,
+      "type": "enter",
+      "func": "make_node",
+      "vars": {
+        "val": 4
+      }
+    },
+    {
+      "step": 11,
+      "line": 24,
+      "type": "exit",
+      "func": "make_node",
+      "vars": {}
+    },
+    {
+      "step": 12,
+      "line": 40,
+      "type": "exec",
+      "vars": {
+        "head": [
+          1,
+          2,
+          3,
+          4
+        ]
+      }
+    },
+    {
+      "step": 13,
+      "line": 41,
+      "type": "enter",
+      "func": "make_node",
+      "vars": {
+        "val": 5
+      }
+    },
+    {
+      "step": 14,
+      "line": 24,
+      "type": "exit",
+      "func": "make_node",
+      "vars": {}
+    },
+    {
+      "step": 15,
+      "line": 41,
+      "type": "exec",
+      "vars": {
+        "head": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      }
+    },
+    {
+      "step": 16,
+      "line": 43,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 17,
+      "line": 43,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 18,
+      "line": 43,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 19,
+      "line": 43,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 20,
+      "line": 43,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 21,
+      "line": 46,
+      "type": "enter",
+      "func": "reverse_list",
+      "vars": {
+        "head": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      }
+    },
+    {
+      "step": 22,
+      "line": 11,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "curr": 0
+      }
+    },
+    {
+      "step": 23,
+      "line": 12,
+      "type": "exec",
+      "vars": {
+        "nextTemp": 1
+      }
+    },
+    {
+      "step": 24,
+      "line": 13,
+      "type": "exec",
+      "vars": {
+        "curr": 0
+      }
+    },
+    {
+      "step": 25,
+      "line": 14,
+      "type": "exec",
+      "vars": {
+        "prev": 0
+      }
+    },
+    {
+      "step": 26,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "curr": -100002
+      }
+    },
+    {
+      "step": 27,
+      "line": 11,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "curr": -100002
+      }
+    },
+    {
+      "step": 28,
+      "line": 12,
+      "type": "exec",
+      "vars": {
+        "nextTemp": -100003
+      }
+    },
+    {
+      "step": 29,
+      "line": 13,
+      "type": "exec",
+      "vars": {
+        "curr": -100002
+      }
+    },
+    {
+      "step": 30,
+      "line": 14,
+      "type": "exec",
+      "vars": {
+        "prev": -100002
+      }
+    },
+    {
+      "step": 31,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "curr": -100003
+      }
+    },
+    {
+      "step": 32,
+      "line": 11,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "curr": -100003
+      }
+    },
+    {
+      "step": 33,
+      "line": 12,
+      "type": "exec",
+      "vars": {
+        "nextTemp": -100004
+      }
+    },
+    {
+      "step": 34,
+      "line": 13,
+      "type": "exec",
+      "vars": {
+        "curr": -100003
+      }
+    },
+    {
+      "step": 35,
+      "line": 14,
+      "type": "exec",
+      "vars": {
+        "prev": -100003
+      }
+    },
+    {
+      "step": 36,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "curr": -100004
+      }
+    },
+    {
+      "step": 37,
+      "line": 11,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "curr": -100004
+      }
+    },
+    {
+      "step": 38,
+      "line": 12,
+      "type": "exec",
+      "vars": {
+        "nextTemp": -100005
+      }
+    },
+    {
+      "step": 39,
+      "line": 13,
+      "type": "exec",
+      "vars": {
+        "curr": -100004
+      }
+    },
+    {
+      "step": 40,
+      "line": 14,
+      "type": "exec",
+      "vars": {
+        "prev": -100004
+      }
+    },
+    {
+      "step": 41,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "curr": -100005
+      }
+    },
+    {
+      "step": 42,
+      "line": 11,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "curr": -100005
+      }
+    },
+    {
+      "step": 43,
+      "line": 12,
+      "type": "exec",
+      "vars": {
+        "nextTemp": -1
+      }
+    },
+    {
+      "step": 44,
+      "line": 13,
+      "type": "exec",
+      "vars": {
+        "curr": -100005
+      }
+    },
+    {
+      "step": 45,
+      "line": 14,
+      "type": "exec",
+      "vars": {
+        "prev": -100005
+      }
+    },
+    {
+      "step": 46,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "curr": -1
+      }
+    },
+    {
+      "step": 47,
+      "line": 18,
+      "type": "exit",
+      "func": "reverse_list",
+      "vars": {}
+    },
+    {
+      "step": 48,
+      "line": 46,
+      "type": "exec",
+      "vars": {
+        "head": [
+          5,
+          4,
+          3,
+          2,
+          1
+        ]
+      }
+    },
+    {
+      "step": 49,
+      "line": 48,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 50,
+      "line": 48,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 51,
+      "line": 48,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 52,
+      "line": 48,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 53,
+      "line": 48,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 54,
+      "line": 51,
+      "type": "enter",
+      "func": "free_list",
+      "vars": {
+        "head": [
+          5,
+          4,
+          3,
+          2,
+          1
+        ]
+      }
+    },
+    {
+      "step": 55,
+      "line": 28,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "head": 71293760
+      }
+    },
+    {
+      "step": 56,
+      "line": 31,
+      "type": "exec",
+      "vars": {
+        "head": [
+          4,
+          3,
+          2,
+          1
+        ]
+      }
+    },
+    {
+      "step": 57,
+      "line": 28,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "head": 71293744
+      }
+    },
+    {
+      "step": 58,
+      "line": 31,
+      "type": "exec",
+      "vars": {
+        "head": [
+          3,
+          2,
+          1
+        ]
+      }
+    },
+    {
+      "step": 59,
+      "line": 28,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "head": 71293728
+      }
+    },
+    {
+      "step": 60,
+      "line": 31,
+      "type": "exec",
+      "vars": {
+        "head": [
+          2,
+          1
+        ]
+      }
+    },
+    {
+      "step": 61,
+      "line": 28,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "head": 71293712
+      }
+    },
+    {
+      "step": 62,
+      "line": 31,
+      "type": "exec",
+      "vars": {
+        "head": [
+          1
+        ]
+      }
+    },
+    {
+      "step": 63,
+      "line": 28,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "head": 71293696
+      }
+    },
+    {
+      "step": 64,
+      "line": 31,
+      "type": "exec",
+      "vars": {
+        "head": []
+      }
+    },
+    {
+      "step": 65,
+      "line": 52,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 66,
+      "line": 52,
+      "type": "exit",
+      "func": "main",
+      "vars": {}
+    }
+  ],
+  "total_steps": 67
+}

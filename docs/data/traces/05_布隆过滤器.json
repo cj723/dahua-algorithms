@@ -1,0 +1,1910 @@
+{
+  "meta": {
+    "algo": "05_布隆过滤器",
+    "source_lines": [
+      "/* 布隆过滤器(Bloom Filter)简化实现 */",
+      "/* 类比：安检门——\"可能在，肯定不在\" */",
+      "#include <stdio.h>",
+      "#include <stdlib.h>",
+      "#include <string.h>",
+      "#define BLOOM_SIZE 1024   /* 位数组大小（bit数） */",
+      "#define HASH_COUNT 3      /* 哈希函数个数 */",
+      "/* 误报率取决于 BLOOM_SIZE、HASH_COUNT 和插入元素数量，工程中要按需求估算参数 */",
+      "/* 布隆过滤器结构 */",
+      "typedef struct {",
+      "    unsigned char bits[(BLOOM_SIZE + 7) >> 3];  /* 位数组，用char数组模拟 */",
+      "} BloomFilter;",
+      "/* 简单的哈希函数1(DJBX33A变体) */",
+      "unsigned int hash1(const char *str) {",
+      "    unsigned int hash = 5381;   /* 初始种子 */",
+      "    while (*str) {",
+      "        hash = ((hash << 5) + hash) + (unsigned char)(*str++);  /* hash * 33 + c */",
+      "    }",
+      "    return hash % BLOOM_SIZE;   /* 映射到bit数组范围内 */",
+      "}",
+      "/* 简单的哈希函数2(另一个种子) */",
+      "unsigned int hash2(const char *str) {",
+      "    unsigned int hash = 0;",
+      "    while (*str) {",
+      "        hash = (unsigned char)(*str++) + (hash << 6) + (hash << 16) - hash;",
+      "    }",
+      "    return hash % BLOOM_SIZE;",
+      "}",
+      "/* 简单的哈希函数3(再换一个种子) */",
+      "unsigned int hash3(const char *str) {",
+      "    unsigned int hash = 0x12345678;  /* 不同的初始值 */",
+      "    while (*str) {",
+      "        hash ^= ((hash << 5) + (unsigned char)(*str++) + (hash >> 2));",
+      "    }",
+      "    return hash % BLOOM_SIZE;",
+      "}",
+      "/* 哈希函数数组，方便遍历 */",
+      "unsigned int (*hash_funcs[])(const char *) = {hash1, hash2, hash3};",
+      "/* 设置bit数组中的某个bit为1 */",
+      "static void set_bit(BloomFilter *bf, int pos) {",
+      "    bf->bits[pos >> 3] |= (1U << (pos & 7));",
+      "}",
+      "/* 检查bit数组中的某个bit是否为1 */",
+      "static int get_bit(BloomFilter *bf, int pos) {",
+      "    return (bf->bits[pos >> 3] & (1U << (pos & 7))) != 0;",
+      "}",
+      "/* 初始化布隆过滤器 */",
+      "void bloom_init(BloomFilter *bf) {",
+      "    memset(bf->bits, 0, sizeof(bf->bits));  /* 全部清零 */",
+      "}",
+      "/* 插入元素 */",
+      "void bloom_insert(BloomFilter *bf, const char *str) {",
+      "    for (int i = 0; i < HASH_COUNT; i++) {",
+      "        unsigned int pos = hash_funcs[i](str);  /* 计算哈希位置 */",
+      "        set_bit(bf, pos);                        /* 把对应bit设为1 */",
+      "    }",
+      "}",
+      "/* 查询元素是否存在 */",
+      "/* 返回1 = 可能存在(有假阳性);返回0 = 肯定不存在 */",
+      "int bloom_contains(BloomFilter *bf, const char *str) {",
+      "    for (int i = 0; i < HASH_COUNT; i++) {",
+      "        unsigned int pos = hash_funcs[i](str);  /* 计算哈希位置 */",
+      "        if (!get_bit(bf, pos)) {                 /* 如果任一bit是0 */",
+      "            return 0;                             /* 肯定不存在 */",
+      "        }",
+      "    }",
+      "    return 1;  /* 所有bit都是1，可能存在 */",
+      "}",
+      "/* 测试代码 */",
+      "int main() {",
+      "    BloomFilter bf;",
+      "    bloom_init(&bf);  /* 初始化 */",
+      "    /* 插入一些元素 */",
+      "    bloom_insert(&bf, \"苹果\");",
+      "    bloom_insert(&bf, \"香蕉\");",
+      "    bloom_insert(&bf, \"芒果\");",
+      "    /* 查询 */",
+      "    printf(\"苹果：%s\\n\", bloom_contains(&bf, \"苹果\") ? \"可能存在\" : \"肯定不存在\");",
+      "    printf(\"香蕉：%s\\n\", bloom_contains(&bf, \"香蕉\") ? \"可能存在\" : \"肯定不存在\");",
+      "    printf(\"橙子：%s\\n\", bloom_contains(&bf, \"橙子\") ? \"可能存在\" : \"肯定不存在\");",
+      "    /* 橙子没有插入过，但可能因为假阳性说\"可能存在\" */",
+      "    return 0;",
+      "}"
+    ],
+    "track_vars": {
+      "primary": [
+        "i"
+      ],
+      "secondary": [
+        "_return",
+        "hash"
+      ]
+    },
+    "var_classes": {
+      "_return": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "hash": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "i": {
+        "category": "primary",
+        "type": "scalar"
+      }
+    },
+    "viz_type": "array",
+    "initial_data": {},
+    "program_output": [
+      {
+        "after_step": 165,
+        "text": "苹果：可能存在"
+      },
+      {
+        "after_step": 212,
+        "text": "香蕉：可能存在"
+      },
+      {
+        "after_step": 234,
+        "text": "橙子：肯定不存在"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step": 0,
+      "line": 70,
+      "type": "enter",
+      "func": "main",
+      "vars": {}
+    },
+    {
+      "step": 1,
+      "line": 53,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0
+      }
+    },
+    {
+      "step": 2,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 3,
+      "line": 17,
+      "type": "exec",
+      "vars": {
+        "hash": 177805
+      }
+    },
+    {
+      "step": 4,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 5,
+      "line": 17,
+      "type": "exec",
+      "vars": {
+        "hash": 5867704
+      }
+    },
+    {
+      "step": 6,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 7,
+      "line": 17,
+      "type": "exec",
+      "vars": {
+        "hash": 193634417
+      }
+    },
+    {
+      "step": 8,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 9,
+      "line": 17,
+      "type": "exec",
+      "vars": {
+        "hash": 2094968695
+      }
+    },
+    {
+      "step": 10,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 11,
+      "line": 17,
+      "type": "exec",
+      "vars": {
+        "hash": 414490357
+      }
+    },
+    {
+      "step": 12,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 13,
+      "line": 17,
+      "type": "exec",
+      "vars": {
+        "hash": 793280049
+      }
+    },
+    {
+      "step": 14,
+      "line": 19,
+      "type": "exec",
+      "vars": {
+        "_return": 561
+      }
+    },
+    {
+      "step": 15,
+      "line": 19,
+      "type": "exit",
+      "func": "hash1",
+      "vars": {}
+    },
+    {
+      "step": 16,
+      "line": 53,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1
+      }
+    },
+    {
+      "step": 17,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 18,
+      "line": 25,
+      "type": "exec",
+      "vars": {
+        "hash": 232
+      }
+    },
+    {
+      "step": 19,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 20,
+      "line": 25,
+      "type": "exec",
+      "vars": {
+        "hash": 15219107
+      }
+    },
+    {
+      "step": 21,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 22,
+      "line": 25,
+      "type": "exec",
+      "vars": {
+        "hash": 1925787606
+      }
+    },
+    {
+      "step": 23,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 24,
+      "line": 25,
+      "type": "exec",
+      "vars": {
+        "hash": 1868088976
+      }
+    },
+    {
+      "step": 25,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 26,
+      "line": 25,
+      "type": "exec",
+      "vars": {
+        "hash": 761847310
+      }
+    },
+    {
+      "step": 27,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 28,
+      "line": 25,
+      "type": "exec",
+      "vars": {
+        "hash": 182232590
+      }
+    },
+    {
+      "step": 29,
+      "line": 27,
+      "type": "exec",
+      "vars": {
+        "_return": 526
+      }
+    },
+    {
+      "step": 30,
+      "line": 27,
+      "type": "exit",
+      "func": "hash2",
+      "vars": {}
+    },
+    {
+      "step": 31,
+      "line": 53,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2
+      }
+    },
+    {
+      "step": 32,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 33,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 34,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 35,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 36,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 37,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 38,
+      "line": 35,
+      "type": "exec",
+      "vars": {
+        "_return": 560
+      }
+    },
+    {
+      "step": 39,
+      "line": 35,
+      "type": "exit",
+      "func": "hash3",
+      "vars": {}
+    },
+    {
+      "step": 40,
+      "line": 53,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0
+      }
+    },
+    {
+      "step": 41,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 42,
+      "line": 17,
+      "type": "exec",
+      "vars": {
+        "hash": 177806
+      }
+    },
+    {
+      "step": 43,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 44,
+      "line": 17,
+      "type": "exec",
+      "vars": {
+        "hash": 5867764
+      }
+    },
+    {
+      "step": 45,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 46,
+      "line": 17,
+      "type": "exec",
+      "vars": {
+        "hash": 193636365
+      }
+    },
+    {
+      "step": 47,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 48,
+      "line": 17,
+      "type": "exec",
+      "vars": {
+        "hash": 2095032981
+      }
+    },
+    {
+      "step": 49,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 50,
+      "line": 17,
+      "type": "exec",
+      "vars": {
+        "hash": 416611786
+      }
+    },
+    {
+      "step": 51,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 52,
+      "line": 17,
+      "type": "exec",
+      "vars": {
+        "hash": 863287187
+      }
+    },
+    {
+      "step": 53,
+      "line": 19,
+      "type": "exec",
+      "vars": {
+        "_return": 915
+      }
+    },
+    {
+      "step": 54,
+      "line": 19,
+      "type": "exit",
+      "func": "hash1",
+      "vars": {}
+    },
+    {
+      "step": 55,
+      "line": 53,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1
+      }
+    },
+    {
+      "step": 56,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 57,
+      "line": 25,
+      "type": "exec",
+      "vars": {
+        "hash": 233
+      }
+    },
+    {
+      "step": 58,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 59,
+      "line": 25,
+      "type": "exec",
+      "vars": {
+        "hash": 15284733
+      }
+    },
+    {
+      "step": 60,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 61,
+      "line": 25,
+      "type": "exec",
+      "vars": {
+        "hash": 1935820252
+      }
+    },
+    {
+      "step": 62,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 63,
+      "line": 25,
+      "type": "exec",
+      "vars": {
+        "hash": -1425329652
+      }
+    },
+    {
+      "step": 64,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 65,
+      "line": 25,
+      "type": "exec",
+      "vars": {
+        "hash": 1238192521
+      }
+    },
+    {
+      "step": 66,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 67,
+      "line": 25,
+      "type": "exec",
+      "vars": {
+        "hash": 2064650560
+      }
+    },
+    {
+      "step": 68,
+      "line": 27,
+      "type": "exec",
+      "vars": {
+        "_return": 320
+      }
+    },
+    {
+      "step": 69,
+      "line": 27,
+      "type": "exit",
+      "func": "hash2",
+      "vars": {}
+    },
+    {
+      "step": 70,
+      "line": 53,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2
+      }
+    },
+    {
+      "step": 71,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 72,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 73,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 74,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 75,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 76,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 77,
+      "line": 35,
+      "type": "exec",
+      "vars": {
+        "_return": 649
+      }
+    },
+    {
+      "step": 78,
+      "line": 35,
+      "type": "exit",
+      "func": "hash3",
+      "vars": {}
+    },
+    {
+      "step": 79,
+      "line": 53,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0
+      }
+    },
+    {
+      "step": 80,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 81,
+      "line": 17,
+      "type": "exec",
+      "vars": {
+        "hash": 177805
+      }
+    },
+    {
+      "step": 82,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 83,
+      "line": 17,
+      "type": "exec",
+      "vars": {
+        "hash": 5867703
+      }
+    },
+    {
+      "step": 84,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 85,
+      "line": 17,
+      "type": "exec",
+      "vars": {
+        "hash": 193634345
+      }
+    },
+    {
+      "step": 86,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 87,
+      "line": 17,
+      "type": "exec",
+      "vars": {
+        "hash": 2094966319
+      }
+    },
+    {
+      "step": 88,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 89,
+      "line": 17,
+      "type": "exec",
+      "vars": {
+        "hash": 414411949
+      }
+    },
+    {
+      "step": 90,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 91,
+      "line": 17,
+      "type": "exec",
+      "vars": {
+        "hash": 790692585
+      }
+    },
+    {
+      "step": 92,
+      "line": 19,
+      "type": "exec",
+      "vars": {
+        "_return": 745
+      }
+    },
+    {
+      "step": 93,
+      "line": 19,
+      "type": "exit",
+      "func": "hash1",
+      "vars": {}
+    },
+    {
+      "step": 94,
+      "line": 53,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1
+      }
+    },
+    {
+      "step": 95,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 96,
+      "line": 25,
+      "type": "exec",
+      "vars": {
+        "hash": 232
+      }
+    },
+    {
+      "step": 97,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 98,
+      "line": 25,
+      "type": "exec",
+      "vars": {
+        "hash": 15219106
+      }
+    },
+    {
+      "step": 99,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 100,
+      "line": 25,
+      "type": "exec",
+      "vars": {
+        "hash": 1925721968
+      }
+    },
+    {
+      "step": 101,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 102,
+      "line": 25,
+      "type": "exec",
+      "vars": {
+        "hash": 1857269110
+      }
+    },
+    {
+      "step": 103,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 104,
+      "line": 25,
+      "type": "exec",
+      "vars": {
+        "hash": -340938584
+      }
+    },
+    {
+      "step": 105,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 106,
+      "line": 25,
+      "type": "exec",
+      "vars": {
+        "hash": -1335461388
+      }
+    },
+    {
+      "step": 107,
+      "line": 27,
+      "type": "exec",
+      "vars": {
+        "_return": 500
+      }
+    },
+    {
+      "step": 108,
+      "line": 27,
+      "type": "exit",
+      "func": "hash2",
+      "vars": {}
+    },
+    {
+      "step": 109,
+      "line": 53,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2
+      }
+    },
+    {
+      "step": 110,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 111,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 112,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 113,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 114,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 115,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 116,
+      "line": 35,
+      "type": "exec",
+      "vars": {
+        "_return": 785
+      }
+    },
+    {
+      "step": 117,
+      "line": 35,
+      "type": "exit",
+      "func": "hash3",
+      "vars": {}
+    },
+    {
+      "step": 118,
+      "line": 61,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0
+      }
+    },
+    {
+      "step": 119,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 120,
+      "line": 17,
+      "type": "exec",
+      "vars": {
+        "hash": 177805
+      }
+    },
+    {
+      "step": 121,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 122,
+      "line": 17,
+      "type": "exec",
+      "vars": {
+        "hash": 5867704
+      }
+    },
+    {
+      "step": 123,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 124,
+      "line": 17,
+      "type": "exec",
+      "vars": {
+        "hash": 193634417
+      }
+    },
+    {
+      "step": 125,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 126,
+      "line": 17,
+      "type": "exec",
+      "vars": {
+        "hash": 2094968695
+      }
+    },
+    {
+      "step": 127,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 128,
+      "line": 17,
+      "type": "exec",
+      "vars": {
+        "hash": 414490357
+      }
+    },
+    {
+      "step": 129,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 130,
+      "line": 17,
+      "type": "exec",
+      "vars": {
+        "hash": 793280049
+      }
+    },
+    {
+      "step": 131,
+      "line": 19,
+      "type": "exec",
+      "vars": {
+        "_return": 561
+      }
+    },
+    {
+      "step": 132,
+      "line": 19,
+      "type": "exit",
+      "func": "hash1",
+      "vars": {}
+    },
+    {
+      "step": 133,
+      "line": 45,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 134,
+      "line": 45,
+      "type": "exit",
+      "func": "get_bit",
+      "vars": {}
+    },
+    {
+      "step": 135,
+      "line": 61,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1
+      }
+    },
+    {
+      "step": 136,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 137,
+      "line": 25,
+      "type": "exec",
+      "vars": {
+        "hash": 232
+      }
+    },
+    {
+      "step": 138,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 139,
+      "line": 25,
+      "type": "exec",
+      "vars": {
+        "hash": 15219107
+      }
+    },
+    {
+      "step": 140,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 141,
+      "line": 25,
+      "type": "exec",
+      "vars": {
+        "hash": 1925787606
+      }
+    },
+    {
+      "step": 142,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 143,
+      "line": 25,
+      "type": "exec",
+      "vars": {
+        "hash": 1868088976
+      }
+    },
+    {
+      "step": 144,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 145,
+      "line": 25,
+      "type": "exec",
+      "vars": {
+        "hash": 761847310
+      }
+    },
+    {
+      "step": 146,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 147,
+      "line": 25,
+      "type": "exec",
+      "vars": {
+        "hash": 182232590
+      }
+    },
+    {
+      "step": 148,
+      "line": 27,
+      "type": "exec",
+      "vars": {
+        "_return": 526
+      }
+    },
+    {
+      "step": 149,
+      "line": 27,
+      "type": "exit",
+      "func": "hash2",
+      "vars": {}
+    },
+    {
+      "step": 150,
+      "line": 45,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 151,
+      "line": 45,
+      "type": "exit",
+      "func": "get_bit",
+      "vars": {}
+    },
+    {
+      "step": 152,
+      "line": 61,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2
+      }
+    },
+    {
+      "step": 153,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 154,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 155,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 156,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 157,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 158,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 159,
+      "line": 35,
+      "type": "exec",
+      "vars": {
+        "_return": 560
+      }
+    },
+    {
+      "step": 160,
+      "line": 35,
+      "type": "exit",
+      "func": "hash3",
+      "vars": {}
+    },
+    {
+      "step": 161,
+      "line": 45,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 162,
+      "line": 45,
+      "type": "exit",
+      "func": "get_bit",
+      "vars": {}
+    },
+    {
+      "step": 163,
+      "line": 67,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 164,
+      "line": 67,
+      "type": "exit",
+      "func": "bloom_contains",
+      "vars": {}
+    },
+    {
+      "step": 165,
+      "line": 61,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0
+      }
+    },
+    {
+      "step": 166,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 167,
+      "line": 17,
+      "type": "exec",
+      "vars": {
+        "hash": 177806
+      }
+    },
+    {
+      "step": 168,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 169,
+      "line": 17,
+      "type": "exec",
+      "vars": {
+        "hash": 5867764
+      }
+    },
+    {
+      "step": 170,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 171,
+      "line": 17,
+      "type": "exec",
+      "vars": {
+        "hash": 193636365
+      }
+    },
+    {
+      "step": 172,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 173,
+      "line": 17,
+      "type": "exec",
+      "vars": {
+        "hash": 2095032981
+      }
+    },
+    {
+      "step": 174,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 175,
+      "line": 17,
+      "type": "exec",
+      "vars": {
+        "hash": 416611786
+      }
+    },
+    {
+      "step": 176,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 177,
+      "line": 17,
+      "type": "exec",
+      "vars": {
+        "hash": 863287187
+      }
+    },
+    {
+      "step": 178,
+      "line": 19,
+      "type": "exec",
+      "vars": {
+        "_return": 915
+      }
+    },
+    {
+      "step": 179,
+      "line": 19,
+      "type": "exit",
+      "func": "hash1",
+      "vars": {}
+    },
+    {
+      "step": 180,
+      "line": 45,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 181,
+      "line": 45,
+      "type": "exit",
+      "func": "get_bit",
+      "vars": {}
+    },
+    {
+      "step": 182,
+      "line": 61,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1
+      }
+    },
+    {
+      "step": 183,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 184,
+      "line": 25,
+      "type": "exec",
+      "vars": {
+        "hash": 233
+      }
+    },
+    {
+      "step": 185,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 186,
+      "line": 25,
+      "type": "exec",
+      "vars": {
+        "hash": 15284733
+      }
+    },
+    {
+      "step": 187,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 188,
+      "line": 25,
+      "type": "exec",
+      "vars": {
+        "hash": 1935820252
+      }
+    },
+    {
+      "step": 189,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 190,
+      "line": 25,
+      "type": "exec",
+      "vars": {
+        "hash": -1425329652
+      }
+    },
+    {
+      "step": 191,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 192,
+      "line": 25,
+      "type": "exec",
+      "vars": {
+        "hash": 1238192521
+      }
+    },
+    {
+      "step": 193,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 194,
+      "line": 25,
+      "type": "exec",
+      "vars": {
+        "hash": 2064650560
+      }
+    },
+    {
+      "step": 195,
+      "line": 27,
+      "type": "exec",
+      "vars": {
+        "_return": 320
+      }
+    },
+    {
+      "step": 196,
+      "line": 27,
+      "type": "exit",
+      "func": "hash2",
+      "vars": {}
+    },
+    {
+      "step": 197,
+      "line": 45,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 198,
+      "line": 45,
+      "type": "exit",
+      "func": "get_bit",
+      "vars": {}
+    },
+    {
+      "step": 199,
+      "line": 61,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2
+      }
+    },
+    {
+      "step": 200,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 201,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 202,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 203,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 204,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 205,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 206,
+      "line": 35,
+      "type": "exec",
+      "vars": {
+        "_return": 649
+      }
+    },
+    {
+      "step": 207,
+      "line": 35,
+      "type": "exit",
+      "func": "hash3",
+      "vars": {}
+    },
+    {
+      "step": 208,
+      "line": 45,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 209,
+      "line": 45,
+      "type": "exit",
+      "func": "get_bit",
+      "vars": {}
+    },
+    {
+      "step": 210,
+      "line": 67,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 211,
+      "line": 67,
+      "type": "exit",
+      "func": "bloom_contains",
+      "vars": {}
+    },
+    {
+      "step": 212,
+      "line": 61,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0
+      }
+    },
+    {
+      "step": 213,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 214,
+      "line": 17,
+      "type": "exec",
+      "vars": {
+        "hash": 177803
+      }
+    },
+    {
+      "step": 215,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 216,
+      "line": 17,
+      "type": "exec",
+      "vars": {
+        "hash": 5867668
+      }
+    },
+    {
+      "step": 217,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 218,
+      "line": 17,
+      "type": "exec",
+      "vars": {
+        "hash": 193633197
+      }
+    },
+    {
+      "step": 219,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 220,
+      "line": 17,
+      "type": "exec",
+      "vars": {
+        "hash": 2094928434
+      }
+    },
+    {
+      "step": 221,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 222,
+      "line": 17,
+      "type": "exec",
+      "vars": {
+        "hash": 413161759
+      }
+    },
+    {
+      "step": 223,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 224,
+      "line": 17,
+      "type": "exec",
+      "vars": {
+        "hash": 749436303
+      }
+    },
+    {
+      "step": 225,
+      "line": 19,
+      "type": "exec",
+      "vars": {
+        "_return": 399
+      }
+    },
+    {
+      "step": 226,
+      "line": 19,
+      "type": "exit",
+      "func": "hash1",
+      "vars": {}
+    },
+    {
+      "step": 227,
+      "line": 45,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 228,
+      "line": 45,
+      "type": "exit",
+      "func": "get_bit",
+      "vars": {}
+    },
+    {
+      "step": 229,
+      "line": 45,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 230,
+      "line": 45,
+      "type": "exit",
+      "func": "get_bit",
+      "vars": {}
+    },
+    {
+      "step": 231,
+      "line": 63,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 232,
+      "line": 64,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 233,
+      "line": 64,
+      "type": "exit",
+      "func": "bloom_contains",
+      "vars": {}
+    },
+    {
+      "step": 234,
+      "line": 82,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 235,
+      "line": 82,
+      "type": "exit",
+      "func": "main",
+      "vars": {}
+    }
+  ],
+  "total_steps": 236
+}

@@ -1,0 +1,348 @@
+{
+  "meta": {
+    "algo": "01_顺序查找",
+    "source_lines": [
+      "/* 顺序查找 */",
+      "#include <stdio.h>",
+      "/* 顺序查找：在 arr[0..n-1] 里找 target，返回下标；找不到返回 -1 */",
+      "int linear_search(int arr[], int n, int target) {",
+      "    for (int i = 0; i < n; i++) {",
+      "        if (arr[i] == target) {",
+      "            return i;  /* 找到了，返回下标 */",
+      "        }",
+      "    }",
+      "    return -1;  /* 没找到 */",
+      "}",
+      "int main(void) {",
+      "    int arr[] = {50, 10, 90, 30, 70, 40, 80, 60, 20};",
+      "    int n = sizeof(arr) / sizeof(arr[0]);",
+      "    printf(\"数组内容：\");",
+      "    for (int i = 0; i < n; i++) printf(\"%d \", arr[i]);",
+      "    printf(\"\\n\\n\");",
+      "    /* 测试一：找一个存在的值 */",
+      "    int target1 = 70;",
+      "    int idx1 = linear_search(arr, n, target1);",
+      "    if (idx1 >= 0)",
+      "        printf(\"找 %d：在下标 %d 处命中\\n\", target1, idx1);",
+      "    else",
+      "        printf(\"找 %d：没找到\\n\", target1);",
+      "    /* 测试二：找一个不存在的值 */",
+      "    int target2 = 99;",
+      "    int idx2 = linear_search(arr, n, target2);",
+      "    if (idx2 >= 0)",
+      "        printf(\"找 %d：在下标 %d 处命中\\n\", target2, idx2);",
+      "    else",
+      "        printf(\"找 %d：没找到\\n\", target2);",
+      "    return 0;",
+      "}"
+    ],
+    "track_vars": {
+      "primary": [
+        "arr",
+        "i",
+        "n",
+        "target"
+      ],
+      "secondary": [
+        "_return"
+      ]
+    },
+    "var_classes": {
+      "_return": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "arr": {
+        "category": "primary",
+        "type": "array"
+      },
+      "i": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "n": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "target": {
+        "category": "primary",
+        "type": "scalar"
+      }
+    },
+    "viz_type": "array",
+    "initial_data": {
+      "arr": [
+        50,
+        10,
+        90,
+        30,
+        70,
+        40,
+        80,
+        60,
+        20
+      ]
+    },
+    "program_output": [
+      {
+        "after_step": 1,
+        "text": "数组内容：50 10 90 30 70 40 80 60 20"
+      },
+      {
+        "after_step": 10,
+        "text": "找 70：在下标 4 处命中"
+      },
+      {
+        "after_step": 22,
+        "text": "找 99：没找到"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step": 0,
+      "line": 12,
+      "type": "enter",
+      "func": "main",
+      "vars": {}
+    },
+    {
+      "step": 1,
+      "line": 20,
+      "type": "enter",
+      "func": "linear_search",
+      "vars": {
+        "arr": [
+          50,
+          10,
+          90,
+          30,
+          70,
+          40,
+          80,
+          60,
+          20
+        ],
+        "n": 9,
+        "target": 70
+      }
+    },
+    {
+      "step": 2,
+      "line": 5,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0,
+        "n": 9
+      }
+    },
+    {
+      "step": 3,
+      "line": 5,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "n": 9
+      }
+    },
+    {
+      "step": 4,
+      "line": 5,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "n": 9
+      }
+    },
+    {
+      "step": 5,
+      "line": 5,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3,
+        "n": 9
+      }
+    },
+    {
+      "step": 6,
+      "line": 5,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 4,
+        "n": 9
+      }
+    },
+    {
+      "step": 7,
+      "line": 6,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 4,
+        "target": 70
+      }
+    },
+    {
+      "step": 8,
+      "line": 7,
+      "type": "exec",
+      "vars": {
+        "_return": 4
+      }
+    },
+    {
+      "step": 9,
+      "line": 7,
+      "type": "exit",
+      "func": "linear_search",
+      "vars": {}
+    },
+    {
+      "step": 10,
+      "line": 27,
+      "type": "enter",
+      "func": "linear_search",
+      "vars": {
+        "arr": [
+          50,
+          10,
+          90,
+          30,
+          70,
+          40,
+          80,
+          60,
+          20
+        ],
+        "n": 9,
+        "target": 99
+      }
+    },
+    {
+      "step": 11,
+      "line": 5,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0,
+        "n": 9
+      }
+    },
+    {
+      "step": 12,
+      "line": 5,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "n": 9
+      }
+    },
+    {
+      "step": 13,
+      "line": 5,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "n": 9
+      }
+    },
+    {
+      "step": 14,
+      "line": 5,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3,
+        "n": 9
+      }
+    },
+    {
+      "step": 15,
+      "line": 5,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 4,
+        "n": 9
+      }
+    },
+    {
+      "step": 16,
+      "line": 5,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 5,
+        "n": 9
+      }
+    },
+    {
+      "step": 17,
+      "line": 5,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 6,
+        "n": 9
+      }
+    },
+    {
+      "step": 18,
+      "line": 5,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 7,
+        "n": 9
+      }
+    },
+    {
+      "step": 19,
+      "line": 5,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 8,
+        "n": 9
+      }
+    },
+    {
+      "step": 20,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "_return": -1
+      }
+    },
+    {
+      "step": 21,
+      "line": 10,
+      "type": "exit",
+      "func": "linear_search",
+      "vars": {}
+    },
+    {
+      "step": 22,
+      "line": 32,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 23,
+      "line": 32,
+      "type": "exit",
+      "func": "main",
+      "vars": {}
+    }
+  ],
+  "total_steps": 24
+}

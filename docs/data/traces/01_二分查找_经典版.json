@@ -1,0 +1,700 @@
+{
+  "meta": {
+    "algo": "01_二分查找_经典版",
+    "source_lines": [
+      "#include <stdio.h>",
+      "int binary_search(int arr[], int n, int target) {",
+      "    int left = 0, right = n - 1;",
+      "    while (left <= right) {",
+      "        int mid = left + (right - left) / 2;  /* 防溢出：避免 left + right 先相加超过 int 上限 */",
+      "        if (arr[mid] == target) {",
+      "            return mid;       /* 找到了 */",
+      "        } else if (arr[mid] < target) {",
+      "            left = mid + 1;   /* 目标在右半边 */",
+      "        } else {",
+      "            right = mid - 1;  /* 目标在左半边 */",
+      "        }",
+      "    }",
+      "    return -1;  /* 没找到 */",
+      "}",
+      "// 测试：二分查找要求数组有序",
+      "int main(void) {",
+      "    int arr[] = {2, 5, 8, 12, 16, 23, 38, 45, 56, 67, 78, 89};",
+      "    int n = sizeof(arr) / sizeof(arr[0]);",
+      "    // 找到的情况",
+      "    int targets[] = {8, 45, 89, 2};",
+      "    for (int i = 0; i < 4; i++) {",
+      "        int pos = binary_search(arr, n, targets[i]);",
+      "        printf(\"查找 %d → 位置 %d\\n\", targets[i], pos);",
+      "    }",
+      "    // 找不到的情况",
+      "    int pos = binary_search(arr, n, 99);",
+      "    printf(\"查找 99 → 位置 %d（未找到）\\n\", pos);",
+      "    return 0;",
+      "}"
+    ],
+    "track_vars": {
+      "primary": [
+        "arr",
+        "i",
+        "left",
+        "mid",
+        "n",
+        "right",
+        "target"
+      ],
+      "secondary": [
+        "_return"
+      ]
+    },
+    "var_classes": {
+      "_return": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "arr": {
+        "category": "primary",
+        "type": "array"
+      },
+      "i": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "left": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "mid": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "n": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "right": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "target": {
+        "category": "primary",
+        "type": "scalar"
+      }
+    },
+    "viz_type": "array",
+    "initial_data": {
+      "arr": [
+        2,
+        5,
+        8,
+        12,
+        16,
+        23,
+        38,
+        45,
+        56,
+        67,
+        78,
+        89
+      ],
+      "targets": [
+        8,
+        45,
+        89,
+        2
+      ]
+    },
+    "program_output": [
+      {
+        "after_step": 9,
+        "text": "查找 8 → 位置 2"
+      },
+      {
+        "after_step": 21,
+        "text": "查找 45 → 位置 7"
+      },
+      {
+        "after_step": 33,
+        "text": "查找 89 → 位置 11"
+      },
+      {
+        "after_step": 43,
+        "text": "查找 2 → 位置 0"
+      },
+      {
+        "after_step": 54,
+        "text": "查找 99 → 位置 -1（未找到）"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step": 0,
+      "line": 17,
+      "type": "enter",
+      "func": "main",
+      "vars": {}
+    },
+    {
+      "step": 1,
+      "line": 22,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0
+      }
+    },
+    {
+      "step": 2,
+      "line": 23,
+      "type": "enter",
+      "func": "binary_search",
+      "vars": {
+        "arr": [
+          2,
+          5,
+          8,
+          12,
+          16,
+          23,
+          38,
+          45,
+          56,
+          67,
+          78,
+          89
+        ],
+        "n": 12,
+        "target": 8
+      }
+    },
+    {
+      "step": 3,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 0,
+        "right": 11
+      }
+    },
+    {
+      "step": 4,
+      "line": 11,
+      "type": "exec",
+      "vars": {
+        "right": 4
+      }
+    },
+    {
+      "step": 5,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 0,
+        "right": 4
+      }
+    },
+    {
+      "step": 6,
+      "line": 6,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "mid": 2,
+        "target": 8
+      }
+    },
+    {
+      "step": 7,
+      "line": 7,
+      "type": "exec",
+      "vars": {
+        "_return": 2
+      }
+    },
+    {
+      "step": 8,
+      "line": 7,
+      "type": "exit",
+      "func": "binary_search",
+      "vars": {}
+    },
+    {
+      "step": 9,
+      "line": 22,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1
+      }
+    },
+    {
+      "step": 10,
+      "line": 23,
+      "type": "enter",
+      "func": "binary_search",
+      "vars": {
+        "arr": [
+          2,
+          5,
+          8,
+          12,
+          16,
+          23,
+          38,
+          45,
+          56,
+          67,
+          78,
+          89
+        ],
+        "n": 12,
+        "target": 45
+      }
+    },
+    {
+      "step": 11,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 0,
+        "right": 11
+      }
+    },
+    {
+      "step": 12,
+      "line": 9,
+      "type": "exec",
+      "vars": {
+        "left": 6
+      }
+    },
+    {
+      "step": 13,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 6,
+        "right": 11
+      }
+    },
+    {
+      "step": 14,
+      "line": 11,
+      "type": "exec",
+      "vars": {
+        "right": 7
+      }
+    },
+    {
+      "step": 15,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 6,
+        "right": 7
+      }
+    },
+    {
+      "step": 16,
+      "line": 9,
+      "type": "exec",
+      "vars": {
+        "left": 7
+      }
+    },
+    {
+      "step": 17,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 7,
+        "right": 7
+      }
+    },
+    {
+      "step": 18,
+      "line": 6,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "mid": 7,
+        "target": 45
+      }
+    },
+    {
+      "step": 19,
+      "line": 7,
+      "type": "exec",
+      "vars": {
+        "_return": 7
+      }
+    },
+    {
+      "step": 20,
+      "line": 7,
+      "type": "exit",
+      "func": "binary_search",
+      "vars": {}
+    },
+    {
+      "step": 21,
+      "line": 22,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2
+      }
+    },
+    {
+      "step": 22,
+      "line": 23,
+      "type": "enter",
+      "func": "binary_search",
+      "vars": {
+        "arr": [
+          2,
+          5,
+          8,
+          12,
+          16,
+          23,
+          38,
+          45,
+          56,
+          67,
+          78,
+          89
+        ],
+        "n": 12,
+        "target": 89
+      }
+    },
+    {
+      "step": 23,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 0,
+        "right": 11
+      }
+    },
+    {
+      "step": 24,
+      "line": 9,
+      "type": "exec",
+      "vars": {
+        "left": 6
+      }
+    },
+    {
+      "step": 25,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 6,
+        "right": 11
+      }
+    },
+    {
+      "step": 26,
+      "line": 9,
+      "type": "exec",
+      "vars": {
+        "left": 9
+      }
+    },
+    {
+      "step": 27,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 9,
+        "right": 11
+      }
+    },
+    {
+      "step": 28,
+      "line": 9,
+      "type": "exec",
+      "vars": {
+        "left": 11
+      }
+    },
+    {
+      "step": 29,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 11,
+        "right": 11
+      }
+    },
+    {
+      "step": 30,
+      "line": 6,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "mid": 11,
+        "target": 89
+      }
+    },
+    {
+      "step": 31,
+      "line": 7,
+      "type": "exec",
+      "vars": {
+        "_return": 11
+      }
+    },
+    {
+      "step": 32,
+      "line": 7,
+      "type": "exit",
+      "func": "binary_search",
+      "vars": {}
+    },
+    {
+      "step": 33,
+      "line": 22,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3
+      }
+    },
+    {
+      "step": 34,
+      "line": 23,
+      "type": "enter",
+      "func": "binary_search",
+      "vars": {
+        "arr": [
+          2,
+          5,
+          8,
+          12,
+          16,
+          23,
+          38,
+          45,
+          56,
+          67,
+          78,
+          89
+        ],
+        "n": 12,
+        "target": 2
+      }
+    },
+    {
+      "step": 35,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 0,
+        "right": 11
+      }
+    },
+    {
+      "step": 36,
+      "line": 11,
+      "type": "exec",
+      "vars": {
+        "right": 4
+      }
+    },
+    {
+      "step": 37,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 0,
+        "right": 4
+      }
+    },
+    {
+      "step": 38,
+      "line": 11,
+      "type": "exec",
+      "vars": {
+        "right": 1
+      }
+    },
+    {
+      "step": 39,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 0,
+        "right": 1
+      }
+    },
+    {
+      "step": 40,
+      "line": 6,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "mid": 0,
+        "target": 2
+      }
+    },
+    {
+      "step": 41,
+      "line": 7,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 42,
+      "line": 7,
+      "type": "exit",
+      "func": "binary_search",
+      "vars": {}
+    },
+    {
+      "step": 43,
+      "line": 27,
+      "type": "enter",
+      "func": "binary_search",
+      "vars": {
+        "arr": [
+          2,
+          5,
+          8,
+          12,
+          16,
+          23,
+          38,
+          45,
+          56,
+          67,
+          78,
+          89
+        ],
+        "n": 12,
+        "target": 99
+      }
+    },
+    {
+      "step": 44,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 0,
+        "right": 11
+      }
+    },
+    {
+      "step": 45,
+      "line": 9,
+      "type": "exec",
+      "vars": {
+        "left": 6
+      }
+    },
+    {
+      "step": 46,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 6,
+        "right": 11
+      }
+    },
+    {
+      "step": 47,
+      "line": 9,
+      "type": "exec",
+      "vars": {
+        "left": 9
+      }
+    },
+    {
+      "step": 48,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 9,
+        "right": 11
+      }
+    },
+    {
+      "step": 49,
+      "line": 9,
+      "type": "exec",
+      "vars": {
+        "left": 11
+      }
+    },
+    {
+      "step": 50,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 11,
+        "right": 11
+      }
+    },
+    {
+      "step": 51,
+      "line": 9,
+      "type": "exec",
+      "vars": {
+        "left": 12
+      }
+    },
+    {
+      "step": 52,
+      "line": 14,
+      "type": "exec",
+      "vars": {
+        "_return": -1
+      }
+    },
+    {
+      "step": 53,
+      "line": 14,
+      "type": "exit",
+      "func": "binary_search",
+      "vars": {}
+    },
+    {
+      "step": 54,
+      "line": 29,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 55,
+      "line": 29,
+      "type": "exit",
+      "func": "main",
+      "vars": {}
+    }
+  ],
+  "total_steps": 56
+}

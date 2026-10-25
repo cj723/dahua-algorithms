@@ -1,0 +1,2118 @@
+{
+  "meta": {
+    "algo": "06_硬币找零_自底向上填表",
+    "source_lines": [
+      "#include <stdio.h>",
+      "#define INF 1000000000",
+      "#define MAX_AMOUNT 10000",
+      "int coin_change(int coins[], int coinCount, int amount) {",
+      "    if (amount < 0 || amount > MAX_AMOUNT) {",
+      "        return -1;  /* 防止 amount 超出 dp 数组范围 */",
+      "    }",
+      "    int dp[MAX_AMOUNT + 1];",
+      "    for (int i = 0; i <= amount; i++) {",
+      "        dp[i] = INF;",
+      "    }",
+      "    dp[0] = 0;",
+      "    for (int i = 1; i <= amount; i++) {",
+      "        for (int j = 0; j < coinCount; j++) {",
+      "            int coin = coins[j];",
+      "            if (i >= coin && dp[i - coin] != INF) {",
+      "                if (dp[i - coin] + 1 < dp[i]) {",
+      "                    dp[i] = dp[i - coin] + 1;",
+      "                }",
+      "            }",
+      "        }",
+      "    }",
+      "    return dp[amount] == INF ? -1 : dp[amount];",
+      "}",
+      "int main(void) {",
+      "    int coins[] = {1, 2, 5};",
+      "    int amount = 11;",
+      "    int coinCount = sizeof(coins) / sizeof(coins[0]);",
+      "    printf(\"最少硬币数：%d\\n\", coin_change(coins, coinCount, amount));",
+      "    return 0;",
+      "}"
+    ],
+    "track_vars": {
+      "primary": [
+        "dp",
+        "i",
+        "j"
+      ],
+      "secondary": [
+        "_return",
+        "amount",
+        "coin",
+        "coinCount",
+        "coins"
+      ]
+    },
+    "var_classes": {
+      "_return": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "amount": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "coin": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "coinCount": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "coins": {
+        "category": "secondary",
+        "type": "array"
+      },
+      "dp": {
+        "category": "primary",
+        "type": "array"
+      },
+      "i": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "j": {
+        "category": "primary",
+        "type": "scalar"
+      }
+    },
+    "viz_type": "array",
+    "initial_data": {
+      "coins": [
+        1,
+        2,
+        5
+      ],
+      "dp": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        "...",
+        -16,
+        -1,
+        1836886840,
+        1,
+        -125009664,
+        1,
+        -125009832,
+        1,
+        2,
+        0
+      ]
+    },
+    "program_output": [
+      {
+        "after_step": 136,
+        "text": "最少硬币数：3"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step": 0,
+      "line": 25,
+      "type": "enter",
+      "func": "main",
+      "vars": {}
+    },
+    {
+      "step": 1,
+      "line": 29,
+      "type": "enter",
+      "func": "coin_change",
+      "vars": {
+        "coins": [
+          1,
+          2,
+          5
+        ],
+        "coinCount": 3,
+        "amount": 11
+      }
+    },
+    {
+      "step": 2,
+      "line": 8,
+      "type": "exec",
+      "vars": {
+        "dp": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          "...",
+          -16,
+          -1,
+          1836886840,
+          1,
+          -125009664,
+          1,
+          -125009832,
+          1,
+          2,
+          0
+        ]
+      }
+    },
+    {
+      "step": 3,
+      "line": 9,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 11,
+        "i": 0
+      }
+    },
+    {
+      "step": 4,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "dp": [
+          1000000000,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          "...",
+          -16,
+          -1,
+          1836886840,
+          1,
+          -125009664,
+          1,
+          -125009832,
+          1,
+          2,
+          0
+        ]
+      }
+    },
+    {
+      "step": 5,
+      "line": 9,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 11,
+        "i": 1
+      }
+    },
+    {
+      "step": 6,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "dp": [
+          1000000000,
+          1000000000,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          "...",
+          -16,
+          -1,
+          1836886840,
+          1,
+          -125009664,
+          1,
+          -125009832,
+          1,
+          2,
+          0
+        ]
+      }
+    },
+    {
+      "step": 7,
+      "line": 9,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 11,
+        "i": 2
+      }
+    },
+    {
+      "step": 8,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "dp": [
+          1000000000,
+          1000000000,
+          1000000000,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          "...",
+          -16,
+          -1,
+          1836886840,
+          1,
+          -125009664,
+          1,
+          -125009832,
+          1,
+          2,
+          0
+        ]
+      }
+    },
+    {
+      "step": 9,
+      "line": 9,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 11,
+        "i": 3
+      }
+    },
+    {
+      "step": 10,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "dp": [
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          "...",
+          -16,
+          -1,
+          1836886840,
+          1,
+          -125009664,
+          1,
+          -125009832,
+          1,
+          2,
+          0
+        ]
+      }
+    },
+    {
+      "step": 11,
+      "line": 9,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 11,
+        "i": 4
+      }
+    },
+    {
+      "step": 12,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "dp": [
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          0,
+          0,
+          0,
+          0,
+          0,
+          "...",
+          -16,
+          -1,
+          1836886840,
+          1,
+          -125009664,
+          1,
+          -125009832,
+          1,
+          2,
+          0
+        ]
+      }
+    },
+    {
+      "step": 13,
+      "line": 9,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 11,
+        "i": 5
+      }
+    },
+    {
+      "step": 14,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "dp": [
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          0,
+          0,
+          0,
+          0,
+          "...",
+          -16,
+          -1,
+          1836886840,
+          1,
+          -125009664,
+          1,
+          -125009832,
+          1,
+          2,
+          0
+        ]
+      }
+    },
+    {
+      "step": 15,
+      "line": 9,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 11,
+        "i": 6
+      }
+    },
+    {
+      "step": 16,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "dp": [
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          0,
+          0,
+          0,
+          "...",
+          -16,
+          -1,
+          1836886840,
+          1,
+          -125009664,
+          1,
+          -125009832,
+          1,
+          2,
+          0
+        ]
+      }
+    },
+    {
+      "step": 17,
+      "line": 9,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 11,
+        "i": 7
+      }
+    },
+    {
+      "step": 18,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "dp": [
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          0,
+          0,
+          "...",
+          -16,
+          -1,
+          1836886840,
+          1,
+          -125009664,
+          1,
+          -125009832,
+          1,
+          2,
+          0
+        ]
+      }
+    },
+    {
+      "step": 19,
+      "line": 9,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 11,
+        "i": 8
+      }
+    },
+    {
+      "step": 20,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "dp": [
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          0,
+          "...",
+          -16,
+          -1,
+          1836886840,
+          1,
+          -125009664,
+          1,
+          -125009832,
+          1,
+          2,
+          0
+        ]
+      }
+    },
+    {
+      "step": 21,
+      "line": 9,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 11,
+        "i": 9
+      }
+    },
+    {
+      "step": 22,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "dp": [
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          "...",
+          -16,
+          -1,
+          1836886840,
+          1,
+          -125009664,
+          1,
+          -125009832,
+          1,
+          2,
+          0
+        ]
+      }
+    },
+    {
+      "step": 23,
+      "line": 9,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 11,
+        "i": 10
+      }
+    },
+    {
+      "step": 24,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "dp": [
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          "...",
+          -16,
+          -1,
+          1836886840,
+          1,
+          -125009664,
+          1,
+          -125009832,
+          1,
+          2,
+          0
+        ]
+      }
+    },
+    {
+      "step": 25,
+      "line": 9,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 11,
+        "i": 11
+      }
+    },
+    {
+      "step": 26,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "dp": [
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          "...",
+          -16,
+          -1,
+          1836886840,
+          1,
+          -125009664,
+          1,
+          -125009832,
+          1,
+          2,
+          0
+        ]
+      }
+    },
+    {
+      "step": 27,
+      "line": 12,
+      "type": "exec",
+      "vars": {
+        "dp": [
+          0,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          "...",
+          -16,
+          -1,
+          1836886840,
+          1,
+          -125009664,
+          1,
+          -125009832,
+          1,
+          2,
+          0
+        ]
+      }
+    },
+    {
+      "step": 28,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 11,
+        "i": 1
+      }
+    },
+    {
+      "step": 29,
+      "line": 14,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coinCount": 3,
+        "j": 0
+      }
+    },
+    {
+      "step": 30,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coin": 1,
+        "i": 1
+      }
+    },
+    {
+      "step": 31,
+      "line": 17,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coin": 1,
+        "i": 1
+      }
+    },
+    {
+      "step": 32,
+      "line": 18,
+      "type": "exec",
+      "vars": {
+        "dp": [
+          0,
+          1,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          "...",
+          -16,
+          -1,
+          1836886840,
+          1,
+          -125009664,
+          1,
+          -125009832,
+          1,
+          2,
+          0
+        ]
+      }
+    },
+    {
+      "step": 33,
+      "line": 14,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coinCount": 3,
+        "j": 1
+      }
+    },
+    {
+      "step": 34,
+      "line": 14,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coinCount": 3,
+        "j": 2
+      }
+    },
+    {
+      "step": 35,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 11,
+        "i": 2
+      }
+    },
+    {
+      "step": 36,
+      "line": 14,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coinCount": 3,
+        "j": 0
+      }
+    },
+    {
+      "step": 37,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coin": 1,
+        "i": 2
+      }
+    },
+    {
+      "step": 38,
+      "line": 17,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coin": 1,
+        "i": 2
+      }
+    },
+    {
+      "step": 39,
+      "line": 18,
+      "type": "exec",
+      "vars": {
+        "dp": [
+          0,
+          1,
+          2,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          "...",
+          -16,
+          -1,
+          1836886840,
+          1,
+          -125009664,
+          1,
+          -125009832,
+          1,
+          2,
+          0
+        ]
+      }
+    },
+    {
+      "step": 40,
+      "line": 14,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coinCount": 3,
+        "j": 1
+      }
+    },
+    {
+      "step": 41,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coin": 2,
+        "i": 2
+      }
+    },
+    {
+      "step": 42,
+      "line": 17,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coin": 2,
+        "i": 2
+      }
+    },
+    {
+      "step": 43,
+      "line": 18,
+      "type": "exec",
+      "vars": {
+        "dp": [
+          0,
+          1,
+          1,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          "...",
+          -16,
+          -1,
+          1836886840,
+          1,
+          -125009664,
+          1,
+          -125009832,
+          1,
+          2,
+          0
+        ]
+      }
+    },
+    {
+      "step": 44,
+      "line": 14,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coinCount": 3,
+        "j": 2
+      }
+    },
+    {
+      "step": 45,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 11,
+        "i": 3
+      }
+    },
+    {
+      "step": 46,
+      "line": 14,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coinCount": 3,
+        "j": 0
+      }
+    },
+    {
+      "step": 47,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coin": 1,
+        "i": 3
+      }
+    },
+    {
+      "step": 48,
+      "line": 17,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coin": 1,
+        "i": 3
+      }
+    },
+    {
+      "step": 49,
+      "line": 18,
+      "type": "exec",
+      "vars": {
+        "dp": [
+          0,
+          1,
+          1,
+          2,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          "...",
+          -16,
+          -1,
+          1836886840,
+          1,
+          -125009664,
+          1,
+          -125009832,
+          1,
+          2,
+          0
+        ]
+      }
+    },
+    {
+      "step": 50,
+      "line": 14,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coinCount": 3,
+        "j": 1
+      }
+    },
+    {
+      "step": 51,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coin": 2,
+        "i": 3
+      }
+    },
+    {
+      "step": 52,
+      "line": 14,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coinCount": 3,
+        "j": 2
+      }
+    },
+    {
+      "step": 53,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 11,
+        "i": 4
+      }
+    },
+    {
+      "step": 54,
+      "line": 14,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coinCount": 3,
+        "j": 0
+      }
+    },
+    {
+      "step": 55,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coin": 1,
+        "i": 4
+      }
+    },
+    {
+      "step": 56,
+      "line": 17,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coin": 1,
+        "i": 4
+      }
+    },
+    {
+      "step": 57,
+      "line": 18,
+      "type": "exec",
+      "vars": {
+        "dp": [
+          0,
+          1,
+          1,
+          2,
+          3,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          "...",
+          -16,
+          -1,
+          1836886840,
+          1,
+          -125009664,
+          1,
+          -125009832,
+          1,
+          2,
+          0
+        ]
+      }
+    },
+    {
+      "step": 58,
+      "line": 14,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coinCount": 3,
+        "j": 1
+      }
+    },
+    {
+      "step": 59,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coin": 2,
+        "i": 4
+      }
+    },
+    {
+      "step": 60,
+      "line": 17,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coin": 2,
+        "i": 4
+      }
+    },
+    {
+      "step": 61,
+      "line": 18,
+      "type": "exec",
+      "vars": {
+        "dp": [
+          0,
+          1,
+          1,
+          2,
+          2,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          "...",
+          -16,
+          -1,
+          1836886840,
+          1,
+          -125009664,
+          1,
+          -125009832,
+          1,
+          2,
+          0
+        ]
+      }
+    },
+    {
+      "step": 62,
+      "line": 14,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coinCount": 3,
+        "j": 2
+      }
+    },
+    {
+      "step": 63,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 11,
+        "i": 5
+      }
+    },
+    {
+      "step": 64,
+      "line": 14,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coinCount": 3,
+        "j": 0
+      }
+    },
+    {
+      "step": 65,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coin": 1,
+        "i": 5
+      }
+    },
+    {
+      "step": 66,
+      "line": 17,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coin": 1,
+        "i": 5
+      }
+    },
+    {
+      "step": 67,
+      "line": 18,
+      "type": "exec",
+      "vars": {
+        "dp": [
+          0,
+          1,
+          1,
+          2,
+          2,
+          3,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          "...",
+          -16,
+          -1,
+          1836886840,
+          1,
+          -125009664,
+          1,
+          -125009832,
+          1,
+          2,
+          0
+        ]
+      }
+    },
+    {
+      "step": 68,
+      "line": 14,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coinCount": 3,
+        "j": 1
+      }
+    },
+    {
+      "step": 69,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coin": 2,
+        "i": 5
+      }
+    },
+    {
+      "step": 70,
+      "line": 14,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coinCount": 3,
+        "j": 2
+      }
+    },
+    {
+      "step": 71,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coin": 5,
+        "i": 5
+      }
+    },
+    {
+      "step": 72,
+      "line": 17,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coin": 5,
+        "i": 5
+      }
+    },
+    {
+      "step": 73,
+      "line": 18,
+      "type": "exec",
+      "vars": {
+        "dp": [
+          0,
+          1,
+          1,
+          2,
+          2,
+          1,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          "...",
+          -16,
+          -1,
+          1836886840,
+          1,
+          -125009664,
+          1,
+          -125009832,
+          1,
+          2,
+          0
+        ]
+      }
+    },
+    {
+      "step": 74,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 11,
+        "i": 6
+      }
+    },
+    {
+      "step": 75,
+      "line": 14,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coinCount": 3,
+        "j": 0
+      }
+    },
+    {
+      "step": 76,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coin": 1,
+        "i": 6
+      }
+    },
+    {
+      "step": 77,
+      "line": 17,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coin": 1,
+        "i": 6
+      }
+    },
+    {
+      "step": 78,
+      "line": 18,
+      "type": "exec",
+      "vars": {
+        "dp": [
+          0,
+          1,
+          1,
+          2,
+          2,
+          1,
+          2,
+          1000000000,
+          1000000000,
+          1000000000,
+          "...",
+          -16,
+          -1,
+          1836886840,
+          1,
+          -125009664,
+          1,
+          -125009832,
+          1,
+          2,
+          0
+        ]
+      }
+    },
+    {
+      "step": 79,
+      "line": 14,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coinCount": 3,
+        "j": 1
+      }
+    },
+    {
+      "step": 80,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coin": 2,
+        "i": 6
+      }
+    },
+    {
+      "step": 81,
+      "line": 14,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coinCount": 3,
+        "j": 2
+      }
+    },
+    {
+      "step": 82,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coin": 5,
+        "i": 6
+      }
+    },
+    {
+      "step": 83,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 11,
+        "i": 7
+      }
+    },
+    {
+      "step": 84,
+      "line": 14,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coinCount": 3,
+        "j": 0
+      }
+    },
+    {
+      "step": 85,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coin": 1,
+        "i": 7
+      }
+    },
+    {
+      "step": 86,
+      "line": 17,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coin": 1,
+        "i": 7
+      }
+    },
+    {
+      "step": 87,
+      "line": 18,
+      "type": "exec",
+      "vars": {
+        "dp": [
+          0,
+          1,
+          1,
+          2,
+          2,
+          1,
+          2,
+          3,
+          1000000000,
+          1000000000,
+          "...",
+          -16,
+          -1,
+          1836886840,
+          1,
+          -125009664,
+          1,
+          -125009832,
+          1,
+          2,
+          0
+        ]
+      }
+    },
+    {
+      "step": 88,
+      "line": 14,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coinCount": 3,
+        "j": 1
+      }
+    },
+    {
+      "step": 89,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coin": 2,
+        "i": 7
+      }
+    },
+    {
+      "step": 90,
+      "line": 17,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coin": 2,
+        "i": 7
+      }
+    },
+    {
+      "step": 91,
+      "line": 18,
+      "type": "exec",
+      "vars": {
+        "dp": [
+          0,
+          1,
+          1,
+          2,
+          2,
+          1,
+          2,
+          2,
+          1000000000,
+          1000000000,
+          "...",
+          -16,
+          -1,
+          1836886840,
+          1,
+          -125009664,
+          1,
+          -125009832,
+          1,
+          2,
+          0
+        ]
+      }
+    },
+    {
+      "step": 92,
+      "line": 14,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coinCount": 3,
+        "j": 2
+      }
+    },
+    {
+      "step": 93,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coin": 5,
+        "i": 7
+      }
+    },
+    {
+      "step": 94,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 11,
+        "i": 8
+      }
+    },
+    {
+      "step": 95,
+      "line": 14,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coinCount": 3,
+        "j": 0
+      }
+    },
+    {
+      "step": 96,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coin": 1,
+        "i": 8
+      }
+    },
+    {
+      "step": 97,
+      "line": 17,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coin": 1,
+        "i": 8
+      }
+    },
+    {
+      "step": 98,
+      "line": 18,
+      "type": "exec",
+      "vars": {
+        "dp": [
+          0,
+          1,
+          1,
+          2,
+          2,
+          1,
+          2,
+          2,
+          3,
+          1000000000,
+          "...",
+          -16,
+          -1,
+          1836886840,
+          1,
+          -125009664,
+          1,
+          -125009832,
+          1,
+          2,
+          0
+        ]
+      }
+    },
+    {
+      "step": 99,
+      "line": 14,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coinCount": 3,
+        "j": 1
+      }
+    },
+    {
+      "step": 100,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coin": 2,
+        "i": 8
+      }
+    },
+    {
+      "step": 101,
+      "line": 14,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coinCount": 3,
+        "j": 2
+      }
+    },
+    {
+      "step": 102,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coin": 5,
+        "i": 8
+      }
+    },
+    {
+      "step": 103,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 11,
+        "i": 9
+      }
+    },
+    {
+      "step": 104,
+      "line": 14,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coinCount": 3,
+        "j": 0
+      }
+    },
+    {
+      "step": 105,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coin": 1,
+        "i": 9
+      }
+    },
+    {
+      "step": 106,
+      "line": 17,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coin": 1,
+        "i": 9
+      }
+    },
+    {
+      "step": 107,
+      "line": 18,
+      "type": "exec",
+      "vars": {
+        "dp": [
+          0,
+          1,
+          1,
+          2,
+          2,
+          1,
+          2,
+          2,
+          3,
+          4,
+          "...",
+          -16,
+          -1,
+          1836886840,
+          1,
+          -125009664,
+          1,
+          -125009832,
+          1,
+          2,
+          0
+        ]
+      }
+    },
+    {
+      "step": 108,
+      "line": 14,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coinCount": 3,
+        "j": 1
+      }
+    },
+    {
+      "step": 109,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coin": 2,
+        "i": 9
+      }
+    },
+    {
+      "step": 110,
+      "line": 17,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coin": 2,
+        "i": 9
+      }
+    },
+    {
+      "step": 111,
+      "line": 18,
+      "type": "exec",
+      "vars": {
+        "dp": [
+          0,
+          1,
+          1,
+          2,
+          2,
+          1,
+          2,
+          2,
+          3,
+          3,
+          "...",
+          -16,
+          -1,
+          1836886840,
+          1,
+          -125009664,
+          1,
+          -125009832,
+          1,
+          2,
+          0
+        ]
+      }
+    },
+    {
+      "step": 112,
+      "line": 14,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coinCount": 3,
+        "j": 2
+      }
+    },
+    {
+      "step": 113,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coin": 5,
+        "i": 9
+      }
+    },
+    {
+      "step": 114,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 11,
+        "i": 10
+      }
+    },
+    {
+      "step": 115,
+      "line": 14,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coinCount": 3,
+        "j": 0
+      }
+    },
+    {
+      "step": 116,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coin": 1,
+        "i": 10
+      }
+    },
+    {
+      "step": 117,
+      "line": 17,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coin": 1,
+        "i": 10
+      }
+    },
+    {
+      "step": 118,
+      "line": 18,
+      "type": "exec",
+      "vars": {
+        "dp": [
+          0,
+          1,
+          1,
+          2,
+          2,
+          1,
+          2,
+          2,
+          3,
+          3,
+          "...",
+          -16,
+          -1,
+          1836886840,
+          1,
+          -125009664,
+          1,
+          -125009832,
+          1,
+          2,
+          0
+        ]
+      }
+    },
+    {
+      "step": 119,
+      "line": 14,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coinCount": 3,
+        "j": 1
+      }
+    },
+    {
+      "step": 120,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coin": 2,
+        "i": 10
+      }
+    },
+    {
+      "step": 121,
+      "line": 14,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coinCount": 3,
+        "j": 2
+      }
+    },
+    {
+      "step": 122,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coin": 5,
+        "i": 10
+      }
+    },
+    {
+      "step": 123,
+      "line": 17,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coin": 5,
+        "i": 10
+      }
+    },
+    {
+      "step": 124,
+      "line": 18,
+      "type": "exec",
+      "vars": {
+        "dp": [
+          0,
+          1,
+          1,
+          2,
+          2,
+          1,
+          2,
+          2,
+          3,
+          3,
+          "...",
+          -16,
+          -1,
+          1836886840,
+          1,
+          -125009664,
+          1,
+          -125009832,
+          1,
+          2,
+          0
+        ]
+      }
+    },
+    {
+      "step": 125,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 11,
+        "i": 11
+      }
+    },
+    {
+      "step": 126,
+      "line": 14,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coinCount": 3,
+        "j": 0
+      }
+    },
+    {
+      "step": 127,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coin": 1,
+        "i": 11
+      }
+    },
+    {
+      "step": 128,
+      "line": 17,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coin": 1,
+        "i": 11
+      }
+    },
+    {
+      "step": 129,
+      "line": 18,
+      "type": "exec",
+      "vars": {
+        "dp": [
+          0,
+          1,
+          1,
+          2,
+          2,
+          1,
+          2,
+          2,
+          3,
+          3,
+          "...",
+          -16,
+          -1,
+          1836886840,
+          1,
+          -125009664,
+          1,
+          -125009832,
+          1,
+          2,
+          0
+        ]
+      }
+    },
+    {
+      "step": 130,
+      "line": 14,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coinCount": 3,
+        "j": 1
+      }
+    },
+    {
+      "step": 131,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coin": 2,
+        "i": 11
+      }
+    },
+    {
+      "step": 132,
+      "line": 14,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coinCount": 3,
+        "j": 2
+      }
+    },
+    {
+      "step": 133,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coin": 5,
+        "i": 11
+      }
+    },
+    {
+      "step": 134,
+      "line": 23,
+      "type": "exec",
+      "vars": {
+        "_return": 3
+      }
+    },
+    {
+      "step": 135,
+      "line": 23,
+      "type": "exit",
+      "func": "coin_change",
+      "vars": {}
+    },
+    {
+      "step": 136,
+      "line": 30,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 137,
+      "line": 30,
+      "type": "exit",
+      "func": "main",
+      "vars": {}
+    }
+  ],
+  "total_steps": 138
+}

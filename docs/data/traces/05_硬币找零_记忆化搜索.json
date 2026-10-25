@@ -1,0 +1,1306 @@
+{
+  "meta": {
+    "algo": "05_硬币找零_记忆化搜索",
+    "source_lines": [
+      "#include <stdio.h>",
+      "#define MAX_AMOUNT 10000",
+      "#define INF 1000000000",
+      "int memo[MAX_AMOUNT + 1];",
+      "int min_coins_memo(int coins[], int coinCount, int amount) {",
+      "    if (amount == 0) return 0;",
+      "    if (amount < 0) return INF;",
+      "    if (amount > MAX_AMOUNT) return INF;",
+      "    if (memo[amount] != -1) {",
+      "        return memo[amount];",
+      "    }",
+      "    int best = INF;",
+      "    for (int i = 0; i < coinCount; i++) {",
+      "        int sub = min_coins_memo(coins, coinCount, amount - coins[i]);",
+      "        if (sub != INF && sub + 1 < best) {",
+      "            best = sub + 1;",
+      "        }",
+      "    }",
+      "    memo[amount] = best;",
+      "    return best;",
+      "}",
+      "int main(void) {",
+      "    int coins[] = {1, 3, 4};",
+      "    int coinCount = sizeof(coins) / sizeof(coins[0]);",
+      "    for (int i = 0; i <= MAX_AMOUNT; i++) memo[i] = -1;",
+      "    printf(\"最少硬币数：%d\\n\", min_coins_memo(coins, coinCount, 6));",
+      "    return 0;",
+      "}"
+    ],
+    "track_vars": {
+      "primary": [
+        "i",
+        "memo"
+      ],
+      "secondary": [
+        "_return",
+        "amount",
+        "best",
+        "coinCount",
+        "coins",
+        "sub"
+      ]
+    },
+    "var_classes": {
+      "_return": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "amount": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "best": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "coinCount": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "coins": {
+        "category": "secondary",
+        "type": "array"
+      },
+      "i": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "memo": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "sub": {
+        "category": "secondary",
+        "type": "scalar"
+      }
+    },
+    "viz_type": "array",
+    "initial_data": {
+      "coins": [
+        1,
+        3,
+        4
+      ]
+    },
+    "program_output": [
+      {
+        "after_step": 121,
+        "text": "最少硬币数：2"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step": 0,
+      "line": 22,
+      "type": "enter",
+      "func": "main",
+      "vars": {}
+    },
+    {
+      "step": 1,
+      "line": 26,
+      "type": "enter",
+      "func": "min_coins_memo",
+      "vars": {
+        "coins": [
+          1,
+          3,
+          4
+        ],
+        "coinCount": 3,
+        "amount": 6
+      }
+    },
+    {
+      "step": 2,
+      "line": 6,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "amount": 6
+      }
+    },
+    {
+      "step": 3,
+      "line": 7,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "amount": 6
+      }
+    },
+    {
+      "step": 4,
+      "line": 8,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "amount": 6
+      }
+    },
+    {
+      "step": 5,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coinCount": 3,
+        "i": 0
+      }
+    },
+    {
+      "step": 6,
+      "line": 14,
+      "type": "enter",
+      "func": "min_coins_memo",
+      "vars": {
+        "coins": [
+          1,
+          3,
+          4
+        ],
+        "coinCount": 3,
+        "amount": 5
+      }
+    },
+    {
+      "step": 7,
+      "line": 6,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "amount": 5
+      }
+    },
+    {
+      "step": 8,
+      "line": 7,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "amount": 5
+      }
+    },
+    {
+      "step": 9,
+      "line": 8,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "amount": 5
+      }
+    },
+    {
+      "step": 10,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coinCount": 3,
+        "i": 0
+      }
+    },
+    {
+      "step": 11,
+      "line": 14,
+      "type": "enter",
+      "func": "min_coins_memo",
+      "vars": {
+        "coins": [
+          1,
+          3,
+          4
+        ],
+        "coinCount": 3,
+        "amount": 4
+      }
+    },
+    {
+      "step": 12,
+      "line": 6,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "amount": 4
+      }
+    },
+    {
+      "step": 13,
+      "line": 7,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "amount": 4
+      }
+    },
+    {
+      "step": 14,
+      "line": 8,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "amount": 4
+      }
+    },
+    {
+      "step": 15,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coinCount": 3,
+        "i": 0
+      }
+    },
+    {
+      "step": 16,
+      "line": 14,
+      "type": "enter",
+      "func": "min_coins_memo",
+      "vars": {
+        "coins": [
+          1,
+          3,
+          4
+        ],
+        "coinCount": 3,
+        "amount": 3
+      }
+    },
+    {
+      "step": 17,
+      "line": 6,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "amount": 3
+      }
+    },
+    {
+      "step": 18,
+      "line": 7,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "amount": 3
+      }
+    },
+    {
+      "step": 19,
+      "line": 8,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "amount": 3
+      }
+    },
+    {
+      "step": 20,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coinCount": 3,
+        "i": 0
+      }
+    },
+    {
+      "step": 21,
+      "line": 14,
+      "type": "enter",
+      "func": "min_coins_memo",
+      "vars": {
+        "coins": [
+          1,
+          3,
+          4
+        ],
+        "coinCount": 3,
+        "amount": 2
+      }
+    },
+    {
+      "step": 22,
+      "line": 6,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "amount": 2
+      }
+    },
+    {
+      "step": 23,
+      "line": 7,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "amount": 2
+      }
+    },
+    {
+      "step": 24,
+      "line": 8,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "amount": 2
+      }
+    },
+    {
+      "step": 25,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coinCount": 3,
+        "i": 0
+      }
+    },
+    {
+      "step": 26,
+      "line": 14,
+      "type": "enter",
+      "func": "min_coins_memo",
+      "vars": {
+        "coins": [
+          1,
+          3,
+          4
+        ],
+        "coinCount": 3,
+        "amount": 1
+      }
+    },
+    {
+      "step": 27,
+      "line": 6,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "amount": 1
+      }
+    },
+    {
+      "step": 28,
+      "line": 7,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "amount": 1
+      }
+    },
+    {
+      "step": 29,
+      "line": 8,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "amount": 1
+      }
+    },
+    {
+      "step": 30,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coinCount": 3,
+        "i": 0
+      }
+    },
+    {
+      "step": 31,
+      "line": 14,
+      "type": "enter",
+      "func": "min_coins_memo",
+      "vars": {
+        "coins": [
+          1,
+          3,
+          4
+        ],
+        "coinCount": 3,
+        "amount": 0
+      }
+    },
+    {
+      "step": 32,
+      "line": 15,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "best": 1000000000,
+        "sub": 0
+      }
+    },
+    {
+      "step": 33,
+      "line": 16,
+      "type": "exec",
+      "vars": {
+        "best": 1
+      }
+    },
+    {
+      "step": 34,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coinCount": 3,
+        "i": 1
+      }
+    },
+    {
+      "step": 35,
+      "line": 14,
+      "type": "enter",
+      "func": "min_coins_memo",
+      "vars": {
+        "coins": [
+          1,
+          3,
+          4
+        ],
+        "coinCount": 3,
+        "amount": -2
+      }
+    },
+    {
+      "step": 36,
+      "line": 6,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "amount": -2
+      }
+    },
+    {
+      "step": 37,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coinCount": 3,
+        "i": 2
+      }
+    },
+    {
+      "step": 38,
+      "line": 14,
+      "type": "enter",
+      "func": "min_coins_memo",
+      "vars": {
+        "coins": [
+          1,
+          3,
+          4
+        ],
+        "coinCount": 3,
+        "amount": -3
+      }
+    },
+    {
+      "step": 39,
+      "line": 6,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "amount": -3
+      }
+    },
+    {
+      "step": 40,
+      "line": 20,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 41,
+      "line": 20,
+      "type": "exit",
+      "func": "min_coins_memo",
+      "vars": {}
+    },
+    {
+      "step": 42,
+      "line": 15,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "best": 1000000000,
+        "sub": 1
+      }
+    },
+    {
+      "step": 43,
+      "line": 16,
+      "type": "exec",
+      "vars": {
+        "best": 2
+      }
+    },
+    {
+      "step": 44,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coinCount": 3,
+        "i": 1
+      }
+    },
+    {
+      "step": 45,
+      "line": 14,
+      "type": "enter",
+      "func": "min_coins_memo",
+      "vars": {
+        "coins": [
+          1,
+          3,
+          4
+        ],
+        "coinCount": 3,
+        "amount": -1
+      }
+    },
+    {
+      "step": 46,
+      "line": 6,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "amount": -1
+      }
+    },
+    {
+      "step": 47,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coinCount": 3,
+        "i": 2
+      }
+    },
+    {
+      "step": 48,
+      "line": 14,
+      "type": "enter",
+      "func": "min_coins_memo",
+      "vars": {
+        "coins": [
+          1,
+          3,
+          4
+        ],
+        "coinCount": 3,
+        "amount": -2
+      }
+    },
+    {
+      "step": 49,
+      "line": 6,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "amount": -2
+      }
+    },
+    {
+      "step": 50,
+      "line": 20,
+      "type": "exec",
+      "vars": {
+        "_return": 2
+      }
+    },
+    {
+      "step": 51,
+      "line": 20,
+      "type": "exit",
+      "func": "min_coins_memo",
+      "vars": {}
+    },
+    {
+      "step": 52,
+      "line": 15,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "best": 1000000000,
+        "sub": 2
+      }
+    },
+    {
+      "step": 53,
+      "line": 16,
+      "type": "exec",
+      "vars": {
+        "best": 3
+      }
+    },
+    {
+      "step": 54,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coinCount": 3,
+        "i": 1
+      }
+    },
+    {
+      "step": 55,
+      "line": 14,
+      "type": "enter",
+      "func": "min_coins_memo",
+      "vars": {
+        "coins": [
+          1,
+          3,
+          4
+        ],
+        "coinCount": 3,
+        "amount": 0
+      }
+    },
+    {
+      "step": 56,
+      "line": 15,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "best": 3,
+        "sub": 0
+      }
+    },
+    {
+      "step": 57,
+      "line": 16,
+      "type": "exec",
+      "vars": {
+        "best": 1
+      }
+    },
+    {
+      "step": 58,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coinCount": 3,
+        "i": 2
+      }
+    },
+    {
+      "step": 59,
+      "line": 14,
+      "type": "enter",
+      "func": "min_coins_memo",
+      "vars": {
+        "coins": [
+          1,
+          3,
+          4
+        ],
+        "coinCount": 3,
+        "amount": -1
+      }
+    },
+    {
+      "step": 60,
+      "line": 6,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "amount": -1
+      }
+    },
+    {
+      "step": 61,
+      "line": 20,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 62,
+      "line": 20,
+      "type": "exit",
+      "func": "min_coins_memo",
+      "vars": {}
+    },
+    {
+      "step": 63,
+      "line": 15,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "best": 1000000000,
+        "sub": 1
+      }
+    },
+    {
+      "step": 64,
+      "line": 16,
+      "type": "exec",
+      "vars": {
+        "best": 2
+      }
+    },
+    {
+      "step": 65,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coinCount": 3,
+        "i": 1
+      }
+    },
+    {
+      "step": 66,
+      "line": 14,
+      "type": "enter",
+      "func": "min_coins_memo",
+      "vars": {
+        "coins": [
+          1,
+          3,
+          4
+        ],
+        "coinCount": 3,
+        "amount": 1
+      }
+    },
+    {
+      "step": 67,
+      "line": 6,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "amount": 1
+      }
+    },
+    {
+      "step": 68,
+      "line": 7,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "amount": 1
+      }
+    },
+    {
+      "step": 69,
+      "line": 8,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "amount": 1
+      }
+    },
+    {
+      "step": 70,
+      "line": 9,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 1,
+        "memo": 6651916
+      }
+    },
+    {
+      "step": 71,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 72,
+      "line": 10,
+      "type": "exit",
+      "func": "min_coins_memo",
+      "vars": {}
+    },
+    {
+      "step": 73,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coinCount": 3,
+        "i": 2
+      }
+    },
+    {
+      "step": 74,
+      "line": 14,
+      "type": "enter",
+      "func": "min_coins_memo",
+      "vars": {
+        "coins": [
+          1,
+          3,
+          4
+        ],
+        "coinCount": 3,
+        "amount": 0
+      }
+    },
+    {
+      "step": 75,
+      "line": 15,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "best": 2,
+        "sub": 0
+      }
+    },
+    {
+      "step": 76,
+      "line": 16,
+      "type": "exec",
+      "vars": {
+        "best": 1
+      }
+    },
+    {
+      "step": 77,
+      "line": 20,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 78,
+      "line": 20,
+      "type": "exit",
+      "func": "min_coins_memo",
+      "vars": {}
+    },
+    {
+      "step": 79,
+      "line": 15,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "best": 1000000000,
+        "sub": 1
+      }
+    },
+    {
+      "step": 80,
+      "line": 16,
+      "type": "exec",
+      "vars": {
+        "best": 2
+      }
+    },
+    {
+      "step": 81,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coinCount": 3,
+        "i": 1
+      }
+    },
+    {
+      "step": 82,
+      "line": 14,
+      "type": "enter",
+      "func": "min_coins_memo",
+      "vars": {
+        "coins": [
+          1,
+          3,
+          4
+        ],
+        "coinCount": 3,
+        "amount": 2
+      }
+    },
+    {
+      "step": 83,
+      "line": 6,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "amount": 2
+      }
+    },
+    {
+      "step": 84,
+      "line": 7,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "amount": 2
+      }
+    },
+    {
+      "step": 85,
+      "line": 8,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "amount": 2
+      }
+    },
+    {
+      "step": 86,
+      "line": 9,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 2,
+        "memo": 6651916
+      }
+    },
+    {
+      "step": 87,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "_return": 2
+      }
+    },
+    {
+      "step": 88,
+      "line": 10,
+      "type": "exit",
+      "func": "min_coins_memo",
+      "vars": {}
+    },
+    {
+      "step": 89,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coinCount": 3,
+        "i": 2
+      }
+    },
+    {
+      "step": 90,
+      "line": 14,
+      "type": "enter",
+      "func": "min_coins_memo",
+      "vars": {
+        "coins": [
+          1,
+          3,
+          4
+        ],
+        "coinCount": 3,
+        "amount": 1
+      }
+    },
+    {
+      "step": 91,
+      "line": 6,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "amount": 1
+      }
+    },
+    {
+      "step": 92,
+      "line": 7,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "amount": 1
+      }
+    },
+    {
+      "step": 93,
+      "line": 8,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "amount": 1
+      }
+    },
+    {
+      "step": 94,
+      "line": 9,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 1,
+        "memo": 6651916
+      }
+    },
+    {
+      "step": 95,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 96,
+      "line": 10,
+      "type": "exit",
+      "func": "min_coins_memo",
+      "vars": {}
+    },
+    {
+      "step": 97,
+      "line": 20,
+      "type": "exec",
+      "vars": {
+        "_return": 2
+      }
+    },
+    {
+      "step": 98,
+      "line": 20,
+      "type": "exit",
+      "func": "min_coins_memo",
+      "vars": {}
+    },
+    {
+      "step": 99,
+      "line": 15,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "best": 1000000000,
+        "sub": 2
+      }
+    },
+    {
+      "step": 100,
+      "line": 16,
+      "type": "exec",
+      "vars": {
+        "best": 3
+      }
+    },
+    {
+      "step": 101,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coinCount": 3,
+        "i": 1
+      }
+    },
+    {
+      "step": 102,
+      "line": 14,
+      "type": "enter",
+      "func": "min_coins_memo",
+      "vars": {
+        "coins": [
+          1,
+          3,
+          4
+        ],
+        "coinCount": 3,
+        "amount": 3
+      }
+    },
+    {
+      "step": 103,
+      "line": 6,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "amount": 3
+      }
+    },
+    {
+      "step": 104,
+      "line": 7,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "amount": 3
+      }
+    },
+    {
+      "step": 105,
+      "line": 8,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "amount": 3
+      }
+    },
+    {
+      "step": 106,
+      "line": 9,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 3,
+        "memo": 6651916
+      }
+    },
+    {
+      "step": 107,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 108,
+      "line": 10,
+      "type": "exit",
+      "func": "min_coins_memo",
+      "vars": {}
+    },
+    {
+      "step": 109,
+      "line": 15,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "best": 3,
+        "sub": 1
+      }
+    },
+    {
+      "step": 110,
+      "line": 16,
+      "type": "exec",
+      "vars": {
+        "best": 2
+      }
+    },
+    {
+      "step": 111,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "coinCount": 3,
+        "i": 2
+      }
+    },
+    {
+      "step": 112,
+      "line": 14,
+      "type": "enter",
+      "func": "min_coins_memo",
+      "vars": {
+        "coins": [
+          1,
+          3,
+          4
+        ],
+        "coinCount": 3,
+        "amount": 2
+      }
+    },
+    {
+      "step": 113,
+      "line": 6,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "amount": 2
+      }
+    },
+    {
+      "step": 114,
+      "line": 7,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "amount": 2
+      }
+    },
+    {
+      "step": 115,
+      "line": 8,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "amount": 2
+      }
+    },
+    {
+      "step": 116,
+      "line": 9,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "amount": 2,
+        "memo": 6651916
+      }
+    },
+    {
+      "step": 117,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "_return": 2
+      }
+    },
+    {
+      "step": 118,
+      "line": 10,
+      "type": "exit",
+      "func": "min_coins_memo",
+      "vars": {}
+    },
+    {
+      "step": 119,
+      "line": 20,
+      "type": "exec",
+      "vars": {
+        "_return": 2
+      }
+    },
+    {
+      "step": 120,
+      "line": 20,
+      "type": "exit",
+      "func": "min_coins_memo",
+      "vars": {}
+    },
+    {
+      "step": 121,
+      "line": 27,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 122,
+      "line": 27,
+      "type": "exit",
+      "func": "main",
+      "vars": {}
+    }
+  ],
+  "total_steps": 123
+}

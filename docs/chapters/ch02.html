@@ -1,0 +1,5989 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#171b28">
+<link rel="icon" href="../assets/mascots/student-dog.png">
+<title>第2章 算法的度量衡 · 大话算法</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #1e2336;
+  --panel: #1a1f30;
+  --panel-deep: #151920;
+  --surface: #21283a;
+  --border: #30384c;
+  --text: #d7dae0;
+  --text-soft: #abb4c3;
+  --text-dim: #929caf;
+  --accent: #59a8ee;
+  --accent-soft: #243f5e;
+  --success: #98c379;
+  --control-height: 64px;
+}
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Noto Sans SC', 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text-soft);
+  overflow: hidden;
+}
+button, input, summary { font: inherit; }
+button:focus-visible, a:focus-visible, input:focus-visible, summary:focus-visible, [tabindex]:focus-visible {
+  outline: 3px solid rgba(89,168,238,.58);
+  outline-offset: 2px;
+}
+.header {
+  height: 65px;
+  background: rgba(23,28,43,.96);
+  padding: 0 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  position: relative;
+  z-index: 30;
+}
+.back-link {
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 13px;
+  white-space: nowrap;
+}
+.back-link:hover { text-decoration: underline; }
+.chapter-heading { min-width: 0; flex: 1; }
+.chapter-kicker { color: var(--text-dim); font-size: 12px; margin-bottom: 2px; }
+.chapter-heading h1 {
+  font-size: 19px;
+  line-height: 1.25;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.chapter-status {
+  min-width: 138px;
+  display: grid;
+  gap: 5px;
+}
+.chapter-status-text { color: var(--text-dim); font-size: 11px; text-align: right; }
+.chapter-status-track { height: 4px; background: #252c3e; border-radius: 99px; overflow: hidden; }
+.chapter-status-fill {
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, var(--accent), var(--success));
+  border-radius: inherit;
+  transition: width .3s ease;
+}
+.chapter-nav { display: flex; gap: 6px; }
+.chapter-nav a, .chapter-nav span {
+  min-width: 36px;
+  height: 36px;
+  padding: 0 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-soft);
+  text-decoration: none;
+  font-size: 12px;
+}
+.chapter-nav a:hover { border-color: var(--accent); color: var(--text); background: #202b40; }
+.chapter-nav .disabled { opacity: .35; cursor: default; }
+.mobile-view-switcher { display: none; }
+.main { display: flex; height: calc(100dvh - 65px); min-height: 0; }
+.code-panel {
+  width: 45%;
+  min-width: 360px;
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.code-header {
+  background: var(--panel);
+  padding: 9px 14px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.algo-tabs {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  flex: 1;
+  min-width: 0;
+}
+.algo-tab, .mode-tab {
+  border: 1px solid var(--border);
+  background: #22283a;
+  color: var(--text-dim);
+  border-radius: 7px;
+  cursor: pointer;
+  transition: background .18s ease, border-color .18s ease, color .18s ease;
+}
+.algo-tab { padding: 6px 11px; font-size: 12px; position: relative; }
+.algo-tab:hover, .mode-tab:hover { color: var(--text); border-color: #48536b; }
+.algo-tab.active, .mode-tab.active {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: #e8f3ff;
+}
+.algo-tab.completed::after {
+  content: '✓';
+  margin-left: 6px;
+  color: var(--success);
+  font-weight: 800;
+}
+.breakpoint-hint {
+  color: #737e92;
+  font-size: 11px;
+  line-height: 29px;
+  white-space: nowrap;
+}
+.mode-tabs {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: #171c2b;
+  border-bottom: 1px solid var(--border);
+}
+.mode-tabs.visible { display: flex; }
+.mode-label { font-size: 12px; color: var(--text-dim); margin-right: 2px; }
+.mode-tab { padding: 5px 12px; border-radius: 999px; font-size: 12px; }
+.code-body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  font-family: 'SFMono-Regular', 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+  font-size: var(--code-font-size, 15px);
+  line-height: 1.8;
+  scrollbar-color: #3b455c transparent;
+}
+.code-line { display: flex; min-width: max-content; padding: 0 16px 0 7px; position: relative; }
+.code-line:hover { background: #22283a; }
+.code-line.active {
+  background: rgba(73,164,238,.32);
+  border-left: 3px solid var(--accent);
+  box-shadow: inset 0 0 16px rgba(73,164,238,.18);
+}
+.code-line.executed { background: rgba(73,164,238,.035); }
+.code-line.setup { background: rgba(127,132,142,.045); color: #667084; }
+.line-num {
+  width: 42px;
+  border: 0;
+  background: transparent;
+  text-align: right;
+  color: #748096;
+  padding-right: 12px;
+  user-select: none;
+  flex-shrink: 0;
+  position: relative;
+  cursor: pointer;
+}
+.line-num:hover { color: var(--accent); }
+.line-num .breakpoint {
+  position: absolute;
+  left: 3px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #e05561;
+}
+.line-content { flex: 1; white-space: pre; }
+.kw, .num { color: #F3A862; }
+.fn { color: #59a8ee; }
+.var { color: #D980FA; }
+.str { color: #74C589; }
+.cmt { color: #71939a; font-style: italic; }
+.right-panel { flex: 1; display: flex; flex-direction: column; min-width: 0; min-height: 0; overflow: hidden; }
+.viz-panel {
+  flex: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 20px;
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
+}
+.viz-panel canvas { width: 100%; height: 100%; display: block; }
+body.concept-mode .viz-panel { flex: 1 1 auto; padding: 6px 20px; }
+body.concept-mode .vars-panel { flex: 0 1 168px; padding: 8px 18px; }
+body.concept-mode .output-panel { flex: 0 1 68px; padding: 6px 16px; }
+body.concept-mode .callstack { display: none; }
+.callstack {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  max-width: calc(100% - 24px);
+  background: rgba(33,38,54,.92);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 12px;
+  pointer-events: none;
+}
+.callstack-title, .vars-panel h3, .output-panel h3 { color: var(--text-dim); }
+.callstack-title { margin-bottom: 4px; }
+.callstack-item { color: var(--accent); padding: 2px 0; }
+.callstack-item::before { content: '▸ '; color: #68758a; }
+.vars-panel {
+  flex: 2;
+  background: var(--panel);
+  padding: 10px 18px;
+  border-top: 1px solid var(--border);
+  overflow-y: auto;
+  min-height: 0;
+}
+.output-panel {
+  flex: 1;
+  background: var(--panel-deep);
+  border-top: 1px solid var(--border);
+  padding: 8px 16px;
+  overflow-y: auto;
+  min-height: 0;
+  font-family: 'SFMono-Regular', 'JetBrains Mono', monospace;
+  font-size: var(--output-font-size, 13px);
+  color: var(--text-dim);
+}
+.output-panel h3 {
+  font-size: 12px;
+  margin-bottom: 4px;
+  position: sticky;
+  top: 0;
+  background: var(--panel-deep);
+  padding-bottom: 4px;
+  z-index: 1;
+}
+.output-line { padding: 1px 0; white-space: pre-wrap; word-break: break-word; }
+.vars-panel h3 { font-size: 13px; margin-bottom: 9px; }
+.var-grid { display: flex; flex-direction: column; gap: 6px; }
+.var-section-title { font-size: 11px; color: var(--text-dim); margin: 8px 0 4px; }
+.var-section:first-child .var-section-title { margin-top: 0; }
+.var-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.var-item {
+  background: #22283a;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 6px 13px;
+  font-family: monospace;
+  font-size: var(--var-font-size, 14px);
+}
+.var-name { color: var(--accent); }
+.var-val { color: var(--text); font-weight: 650; }
+.var-changed { animation: varPulse .5s ease; border-color: var(--accent); }
+.var-highlight { border-color: var(--accent); background: var(--accent-soft); }
+@keyframes varPulse { 0% { background: var(--accent-soft); } 100% { background: #22283a; } }
+.var-toggle { font-size: 12px; color: var(--text-dim); cursor: pointer; padding: 4px 0; user-select: none; }
+.control-bar {
+  min-height: var(--control-height);
+  flex-shrink: 0;
+  background: var(--panel);
+  border-top: 1px solid var(--border);
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+  z-index: 20;
+}
+.transport-controls { display: flex; align-items: center; gap: 7px; }
+.btn {
+  min-height: 38px;
+  background: #22283a;
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  white-space: nowrap;
+}
+.btn:hover:not(:disabled) { background: #2a3247; border-color: #4c5872; }
+.btn:disabled { opacity: .36; cursor: not-allowed; }
+.btn-primary { min-width: 82px; background: var(--accent-soft); border-color: var(--accent); }
+.btn-active { background: #285176; border-color: #77bfff; }
+.step-info {
+  margin-left: auto;
+  min-width: 68px;
+  font-size: 12px;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+.step-info strong { color: var(--text); }
+.settings-menu { position: relative; }
+.settings-menu summary {
+  list-style: none;
+  min-height: 38px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-soft);
+  cursor: pointer;
+  font-size: 12px;
+  user-select: none;
+}
+.settings-menu summary::-webkit-details-marker { display: none; }
+.settings-menu[open] summary { border-color: var(--accent); background: var(--accent-soft); color: var(--text); }
+.settings-popover {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 10px);
+  width: 250px;
+  padding: 14px;
+  display: grid;
+  gap: 12px;
+  background: rgba(23,28,43,.98);
+  border: 1px solid #3a465f;
+  border-radius: 12px;
+  box-shadow: 0 16px 42px rgba(0,0,0,.38);
+}
+.setting-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.setting-row label, .shortcut-help { font-size: 12px; color: var(--text-dim); }
+.speed-slider { width: 130px; accent-color: var(--accent); }
+.font-control { display: flex; align-items: center; gap: 6px; }
+.btn-sm { min-height: 32px; padding: 5px 10px; font-size: 12px; }
+.settings-divider { height: 1px; background: var(--border); }
+.shortcut-help { line-height: 1.65; }
+
+@media (max-width: 1050px) {
+  .code-panel { width: 42%; min-width: 320px; }
+  .chapter-status { display: none; }
+  .breakpoint-hint { display: none; }
+  .btn { padding-inline: 10px; }
+}
+
+@media (max-width: 900px) {
+  body { overflow: auto; padding-bottom: 72px; }
+  .header {
+    height: auto;
+    min-height: 60px;
+    padding: 8px 12px;
+    gap: 10px;
+    position: sticky;
+    top: 0;
+  }
+  .back-link { font-size: 0; width: 36px; height: 36px; display: grid; place-items: center; }
+  .back-link::before { content: '←'; font-size: 21px; }
+  .chapter-kicker { font-size: 10px; }
+  .chapter-heading h1 { font-size: 16px; }
+  .chapter-nav a, .chapter-nav span { width: 34px; min-width: 34px; padding: 0; font-size: 0; }
+  .chapter-nav a:first-child::before, .chapter-nav span:first-child::before { content: '‹'; font-size: 22px; }
+  .chapter-nav a:last-child::before, .chapter-nav span:last-child::before { content: '›'; font-size: 22px; }
+  .mobile-view-switcher {
+    position: sticky;
+    top: 60px;
+    z-index: 25;
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 4px;
+    padding: 7px 10px;
+    background: rgba(23,28,43,.97);
+    border-bottom: 1px solid var(--border);
+  }
+  .mobile-view-switcher button {
+    min-height: 38px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text-dim);
+  }
+  .mobile-view-switcher button.active {
+    color: #e8f3ff;
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+  .main { display: block; height: auto; min-height: calc(100dvh - 114px); }
+  .code-panel, .right-panel { width: 100%; min-width: 0; border: 0; }
+  .code-panel { height: calc(100dvh - 186px); }
+  .code-header { padding: 8px 10px; overflow: hidden; }
+  .algo-tabs { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 3px; scrollbar-width: thin; }
+  .algo-tab { flex: 0 0 auto; min-height: 38px; }
+  .mode-tabs { padding: 7px 10px; overflow-x: auto; }
+  .code-body { min-height: 0; font-size: max(13px,var(--code-font-size,15px)); }
+  .code-line { padding-right: 12px; }
+  .right-panel { min-height: calc(100dvh - 186px); overflow: visible; }
+  .viz-panel { height: calc(100dvh - 186px); min-height: 430px; flex: none !important; padding: 8px 10px !important; }
+  .vars-panel { min-height: 50dvh; padding: 14px; }
+  .output-panel { min-height: 28dvh; padding: 12px 14px; }
+  body[data-mobile-view="animation"] .code-panel,
+  body[data-mobile-view="animation"] .vars-panel,
+  body[data-mobile-view="animation"] .output-panel { display: none; }
+  body[data-mobile-view="code"] .right-panel > :not(.control-bar),
+  body[data-mobile-view="code"] .vars-panel,
+  body[data-mobile-view="code"] .output-panel { display: none; }
+  body[data-mobile-view="code"] .right-panel { min-height: 0; }
+  body[data-mobile-view="data"] .code-panel,
+  body[data-mobile-view="data"] .viz-panel { display: none; }
+  body[data-mobile-view="data"] .right-panel { min-height: calc(100dvh - 186px); }
+  .control-bar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    min-height: 72px;
+    padding: 9px max(10px,env(safe-area-inset-right)) calc(9px + env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left));
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 -10px 30px rgba(9,12,20,.36);
+  }
+  .transport-controls { gap: 7px; }
+  #btn-reset { display: none; }
+  .btn { min-width: 48px; min-height: 44px; padding: 8px 10px; font-size: 0; }
+  #btn-back::after { content: '◀'; font-size: 16px; }
+  #btn-play { min-width: 92px; font-size: 14px; }
+  #btn-step::after { content: '▶'; font-size: 16px; }
+  .step-info { margin-left: 0; min-width: 52px; text-align: center; font-size: 11px; }
+  .step-info .step-prefix { display: none; }
+  .settings-menu summary { width: 44px; min-height: 44px; padding: 0; justify-content: center; font-size: 0; }
+  .settings-menu summary::before { content: '⚙'; font-size: 17px; }
+  .settings-popover { right: -2px; width: min(280px,calc(100vw - 20px)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: .001ms !important;
+  }
+}
+</style>
+</head>
+<body data-mobile-view="animation">
+
+<header class="header">
+  <a class="back-link" href="../index.html" aria-label="返回学习地图">← 学习地图</a>
+  <div class="chapter-heading">
+    <div class="chapter-kicker">第2章</div>
+    <h1>算法的度量衡</h1>
+  </div>
+  <div class="chapter-status" aria-label="本章学习进度">
+    <div class="chapter-status-text" id="chapter-progress-text">0 / 0 个演示完成</div>
+    <div class="chapter-status-track"><div class="chapter-status-fill" id="chapter-progress-fill"></div></div>
+  </div>
+  <nav class="chapter-nav" aria-label="章节导航">
+    <a href="ch01.html" aria-label="上一章：算法——你每天都在用" title="上一章：算法——你每天都在用">上一章</a>
+    <a href="ch03.html" aria-label="下一章：分而治之" title="下一章：分而治之">下一章</a>
+  </nav>
+</header>
+
+<div class="mobile-view-switcher" role="tablist" aria-label="学习视图">
+  <button type="button" class="active" data-mobile-view="animation" role="tab" aria-selected="true">动画</button>
+  <button type="button" data-mobile-view="code" role="tab" aria-selected="false">代码</button>
+  <button type="button" data-mobile-view="data" role="tab" aria-selected="false">变量</button>
+</div>
+
+<main class="main">
+  <section class="code-panel" aria-label="算法代码">
+    <div class="code-header">
+      <div class="algo-tabs" id="algo-tabs" role="tablist" aria-label="本章算法"></div>
+      <span class="breakpoint-hint">点击行号可设断点</span>
+    </div>
+    <div class="mode-tabs" id="mode-tabs" role="tablist" aria-label="演示模式"></div>
+    <div class="code-body" id="code-body" aria-label="代码执行过程"></div>
+  </section>
+
+  <section class="right-panel" aria-label="算法可视化与状态">
+    <div class="viz-panel">
+      <canvas id="viz-canvas" width="800" height="300" role="img" aria-label="算法执行动画"></canvas>
+      <div class="callstack" id="callstack"><div class="callstack-title">调用栈</div></div>
+    </div>
+    <div class="vars-panel">
+      <h3>变量状态</h3>
+      <div class="var-grid" id="var-grid"></div>
+    </div>
+    <div class="output-panel" id="output-panel">
+      <h3>程序输出</h3>
+      <div id="output-content" aria-live="polite"></div>
+    </div>
+
+    <div class="control-bar" aria-label="播放控制">
+      <div class="transport-controls">
+        <button class="btn" id="btn-reset" type="button" aria-label="重置当前演示" title="重置当前演示">⏮ 重置</button>
+        <button class="btn" id="btn-back" type="button" aria-label="上一步" title="上一步">◀ 后退</button>
+        <button class="btn btn-primary" id="btn-play" type="button" aria-label="播放或暂停">▶ 播放</button>
+        <button class="btn" id="btn-step" type="button" aria-label="下一步" title="下一步">⏭ 单步</button>
+      </div>
+      <div class="step-info" aria-live="polite">
+        <span class="step-prefix">步骤 </span><strong id="step-cur">0</strong> / <strong id="step-total">0</strong>
+      </div>
+      <details class="settings-menu">
+        <summary aria-label="播放设置">⚙ 设置</summary>
+        <div class="settings-popover">
+          <div class="setting-row">
+            <label for="speed-slider">播放速度</label>
+            <input type="range" class="speed-slider" id="speed-slider" min="1" max="10" value="5" aria-valuetext="速度 5">
+          </div>
+          <div class="setting-row">
+            <span class="mode-label">代码字体</span>
+            <div class="font-control">
+              <button class="btn btn-sm" type="button" id="font-dec" aria-label="减小代码字体">A−</button>
+              <button class="btn btn-sm" type="button" id="font-inc" aria-label="增大代码字体">A＋</button>
+            </div>
+          </div>
+          <button class="btn" id="btn-to-bp" type="button">运行到断点</button>
+          <div class="settings-divider"></div>
+          <div class="shortcut-help">页面空白处：空格播放/暂停，← → 单步，R 重置</div>
+        </div>
+      </details>
+    </div>
+  </section>
+</main>
+
+<script src="../js/learning-state.js?v=20260725"></script>
+<script src="../js/engine.js?v=20260725-ux2"></script>
+<script src="../js/viz-renderers.js?v=20260725-layout-audit"></script>
+<script>
+const CHAPTER_NUM = 2;
+const ALGOS = {
+  "01_顺序查找_复杂度分析": {
+    "title": "顺序查找（复杂度分析）",
+    "defaultMode": "concept",
+    "modeLabels": {
+      "concept": "理解动画",
+      "trace": "代码执行"
+    },
+    "modes": {
+      "concept": {
+        "title": "顺序查找（复杂度分析）",
+        "source": [
+          "算法: 顺序查找复杂度分析",
+          "输入: 数组 arr 和目标 target",
+          "从第 0 个元素开始逐个比较",
+          "如果命中, 立即返回当前位置",
+          "如果扫完整个数组还没命中, 返回 -1",
+          "",
+          "最好情况: 第 1 步命中 -> O(1)",
+          "最坏情况: 最后一步命中或失败 -> O(n)",
+          "平均情况: 大约检查 n/2 个元素 -> O(n)"
+        ],
+        "important_vars": {
+          "target": "目标",
+          "steps": "步数",
+          "case": "情况"
+        },
+        "track_vars": {
+          "primary": [
+            "target",
+            "steps",
+            "case"
+          ],
+          "secondary": []
+        },
+        "var_classes": {
+          "target": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "steps": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "case": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "concept": {
+            "category": "secondary",
+            "type": "concept"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 5,
+            "text": "概念动画：顺序查找的最好情况很幸运, 工程上更要关心最坏情况这条保底线。"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 3,
+            "type": "exec",
+            "vars": {
+              "target": 3,
+              "steps": 1,
+              "case": "最好情况",
+              "concept": {
+                "kind": "array_process",
+                "mode": "linear_search",
+                "title": "顺序查找复杂度",
+                "values": [
+                  3,
+                  7,
+                  1,
+                  9,
+                  5,
+                  2,
+                  8,
+                  4,
+                  6,
+                  0
+                ],
+                "target": 3,
+                "current": 0,
+                "compare": [
+                  0
+                ],
+                "visited": [
+                  0
+                ],
+                "found": true,
+                "phase": "最好情况: 第一个元素就是 3, 只走 1 步"
+              }
+            }
+          },
+          {
+            "step": 1,
+            "line": 3,
+            "type": "exec",
+            "vars": {
+              "target": 0,
+              "steps": 1,
+              "case": "最坏情况开始",
+              "concept": {
+                "kind": "array_process",
+                "mode": "linear_search",
+                "title": "顺序查找复杂度",
+                "values": [
+                  3,
+                  7,
+                  1,
+                  9,
+                  5,
+                  2,
+                  8,
+                  4,
+                  6,
+                  0
+                ],
+                "target": 0,
+                "current": 0,
+                "compare": [
+                  0
+                ],
+                "visited": [
+                  0
+                ],
+                "found": true,
+                "phase": "最坏情况开始: 要找 0, 前面都不是"
+              }
+            }
+          },
+          {
+            "step": 2,
+            "line": 3,
+            "type": "exec",
+            "vars": {
+              "target": 0,
+              "steps": 5,
+              "case": "已经检查到中间, 步数随 n 线性增加",
+              "concept": {
+                "kind": "array_process",
+                "mode": "linear_search",
+                "title": "顺序查找复杂度",
+                "values": [
+                  3,
+                  7,
+                  1,
+                  9,
+                  5,
+                  2,
+                  8,
+                  4,
+                  6,
+                  0
+                ],
+                "target": 0,
+                "current": 4,
+                "compare": [
+                  4
+                ],
+                "visited": [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4
+                ],
+                "found": false,
+                "phase": "已经检查到中间, 步数随 n 线性增加"
+              }
+            }
+          },
+          {
+            "step": 3,
+            "line": 4,
+            "type": "exec",
+            "vars": {
+              "target": 0,
+              "steps": 10,
+              "case": "最后一个才命中",
+              "concept": {
+                "kind": "array_process",
+                "mode": "linear_search",
+                "title": "顺序查找复杂度",
+                "values": [
+                  3,
+                  7,
+                  1,
+                  9,
+                  5,
+                  2,
+                  8,
+                  4,
+                  6,
+                  0
+                ],
+                "target": 0,
+                "current": 9,
+                "compare": [
+                  9
+                ],
+                "visited": [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6,
+                  7,
+                  8,
+                  9
+                ],
+                "found": true,
+                "phase": "最后一个才命中: 10 个数检查 10 次"
+              }
+            }
+          },
+          {
+            "step": 4,
+            "line": 8,
+            "type": "exec",
+            "vars": {
+              "target": "随机目标",
+              "steps": 6,
+              "case": "平均大约检查一半, 但大 O 仍然是 O(n)",
+              "concept": {
+                "kind": "array_process",
+                "mode": "linear_search",
+                "title": "顺序查找复杂度",
+                "values": [
+                  3,
+                  7,
+                  1,
+                  9,
+                  5,
+                  2,
+                  8,
+                  4,
+                  6,
+                  0
+                ],
+                "target": "随机目标",
+                "current": 5,
+                "compare": [
+                  5
+                ],
+                "visited": [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  5
+                ],
+                "found": false,
+                "phase": "平均大约检查一半, 但大 O 仍然是 O(n)"
+              }
+            }
+          }
+        ]
+      },
+      "trace": {
+        "title": "顺序查找（复杂度分析）",
+        "source": [
+          "#include <stdio.h>",
+          "/* 顺序查找：从头到尾一个一个比 */",
+          "/* arr：数组，n：数组长度，target：要找的目标 */",
+          "int sequential_search(int arr[], int n, int target) {",
+          "    for (int i = 0; i < n; i++) {",
+          "        if (arr[i] == target) {",
+          "            return i;  /* 找到了，返回下标 */",
+          "        }",
+          "    }",
+          "    return -1;  /* 没找到 */",
+          "}",
+          "int main(void) {",
+          "    int arr[] = {3, 7, 1, 9, 5, 2, 8, 4, 6, 0};",
+          "    int n = 10;",
+          "    /* 最好情况：target = 3，第一个就命中 */",
+          "    printf(\"找 3：第 %d 步找到\\n\", sequential_search(arr, n, 3) + 1);",
+          "    /* 最坏情况：target = 0，最后一个才找到 */",
+          "    printf(\"找 0：第 %d 步找到\\n\", sequential_search(arr, n, 0) + 1);",
+          "    /* 平均情况：假设目标等概率出现，",
+          "       平均步数为 (1 + 2 + ... + 10) / 10 = 5.5 步，",
+          "       因此在一般情况下仍属于 O(n) */",
+          "    return 0;",
+          "}"
+        ],
+        "important_vars": {
+          "i": "索引",
+          "n": "参数",
+          "arr": "数据"
+        },
+        "track_vars": {
+          "primary": [
+            "arr",
+            "i",
+            "n",
+            "target"
+          ],
+          "secondary": [
+            "_return"
+          ]
+        },
+        "var_classes": {
+          "_return": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "arr": {
+            "category": "primary",
+            "type": "array"
+          },
+          "i": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "n": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "target": {
+            "category": "primary",
+            "type": "scalar"
+          }
+        },
+        "initial_data": {
+          "arr": [
+            3,
+            7,
+            1,
+            9,
+            5,
+            2,
+            8,
+            4,
+            6,
+            0
+          ]
+        },
+        "program_output": [
+          {
+            "after_step": 6,
+            "text": "找 3：第 1 步找到"
+          },
+          {
+            "after_step": 20,
+            "text": "找 0：第 10 步找到"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 12,
+            "type": "enter",
+            "func": "main",
+            "vars": {}
+          },
+          {
+            "step": 1,
+            "line": 16,
+            "type": "enter",
+            "func": "sequential_search",
+            "vars": {
+              "arr": [
+                3,
+                7,
+                1,
+                9,
+                5,
+                2,
+                8,
+                4,
+                6,
+                0
+              ],
+              "n": 10,
+              "target": 3
+            }
+          },
+          {
+            "step": 2,
+            "line": 5,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 0,
+              "n": 10
+            }
+          },
+          {
+            "step": 3,
+            "line": 6,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 0,
+              "target": 3
+            }
+          },
+          {
+            "step": 4,
+            "line": 7,
+            "type": "exec",
+            "vars": {
+              "_return": 0
+            }
+          },
+          {
+            "step": 5,
+            "line": 7,
+            "type": "exit",
+            "func": "sequential_search",
+            "vars": {}
+          },
+          {
+            "step": 6,
+            "line": 18,
+            "type": "enter",
+            "func": "sequential_search",
+            "vars": {
+              "arr": [
+                3,
+                7,
+                1,
+                9,
+                5,
+                2,
+                8,
+                4,
+                6,
+                0
+              ],
+              "n": 10,
+              "target": 0
+            }
+          },
+          {
+            "step": 7,
+            "line": 5,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 0,
+              "n": 10
+            }
+          },
+          {
+            "step": 8,
+            "line": 5,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 1,
+              "n": 10
+            }
+          },
+          {
+            "step": 9,
+            "line": 5,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 2,
+              "n": 10
+            }
+          },
+          {
+            "step": 10,
+            "line": 5,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 3,
+              "n": 10
+            }
+          },
+          {
+            "step": 11,
+            "line": 5,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 4,
+              "n": 10
+            }
+          },
+          {
+            "step": 12,
+            "line": 5,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 5,
+              "n": 10
+            }
+          },
+          {
+            "step": 13,
+            "line": 5,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 6,
+              "n": 10
+            }
+          },
+          {
+            "step": 14,
+            "line": 5,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 7,
+              "n": 10
+            }
+          },
+          {
+            "step": 15,
+            "line": 5,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 8,
+              "n": 10
+            }
+          },
+          {
+            "step": 16,
+            "line": 5,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 9,
+              "n": 10
+            }
+          },
+          {
+            "step": 17,
+            "line": 6,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 9,
+              "target": 0
+            }
+          },
+          {
+            "step": 18,
+            "line": 7,
+            "type": "exec",
+            "vars": {
+              "_return": 9
+            }
+          },
+          {
+            "step": 19,
+            "line": 7,
+            "type": "exit",
+            "func": "sequential_search",
+            "vars": {}
+          },
+          {
+            "step": 20,
+            "line": 22,
+            "type": "exec",
+            "vars": {
+              "_return": 0
+            }
+          },
+          {
+            "step": 21,
+            "line": 22,
+            "type": "exit",
+            "func": "main",
+            "vars": {}
+          }
+        ]
+      }
+    }
+  },
+  "02_快排_最坏与平均": {
+    "title": "快排（最坏与平均）",
+    "defaultMode": "concept",
+    "modeLabels": {
+      "concept": "理解动画",
+      "trace": "代码执行"
+    },
+    "modes": {
+      "concept": {
+        "title": "快排（最坏与平均）",
+        "source": [
+          "算法: 快排最坏与平均情况",
+          "输入: 一个数组 arr",
+          "每次选择 pivot 做分区",
+          "如果 pivot 比较居中, 递归树接近平衡",
+          "如果 pivot 总是最大/最小, 递归树会退化成链",
+          "平衡时约 O(n log n)",
+          "退化时约 O(n^2)"
+        ],
+        "important_vars": {
+          "pivot": "状态",
+          "case": "状态",
+          "phase": "状态"
+        },
+        "track_vars": {
+          "primary": [
+            "pivot",
+            "case",
+            "phase"
+          ],
+          "secondary": []
+        },
+        "var_classes": {
+          "pivot": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "case": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "phase": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "concept": {
+            "category": "secondary",
+            "type": "concept"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 6,
+            "text": "概念动画：快排不是永远 O(n log n), pivot 选得太偏会退化成 O(n^2)。"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 3,
+            "type": "exec",
+            "vars": {
+              "pivot": "选择 pivot",
+              "case": "平均情况",
+              "phase": "pivot 把数组分得比较均匀",
+              "concept": {
+                "kind": "complexity_tree",
+                "title": "快排复杂度对比",
+                "shape": "balanced",
+                "depth": 1,
+                "phase": "pivot 把数组分得比较均匀"
+              }
+            }
+          },
+          {
+            "step": 1,
+            "line": 4,
+            "type": "exec",
+            "vars": {
+              "pivot": "左右两边规模接近",
+              "case": "平均情况",
+              "phase": "每层总工作量约 n, 层数约 log n",
+              "concept": {
+                "kind": "complexity_tree",
+                "title": "快排复杂度对比",
+                "shape": "balanced",
+                "depth": 2,
+                "phase": "每层总工作量约 n, 层数约 log n"
+              }
+            }
+          },
+          {
+            "step": 2,
+            "line": 6,
+            "type": "exec",
+            "vars": {
+              "pivot": "O(n log n)",
+              "case": "平均情况",
+              "phase": "树不高, 所以快排通常很快",
+              "concept": {
+                "kind": "complexity_tree",
+                "title": "快排复杂度对比",
+                "shape": "balanced",
+                "depth": 3,
+                "phase": "树不高, 所以快排通常很快"
+              }
+            }
+          },
+          {
+            "step": 3,
+            "line": 3,
+            "type": "exec",
+            "vars": {
+              "pivot": "选择最后一个元素",
+              "case": "最坏情况",
+              "phase": "有序数组里, 最后一个总是最大值",
+              "concept": {
+                "kind": "complexity_tree",
+                "title": "快排复杂度对比",
+                "shape": "skew",
+                "depth": 1,
+                "phase": "有序数组里, 最后一个总是最大值"
+              }
+            }
+          },
+          {
+            "step": 4,
+            "line": 5,
+            "type": "exec",
+            "vars": {
+              "pivot": "一边空, 一边 n-1",
+              "case": "最坏情况",
+              "phase": "递归树变成一条长链",
+              "concept": {
+                "kind": "complexity_tree",
+                "title": "快排复杂度对比",
+                "shape": "skew",
+                "depth": 2,
+                "phase": "递归树变成一条长链"
+              }
+            }
+          },
+          {
+            "step": 5,
+            "line": 7,
+            "type": "exec",
+            "vars": {
+              "pivot": "O(n^2)",
+              "case": "最坏情况",
+              "phase": "每一层只少一个元素, 总工作量会爆炸",
+              "concept": {
+                "kind": "complexity_tree",
+                "title": "快排复杂度对比",
+                "shape": "skew",
+                "depth": 3,
+                "phase": "每一层只少一个元素, 总工作量会爆炸"
+              }
+            }
+          }
+        ]
+      },
+      "trace": {
+        "title": "快排（最坏与平均）",
+        "source": [
+          "#include <stdio.h>",
+          "/* 交换两个数 */",
+          "void swap(int *a, int *b) {",
+          "    int temp = *a;",
+          "    *a = *b;",
+          "    *b = temp;",
+          "}",
+          "/* 分区函数：选最后一个元素作为基准，小的放左边，大的放右边 */",
+          "int partition(int arr[], int low, int high) {",
+          "    int pivot = arr[high];  /* 基准值 */",
+          "    int i = low - 1;        /* \"小元素区\"的边界 */",
+          "    for (int j = low; j < high; j++) {",
+          "        if (arr[j] < pivot) {",
+          "            i++;",
+          "            swap(&arr[i], &arr[j]);",
+          "        }",
+          "    }",
+          "    swap(&arr[i + 1], &arr[high]);",
+          "    return i + 1;",
+          "}",
+          "/* 快速排序 */",
+          "void quick_sort(int arr[], int low, int high) {",
+          "    if (low < high) {",
+          "        int pi = partition(arr, low, high);",
+          "        quick_sort(arr, low, pi - 1);   /* 排左边 */",
+          "        quick_sort(arr, pi + 1, high);  /* 排右边 */",
+          "    }",
+          "}",
+          "void print_array(int arr[], int n) {",
+          "    for (int i = 0; i < n; i++) {",
+          "        printf(\"%d \", arr[i]);",
+          "    }",
+          "    printf(\"\\n\");",
+          "}",
+          "int main(void) {",
+          "    int arr[] = {10, 7, 8, 9, 1, 5};",
+          "    int n = 6;",
+          "    printf(\"排序前：\");",
+          "    print_array(arr, n);",
+          "    quick_sort(arr, 0, n - 1);",
+          "    printf(\"排序后：\");",
+          "    print_array(arr, n);",
+          "    return 0;",
+          "}"
+        ],
+        "important_vars": {
+          "i": "索引",
+          "j": "索引",
+          "n": "参数",
+          "arr": "数据"
+        },
+        "track_vars": {
+          "primary": [
+            "arr",
+            "high",
+            "i",
+            "j",
+            "low",
+            "n",
+            "pivot"
+          ],
+          "secondary": [
+            "_return"
+          ]
+        },
+        "var_classes": {
+          "_return": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "arr": {
+            "category": "primary",
+            "type": "array"
+          },
+          "high": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "i": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "j": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "low": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "n": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "pivot": {
+            "category": "primary",
+            "type": "scalar"
+          }
+        },
+        "initial_data": {
+          "arr": [
+            10,
+            7,
+            8,
+            9,
+            1,
+            5
+          ]
+        },
+        "program_output": [
+          {
+            "after_step": 1,
+            "text": "排序前： 10 7 8 9 1 5"
+          },
+          {
+            "after_step": 42,
+            "text": "排序后： 1 5 7 8 9 10"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 35,
+            "type": "enter",
+            "func": "main",
+            "vars": {}
+          },
+          {
+            "step": 1,
+            "line": 39,
+            "type": "enter",
+            "func": "print_array",
+            "vars": {
+              "arr": [
+                10,
+                7,
+                8,
+                9,
+                1,
+                5
+              ],
+              "n": 6
+            }
+          },
+          {
+            "step": 2,
+            "line": 30,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 0,
+              "n": 6
+            }
+          },
+          {
+            "step": 3,
+            "line": 30,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 1,
+              "n": 6
+            }
+          },
+          {
+            "step": 4,
+            "line": 30,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 2,
+              "n": 6
+            }
+          },
+          {
+            "step": 5,
+            "line": 30,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 3,
+              "n": 6
+            }
+          },
+          {
+            "step": 6,
+            "line": 30,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 4,
+              "n": 6
+            }
+          },
+          {
+            "step": 7,
+            "line": 30,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 5,
+              "n": 6
+            }
+          },
+          {
+            "step": 8,
+            "line": 40,
+            "type": "enter",
+            "func": "quick_sort",
+            "vars": {
+              "arr": [
+                10,
+                7,
+                8,
+                9,
+                1,
+                5
+              ],
+              "low": 0,
+              "high": 5
+            }
+          },
+          {
+            "step": 9,
+            "line": 23,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "high": 5,
+              "low": 0
+            }
+          },
+          {
+            "step": 10,
+            "line": 24,
+            "type": "enter",
+            "func": "partition",
+            "vars": {
+              "arr": [
+                10,
+                7,
+                8,
+                9,
+                1,
+                5
+              ],
+              "low": 0,
+              "high": 5
+            }
+          },
+          {
+            "step": 11,
+            "line": 12,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "high": 5,
+              "j": 0
+            }
+          },
+          {
+            "step": 12,
+            "line": 12,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "high": 5,
+              "j": 1
+            }
+          },
+          {
+            "step": 13,
+            "line": 12,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "high": 5,
+              "j": 2
+            }
+          },
+          {
+            "step": 14,
+            "line": 12,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "high": 5,
+              "j": 3
+            }
+          },
+          {
+            "step": 15,
+            "line": 12,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "high": 5,
+              "j": 4
+            }
+          },
+          {
+            "step": 16,
+            "line": 13,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "j": 4,
+              "pivot": 5
+            }
+          },
+          {
+            "step": 17,
+            "line": 14,
+            "type": "exec",
+            "vars": {
+              "i": 0
+            }
+          },
+          {
+            "step": 18,
+            "line": 19,
+            "type": "exec",
+            "vars": {
+              "_return": 1
+            }
+          },
+          {
+            "step": 19,
+            "line": 19,
+            "type": "exit",
+            "func": "partition",
+            "vars": {}
+          },
+          {
+            "step": 20,
+            "line": 25,
+            "type": "enter",
+            "func": "quick_sort",
+            "vars": {
+              "arr": [
+                1,
+                5,
+                8,
+                9,
+                10,
+                7
+              ],
+              "low": 0,
+              "high": 0
+            }
+          },
+          {
+            "step": 21,
+            "line": 23,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "high": 5,
+              "low": 2
+            }
+          },
+          {
+            "step": 22,
+            "line": 24,
+            "type": "enter",
+            "func": "partition",
+            "vars": {
+              "arr": [
+                1,
+                5,
+                8,
+                9,
+                10,
+                7
+              ],
+              "low": 2,
+              "high": 5
+            }
+          },
+          {
+            "step": 23,
+            "line": 12,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "high": 5,
+              "j": 2
+            }
+          },
+          {
+            "step": 24,
+            "line": 12,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "high": 5,
+              "j": 3
+            }
+          },
+          {
+            "step": 25,
+            "line": 12,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "high": 5,
+              "j": 4
+            }
+          },
+          {
+            "step": 26,
+            "line": 19,
+            "type": "exec",
+            "vars": {
+              "_return": 2
+            }
+          },
+          {
+            "step": 27,
+            "line": 19,
+            "type": "exit",
+            "func": "partition",
+            "vars": {}
+          },
+          {
+            "step": 28,
+            "line": 25,
+            "type": "enter",
+            "func": "quick_sort",
+            "vars": {
+              "arr": [
+                1,
+                5,
+                7,
+                9,
+                10,
+                8
+              ],
+              "low": 2,
+              "high": 1
+            }
+          },
+          {
+            "step": 29,
+            "line": 23,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "high": 5,
+              "low": 3
+            }
+          },
+          {
+            "step": 30,
+            "line": 24,
+            "type": "enter",
+            "func": "partition",
+            "vars": {
+              "arr": [
+                1,
+                5,
+                7,
+                9,
+                10,
+                8
+              ],
+              "low": 3,
+              "high": 5
+            }
+          },
+          {
+            "step": 31,
+            "line": 12,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "high": 5,
+              "j": 3
+            }
+          },
+          {
+            "step": 32,
+            "line": 12,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "high": 5,
+              "j": 4
+            }
+          },
+          {
+            "step": 33,
+            "line": 19,
+            "type": "exec",
+            "vars": {
+              "_return": 3
+            }
+          },
+          {
+            "step": 34,
+            "line": 19,
+            "type": "exit",
+            "func": "partition",
+            "vars": {}
+          },
+          {
+            "step": 35,
+            "line": 25,
+            "type": "enter",
+            "func": "quick_sort",
+            "vars": {
+              "arr": [
+                1,
+                5,
+                7,
+                8,
+                10,
+                9
+              ],
+              "low": 3,
+              "high": 2
+            }
+          },
+          {
+            "step": 36,
+            "line": 23,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "high": 5,
+              "low": 4
+            }
+          },
+          {
+            "step": 37,
+            "line": 24,
+            "type": "enter",
+            "func": "partition",
+            "vars": {
+              "arr": [
+                1,
+                5,
+                7,
+                8,
+                10,
+                9
+              ],
+              "low": 4,
+              "high": 5
+            }
+          },
+          {
+            "step": 38,
+            "line": 12,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "high": 5,
+              "j": 4
+            }
+          },
+          {
+            "step": 39,
+            "line": 19,
+            "type": "exec",
+            "vars": {
+              "_return": 4
+            }
+          },
+          {
+            "step": 40,
+            "line": 19,
+            "type": "exit",
+            "func": "partition",
+            "vars": {}
+          },
+          {
+            "step": 41,
+            "line": 25,
+            "type": "enter",
+            "func": "quick_sort",
+            "vars": {
+              "arr": [
+                1,
+                5,
+                7,
+                8,
+                9,
+                10
+              ],
+              "low": 4,
+              "high": 3
+            }
+          },
+          {
+            "step": 42,
+            "line": 42,
+            "type": "enter",
+            "func": "print_array",
+            "vars": {
+              "arr": [
+                1,
+                5,
+                7,
+                8,
+                9,
+                10
+              ],
+              "n": 6
+            }
+          },
+          {
+            "step": 43,
+            "line": 30,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 0,
+              "n": 6
+            }
+          },
+          {
+            "step": 44,
+            "line": 30,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 1,
+              "n": 6
+            }
+          },
+          {
+            "step": 45,
+            "line": 30,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 2,
+              "n": 6
+            }
+          },
+          {
+            "step": 46,
+            "line": 30,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 3,
+              "n": 6
+            }
+          },
+          {
+            "step": 47,
+            "line": 30,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 4,
+              "n": 6
+            }
+          },
+          {
+            "step": 48,
+            "line": 30,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 5,
+              "n": 6
+            }
+          },
+          {
+            "step": 49,
+            "line": 43,
+            "type": "exec",
+            "vars": {
+              "_return": 0
+            }
+          },
+          {
+            "step": 50,
+            "line": 43,
+            "type": "exit",
+            "func": "main",
+            "vars": {}
+          }
+        ]
+      }
+    }
+  },
+  "03_原地反转_空间O1": {
+    "title": "原地反转（空间 O(1)）",
+    "defaultMode": "concept",
+    "modeLabels": {
+      "concept": "理解动画",
+      "trace": "代码执行"
+    },
+    "modes": {
+      "concept": {
+        "title": "原地反转（空间 O(1)）",
+        "source": [
+          "算法: 原地反转数组",
+          "输入: arr",
+          "left 指向开头, right 指向末尾",
+          "交换 arr[left] 和 arr[right]",
+          "left++, right--",
+          "直到两个指针相遇",
+          "额外变量只有 left/right/temp -> O(1) 空间"
+        ],
+        "important_vars": {
+          "left": "左指针",
+          "right": "右指针",
+          "space": "空间"
+        },
+        "track_vars": {
+          "primary": [
+            "left",
+            "right",
+            "space"
+          ],
+          "secondary": []
+        },
+        "var_classes": {
+          "left": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "right": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "space": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "concept": {
+            "category": "secondary",
+            "type": "concept"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 6,
+            "text": "概念动画：数组再大, 原地反转额外需要的变量数量也不跟着变大。"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 4,
+            "type": "exec",
+            "vars": {
+              "left": 0,
+              "right": 8,
+              "space": "O(1)",
+              "concept": {
+                "kind": "array_process",
+                "mode": "reverse",
+                "title": "原地反转: O(1) 空间",
+                "values": [
+                  50,
+                  10,
+                  90,
+                  30,
+                  70,
+                  40,
+                  80,
+                  60,
+                  20
+                ],
+                "compare": [
+                  0,
+                  8
+                ],
+                "sorted": [],
+                "phase": "只用 left/right/temp 三个变量, 不复制整份数组"
+              }
+            }
+          },
+          {
+            "step": 1,
+            "line": 4,
+            "type": "exec",
+            "vars": {
+              "left": 1,
+              "right": 7,
+              "space": "O(1)",
+              "concept": {
+                "kind": "array_process",
+                "mode": "reverse",
+                "title": "原地反转: O(1) 空间",
+                "values": [
+                  20,
+                  10,
+                  90,
+                  30,
+                  70,
+                  40,
+                  80,
+                  60,
+                  50
+                ],
+                "compare": [
+                  1,
+                  7
+                ],
+                "sorted": [
+                  0,
+                  8
+                ],
+                "phase": "只用 left/right/temp 三个变量, 不复制整份数组"
+              }
+            }
+          },
+          {
+            "step": 2,
+            "line": 4,
+            "type": "exec",
+            "vars": {
+              "left": 2,
+              "right": 6,
+              "space": "O(1)",
+              "concept": {
+                "kind": "array_process",
+                "mode": "reverse",
+                "title": "原地反转: O(1) 空间",
+                "values": [
+                  20,
+                  60,
+                  90,
+                  30,
+                  70,
+                  40,
+                  80,
+                  10,
+                  50
+                ],
+                "compare": [
+                  2,
+                  6
+                ],
+                "sorted": [
+                  0,
+                  1,
+                  7,
+                  8
+                ],
+                "phase": "只用 left/right/temp 三个变量, 不复制整份数组"
+              }
+            }
+          },
+          {
+            "step": 3,
+            "line": 4,
+            "type": "exec",
+            "vars": {
+              "left": 3,
+              "right": 5,
+              "space": "O(1)",
+              "concept": {
+                "kind": "array_process",
+                "mode": "reverse",
+                "title": "原地反转: O(1) 空间",
+                "values": [
+                  20,
+                  60,
+                  80,
+                  30,
+                  70,
+                  40,
+                  90,
+                  10,
+                  50
+                ],
+                "compare": [
+                  3,
+                  5
+                ],
+                "sorted": [
+                  0,
+                  1,
+                  2,
+                  6,
+                  7,
+                  8
+                ],
+                "phase": "只用 left/right/temp 三个变量, 不复制整份数组"
+              }
+            }
+          },
+          {
+            "step": 4,
+            "line": 4,
+            "type": "exec",
+            "vars": {
+              "left": 4,
+              "right": 4,
+              "space": "O(1)",
+              "concept": {
+                "kind": "array_process",
+                "mode": "reverse",
+                "title": "原地反转: O(1) 空间",
+                "values": [
+                  20,
+                  60,
+                  80,
+                  40,
+                  70,
+                  30,
+                  90,
+                  10,
+                  50
+                ],
+                "compare": [
+                  4,
+                  4
+                ],
+                "sorted": [
+                  0,
+                  1,
+                  2,
+                  3,
+                  5,
+                  6,
+                  7,
+                  8
+                ],
+                "phase": "只用 left/right/temp 三个变量, 不复制整份数组"
+              }
+            }
+          },
+          {
+            "step": 5,
+            "line": 6,
+            "type": "exec",
+            "vars": {
+              "left": 4,
+              "right": 4,
+              "space": "O(1)",
+              "concept": {
+                "kind": "array_process",
+                "mode": "reverse",
+                "title": "原地反转: O(1) 空间",
+                "values": [
+                  20,
+                  60,
+                  80,
+                  40,
+                  70,
+                  30,
+                  90,
+                  10,
+                  50
+                ],
+                "compare": [
+                  4,
+                  4
+                ],
+                "sorted": [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4,
+                  5,
+                  6,
+                  7,
+                  8
+                ],
+                "phase": "指针相遇, 反转完成; 额外空间仍是常数级"
+              }
+            }
+          }
+        ]
+      },
+      "trace": {
+        "title": "原地反转（空间 O(1)）",
+        "source": [
+          "#include <stdio.h>",
+          "/* 原地反转数组：空间复杂度 O(1) */",
+          "void reverse_array(int arr[], int n) {",
+          "    int left = 0, right = n - 1;",
+          "    while (left < right) {",
+          "        int temp = arr[left];",
+          "        arr[left] = arr[right];",
+          "        arr[right] = temp;",
+          "        left++;",
+          "        right--;",
+          "    }",
+          "}",
+          "/* ===== 自动生成的测试入口 ===== */",
+          "#define N 9",
+          "int main(void) {",
+          "    int d[N] = {50, 10, 90, 30, 70, 40, 80, 60, 20};",
+          "    int i;",
+          "    printf(\"=== reverse_array ===\\n\");",
+          "    {",
+          "        int arr[N];",
+          "        for (i = 0; i < N; i++) arr[i] = d[i];",
+          "        printf(\"反转前: \");",
+          "        for (i = 0; i < N; i++) printf(\"%d \", arr[i]);",
+          "        printf(\"\\n\");",
+          "        reverse_array(arr, N);",
+          "        printf(\"反转后: \");",
+          "        for (i = 0; i < N; i++) printf(\"%d \", arr[i]);",
+          "        printf(\"\\n\");",
+          "    }",
+          "    return 0;",
+          "}"
+        ],
+        "important_vars": {
+          "left": "索引",
+          "arr": "数据",
+          "d": "数据"
+        },
+        "track_vars": {
+          "primary": [
+            "arr",
+            "i",
+            "left",
+            "n",
+            "right"
+          ],
+          "secondary": [
+            "_return"
+          ]
+        },
+        "var_classes": {
+          "_return": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "arr": {
+            "category": "primary",
+            "type": "array"
+          },
+          "i": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "left": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "n": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "right": {
+            "category": "primary",
+            "type": "scalar"
+          }
+        },
+        "initial_data": {
+          "arr": [
+            0,
+            0,
+            0,
+            0,
+            -122161296,
+            1,
+            1837034656,
+            1,
+            1
+          ]
+        },
+        "program_output": [
+          {
+            "after_step": 1,
+            "text": "=== reverse_array === 反转前: 50 10 90 30 70 40 80 60 20"
+          },
+          {
+            "after_step": 25,
+            "text": "反转后: 20 60 80 40 70 30 90 10 50"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 15,
+            "type": "enter",
+            "func": "main",
+            "vars": {}
+          },
+          {
+            "step": 1,
+            "line": 20,
+            "type": "exec",
+            "vars": {
+              "arr": [
+                0,
+                0,
+                0,
+                0,
+                -122161296,
+                1,
+                1837034656,
+                1,
+                1
+              ]
+            }
+          },
+          {
+            "step": 2,
+            "line": 21,
+            "type": "cond",
+            "result": false,
+            "vars": {
+              "i": 9
+            }
+          },
+          {
+            "step": 3,
+            "line": 23,
+            "type": "cond",
+            "result": false,
+            "vars": {
+              "i": 9
+            }
+          },
+          {
+            "step": 4,
+            "line": 25,
+            "type": "enter",
+            "func": "reverse_array",
+            "vars": {
+              "arr": [
+                50,
+                10,
+                90,
+                30,
+                70,
+                40,
+                80,
+                60,
+                20
+              ],
+              "n": 9
+            }
+          },
+          {
+            "step": 5,
+            "line": 5,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "left": 0,
+              "right": 8
+            }
+          },
+          {
+            "step": 6,
+            "line": 7,
+            "type": "exec",
+            "vars": {
+              "arr": [
+                20,
+                10,
+                90,
+                30,
+                70,
+                40,
+                80,
+                60,
+                20
+              ]
+            }
+          },
+          {
+            "step": 7,
+            "line": 8,
+            "type": "exec",
+            "vars": {
+              "arr": [
+                20,
+                10,
+                90,
+                30,
+                70,
+                40,
+                80,
+                60,
+                50
+              ]
+            }
+          },
+          {
+            "step": 8,
+            "line": 9,
+            "type": "exec",
+            "vars": {
+              "left": 1
+            }
+          },
+          {
+            "step": 9,
+            "line": 10,
+            "type": "exec",
+            "vars": {
+              "right": 7
+            }
+          },
+          {
+            "step": 10,
+            "line": 5,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "left": 1,
+              "right": 7
+            }
+          },
+          {
+            "step": 11,
+            "line": 7,
+            "type": "exec",
+            "vars": {
+              "arr": [
+                20,
+                60,
+                90,
+                30,
+                70,
+                40,
+                80,
+                60,
+                50
+              ]
+            }
+          },
+          {
+            "step": 12,
+            "line": 8,
+            "type": "exec",
+            "vars": {
+              "arr": [
+                20,
+                60,
+                90,
+                30,
+                70,
+                40,
+                80,
+                10,
+                50
+              ]
+            }
+          },
+          {
+            "step": 13,
+            "line": 9,
+            "type": "exec",
+            "vars": {
+              "left": 2
+            }
+          },
+          {
+            "step": 14,
+            "line": 10,
+            "type": "exec",
+            "vars": {
+              "right": 6
+            }
+          },
+          {
+            "step": 15,
+            "line": 5,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "left": 2,
+              "right": 6
+            }
+          },
+          {
+            "step": 16,
+            "line": 7,
+            "type": "exec",
+            "vars": {
+              "arr": [
+                20,
+                60,
+                80,
+                30,
+                70,
+                40,
+                80,
+                10,
+                50
+              ]
+            }
+          },
+          {
+            "step": 17,
+            "line": 8,
+            "type": "exec",
+            "vars": {
+              "arr": [
+                20,
+                60,
+                80,
+                30,
+                70,
+                40,
+                90,
+                10,
+                50
+              ]
+            }
+          },
+          {
+            "step": 18,
+            "line": 9,
+            "type": "exec",
+            "vars": {
+              "left": 3
+            }
+          },
+          {
+            "step": 19,
+            "line": 10,
+            "type": "exec",
+            "vars": {
+              "right": 5
+            }
+          },
+          {
+            "step": 20,
+            "line": 5,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "left": 3,
+              "right": 5
+            }
+          },
+          {
+            "step": 21,
+            "line": 7,
+            "type": "exec",
+            "vars": {
+              "arr": [
+                20,
+                60,
+                80,
+                40,
+                70,
+                40,
+                90,
+                10,
+                50
+              ]
+            }
+          },
+          {
+            "step": 22,
+            "line": 8,
+            "type": "exec",
+            "vars": {
+              "arr": [
+                20,
+                60,
+                80,
+                40,
+                70,
+                30,
+                90,
+                10,
+                50
+              ]
+            }
+          },
+          {
+            "step": 23,
+            "line": 9,
+            "type": "exec",
+            "vars": {
+              "left": 4
+            }
+          },
+          {
+            "step": 24,
+            "line": 10,
+            "type": "exec",
+            "vars": {
+              "right": 4
+            }
+          },
+          {
+            "step": 25,
+            "line": 27,
+            "type": "cond",
+            "result": false,
+            "vars": {
+              "i": 9
+            }
+          },
+          {
+            "step": 26,
+            "line": 30,
+            "type": "exec",
+            "vars": {
+              "_return": 0
+            }
+          },
+          {
+            "step": 27,
+            "line": 30,
+            "type": "exit",
+            "func": "main",
+            "vars": {}
+          }
+        ]
+      }
+    }
+  },
+  "04_归并_空间On": {
+    "title": "归并（空间 O(n)）",
+    "defaultMode": "concept",
+    "modeLabels": {
+      "concept": "理解动画",
+      "trace": "代码执行"
+    },
+    "modes": {
+      "concept": {
+        "title": "归并（空间 O(n)）",
+        "source": [
+          "算法: 归并排序空间分析",
+          "输入: 两个有序子数组",
+          "申请临时数组 L 和 R",
+          "把左右两半复制进去",
+          "比较 L[i] 和 R[j]",
+          "把较小值写回原数组",
+          "临时空间规模随 n 增长 -> O(n)"
+        ],
+        "important_vars": {
+          "extra": "状态",
+          "space": "状态",
+          "phase": "状态"
+        },
+        "track_vars": {
+          "primary": [
+            "extra",
+            "space",
+            "phase"
+          ],
+          "secondary": []
+        },
+        "var_classes": {
+          "extra": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "space": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "phase": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "concept": {
+            "category": "secondary",
+            "type": "concept"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 4,
+            "text": "概念动画：归并排序的稳定速度来自额外临时数组, 空间复杂度是 O(n)。"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 2,
+            "type": "exec",
+            "vars": {
+              "extra": 0,
+              "space": "准备申请",
+              "phase": "原数组在这里, 但归并不能只靠几个指针完成",
+              "concept": {
+                "kind": "space_compare",
+                "title": "归并排序: O(n) 空间",
+                "array": [
+                  38,
+                  27,
+                  43,
+                  3,
+                  9,
+                  82,
+                  10
+                ],
+                "left": [],
+                "right": [],
+                "phase": "原数组在这里, 但归并不能只靠几个指针完成"
+              }
+            }
+          },
+          {
+            "step": 1,
+            "line": 3,
+            "type": "exec",
+            "vars": {
+              "extra": 7,
+              "space": "O(n)",
+              "phase": "申请 L/R 临时数组, 额外空间跟数据规模一起长",
+              "concept": {
+                "kind": "space_compare",
+                "title": "归并排序: O(n) 空间",
+                "array": [
+                  38,
+                  27,
+                  43,
+                  3,
+                  9,
+                  82,
+                  10
+                ],
+                "left": [
+                  3,
+                  27,
+                  38,
+                  43
+                ],
+                "right": [
+                  9,
+                  10,
+                  82
+                ],
+                "phase": "申请 L/R 临时数组, 额外空间跟数据规模一起长"
+              }
+            }
+          },
+          {
+            "step": 2,
+            "line": 5,
+            "type": "exec",
+            "vars": {
+              "extra": 7,
+              "space": "O(n)",
+              "phase": "比较两个临时数组的头部元素",
+              "concept": {
+                "kind": "space_compare",
+                "title": "归并排序: O(n) 空间",
+                "array": [
+                  38,
+                  27,
+                  43,
+                  3,
+                  9,
+                  82,
+                  10
+                ],
+                "left": [
+                  3,
+                  27,
+                  38,
+                  43
+                ],
+                "right": [
+                  9,
+                  10,
+                  82
+                ],
+                "phase": "比较两个临时数组的头部元素"
+              }
+            }
+          },
+          {
+            "step": 3,
+            "line": 6,
+            "type": "exec",
+            "vars": {
+              "extra": 7,
+              "space": "O(n)",
+              "phase": "合并完成, 时间稳定, 代价是 O(n) 额外空间",
+              "concept": {
+                "kind": "space_compare",
+                "title": "归并排序: O(n) 空间",
+                "array": [
+                  3,
+                  9,
+                  10,
+                  27,
+                  38,
+                  43,
+                  82
+                ],
+                "left": [
+                  3,
+                  27,
+                  38,
+                  43
+                ],
+                "right": [
+                  9,
+                  10,
+                  82
+                ],
+                "phase": "合并完成, 时间稳定, 代价是 O(n) 额外空间"
+              }
+            }
+          }
+        ]
+      },
+      "trace": {
+        "title": "归并（空间 O(n)）",
+        "source": [
+          "#include <stdio.h>",
+          "#include <stdlib.h>",
+          "/* 合并两个有序子数组；成功返回 1，内存分配失败返回 0 */",
+          "int merge(int arr[], int left, int mid, int right) {",
+          "    int n1 = mid - left + 1;  /* 左半部分的大小 */",
+          "    int n2 = right - mid;      /* 右半部分的大小 */",
+          "    /* 创建临时数组——这就是额外空间！ */",
+          "    int *L = (int *)malloc(n1 * sizeof(int));",
+          "    int *R = (int *)malloc(n2 * sizeof(int));",
+          "    if (L == NULL || R == NULL) {",
+          "        free(L);",
+          "        free(R);",
+          "        return 0;",
+          "    }",
+          "    /* 拷贝数据到临时数组 */",
+          "    for (int i = 0; i < n1; i++)",
+          "        L[i] = arr[left + i];",
+          "    for (int j = 0; j < n2; j++)",
+          "        R[j] = arr[mid + 1 + j];",
+          "    /* 合并回原数组 */",
+          "    int i = 0, j = 0, k = left;",
+          "    while (i < n1 && j < n2) {",
+          "        if (L[i] <= R[j]) {",
+          "            arr[k++] = L[i++];",
+          "        } else {",
+          "            arr[k++] = R[j++];",
+          "        }",
+          "    }",
+          "    /* 把剩余的元素也塞进去 */",
+          "    while (i < n1) arr[k++] = L[i++];",
+          "    while (j < n2) arr[k++] = R[j++];",
+          "    free(L);",
+          "    free(R);",
+          "    return 1;",
+          "}",
+          "/* 归并排序；成功返回 1，失败返回 0 */",
+          "int merge_sort(int arr[], int left, int right) {",
+          "    if (left < right) {",
+          "        int mid = left + (right - left) / 2;",
+          "        if (!merge_sort(arr, left, mid)) return 0;       /* 排左半 */",
+          "        if (!merge_sort(arr, mid + 1, right)) return 0;  /* 排右半 */",
+          "        if (!merge(arr, left, mid, right)) return 0;     /* 合并 */",
+          "    }",
+          "    return 1;",
+          "}",
+          "int main(void) {",
+          "    int arr[] = {38, 27, 43, 3, 9, 82, 10};",
+          "    int n = 7;",
+          "    if (!merge_sort(arr, 0, n - 1)) {",
+          "        fprintf(stderr, \"内存分配失败，排序未完成。\\n\");",
+          "        return 1;",
+          "    }",
+          "    for (int i = 0; i < n; i++) {",
+          "        printf(\"%d \", arr[i]);",
+          "    }",
+          "    printf(\"\\n\");",
+          "    return 0;",
+          "}"
+        ],
+        "important_vars": {
+          "i": "索引",
+          "j": "索引",
+          "mid": "索引",
+          "n": "参数",
+          "arr": "数据"
+        },
+        "track_vars": {
+          "primary": [
+            "arr",
+            "i",
+            "j",
+            "left",
+            "mid",
+            "n",
+            "n1",
+            "n2",
+            "right"
+          ],
+          "secondary": [
+            "L",
+            "R",
+            "_return"
+          ]
+        },
+        "var_classes": {
+          "L": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "R": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "_return": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "arr": {
+            "category": "primary",
+            "type": "array"
+          },
+          "i": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "j": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "left": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "mid": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "n": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "n1": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "n2": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "right": {
+            "category": "primary",
+            "type": "scalar"
+          }
+        },
+        "initial_data": {
+          "arr": [
+            38,
+            27,
+            43,
+            3,
+            9,
+            82,
+            10
+          ]
+        },
+        "program_output": [
+          {
+            "after_step": 599,
+            "text": "3 9 10 27 38 43 82"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 46,
+            "type": "enter",
+            "func": "main",
+            "vars": {
+              "phase": "已省略重复条件检查，保留递归进出与数组变化"
+            }
+          },
+          {
+            "step": 1,
+            "line": 49,
+            "type": "enter",
+            "func": "merge_sort",
+            "vars": {
+              "arr": [
+                38,
+                27,
+                43,
+                3,
+                9,
+                82,
+                10
+              ],
+              "left": 0,
+              "right": 6
+            }
+          },
+          {
+            "step": 2,
+            "line": 40,
+            "type": "enter",
+            "func": "merge_sort",
+            "vars": {
+              "arr": [
+                38,
+                27,
+                43,
+                3,
+                9,
+                82,
+                10
+              ],
+              "left": 0,
+              "right": 3
+            }
+          },
+          {
+            "step": 3,
+            "line": 40,
+            "type": "enter",
+            "func": "merge_sort",
+            "vars": {
+              "arr": [
+                38,
+                27,
+                43,
+                3,
+                9,
+                82,
+                10
+              ],
+              "left": 0,
+              "right": 1
+            }
+          },
+          {
+            "step": 4,
+            "line": 40,
+            "type": "enter",
+            "func": "merge_sort",
+            "vars": {
+              "arr": [
+                38,
+                27,
+                43,
+                3,
+                9,
+                82,
+                10
+              ],
+              "left": 0,
+              "right": 0
+            }
+          },
+          {
+            "step": 5,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 6,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 7,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 8,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 9,
+            "line": 26,
+            "type": "exec",
+            "vars": {
+              "arr": [
+                27,
+                27,
+                43,
+                3,
+                9,
+                82,
+                10
+              ]
+            }
+          },
+          {
+            "step": 10,
+            "line": 34,
+            "type": "exit",
+            "func": "merge",
+            "vars": {}
+          },
+          {
+            "step": 11,
+            "line": 24,
+            "type": "exec",
+            "vars": {
+              "arr": [
+                27,
+                38,
+                43,
+                3,
+                9,
+                82,
+                10
+              ]
+            }
+          },
+          {
+            "step": 12,
+            "line": 34,
+            "type": "exit",
+            "func": "merge",
+            "vars": {}
+          },
+          {
+            "step": 13,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 14,
+            "line": 40,
+            "type": "enter",
+            "func": "merge_sort",
+            "vars": {
+              "arr": [
+                27,
+                38,
+                43,
+                3,
+                9,
+                82,
+                10
+              ],
+              "left": 0,
+              "right": 0
+            }
+          },
+          {
+            "step": 15,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 16,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 17,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 18,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 19,
+            "line": 34,
+            "type": "exit",
+            "func": "merge",
+            "vars": {}
+          },
+          {
+            "step": 20,
+            "line": 34,
+            "type": "exit",
+            "func": "merge",
+            "vars": {}
+          },
+          {
+            "step": 21,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 22,
+            "line": 40,
+            "type": "enter",
+            "func": "merge_sort",
+            "vars": {
+              "arr": [
+                27,
+                38,
+                43,
+                3,
+                9,
+                82,
+                10
+              ],
+              "left": 2,
+              "right": 2
+            }
+          },
+          {
+            "step": 23,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 24,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 25,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 26,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 27,
+            "line": 26,
+            "type": "exec",
+            "vars": {
+              "arr": [
+                27,
+                38,
+                3,
+                3,
+                9,
+                82,
+                10
+              ]
+            }
+          },
+          {
+            "step": 28,
+            "line": 34,
+            "type": "exit",
+            "func": "merge",
+            "vars": {}
+          },
+          {
+            "step": 29,
+            "line": 24,
+            "type": "exec",
+            "vars": {
+              "arr": [
+                27,
+                38,
+                3,
+                43,
+                9,
+                82,
+                10
+              ]
+            }
+          },
+          {
+            "step": 30,
+            "line": 34,
+            "type": "exit",
+            "func": "merge",
+            "vars": {}
+          },
+          {
+            "step": 31,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 32,
+            "line": 40,
+            "type": "enter",
+            "func": "merge_sort",
+            "vars": {
+              "arr": [
+                27,
+                38,
+                3,
+                43,
+                9,
+                82,
+                10
+              ],
+              "left": 2,
+              "right": 2
+            }
+          },
+          {
+            "step": 33,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 34,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 35,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 36,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 37,
+            "line": 34,
+            "type": "exit",
+            "func": "merge",
+            "vars": {}
+          },
+          {
+            "step": 38,
+            "line": 34,
+            "type": "exit",
+            "func": "merge",
+            "vars": {}
+          },
+          {
+            "step": 39,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 40,
+            "line": 26,
+            "type": "exec",
+            "vars": {
+              "arr": [
+                3,
+                38,
+                3,
+                43,
+                9,
+                82,
+                10
+              ]
+            }
+          },
+          {
+            "step": 41,
+            "line": 24,
+            "type": "exec",
+            "vars": {
+              "arr": [
+                3,
+                27,
+                3,
+                43,
+                9,
+                82,
+                10
+              ]
+            }
+          },
+          {
+            "step": 42,
+            "line": 24,
+            "type": "exec",
+            "vars": {
+              "arr": [
+                3,
+                27,
+                38,
+                43,
+                9,
+                82,
+                10
+              ]
+            }
+          },
+          {
+            "step": 43,
+            "line": 34,
+            "type": "exit",
+            "func": "merge",
+            "vars": {}
+          },
+          {
+            "step": 44,
+            "line": 34,
+            "type": "exit",
+            "func": "merge",
+            "vars": {}
+          },
+          {
+            "step": 45,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 46,
+            "line": 40,
+            "type": "enter",
+            "func": "merge_sort",
+            "vars": {
+              "arr": [
+                3,
+                27,
+                38,
+                43,
+                9,
+                82,
+                10
+              ],
+              "left": 0,
+              "right": 1
+            }
+          },
+          {
+            "step": 47,
+            "line": 40,
+            "type": "enter",
+            "func": "merge_sort",
+            "vars": {
+              "arr": [
+                3,
+                27,
+                38,
+                43,
+                9,
+                82,
+                10
+              ],
+              "left": 0,
+              "right": 0
+            }
+          },
+          {
+            "step": 48,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 49,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 50,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 51,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 52,
+            "line": 34,
+            "type": "exit",
+            "func": "merge",
+            "vars": {}
+          },
+          {
+            "step": 53,
+            "line": 34,
+            "type": "exit",
+            "func": "merge",
+            "vars": {}
+          },
+          {
+            "step": 54,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 55,
+            "line": 40,
+            "type": "enter",
+            "func": "merge_sort",
+            "vars": {
+              "arr": [
+                3,
+                27,
+                38,
+                43,
+                9,
+                82,
+                10
+              ],
+              "left": 0,
+              "right": 0
+            }
+          },
+          {
+            "step": 56,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 57,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 58,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 59,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 60,
+            "line": 34,
+            "type": "exit",
+            "func": "merge",
+            "vars": {}
+          },
+          {
+            "step": 61,
+            "line": 34,
+            "type": "exit",
+            "func": "merge",
+            "vars": {}
+          },
+          {
+            "step": 62,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 63,
+            "line": 40,
+            "type": "enter",
+            "func": "merge_sort",
+            "vars": {
+              "arr": [
+                3,
+                27,
+                38,
+                43,
+                9,
+                82,
+                10
+              ],
+              "left": 2,
+              "right": 2
+            }
+          },
+          {
+            "step": 64,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 65,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 66,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 67,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 68,
+            "line": 34,
+            "type": "exit",
+            "func": "merge",
+            "vars": {}
+          },
+          {
+            "step": 69,
+            "line": 34,
+            "type": "exit",
+            "func": "merge",
+            "vars": {}
+          },
+          {
+            "step": 70,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 71,
+            "line": 40,
+            "type": "enter",
+            "func": "merge_sort",
+            "vars": {
+              "arr": [
+                3,
+                27,
+                38,
+                43,
+                9,
+                82,
+                10
+              ],
+              "left": 2,
+              "right": 2
+            }
+          },
+          {
+            "step": 72,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 73,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 74,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 75,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 76,
+            "line": 34,
+            "type": "exit",
+            "func": "merge",
+            "vars": {}
+          },
+          {
+            "step": 77,
+            "line": 34,
+            "type": "exit",
+            "func": "merge",
+            "vars": {}
+          },
+          {
+            "step": 78,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 79,
+            "line": 34,
+            "type": "exit",
+            "func": "merge",
+            "vars": {}
+          },
+          {
+            "step": 80,
+            "line": 34,
+            "type": "exit",
+            "func": "merge",
+            "vars": {}
+          },
+          {
+            "step": 81,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 82,
+            "line": 40,
+            "type": "enter",
+            "func": "merge_sort",
+            "vars": {
+              "arr": [
+                3,
+                27,
+                38,
+                43,
+                9,
+                82,
+                10
+              ],
+              "left": 4,
+              "right": 5
+            }
+          },
+          {
+            "step": 83,
+            "line": 40,
+            "type": "enter",
+            "func": "merge_sort",
+            "vars": {
+              "arr": [
+                3,
+                27,
+                38,
+                43,
+                9,
+                82,
+                10
+              ],
+              "left": 4,
+              "right": 4
+            }
+          },
+          {
+            "step": 84,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 85,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 86,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 87,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 88,
+            "line": 34,
+            "type": "exit",
+            "func": "merge",
+            "vars": {}
+          },
+          {
+            "step": 89,
+            "line": 34,
+            "type": "exit",
+            "func": "merge",
+            "vars": {}
+          },
+          {
+            "step": 90,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 91,
+            "line": 40,
+            "type": "enter",
+            "func": "merge_sort",
+            "vars": {
+              "arr": [
+                3,
+                27,
+                38,
+                43,
+                9,
+                82,
+                10
+              ],
+              "left": 4,
+              "right": 4
+            }
+          },
+          {
+            "step": 92,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 93,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 94,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 95,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 96,
+            "line": 34,
+            "type": "exit",
+            "func": "merge",
+            "vars": {}
+          },
+          {
+            "step": 97,
+            "line": 34,
+            "type": "exit",
+            "func": "merge",
+            "vars": {}
+          },
+          {
+            "step": 98,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 99,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 100,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 101,
+            "line": 26,
+            "type": "exec",
+            "vars": {
+              "arr": [
+                3,
+                27,
+                38,
+                43,
+                9,
+                10,
+                10
+              ]
+            }
+          },
+          {
+            "step": 102,
+            "line": 34,
+            "type": "exit",
+            "func": "merge",
+            "vars": {}
+          },
+          {
+            "step": 103,
+            "line": 24,
+            "type": "exec",
+            "vars": {
+              "arr": [
+                3,
+                27,
+                38,
+                43,
+                9,
+                10,
+                82
+              ]
+            }
+          },
+          {
+            "step": 104,
+            "line": 34,
+            "type": "exit",
+            "func": "merge",
+            "vars": {}
+          },
+          {
+            "step": 105,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 106,
+            "line": 40,
+            "type": "enter",
+            "func": "merge_sort",
+            "vars": {
+              "arr": [
+                3,
+                27,
+                38,
+                43,
+                9,
+                10,
+                82
+              ],
+              "left": 4,
+              "right": 5
+            }
+          },
+          {
+            "step": 107,
+            "line": 40,
+            "type": "enter",
+            "func": "merge_sort",
+            "vars": {
+              "arr": [
+                3,
+                27,
+                38,
+                43,
+                9,
+                10,
+                82
+              ],
+              "left": 4,
+              "right": 4
+            }
+          },
+          {
+            "step": 108,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 109,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 110,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 111,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 112,
+            "line": 34,
+            "type": "exit",
+            "func": "merge",
+            "vars": {}
+          },
+          {
+            "step": 113,
+            "line": 34,
+            "type": "exit",
+            "func": "merge",
+            "vars": {}
+          },
+          {
+            "step": 114,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 115,
+            "line": 40,
+            "type": "enter",
+            "func": "merge_sort",
+            "vars": {
+              "arr": [
+                3,
+                27,
+                38,
+                43,
+                9,
+                10,
+                82
+              ],
+              "left": 4,
+              "right": 4
+            }
+          },
+          {
+            "step": 116,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 117,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 118,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 119,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 120,
+            "line": 34,
+            "type": "exit",
+            "func": "merge",
+            "vars": {}
+          },
+          {
+            "step": 121,
+            "line": 34,
+            "type": "exit",
+            "func": "merge",
+            "vars": {}
+          },
+          {
+            "step": 122,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 123,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 124,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 125,
+            "line": 34,
+            "type": "exit",
+            "func": "merge",
+            "vars": {}
+          },
+          {
+            "step": 126,
+            "line": 34,
+            "type": "exit",
+            "func": "merge",
+            "vars": {}
+          },
+          {
+            "step": 127,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 128,
+            "line": 26,
+            "type": "exec",
+            "vars": {
+              "arr": [
+                3,
+                9,
+                38,
+                43,
+                9,
+                10,
+                82
+              ]
+            }
+          },
+          {
+            "step": 129,
+            "line": 26,
+            "type": "exec",
+            "vars": {
+              "arr": [
+                3,
+                9,
+                10,
+                43,
+                9,
+                10,
+                82
+              ]
+            }
+          },
+          {
+            "step": 130,
+            "line": 24,
+            "type": "exec",
+            "vars": {
+              "arr": [
+                3,
+                9,
+                10,
+                27,
+                9,
+                10,
+                82
+              ]
+            }
+          },
+          {
+            "step": 131,
+            "line": 24,
+            "type": "exec",
+            "vars": {
+              "arr": [
+                3,
+                9,
+                10,
+                27,
+                38,
+                10,
+                82
+              ]
+            }
+          },
+          {
+            "step": 132,
+            "line": 24,
+            "type": "exec",
+            "vars": {
+              "arr": [
+                3,
+                9,
+                10,
+                27,
+                38,
+                43,
+                82
+              ]
+            }
+          },
+          {
+            "step": 133,
+            "line": 34,
+            "type": "exit",
+            "func": "merge",
+            "vars": {}
+          },
+          {
+            "step": 134,
+            "line": 34,
+            "type": "exit",
+            "func": "merge",
+            "vars": {}
+          },
+          {
+            "step": 135,
+            "line": 44,
+            "type": "exit",
+            "func": "merge_sort",
+            "vars": {}
+          },
+          {
+            "step": 136,
+            "line": 57,
+            "type": "exit",
+            "func": "main",
+            "vars": {}
+          }
+        ]
+      }
+    }
+  },
+  "05_动态数组_摊还分析": {
+    "title": "动态数组（摊还分析）",
+    "defaultMode": "concept",
+    "modeLabels": {
+      "concept": "理解动画",
+      "trace": "代码执行"
+    },
+    "modes": {
+      "concept": {
+        "title": "动态数组（摊还分析）",
+        "source": [
+          "算法: 动态数组摊还分析",
+          "初始 capacity = 2",
+          "每次 push_back 一个元素",
+          "如果 size == capacity, 先翻倍扩容",
+          "扩容会复制已有元素, 单次可能 O(n)",
+          "但扩容不常发生, 总账摊下来仍是 O(1)"
+        ],
+        "important_vars": {
+          "size": "状态",
+          "capacity": "状态",
+          "cost": "状态"
+        },
+        "track_vars": {
+          "primary": [
+            "size",
+            "capacity",
+            "cost"
+          ],
+          "secondary": []
+        },
+        "var_classes": {
+          "size": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "capacity": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "cost": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "concept": {
+            "category": "secondary",
+            "type": "concept"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 8,
+            "text": "概念动画：扩容那一下很贵, 但把总成本摊到整串插入上, push_back 仍是摊还 O(1)。"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 2,
+            "type": "exec",
+            "vars": {
+              "size": 0,
+              "capacity": 2,
+              "cost": 0,
+              "concept": {
+                "kind": "dynamic_array",
+                "title": "动态数组_摊还分析",
+                "items": [],
+                "capacity": 2,
+                "cost": 0,
+                "phase": "一开始容量只有 2"
+              }
+            }
+          },
+          {
+            "step": 1,
+            "line": 3,
+            "type": "exec",
+            "vars": {
+              "size": 1,
+              "capacity": 2,
+              "cost": 1,
+              "concept": {
+                "kind": "dynamic_array",
+                "title": "动态数组_摊还分析",
+                "items": [
+                  1
+                ],
+                "capacity": 2,
+                "cost": 1,
+                "phase": "普通插入: 只写入一个格子"
+              }
+            }
+          },
+          {
+            "step": 2,
+            "line": 3,
+            "type": "exec",
+            "vars": {
+              "size": 2,
+              "capacity": 2,
+              "cost": 1,
+              "concept": {
+                "kind": "dynamic_array",
+                "title": "动态数组_摊还分析",
+                "items": [
+                  1,
+                  2
+                ],
+                "capacity": 2,
+                "cost": 1,
+                "phase": "容量刚好填满, 下一次要扩容"
+              }
+            }
+          },
+          {
+            "step": 3,
+            "line": 4,
+            "type": "exec",
+            "vars": {
+              "size": 3,
+              "capacity": 4,
+              "cost": 3,
+              "concept": {
+                "kind": "dynamic_array",
+                "title": "动态数组_摊还分析",
+                "items": [
+                  1,
+                  2,
+                  3
+                ],
+                "capacity": 4,
+                "cost": 3,
+                "phase": "插入 3 前先扩容, 复制 2 个旧元素"
+              }
+            }
+          },
+          {
+            "step": 4,
+            "line": 3,
+            "type": "exec",
+            "vars": {
+              "size": 4,
+              "capacity": 4,
+              "cost": 1,
+              "concept": {
+                "kind": "dynamic_array",
+                "title": "动态数组_摊还分析",
+                "items": [
+                  1,
+                  2,
+                  3,
+                  4
+                ],
+                "capacity": 4,
+                "cost": 1,
+                "phase": "扩容后又能连续便宜插入"
+              }
+            }
+          },
+          {
+            "step": 5,
+            "line": 4,
+            "type": "exec",
+            "vars": {
+              "size": 5,
+              "capacity": 8,
+              "cost": 5,
+              "concept": {
+                "kind": "dynamic_array",
+                "title": "动态数组_摊还分析",
+                "items": [
+                  1,
+                  2,
+                  3,
+                  4,
+                  5
+                ],
+                "capacity": 8,
+                "cost": 5,
+                "phase": "插入 5 前扩容到 8, 这次复制 4 个旧元素"
+              }
+            }
+          },
+          {
+            "step": 6,
+            "line": 3,
+            "type": "exec",
+            "vars": {
+              "size": 8,
+              "capacity": 8,
+              "cost": 1,
+              "concept": {
+                "kind": "dynamic_array",
+                "title": "动态数组_摊还分析",
+                "items": [
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6,
+                  7,
+                  8
+                ],
+                "capacity": 8,
+                "cost": 1,
+                "phase": "后面几次又都是 O(1)"
+              }
+            }
+          },
+          {
+            "step": 7,
+            "line": 6,
+            "type": "exec",
+            "vars": {
+              "size": 10,
+              "capacity": 16,
+              "cost": 10,
+              "concept": {
+                "kind": "dynamic_array",
+                "title": "动态数组_摊还分析",
+                "items": [
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6,
+                  7,
+                  8,
+                  9,
+                  10
+                ],
+                "capacity": 16,
+                "cost": 10,
+                "phase": "10 次插入只扩容 3 次, 摊还后每次仍接近常数"
+              }
+            }
+          }
+        ]
+      },
+      "trace": {
+        "title": "动态数组（摊还分析）",
+        "source": [
+          "#include <stdio.h>",
+          "#include <stdlib.h>",
+          "typedef struct {",
+          "    int *data;     // 实际存储数据的数组",
+          "    int size;      // 当前元素个数",
+          "    int capacity;  // 当前容量",
+          "} DynamicArray;",
+          "/* 创建动态数组 */",
+          "DynamicArray* create_array(int initial_capacity) {",
+          "    DynamicArray *arr = (DynamicArray *)malloc(sizeof(DynamicArray));",
+          "    if (arr == NULL) {",
+          "        return NULL;",
+          "    }",
+          "    arr->data = (int *)malloc(initial_capacity * sizeof(int));",
+          "    if (arr->data == NULL) {",
+          "        free(arr);",
+          "        return NULL;",
+          "    }",
+          "    arr->size = 0;",
+          "    arr->capacity = initial_capacity;",
+          "    return arr;",
+          "}",
+          "/* 添加元素（核心） */",
+          "void push_back(DynamicArray *arr, int value) {",
+          "    /* 如果满了，翻倍扩容 */",
+          "    if (arr->size == arr->capacity) {",
+          "        int new_capacity = arr->capacity * 2;  /* 容量翻倍 */",
+          "        int *temp = (int *)realloc(arr->data, new_capacity * sizeof(int));",
+          "        if (temp == NULL) {",
+          "            printf(\"  扩容失败：内存不足！\\n\");",
+          "            return;",
+          "        }",
+          "        arr->data = temp;  /* 确认成功后再赋值 */",
+          "        arr->capacity = new_capacity;",
+          "        printf(\"  扩容：新容量：%d\\n\", arr->capacity);",
+          "    }",
+          "    arr->data[arr->size++] = value;",
+          "}",
+          "/* 销毁 */",
+          "void destroy_array(DynamicArray *arr) {",
+          "    if (arr == NULL) {",
+          "        return;",
+          "    }",
+          "    free(arr->data);",
+          "    free(arr);",
+          "}",
+          "int main(void) {",
+          "    DynamicArray *arr = create_array(2);  /* 初始容量 2 */",
+          "    if (arr == NULL) {",
+          "        printf(\"创建动态数组失败！\\n\");",
+          "        return 1;",
+          "    }",
+          "    printf(\"往动态数组里塞 10 个元素：\\n\");",
+          "    for (int i = 1; i <= 10; i++) {",
+          "        printf(\"添加 %d → \", i);",
+          "        push_back(arr, i);",
+          "        printf(\"size=%d, capacity=%d\\n\", arr->size, arr->capacity);",
+          "    }",
+          "    destroy_array(arr);",
+          "    return 0;",
+          "}"
+        ],
+        "important_vars": {
+          "i": "索引"
+        },
+        "track_vars": {
+          "primary": [
+            "arr",
+            "i"
+          ],
+          "secondary": [
+            "_return",
+            "initial_capacity",
+            "value"
+          ]
+        },
+        "var_classes": {
+          "_return": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "arr": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "i": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "initial_capacity": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "value": {
+            "category": "secondary",
+            "type": "scalar"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 6,
+            "text": "往动态数组里塞 10 个元素： 添加 1 → size=1, capacity=2 添加 2 → size=2, capacity=2 添加 3 → 扩容：新容量：4 size=3, capacity=4 添加 4 → size=4, capacity=4 添加 5 → 扩容：新容量：8 size=5, capacity=8 添加 6 → size=6, capacity=8 添加 7 → size=7, capacity=8 添加 8 → size=8, capacity=8 添加 9 → 扩容：新容量：16 size=9, capacity=16 添加 10 → size=10, capacity=16"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 47,
+            "type": "enter",
+            "func": "main",
+            "vars": {}
+          },
+          {
+            "step": 1,
+            "line": 48,
+            "type": "enter",
+            "func": "create_array",
+            "vars": {
+              "initial_capacity": 2
+            }
+          },
+          {
+            "step": 2,
+            "line": 14,
+            "type": "exec",
+            "vars": {
+              "arr": 48027856
+            }
+          },
+          {
+            "step": 3,
+            "line": 19,
+            "type": "exec",
+            "vars": {
+              "arr": 48027856
+            }
+          },
+          {
+            "step": 4,
+            "line": 20,
+            "type": "exec",
+            "vars": {
+              "arr": 48027856
+            }
+          },
+          {
+            "step": 5,
+            "line": 21,
+            "type": "exit",
+            "func": "create_array",
+            "vars": {}
+          },
+          {
+            "step": 6,
+            "line": 54,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 1
+            }
+          },
+          {
+            "step": 7,
+            "line": 56,
+            "type": "enter",
+            "func": "push_back",
+            "vars": {
+              "value": 1
+            }
+          },
+          {
+            "step": 8,
+            "line": 54,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 2
+            }
+          },
+          {
+            "step": 9,
+            "line": 56,
+            "type": "enter",
+            "func": "push_back",
+            "vars": {
+              "value": 2
+            }
+          },
+          {
+            "step": 10,
+            "line": 54,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 3
+            }
+          },
+          {
+            "step": 11,
+            "line": 56,
+            "type": "enter",
+            "func": "push_back",
+            "vars": {
+              "value": 3
+            }
+          },
+          {
+            "step": 12,
+            "line": 26,
+            "type": "cond",
+            "result": true,
+            "vars": {}
+          },
+          {
+            "step": 13,
+            "line": 54,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 4
+            }
+          },
+          {
+            "step": 14,
+            "line": 56,
+            "type": "enter",
+            "func": "push_back",
+            "vars": {
+              "value": 4
+            }
+          },
+          {
+            "step": 15,
+            "line": 54,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 5
+            }
+          },
+          {
+            "step": 16,
+            "line": 56,
+            "type": "enter",
+            "func": "push_back",
+            "vars": {
+              "value": 5
+            }
+          },
+          {
+            "step": 17,
+            "line": 26,
+            "type": "cond",
+            "result": true,
+            "vars": {}
+          },
+          {
+            "step": 18,
+            "line": 54,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 6
+            }
+          },
+          {
+            "step": 19,
+            "line": 56,
+            "type": "enter",
+            "func": "push_back",
+            "vars": {
+              "value": 6
+            }
+          },
+          {
+            "step": 20,
+            "line": 54,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 7
+            }
+          },
+          {
+            "step": 21,
+            "line": 56,
+            "type": "enter",
+            "func": "push_back",
+            "vars": {
+              "value": 7
+            }
+          },
+          {
+            "step": 22,
+            "line": 54,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 8
+            }
+          },
+          {
+            "step": 23,
+            "line": 56,
+            "type": "enter",
+            "func": "push_back",
+            "vars": {
+              "value": 8
+            }
+          },
+          {
+            "step": 24,
+            "line": 54,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 9
+            }
+          },
+          {
+            "step": 25,
+            "line": 56,
+            "type": "enter",
+            "func": "push_back",
+            "vars": {
+              "value": 9
+            }
+          },
+          {
+            "step": 26,
+            "line": 26,
+            "type": "cond",
+            "result": true,
+            "vars": {}
+          },
+          {
+            "step": 27,
+            "line": 54,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 10
+            }
+          },
+          {
+            "step": 28,
+            "line": 56,
+            "type": "enter",
+            "func": "push_back",
+            "vars": {
+              "value": 10
+            }
+          },
+          {
+            "step": 29,
+            "line": 60,
+            "type": "exec",
+            "vars": {
+              "_return": 0
+            }
+          },
+          {
+            "step": 30,
+            "line": 60,
+            "type": "exit",
+            "func": "main",
+            "vars": {}
+          }
+        ]
+      }
+    }
+  },
+  "07_停机问题_反证法": {
+    "title": "停机问题（反证法）",
+    "source": [
+      "算法: 停机问题反证法",
+      "假设存在 halts(program, input)",
+      "它能判断任意程序是否会停机",
+      "构造 paradox(P):",
+      "    如果 halts(P, P) 说会停",
+      "        paradox 就故意死循环",
+      "    如果 halts(P, P) 说不停",
+      "        paradox 就立刻停机",
+      "把 paradox 自己交给 paradox",
+      "无论 halts 怎么回答, 都会矛盾"
+    ],
+    "important_vars": {
+      "state": "状态",
+      "phase": "状态"
+    },
+    "track_vars": {
+      "primary": [
+        "state",
+        "phase"
+      ],
+      "secondary": []
+    },
+    "var_classes": {
+      "state": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "phase": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "concept": {
+        "category": "secondary",
+        "type": "concept"
+      }
+    },
+    "initial_data": {},
+    "program_output": [
+      {
+        "after_step": 7,
+        "text": "概念动画：停机问题的关键是自指和反着做, 不是运行一段真的万能检测代码。"
+      }
+    ],
+    "steps": [
+      {
+        "step": 0,
+        "line": 2,
+        "type": "exec",
+        "vars": {
+          "state": "假设",
+          "phase": "万能检测器 halts 存在",
+          "concept": {
+            "kind": "halting",
+            "title": "停机问题反证法",
+            "state": "假设",
+            "phase": "万能检测器 halts 存在",
+            "index": 0
+          }
+        }
+      },
+      {
+        "step": 1,
+        "line": 4,
+        "type": "exec",
+        "vars": {
+          "state": "构造",
+          "phase": "写一个专门唱反调的 paradox",
+          "concept": {
+            "kind": "halting",
+            "title": "停机问题反证法",
+            "state": "构造",
+            "phase": "写一个专门唱反调的 paradox",
+            "index": 1
+          }
+        }
+      },
+      {
+        "step": 2,
+        "line": 5,
+        "type": "exec",
+        "vars": {
+          "state": "回答: 会停",
+          "phase": "如果 halts 说会停, paradox 就进入死循环",
+          "concept": {
+            "kind": "halting",
+            "title": "停机问题反证法",
+            "state": "回答: 会停",
+            "phase": "如果 halts 说会停, paradox 就进入死循环",
+            "index": 2
+          }
+        }
+      },
+      {
+        "step": 3,
+        "line": 7,
+        "type": "exec",
+        "vars": {
+          "state": "回答: 不停",
+          "phase": "如果 halts 说不停, paradox 就立刻返回",
+          "concept": {
+            "kind": "halting",
+            "title": "停机问题反证法",
+            "state": "回答: 不停",
+            "phase": "如果 halts 说不停, paradox 就立刻返回",
+            "index": 3
+          }
+        }
+      },
+      {
+        "step": 4,
+        "line": 9,
+        "type": "exec",
+        "vars": {
+          "state": "自指",
+          "phase": "现在运行 paradox(paradox)",
+          "concept": {
+            "kind": "halting",
+            "title": "停机问题反证法",
+            "state": "自指",
+            "phase": "现在运行 paradox(paradox)",
+            "index": 4
+          }
+        }
+      },
+      {
+        "step": 5,
+        "line": 10,
+        "type": "exec",
+        "vars": {
+          "state": "矛盾",
+          "phase": "两种回答都会被 paradox 反着打脸",
+          "concept": {
+            "kind": "halting",
+            "title": "停机问题反证法",
+            "state": "矛盾",
+            "phase": "两种回答都会被 paradox 反着打脸",
+            "index": 5
+          }
+        }
+      },
+      {
+        "step": 6,
+        "line": 10,
+        "type": "exec",
+        "vars": {
+          "state": "结论",
+          "phase": "万能停机检测器不可能存在",
+          "concept": {
+            "kind": "halting",
+            "title": "停机问题反证法",
+            "state": "结论",
+            "phase": "万能停机检测器不可能存在",
+            "index": 6
+          }
+        }
+      }
+    ]
+  },
+  "08_复杂度阶层全景图": {
+    "title": "复杂度阶层全景图",
+    "source": [
+      "算法: 复杂度阶层全景图",
+      "把常见复杂度从快到慢排成一张地图",
+      "观察 n 从 10 增长到 1000 时, 步数怎样拉开",
+      "O(1), O(log n), O(n) 通常比较从容",
+      "O(n log n) 是很多排序算法的理想区间",
+      "O(n^2) 往后, 数据一大就会明显吃力",
+      "O(2^n) 和 O(n!) 通常只适合很小的规模"
+    ],
+    "important_vars": {
+      "complexity": "状态",
+      "example": "状态",
+      "scale": "状态"
+    },
+    "track_vars": {
+      "primary": [
+        "complexity",
+        "example",
+        "scale"
+      ],
+      "secondary": []
+    },
+    "var_classes": {
+      "complexity": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "example": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "scale": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "concept": {
+        "category": "secondary",
+        "type": "concept"
+      }
+    },
+    "initial_data": {},
+    "program_output": [
+      {
+        "after_step": 7,
+        "text": "概念动画：复杂度不是背符号, 而是建立数据变大时的危险直觉。"
+      }
+    ],
+    "steps": [
+      {
+        "step": 0,
+        "line": 2,
+        "type": "exec",
+        "vars": {
+          "complexity": "O(1)",
+          "example": "数组下标访问",
+          "scale": "1步",
+          "concept": {
+            "kind": "complexity_ladder",
+            "title": "复杂度阶层全景图",
+            "levels": [
+              {
+                "order": "O(1)",
+                "name": "常数时间",
+                "example": "数组下标访问",
+                "n10": "1步",
+                "n100": "1步",
+                "n1000": "1步",
+                "weight": 0.18
+              },
+              {
+                "order": "O(log n)",
+                "name": "对数时间",
+                "example": "二分查找",
+                "n10": "~3步",
+                "n100": "~7步",
+                "n1000": "~10步",
+                "weight": 0.28
+              },
+              {
+                "order": "O(n)",
+                "name": "线性时间",
+                "example": "遍历数组",
+                "n10": "10步",
+                "n100": "100步",
+                "n1000": "1000步",
+                "weight": 0.42
+              },
+              {
+                "order": "O(n log n)",
+                "name": "线性对数",
+                "example": "归并/堆排序",
+                "n10": "~33步",
+                "n100": "~664步",
+                "n1000": "~9966步",
+                "weight": 0.56
+              },
+              {
+                "order": "O(n^2)",
+                "name": "平方时间",
+                "example": "两两比较",
+                "n10": "100步",
+                "n100": "1万步",
+                "n1000": "100万步",
+                "weight": 0.72
+              },
+              {
+                "order": "O(2^n)",
+                "name": "指数时间",
+                "example": "穷举子集",
+                "n10": "1024步",
+                "n100": "天文数字",
+                "n1000": "别想了",
+                "weight": 0.88
+              },
+              {
+                "order": "O(n!)",
+                "name": "阶乘时间",
+                "example": "穷举排列",
+                "n10": "362万步",
+                "n100": "宇宙级",
+                "n1000": "不可想象",
+                "weight": 1.0
+              }
+            ],
+            "active": 0,
+            "phase": "先看 O(1): 数据变大, 步数仍然不变"
+          }
+        }
+      },
+      {
+        "step": 1,
+        "line": 3,
+        "type": "exec",
+        "vars": {
+          "complexity": "O(log n)",
+          "example": "二分查找",
+          "scale": "~10步",
+          "concept": {
+            "kind": "complexity_ladder",
+            "title": "复杂度阶层全景图",
+            "levels": [
+              {
+                "order": "O(1)",
+                "name": "常数时间",
+                "example": "数组下标访问",
+                "n10": "1步",
+                "n100": "1步",
+                "n1000": "1步",
+                "weight": 0.18
+              },
+              {
+                "order": "O(log n)",
+                "name": "对数时间",
+                "example": "二分查找",
+                "n10": "~3步",
+                "n100": "~7步",
+                "n1000": "~10步",
+                "weight": 0.28
+              },
+              {
+                "order": "O(n)",
+                "name": "线性时间",
+                "example": "遍历数组",
+                "n10": "10步",
+                "n100": "100步",
+                "n1000": "1000步",
+                "weight": 0.42
+              },
+              {
+                "order": "O(n log n)",
+                "name": "线性对数",
+                "example": "归并/堆排序",
+                "n10": "~33步",
+                "n100": "~664步",
+                "n1000": "~9966步",
+                "weight": 0.56
+              },
+              {
+                "order": "O(n^2)",
+                "name": "平方时间",
+                "example": "两两比较",
+                "n10": "100步",
+                "n100": "1万步",
+                "n1000": "100万步",
+                "weight": 0.72
+              },
+              {
+                "order": "O(2^n)",
+                "name": "指数时间",
+                "example": "穷举子集",
+                "n10": "1024步",
+                "n100": "天文数字",
+                "n1000": "别想了",
+                "weight": 0.88
+              },
+              {
+                "order": "O(n!)",
+                "name": "阶乘时间",
+                "example": "穷举排列",
+                "n10": "362万步",
+                "n100": "宇宙级",
+                "n1000": "不可想象",
+                "weight": 1.0
+              }
+            ],
+            "active": 1,
+            "phase": "O(log n) 增长很慢, 每次把范围砍半"
+          }
+        }
+      },
+      {
+        "step": 2,
+        "line": 4,
+        "type": "exec",
+        "vars": {
+          "complexity": "O(n)",
+          "example": "遍历数组",
+          "scale": "1000步",
+          "concept": {
+            "kind": "complexity_ladder",
+            "title": "复杂度阶层全景图",
+            "levels": [
+              {
+                "order": "O(1)",
+                "name": "常数时间",
+                "example": "数组下标访问",
+                "n10": "1步",
+                "n100": "1步",
+                "n1000": "1步",
+                "weight": 0.18
+              },
+              {
+                "order": "O(log n)",
+                "name": "对数时间",
+                "example": "二分查找",
+                "n10": "~3步",
+                "n100": "~7步",
+                "n1000": "~10步",
+                "weight": 0.28
+              },
+              {
+                "order": "O(n)",
+                "name": "线性时间",
+                "example": "遍历数组",
+                "n10": "10步",
+                "n100": "100步",
+                "n1000": "1000步",
+                "weight": 0.42
+              },
+              {
+                "order": "O(n log n)",
+                "name": "线性对数",
+                "example": "归并/堆排序",
+                "n10": "~33步",
+                "n100": "~664步",
+                "n1000": "~9966步",
+                "weight": 0.56
+              },
+              {
+                "order": "O(n^2)",
+                "name": "平方时间",
+                "example": "两两比较",
+                "n10": "100步",
+                "n100": "1万步",
+                "n1000": "100万步",
+                "weight": 0.72
+              },
+              {
+                "order": "O(2^n)",
+                "name": "指数时间",
+                "example": "穷举子集",
+                "n10": "1024步",
+                "n100": "天文数字",
+                "n1000": "别想了",
+                "weight": 0.88
+              },
+              {
+                "order": "O(n!)",
+                "name": "阶乘时间",
+                "example": "穷举排列",
+                "n10": "362万步",
+                "n100": "宇宙级",
+                "n1000": "不可想象",
+                "weight": 1.0
+              }
+            ],
+            "active": 2,
+            "phase": "O(n) 随数据规模同步增长, 直观但可控"
+          }
+        }
+      },
+      {
+        "step": 3,
+        "line": 5,
+        "type": "exec",
+        "vars": {
+          "complexity": "O(n log n)",
+          "example": "归并/堆排序",
+          "scale": "~9966步",
+          "concept": {
+            "kind": "complexity_ladder",
+            "title": "复杂度阶层全景图",
+            "levels": [
+              {
+                "order": "O(1)",
+                "name": "常数时间",
+                "example": "数组下标访问",
+                "n10": "1步",
+                "n100": "1步",
+                "n1000": "1步",
+                "weight": 0.18
+              },
+              {
+                "order": "O(log n)",
+                "name": "对数时间",
+                "example": "二分查找",
+                "n10": "~3步",
+                "n100": "~7步",
+                "n1000": "~10步",
+                "weight": 0.28
+              },
+              {
+                "order": "O(n)",
+                "name": "线性时间",
+                "example": "遍历数组",
+                "n10": "10步",
+                "n100": "100步",
+                "n1000": "1000步",
+                "weight": 0.42
+              },
+              {
+                "order": "O(n log n)",
+                "name": "线性对数",
+                "example": "归并/堆排序",
+                "n10": "~33步",
+                "n100": "~664步",
+                "n1000": "~9966步",
+                "weight": 0.56
+              },
+              {
+                "order": "O(n^2)",
+                "name": "平方时间",
+                "example": "两两比较",
+                "n10": "100步",
+                "n100": "1万步",
+                "n1000": "100万步",
+                "weight": 0.72
+              },
+              {
+                "order": "O(2^n)",
+                "name": "指数时间",
+                "example": "穷举子集",
+                "n10": "1024步",
+                "n100": "天文数字",
+                "n1000": "别想了",
+                "weight": 0.88
+              },
+              {
+                "order": "O(n!)",
+                "name": "阶乘时间",
+                "example": "穷举排列",
+                "n10": "362万步",
+                "n100": "宇宙级",
+                "n1000": "不可想象",
+                "weight": 1.0
+              }
+            ],
+            "active": 3,
+            "phase": "O(n log n) 是高效比较排序常见的天花板"
+          }
+        }
+      },
+      {
+        "step": 4,
+        "line": 6,
+        "type": "exec",
+        "vars": {
+          "complexity": "O(n^2)",
+          "example": "两两比较",
+          "scale": "100万步",
+          "concept": {
+            "kind": "complexity_ladder",
+            "title": "复杂度阶层全景图",
+            "levels": [
+              {
+                "order": "O(1)",
+                "name": "常数时间",
+                "example": "数组下标访问",
+                "n10": "1步",
+                "n100": "1步",
+                "n1000": "1步",
+                "weight": 0.18
+              },
+              {
+                "order": "O(log n)",
+                "name": "对数时间",
+                "example": "二分查找",
+                "n10": "~3步",
+                "n100": "~7步",
+                "n1000": "~10步",
+                "weight": 0.28
+              },
+              {
+                "order": "O(n)",
+                "name": "线性时间",
+                "example": "遍历数组",
+                "n10": "10步",
+                "n100": "100步",
+                "n1000": "1000步",
+                "weight": 0.42
+              },
+              {
+                "order": "O(n log n)",
+                "name": "线性对数",
+                "example": "归并/堆排序",
+                "n10": "~33步",
+                "n100": "~664步",
+                "n1000": "~9966步",
+                "weight": 0.56
+              },
+              {
+                "order": "O(n^2)",
+                "name": "平方时间",
+                "example": "两两比较",
+                "n10": "100步",
+                "n100": "1万步",
+                "n1000": "100万步",
+                "weight": 0.72
+              },
+              {
+                "order": "O(2^n)",
+                "name": "指数时间",
+                "example": "穷举子集",
+                "n10": "1024步",
+                "n100": "天文数字",
+                "n1000": "别想了",
+                "weight": 0.88
+              },
+              {
+                "order": "O(n!)",
+                "name": "阶乘时间",
+                "example": "穷举排列",
+                "n10": "362万步",
+                "n100": "宇宙级",
+                "n1000": "不可想象",
+                "weight": 1.0
+              }
+            ],
+            "active": 4,
+            "phase": "O(n^2) 开始危险: n=1000 已经到百万级"
+          }
+        }
+      },
+      {
+        "step": 5,
+        "line": 7,
+        "type": "exec",
+        "vars": {
+          "complexity": "O(2^n)",
+          "example": "穷举子集",
+          "scale": "别想了",
+          "concept": {
+            "kind": "complexity_ladder",
+            "title": "复杂度阶层全景图",
+            "levels": [
+              {
+                "order": "O(1)",
+                "name": "常数时间",
+                "example": "数组下标访问",
+                "n10": "1步",
+                "n100": "1步",
+                "n1000": "1步",
+                "weight": 0.18
+              },
+              {
+                "order": "O(log n)",
+                "name": "对数时间",
+                "example": "二分查找",
+                "n10": "~3步",
+                "n100": "~7步",
+                "n1000": "~10步",
+                "weight": 0.28
+              },
+              {
+                "order": "O(n)",
+                "name": "线性时间",
+                "example": "遍历数组",
+                "n10": "10步",
+                "n100": "100步",
+                "n1000": "1000步",
+                "weight": 0.42
+              },
+              {
+                "order": "O(n log n)",
+                "name": "线性对数",
+                "example": "归并/堆排序",
+                "n10": "~33步",
+                "n100": "~664步",
+                "n1000": "~9966步",
+                "weight": 0.56
+              },
+              {
+                "order": "O(n^2)",
+                "name": "平方时间",
+                "example": "两两比较",
+                "n10": "100步",
+                "n100": "1万步",
+                "n1000": "100万步",
+                "weight": 0.72
+              },
+              {
+                "order": "O(2^n)",
+                "name": "指数时间",
+                "example": "穷举子集",
+                "n10": "1024步",
+                "n100": "天文数字",
+                "n1000": "别想了",
+                "weight": 0.88
+              },
+              {
+                "order": "O(n!)",
+                "name": "阶乘时间",
+                "example": "穷举排列",
+                "n10": "362万步",
+                "n100": "宇宙级",
+                "n1000": "不可想象",
+                "weight": 1.0
+              }
+            ],
+            "active": 5,
+            "phase": "O(2^n) 会爆炸, 通常要靠剪枝或动态规划改写"
+          }
+        }
+      },
+      {
+        "step": 6,
+        "line": 7,
+        "type": "exec",
+        "vars": {
+          "complexity": "O(n!)",
+          "example": "穷举排列",
+          "scale": "不可想象",
+          "concept": {
+            "kind": "complexity_ladder",
+            "title": "复杂度阶层全景图",
+            "levels": [
+              {
+                "order": "O(1)",
+                "name": "常数时间",
+                "example": "数组下标访问",
+                "n10": "1步",
+                "n100": "1步",
+                "n1000": "1步",
+                "weight": 0.18
+              },
+              {
+                "order": "O(log n)",
+                "name": "对数时间",
+                "example": "二分查找",
+                "n10": "~3步",
+                "n100": "~7步",
+                "n1000": "~10步",
+                "weight": 0.28
+              },
+              {
+                "order": "O(n)",
+                "name": "线性时间",
+                "example": "遍历数组",
+                "n10": "10步",
+                "n100": "100步",
+                "n1000": "1000步",
+                "weight": 0.42
+              },
+              {
+                "order": "O(n log n)",
+                "name": "线性对数",
+                "example": "归并/堆排序",
+                "n10": "~33步",
+                "n100": "~664步",
+                "n1000": "~9966步",
+                "weight": 0.56
+              },
+              {
+                "order": "O(n^2)",
+                "name": "平方时间",
+                "example": "两两比较",
+                "n10": "100步",
+                "n100": "1万步",
+                "n1000": "100万步",
+                "weight": 0.72
+              },
+              {
+                "order": "O(2^n)",
+                "name": "指数时间",
+                "example": "穷举子集",
+                "n10": "1024步",
+                "n100": "天文数字",
+                "n1000": "别想了",
+                "weight": 0.88
+              },
+              {
+                "order": "O(n!)",
+                "name": "阶乘时间",
+                "example": "穷举排列",
+                "n10": "362万步",
+                "n100": "宇宙级",
+                "n1000": "不可想象",
+                "weight": 1.0
+              }
+            ],
+            "active": 6,
+            "phase": "O(n!) 更夸张, 只能处理很小规模或换思路"
+          }
+        }
+      }
+    ]
+  }
+};
+const firstKey = Object.keys(ALGOS)[0];
+const requestedKey = new URLSearchParams(location.search).get('algo');
+const savedAtOpen = DHLearning.load();
+let currentKey = ALGOS[requestedKey]
+  ? requestedKey
+  : (savedAtOpen.last && savedAtOpen.last.chapter === CHAPTER_NUM && ALGOS[savedAtOpen.last.algorithm]
+      ? savedAtOpen.last.algorithm
+      : firstKey);
+let currentMode = null;
+const engine = new TraceEngine('viz-canvas', 'code-body', 'var-grid', 'callstack');
+const tabsEl = document.getElementById('algo-tabs');
+const modeTabsEl = document.getElementById('mode-tabs');
+
+function has_modes(algo) {
+  return algo && algo.modes && typeof algo.modes === 'object';
+}
+
+function mode_label(rawAlgo, mode) {
+  const labels = rawAlgo.modeLabels || {};
+  if (labels[mode]) return labels[mode];
+  if (mode === 'concept') return '理解动画';
+  if (mode === 'trace') return '代码执行';
+  return mode;
+}
+
+function resolve_algo(rawAlgo) {
+  if (!has_modes(rawAlgo)) return rawAlgo;
+  const mode = currentMode || rawAlgo.defaultMode || Object.keys(rawAlgo.modes)[0];
+  return rawAlgo.modes[mode] || rawAlgo.modes[rawAlgo.defaultMode] || Object.values(rawAlgo.modes)[0];
+}
+
+function is_concept_algo(algo) {
+  if (!algo) return false;
+  const classes = algo.var_classes || {};
+  if (Object.values(classes).some(info => info && info.type === 'concept')) return true;
+  return (algo.steps || []).some(step => step.vars && step.vars.concept);
+}
+
+function update_tab_states() {
+  const completed = new Set(DHLearning.load().completedDemos);
+  tabsEl.querySelectorAll('.algo-tab').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.key === currentKey);
+    btn.classList.toggle('completed', completed.has(DHLearning.demoId(CHAPTER_NUM, btn.dataset.key)));
+    btn.setAttribute('aria-selected', String(btn.dataset.key === currentKey));
+  });
+}
+
+function update_chapter_progress() {
+  const state = DHLearning.load();
+  const completed = new Set(state.completedDemos);
+  const keys = Object.keys(ALGOS);
+  const done = keys.filter(key => completed.has(DHLearning.demoId(CHAPTER_NUM, key))).length;
+  document.getElementById('chapter-progress-text').textContent = `${done} / ${keys.length} 个演示完成`;
+  document.getElementById('chapter-progress-fill').style.width = `${keys.length ? done / keys.length * 100 : 0}%`;
+  update_tab_states();
+}
+
+function render_mode_tabs(rawAlgo) {
+  modeTabsEl.innerHTML = '';
+  if (!has_modes(rawAlgo)) {
+    modeTabsEl.classList.remove('visible');
+    currentMode = null;
+    return;
+  }
+  modeTabsEl.classList.add('visible');
+  const label = document.createElement('span');
+  label.className = 'mode-label';
+  label.textContent = '学习方式';
+  modeTabsEl.appendChild(label);
+  const activeMode = currentMode || rawAlgo.defaultMode || Object.keys(rawAlgo.modes)[0];
+  Object.keys(rawAlgo.modes).forEach(mode => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'mode-tab' + (mode === activeMode ? ' active' : '');
+    btn.textContent = mode_label(rawAlgo, mode);
+    btn.setAttribute('role', 'tab');
+    btn.setAttribute('aria-selected', String(mode === activeMode));
+    btn.addEventListener('click', () => {
+      if (currentMode === mode) return;
+      currentMode = mode;
+      load_current_algo(false);
+      if (matchMedia('(max-width: 900px)').matches) {
+        set_mobile_view(mode === 'trace' ? 'code' : 'animation');
+      }
+    });
+    modeTabsEl.appendChild(btn);
+  });
+}
+
+function load_current_algo(allowRestore = true) {
+  const rawAlgo = ALGOS[currentKey];
+  const beforeLoad = DHLearning.load().last;
+  if (has_modes(rawAlgo)) {
+    const savedMode = beforeLoad && beforeLoad.chapter === CHAPTER_NUM && beforeLoad.algorithm === currentKey
+      ? beforeLoad.mode
+      : null;
+    if (!currentMode) currentMode = savedMode && rawAlgo.modes[savedMode]
+      ? savedMode
+      : (rawAlgo.defaultMode || Object.keys(rawAlgo.modes)[0]);
+  } else {
+    currentMode = null;
+  }
+  render_mode_tabs(rawAlgo);
+  const activeAlgo = resolve_algo(rawAlgo);
+  document.body.classList.toggle('concept-mode', currentMode === 'concept' || is_concept_algo(activeAlgo));
+  engine.stop_play();
+  engine.load(activeAlgo);
+  try {
+    const currentUrl = new URL(location.href);
+    currentUrl.searchParams.set('algo', currentKey);
+    history.replaceState(null, '', currentUrl.href);
+  } catch (_) {
+    // file:// 预览环境可能限制 history API，不影响演示本身。
+  }
+  update_tab_states();
+
+  if (
+    allowRestore
+    && beforeLoad
+    && beforeLoad.chapter === CHAPTER_NUM
+    && beforeLoad.algorithm === currentKey
+    && beforeLoad.mode === currentMode
+    && beforeLoad.step > 0
+    && activeAlgo.steps.length
+  ) {
+    const restoreStep = Math.min(beforeLoad.step, activeAlgo.steps.length - 1);
+    requestAnimationFrame(() => engine.go_to_step(restoreStep));
+  }
+}
+
+Object.entries(ALGOS).forEach(([key, algo]) => {
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'algo-tab';
+  btn.dataset.key = key;
+  btn.textContent = algo.title;
+  btn.setAttribute('role', 'tab');
+  btn.setAttribute('aria-selected', String(key === currentKey));
+  btn.addEventListener('click', () => {
+    if (currentKey === key) return;
+    currentKey = key;
+    currentMode = has_modes(algo) ? (algo.defaultMode || Object.keys(algo.modes)[0]) : null;
+    load_current_algo(true);
+  });
+  tabsEl.appendChild(btn);
+});
+
+document.addEventListener('dh:stepchange', event => {
+  const detail = event.detail || {};
+  DHLearning.updateLast(CHAPTER_NUM, currentKey, currentMode, detail.currentStep);
+  if (detail.atEnd) DHLearning.markDemoComplete(CHAPTER_NUM, currentKey);
+  update_chapter_progress();
+});
+
+document.getElementById('btn-play').addEventListener('click', () => engine.playing ? engine.stop_play() : engine.start_play());
+document.getElementById('btn-step').addEventListener('click', () => { engine.stop_play(); engine.step_forward(); });
+document.getElementById('btn-reset').addEventListener('click', () => engine.reset());
+document.getElementById('btn-back').addEventListener('click', () => { engine.stop_play(); engine.step_backward(); });
+document.getElementById('btn-to-bp').addEventListener('click', () => { engine.stop_play(); engine.play_to_bp(); });
+
+const speedSlider = document.getElementById('speed-slider');
+const savedSpeed = localStorage.getItem('dh_speed');
+if (savedSpeed !== null) speedSlider.value = savedSpeed;
+speedSlider.setAttribute('aria-valuetext', `速度 ${speedSlider.value}`);
+speedSlider.addEventListener('input', () => {
+  localStorage.setItem('dh_speed', speedSlider.value);
+  speedSlider.setAttribute('aria-valuetext', `速度 ${speedSlider.value}`);
+  if (engine.playing) { clearTimeout(engine.playTimer); engine._play_loop(); }
+});
+speedSlider.addEventListener('keydown', event => {
+  if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+  event.preventDefault();
+  event.stopPropagation();
+  const direction = event.key === 'ArrowRight' ? 1 : -1;
+  speedSlider.value = String(Math.max(Number(speedSlider.min), Math.min(Number(speedSlider.max), Number(speedSlider.value) + direction)));
+  speedSlider.dispatchEvent(new Event('input', { bubbles: true }));
+});
+document.getElementById('font-dec').addEventListener('click', () => engine.font_dec());
+document.getElementById('font-inc').addEventListener('click', () => engine.font_inc());
+
+document.addEventListener('keydown', event => {
+  const target = event.target;
+  if (target && target.closest && target.closest('button,input,select,textarea,a,summary,[contenteditable="true"]')) return;
+  if (event.key === ' ') {
+    event.preventDefault();
+    engine.playing ? engine.stop_play() : engine.start_play();
+  } else if (event.key === 'ArrowRight') {
+    event.preventDefault();
+    engine.stop_play();
+    engine.step_forward();
+  } else if (event.key === 'ArrowLeft') {
+    event.preventDefault();
+    engine.stop_play();
+    engine.step_backward();
+  } else if (event.key.toLowerCase() === 'r' && !event.metaKey && !event.ctrlKey && !event.altKey) {
+    engine.reset();
+  }
+});
+
+function set_mobile_view(view) {
+  document.body.dataset.mobileView = view;
+  document.querySelectorAll('.mobile-view-switcher button').forEach(btn => {
+    const active = btn.dataset.mobileView === view;
+    btn.classList.toggle('active', active);
+    btn.setAttribute('aria-selected', String(active));
+  });
+  if (view === 'animation' && engine.currentStep >= 0) {
+    requestAnimationFrame(() => engine.go_to_step(engine.currentStep));
+  }
+}
+
+document.querySelectorAll('.mobile-view-switcher button').forEach(btn => {
+  btn.addEventListener('click', () => set_mobile_view(btn.dataset.mobileView));
+});
+
+DHLearning.visitChapter(CHAPTER_NUM);
+update_chapter_progress();
+load_current_algo(true);
+</script>
+</body>
+</html>

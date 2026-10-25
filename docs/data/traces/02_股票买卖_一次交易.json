@@ -1,0 +1,446 @@
+{
+  "meta": {
+    "algo": "02_股票买卖_一次交易",
+    "source_lines": [
+      "#include <stdio.h>",
+      "#include <limits.h>",
+      "int max_profit(int* prices, int pricesSize) {",
+      "    if (pricesSize <= 1) return 0;",
+      "    int min_price = INT_MAX;  /* 到今天为止见过的最低价格 */",
+      "    int max_profit = 0;       /* 最大利润；如果一直亏，就不交易 */",
+      "    for (int i = 0; i < pricesSize; i++) {",
+      "        if (prices[i] < min_price) {",
+      "            min_price = prices[i];",
+      "        }",
+      "        int today_profit = prices[i] - min_price;",
+      "        if (today_profit > max_profit) {",
+      "            max_profit = today_profit;",
+      "        }",
+      "    }",
+      "    return max_profit;",
+      "}",
+      "// 测试：买卖股票最佳时机（一次交易）",
+      "int main() {",
+      "    int prices1[] = {7, 1, 5, 3, 6, 4};",
+      "    printf(\"价格[7,1,5,3,6,4] → 最大利润：%d（期望 5）\\n\",",
+      "           max_profit(prices1, 6));",
+      "    int prices2[] = {7, 6, 4, 3, 1};",
+      "    printf(\"价格[7,6,4,3,1] → 最大利润：%d（期望 0，一直跌不买）\\n\",",
+      "           max_profit(prices2, 5));",
+      "    printf(\"\\n说明：一遍扫描，跟踪历史最低价，O(n)时间 O(1)空间\\n\");",
+      "    return 0;",
+      "}"
+    ],
+    "track_vars": {
+      "primary": [
+        "i"
+      ],
+      "secondary": [
+        "_return",
+        "max_profit",
+        "min_price",
+        "pricesSize",
+        "today_profit"
+      ]
+    },
+    "var_classes": {
+      "_return": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "i": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "max_profit": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "min_price": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "pricesSize": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "today_profit": {
+        "category": "secondary",
+        "type": "scalar"
+      }
+    },
+    "viz_type": "array",
+    "initial_data": {
+      "prices1": [
+        7,
+        1,
+        5,
+        3,
+        6,
+        4
+      ],
+      "prices2": [
+        7,
+        6,
+        4,
+        3,
+        1
+      ]
+    },
+    "program_output": [
+      {
+        "after_step": 18,
+        "text": "价格[7,1,5,3,6,4] → 最大利润：5（期望 5）"
+      },
+      {
+        "after_step": 36,
+        "text": "价格[7,6,4,3,1] → 最大利润：0（期望 0，一直跌不买） 说明：一遍扫描，跟踪历史最低价，O(n)时间 O(1)空间"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step": 0,
+      "line": 19,
+      "type": "enter",
+      "func": "main",
+      "vars": {}
+    },
+    {
+      "step": 1,
+      "line": 4,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "pricesSize": 6
+      }
+    },
+    {
+      "step": 2,
+      "line": 7,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0,
+        "pricesSize": 6
+      }
+    },
+    {
+      "step": 3,
+      "line": 8,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0,
+        "min_price": 2147483647
+      }
+    },
+    {
+      "step": 4,
+      "line": 9,
+      "type": "exec",
+      "vars": {
+        "min_price": 7
+      }
+    },
+    {
+      "step": 5,
+      "line": 7,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "pricesSize": 6
+      }
+    },
+    {
+      "step": 6,
+      "line": 8,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "min_price": 7
+      }
+    },
+    {
+      "step": 7,
+      "line": 9,
+      "type": "exec",
+      "vars": {
+        "min_price": 1
+      }
+    },
+    {
+      "step": 8,
+      "line": 7,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "pricesSize": 6
+      }
+    },
+    {
+      "step": 9,
+      "line": 12,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "max_profit": 0,
+        "today_profit": 4
+      }
+    },
+    {
+      "step": 10,
+      "line": 13,
+      "type": "exec",
+      "vars": {
+        "max_profit": 4
+      }
+    },
+    {
+      "step": 11,
+      "line": 7,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3,
+        "pricesSize": 6
+      }
+    },
+    {
+      "step": 12,
+      "line": 7,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 4,
+        "pricesSize": 6
+      }
+    },
+    {
+      "step": 13,
+      "line": 12,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "max_profit": 4,
+        "today_profit": 5
+      }
+    },
+    {
+      "step": 14,
+      "line": 13,
+      "type": "exec",
+      "vars": {
+        "max_profit": 5
+      }
+    },
+    {
+      "step": 15,
+      "line": 7,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 5,
+        "pricesSize": 6
+      }
+    },
+    {
+      "step": 16,
+      "line": 16,
+      "type": "exec",
+      "vars": {
+        "_return": 5
+      }
+    },
+    {
+      "step": 17,
+      "line": 16,
+      "type": "exit",
+      "func": "max_profit",
+      "vars": {}
+    },
+    {
+      "step": 18,
+      "line": 4,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "pricesSize": 5
+      }
+    },
+    {
+      "step": 19,
+      "line": 7,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0,
+        "pricesSize": 5
+      }
+    },
+    {
+      "step": 20,
+      "line": 8,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0,
+        "min_price": 2147483647
+      }
+    },
+    {
+      "step": 21,
+      "line": 9,
+      "type": "exec",
+      "vars": {
+        "min_price": 7
+      }
+    },
+    {
+      "step": 22,
+      "line": 7,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "pricesSize": 5
+      }
+    },
+    {
+      "step": 23,
+      "line": 8,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "min_price": 7
+      }
+    },
+    {
+      "step": 24,
+      "line": 9,
+      "type": "exec",
+      "vars": {
+        "min_price": 6
+      }
+    },
+    {
+      "step": 25,
+      "line": 7,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "pricesSize": 5
+      }
+    },
+    {
+      "step": 26,
+      "line": 8,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "min_price": 6
+      }
+    },
+    {
+      "step": 27,
+      "line": 9,
+      "type": "exec",
+      "vars": {
+        "min_price": 4
+      }
+    },
+    {
+      "step": 28,
+      "line": 7,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3,
+        "pricesSize": 5
+      }
+    },
+    {
+      "step": 29,
+      "line": 8,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3,
+        "min_price": 4
+      }
+    },
+    {
+      "step": 30,
+      "line": 9,
+      "type": "exec",
+      "vars": {
+        "min_price": 3
+      }
+    },
+    {
+      "step": 31,
+      "line": 7,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 4,
+        "pricesSize": 5
+      }
+    },
+    {
+      "step": 32,
+      "line": 8,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 4,
+        "min_price": 3
+      }
+    },
+    {
+      "step": 33,
+      "line": 9,
+      "type": "exec",
+      "vars": {
+        "min_price": 1
+      }
+    },
+    {
+      "step": 34,
+      "line": 16,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 35,
+      "line": 16,
+      "type": "exit",
+      "func": "max_profit",
+      "vars": {}
+    },
+    {
+      "step": 36,
+      "line": 27,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 37,
+      "line": 27,
+      "type": "exit",
+      "func": "main",
+      "vars": {}
+    }
+  ],
+  "total_steps": 38
+}

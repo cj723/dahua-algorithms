@@ -1,0 +1,665 @@
+{
+  "meta": {
+    "algo": "02_KMP_next数组",
+    "source_lines": [
+      "#include <stdio.h>",
+      "#include <string.h>",
+      "/* 构建next数组 */",
+      "void build_next(const char *pattern, int *next, int m) {",
+      "    next[0] = -1;",
+      "    int i = 0, j = -1;",
+      "    while (i < m - 1) {",
+      "        if (j == -1 || pattern[i] == pattern[j]) {",
+      "            i++;",
+      "            j++;",
+      "            next[i] = j;",
+      "        } else {",
+      "            j = next[j];  /* 回退！这里用到了已经算好的next值 */",
+      "        }",
+      "    }",
+      "}",
+      "/* 测试：构建 KMP next 数组 */",
+      "int main() {",
+      "    char pattern[] = \"ABABCABAB\";",
+      "    int m = (int)strlen(pattern);",
+      "    int next[100];",
+      "    build_next(pattern, next, m);",
+      "    printf(\"模式串：%s\\n\", pattern);",
+      "    printf(\"next 数组：\");",
+      "    for (int i = 0; i < m; i++) printf(\"%d \", next[i]);",
+      "    printf(\"\\n\\n说明：next[i] 表示 pattern[0..i-1] 的最长相同前后缀长度\\n\");",
+      "    printf(\"next[0]=-1 是哨兵，匹配时遇到 next[j]=-1 则 i++,j++\\n\");",
+      "    return 0;",
+      "}"
+    ],
+    "track_vars": {
+      "primary": [
+        "i",
+        "j",
+        "m",
+        "next"
+      ],
+      "secondary": [
+        "_return"
+      ]
+    },
+    "var_classes": {
+      "_return": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "i": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "j": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "m": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "next": {
+        "category": "primary",
+        "type": "array"
+      }
+    },
+    "viz_type": "array",
+    "initial_data": {
+      "next": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        2051904,
+        1,
+        0,
+        0,
+        1,
+        0,
+        515,
+        0,
+        4608,
+        0,
+        1874962936,
+        1,
+        125200,
+        0,
+        2,
+        0,
+        -326729536,
+        1,
+        -326723552,
+        1,
+        1874962848,
+        1,
+        -2140974420,
+        1,
+        -326729640,
+        1,
+        40,
+        0,
+        8,
+        0,
+        -326723616,
+        1,
+        48,
+        0,
+        -326729536,
+        1,
+        1874962896,
+        1,
+        -2140976616,
+        1,
+        8,
+        0,
+        48,
+        0,
+        16,
+        0,
+        -326729472,
+        1,
+        1874962960,
+        1,
+        -2140977200,
+        1,
+        -1786445710,
+        911574050,
+        -368747480,
+        1,
+        1107296256,
+        0,
+        -2140977564,
+        1,
+        -300414824,
+        1,
+        1874963000,
+        1,
+        1,
+        0,
+        -326729640,
+        1,
+        1874963120,
+        1,
+        -2140978460,
+        1,
+        -16,
+        -1,
+        -368747480,
+        1,
+        1073741824,
+        0,
+        -2140972060,
+        1,
+        -438592176,
+        1,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        -323881104,
+        1,
+        1874963632,
+        1,
+        1,
+        0
+      ]
+    },
+    "program_output": [
+      {
+        "after_step": 41,
+        "text": "模式串：ABABCABAB next 数组：-1 0 0 1 2 0 1 2 3 说明：next[i] 表示 pattern[0..i-1] 的最长相同前后缀长度 next[0]=-1 是哨兵，匹配时遇到 next[j]=-1 则 i++,j++"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step": 0,
+      "line": 18,
+      "type": "enter",
+      "func": "main",
+      "vars": {}
+    },
+    {
+      "step": 1,
+      "line": 21,
+      "type": "exec",
+      "vars": {
+        "next": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          2051904,
+          1,
+          0,
+          0,
+          1,
+          0,
+          515,
+          0,
+          4608,
+          0,
+          1874962936,
+          1,
+          125200,
+          0,
+          2,
+          0,
+          -326729536,
+          1,
+          -326723552,
+          1,
+          1874962848,
+          1,
+          -2140974420,
+          1,
+          -326729640,
+          1,
+          40,
+          0,
+          8,
+          0,
+          -326723616,
+          1,
+          48,
+          0,
+          -326729536,
+          1,
+          1874962896,
+          1,
+          -2140976616,
+          1,
+          8,
+          0,
+          48,
+          0,
+          16,
+          0,
+          -326729472,
+          1,
+          1874962960,
+          1,
+          -2140977200,
+          1,
+          -1786445710,
+          911574050,
+          -368747480,
+          1,
+          1107296256,
+          0,
+          -2140977564,
+          1,
+          -300414824,
+          1,
+          1874963000,
+          1,
+          1,
+          0,
+          -326729640,
+          1,
+          1874963120,
+          1,
+          -2140978460,
+          1,
+          -16,
+          -1,
+          -368747480,
+          1,
+          1073741824,
+          0,
+          -2140972060,
+          1,
+          -438592176,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          -323881104,
+          1,
+          1874963632,
+          1,
+          1,
+          0
+        ]
+      }
+    },
+    {
+      "step": 2,
+      "line": 22,
+      "type": "enter",
+      "func": "build_next",
+      "vars": {
+        "m": 9
+      }
+    },
+    {
+      "step": 3,
+      "line": 7,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0,
+        "m": 9
+      }
+    },
+    {
+      "step": 4,
+      "line": 8,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0,
+        "j": -1
+      }
+    },
+    {
+      "step": 5,
+      "line": 9,
+      "type": "exec",
+      "vars": {
+        "i": 1
+      }
+    },
+    {
+      "step": 6,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "j": 0
+      }
+    },
+    {
+      "step": 7,
+      "line": 7,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "m": 9
+      }
+    },
+    {
+      "step": 8,
+      "line": 13,
+      "type": "exec",
+      "vars": {
+        "j": -1
+      }
+    },
+    {
+      "step": 9,
+      "line": 7,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "m": 9
+      }
+    },
+    {
+      "step": 10,
+      "line": 8,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "j": -1
+      }
+    },
+    {
+      "step": 11,
+      "line": 9,
+      "type": "exec",
+      "vars": {
+        "i": 2
+      }
+    },
+    {
+      "step": 12,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "j": 0
+      }
+    },
+    {
+      "step": 13,
+      "line": 7,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "m": 9
+      }
+    },
+    {
+      "step": 14,
+      "line": 8,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "j": 0
+      }
+    },
+    {
+      "step": 15,
+      "line": 9,
+      "type": "exec",
+      "vars": {
+        "i": 3
+      }
+    },
+    {
+      "step": 16,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "j": 1
+      }
+    },
+    {
+      "step": 17,
+      "line": 7,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3,
+        "m": 9
+      }
+    },
+    {
+      "step": 18,
+      "line": 8,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3,
+        "j": 1
+      }
+    },
+    {
+      "step": 19,
+      "line": 9,
+      "type": "exec",
+      "vars": {
+        "i": 4
+      }
+    },
+    {
+      "step": 20,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "j": 2
+      }
+    },
+    {
+      "step": 21,
+      "line": 7,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 4,
+        "m": 9
+      }
+    },
+    {
+      "step": 22,
+      "line": 13,
+      "type": "exec",
+      "vars": {
+        "j": 0
+      }
+    },
+    {
+      "step": 23,
+      "line": 7,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 4,
+        "m": 9
+      }
+    },
+    {
+      "step": 24,
+      "line": 13,
+      "type": "exec",
+      "vars": {
+        "j": -1
+      }
+    },
+    {
+      "step": 25,
+      "line": 7,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 4,
+        "m": 9
+      }
+    },
+    {
+      "step": 26,
+      "line": 8,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 4,
+        "j": -1
+      }
+    },
+    {
+      "step": 27,
+      "line": 9,
+      "type": "exec",
+      "vars": {
+        "i": 5
+      }
+    },
+    {
+      "step": 28,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "j": 0
+      }
+    },
+    {
+      "step": 29,
+      "line": 7,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 5,
+        "m": 9
+      }
+    },
+    {
+      "step": 30,
+      "line": 8,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 5,
+        "j": 0
+      }
+    },
+    {
+      "step": 31,
+      "line": 9,
+      "type": "exec",
+      "vars": {
+        "i": 6
+      }
+    },
+    {
+      "step": 32,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "j": 1
+      }
+    },
+    {
+      "step": 33,
+      "line": 7,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 6,
+        "m": 9
+      }
+    },
+    {
+      "step": 34,
+      "line": 8,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 6,
+        "j": 1
+      }
+    },
+    {
+      "step": 35,
+      "line": 9,
+      "type": "exec",
+      "vars": {
+        "i": 7
+      }
+    },
+    {
+      "step": 36,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "j": 2
+      }
+    },
+    {
+      "step": 37,
+      "line": 7,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 7,
+        "m": 9
+      }
+    },
+    {
+      "step": 38,
+      "line": 8,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 7,
+        "j": 2
+      }
+    },
+    {
+      "step": 39,
+      "line": 9,
+      "type": "exec",
+      "vars": {
+        "i": 8
+      }
+    },
+    {
+      "step": 40,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "j": 3
+      }
+    },
+    {
+      "step": 41,
+      "line": 28,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 42,
+      "line": 28,
+      "type": "exit",
+      "func": "main",
+      "vars": {}
+    }
+  ],
+  "total_steps": 43
+}

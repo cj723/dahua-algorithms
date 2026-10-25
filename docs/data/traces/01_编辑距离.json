@@ -1,0 +1,360 @@
+{
+  "meta": {
+    "algo": "01_编辑距离",
+    "source_lines": [
+      "#include <stdio.h>",
+      "#include <string.h>",
+      "#include <stdlib.h>",
+      "#define MIN(a, b) ((a) < (b) ? (a) : (b))",
+      "#define MIN3(a, b, c) MIN(MIN(a, b), c)",
+      "int min_distance(char *word1, char *word2) {",
+      "    int m = (int)strlen(word1);",
+      "    int n = (int)strlen(word2);",
+      "    /* 一次性分配连续的一维内存来模拟二维数组（工程规范写法） */",
+      "    /* dp[i][j] 对应 dp[i * (n + 1) + j] */",
+      "    int cols = n + 1;",
+      "    int *dp = (int *)malloc((m + 1) * cols * sizeof(int));",
+      "    if (dp == NULL) {",
+      "        return -1;  /* 表示内存分配失败 */",
+      "    }",
+      "    /* 初始化边界：空串变成目标串，只能一个一个插入 */",
+      "    for (int i = 0; i <= m; i++) dp[i * cols + 0] = i;  /* 删除操作 */",
+      "    for (int j = 0; j <= n; j++) dp[0 * cols + j] = j;  /* 插入操作 */",
+      "    /* 填表 */",
+      "    for (int i = 1; i <= m; i++) {",
+      "        for (int j = 1; j <= n; j++) {",
+      "            if (word1[i - 1] == word2[j - 1]) {",
+      "                dp[i * cols + j] = dp[(i - 1) * cols + (j - 1)];",
+      "            } else {",
+      "                dp[i * cols + j] = 1 + MIN3(",
+      "                    dp[(i - 1) * cols + j],        /* 删除 */",
+      "                    dp[i * cols + (j - 1)],        /* 插入 */",
+      "                    dp[(i - 1) * cols + (j - 1)]   /* 替换 */",
+      "                );",
+      "            }",
+      "        }",
+      "    }",
+      "    int result = dp[m * cols + n];",
+      "    free(dp);",
+      "    return result;",
+      "}",
+      "int main(void) {",
+      "    char word1[] = \"horse\";",
+      "    char word2[] = \"ros\";",
+      "    printf(\"编辑距离：%d\\n\", min_distance(word1, word2));  /* 输出 3 */",
+      "    return 0;",
+      "}"
+    ],
+    "track_vars": {
+      "primary": [
+        "i",
+        "j",
+        "m",
+        "n"
+      ],
+      "secondary": [
+        "_return"
+      ]
+    },
+    "var_classes": {
+      "_return": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "i": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "j": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "m": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "n": {
+        "category": "primary",
+        "type": "scalar"
+      }
+    },
+    "viz_type": "array",
+    "initial_data": {},
+    "program_output": [
+      {
+        "after_step": 26,
+        "text": "编辑距离：3"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step": 0,
+      "line": 37,
+      "type": "enter",
+      "func": "main",
+      "vars": {}
+    },
+    {
+      "step": 1,
+      "line": 20,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "m": 5
+      }
+    },
+    {
+      "step": 2,
+      "line": 21,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 1,
+        "n": 3
+      }
+    },
+    {
+      "step": 3,
+      "line": 21,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 2,
+        "n": 3
+      }
+    },
+    {
+      "step": 4,
+      "line": 21,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 3,
+        "n": 3
+      }
+    },
+    {
+      "step": 5,
+      "line": 20,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "m": 5
+      }
+    },
+    {
+      "step": 6,
+      "line": 21,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 1,
+        "n": 3
+      }
+    },
+    {
+      "step": 7,
+      "line": 21,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 2,
+        "n": 3
+      }
+    },
+    {
+      "step": 8,
+      "line": 22,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "j": 2
+      }
+    },
+    {
+      "step": 9,
+      "line": 21,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 3,
+        "n": 3
+      }
+    },
+    {
+      "step": 10,
+      "line": 20,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3,
+        "m": 5
+      }
+    },
+    {
+      "step": 11,
+      "line": 21,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 1,
+        "n": 3
+      }
+    },
+    {
+      "step": 12,
+      "line": 22,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3,
+        "j": 1
+      }
+    },
+    {
+      "step": 13,
+      "line": 21,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 2,
+        "n": 3
+      }
+    },
+    {
+      "step": 14,
+      "line": 21,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 3,
+        "n": 3
+      }
+    },
+    {
+      "step": 15,
+      "line": 20,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 4,
+        "m": 5
+      }
+    },
+    {
+      "step": 16,
+      "line": 21,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 1,
+        "n": 3
+      }
+    },
+    {
+      "step": 17,
+      "line": 21,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 2,
+        "n": 3
+      }
+    },
+    {
+      "step": 18,
+      "line": 21,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 3,
+        "n": 3
+      }
+    },
+    {
+      "step": 19,
+      "line": 22,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 4,
+        "j": 3
+      }
+    },
+    {
+      "step": 20,
+      "line": 20,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 5,
+        "m": 5
+      }
+    },
+    {
+      "step": 21,
+      "line": 21,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 1,
+        "n": 3
+      }
+    },
+    {
+      "step": 22,
+      "line": 21,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 2,
+        "n": 3
+      }
+    },
+    {
+      "step": 23,
+      "line": 21,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 3,
+        "n": 3
+      }
+    },
+    {
+      "step": 24,
+      "line": 35,
+      "type": "exec",
+      "vars": {
+        "_return": 3
+      }
+    },
+    {
+      "step": 25,
+      "line": 35,
+      "type": "exit",
+      "func": "min_distance",
+      "vars": {}
+    },
+    {
+      "step": 26,
+      "line": 41,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 27,
+      "line": 41,
+      "type": "exit",
+      "func": "main",
+      "vars": {}
+    }
+  ],
+  "total_steps": 28
+}

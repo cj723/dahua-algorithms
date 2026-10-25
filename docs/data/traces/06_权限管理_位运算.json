@@ -1,0 +1,269 @@
+{
+  "meta": {
+    "algo": "06_权限管理_位运算",
+    "source_lines": [
+      "#include <stdio.h>",
+      "#include <stdlib.h>",
+      "#include <string.h>",
+      "/* 用位运算管理用户权限 */",
+      "/* 类比：钥匙扣——每把钥匙开一道门，权限就是钥匙的组合 */",
+      "/* 注意：这里为了演示把 READ 放在最低位，和 Unix rwx 中 r=4,w=2,x=1 的编号方向不同 */",
+      "#define PERM_READ    0x01   /* 0001：读权限 */",
+      "#define PERM_WRITE   0x02   /* 0010：写权限 */",
+      "#define PERM_EXECUTE 0x04   /* 0100：执行权限 */",
+      "#define PERM_ADMIN   0x08   /* 1000：管理员权限 */",
+      "/* 检查是否有某项权限 */",
+      "/* 用&操作：如果对应bit是1，说明有这个权限 */",
+      "int has_permission(int user_perm, int perm) {",
+      "    return (user_perm & perm) == perm;",
+      "}",
+      "/* 添加权限 */",
+      "/* 用|操作：把对应的bit设为1 */",
+      "int add_permission(int user_perm, int perm) {",
+      "    return user_perm | perm;",
+      "}",
+      "/* 移除权限 */",
+      "/* 用& ~操作：把对应的bit清0 */",
+      "int remove_permission(int user_perm, int perm) {",
+      "    return user_perm & ~perm;",
+      "}",
+      "/* 测试 */",
+      "int main() {",
+      "    int user = PERM_READ;  /* 用户初始只有读权限 */",
+      "    printf(\"初始权限： %d\\n\", user);",
+      "    /* 检查权限 */",
+      "    printf(\"有读权限？%s\\n\", has_permission(user, PERM_READ) ? \"是\" : \"否\");",
+      "    printf(\"有写权限？%s\\n\", has_permission(user, PERM_WRITE) ? \"是\" : \"否\");",
+      "    /* 添加写权限 */",
+      "    user = add_permission(user, PERM_WRITE);",
+      "    printf(\"添加写权限后： %d\\n\", user);",
+      "    printf(\"现在有写权限？%s\\n\", has_permission(user, PERM_WRITE) ? \"是\" : \"否\");",
+      "    /* 移除读权限 */",
+      "    user = remove_permission(user, PERM_READ);",
+      "    printf(\"移除读权限后： %d\\n\", user);",
+      "    return 0;",
+      "}"
+    ],
+    "track_vars": {
+      "primary": [],
+      "secondary": [
+        "_return",
+        "perm",
+        "user",
+        "user_perm"
+      ]
+    },
+    "var_classes": {
+      "_return": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "perm": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "user": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "user_perm": {
+        "category": "secondary",
+        "type": "scalar"
+      }
+    },
+    "viz_type": "array",
+    "initial_data": {},
+    "program_output": [
+      {
+        "after_step": 1,
+        "text": "初始权限： 1"
+      },
+      {
+        "after_step": 4,
+        "text": "有读权限？是"
+      },
+      {
+        "after_step": 7,
+        "text": "有写权限？否"
+      },
+      {
+        "after_step": 11,
+        "text": "添加写权限后： 3"
+      },
+      {
+        "after_step": 14,
+        "text": "现在有写权限？是"
+      },
+      {
+        "after_step": 18,
+        "text": "移除读权限后： 2"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step": 0,
+      "line": 27,
+      "type": "enter",
+      "func": "main",
+      "vars": {}
+    },
+    {
+      "step": 1,
+      "line": 31,
+      "type": "enter",
+      "func": "has_permission",
+      "vars": {
+        "user_perm": 1,
+        "perm": 1
+      }
+    },
+    {
+      "step": 2,
+      "line": 14,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 3,
+      "line": 14,
+      "type": "exit",
+      "func": "has_permission",
+      "vars": {}
+    },
+    {
+      "step": 4,
+      "line": 32,
+      "type": "enter",
+      "func": "has_permission",
+      "vars": {
+        "user_perm": 1,
+        "perm": 2
+      }
+    },
+    {
+      "step": 5,
+      "line": 14,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 6,
+      "line": 14,
+      "type": "exit",
+      "func": "has_permission",
+      "vars": {}
+    },
+    {
+      "step": 7,
+      "line": 34,
+      "type": "enter",
+      "func": "add_permission",
+      "vars": {
+        "user_perm": 1,
+        "perm": 2
+      }
+    },
+    {
+      "step": 8,
+      "line": 19,
+      "type": "exec",
+      "vars": {
+        "_return": 3
+      }
+    },
+    {
+      "step": 9,
+      "line": 19,
+      "type": "exit",
+      "func": "add_permission",
+      "vars": {}
+    },
+    {
+      "step": 10,
+      "line": 34,
+      "type": "exec",
+      "vars": {
+        "user": 3
+      }
+    },
+    {
+      "step": 11,
+      "line": 36,
+      "type": "enter",
+      "func": "has_permission",
+      "vars": {
+        "user_perm": 3,
+        "perm": 2
+      }
+    },
+    {
+      "step": 12,
+      "line": 14,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 13,
+      "line": 14,
+      "type": "exit",
+      "func": "has_permission",
+      "vars": {}
+    },
+    {
+      "step": 14,
+      "line": 38,
+      "type": "enter",
+      "func": "remove_permission",
+      "vars": {
+        "user_perm": 3,
+        "perm": 1
+      }
+    },
+    {
+      "step": 15,
+      "line": 24,
+      "type": "exec",
+      "vars": {
+        "_return": 2
+      }
+    },
+    {
+      "step": 16,
+      "line": 24,
+      "type": "exit",
+      "func": "remove_permission",
+      "vars": {}
+    },
+    {
+      "step": 17,
+      "line": 38,
+      "type": "exec",
+      "vars": {
+        "user": 2
+      }
+    },
+    {
+      "step": 18,
+      "line": 40,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 19,
+      "line": 40,
+      "type": "exit",
+      "func": "main",
+      "vars": {}
+    }
+  ],
+  "total_steps": 20
+}

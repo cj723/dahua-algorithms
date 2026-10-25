@@ -1,0 +1,50 @@
+#include <stdio.h>
+
+// 假设的万能停机检测器（我们来证明它不可能存在）
+int halts(char *program, char *input) {
+    // 这个函数能判断 program(input) 是否会停机
+    // 返回1：会停机；返回0：死循环
+    // 但实际上它不可能被实现！
+    (void)program;
+    (void)input;
+    return 0; // 占位
+}
+
+// 捣蛋鬼程序 paradox
+void paradox(char *program) {
+    if (halts(program, program)) {
+        // 如果"程序把自己当输入"会停机
+        // 那我就死循环！
+        while (1) { }  // 故意不停
+    } else {
+        // 如果"程序把自己当输入"会死循环
+        // 那我就立刻停机！
+        return;
+    }
+}
+
+// 演示停机问题的反证法逻辑
+// 这段代码本身不会调用 paradox，只展示"如果 halts 存在，则矛盾"的推理结构
+int main(void) {
+    printf("停机问题反证法演示\n");
+    printf("==================\n");
+    printf("假设存在一个万能函数 halts(program, input)，\n");
+    printf("能判断任意程序 program 在输入 input 上是否会停机。\n\n");
+
+    printf("现在我们构造一个捣蛋鬼程序 paradox：\n");
+    printf("  paradox(P):\n");
+    printf("    if halts(P, P) == true:   // P把自己当输入会停？\n");
+    printf("      while (1) {}            // 那我偏不停！\n");
+    printf("    else:\n");
+    printf("      return;                 // 那我偏要停！\n\n");
+
+    printf("问：paradox(paradox) 会停机吗？\n");
+    printf("→ 如果会停，说明 halts(paradox, paradox)=true\n");
+    printf("  但 paradox 收到 true 后会进入死循环——矛盾！\n");
+    printf("→ 如果不停，说明 halts(paradox, paradox)=false\n");
+    printf("  但 paradox 收到 false 后会立刻停机——矛盾！\n\n");
+
+    printf("结论：halts() 不可能存在。停机问题不可判定。\n");
+
+    return 0;
+}

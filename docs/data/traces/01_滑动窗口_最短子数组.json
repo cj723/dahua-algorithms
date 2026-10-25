@@ -1,0 +1,467 @@
+{
+  "meta": {
+    "algo": "01_滑动窗口_最短子数组",
+    "source_lines": [
+      "/* 滑动窗口：长度最小的子数组 */",
+      "/* 总和>=target的最短连续子数组长度 */",
+      "/* 类比：火车车窗看风景——窗口不断滑动，找到最佳视角 */",
+      "#include <stdio.h>",
+      "#include <limits.h>",
+      "/* 返回总和>=target的最短子数组长度 */",
+      "/* 如果不存在返回0 */",
+      "int min_subarray_len(long long target, int nums[], int n) {",
+      "    int left = 0;              /* 窗口左边界 */",
+      "    long long window_sum = 0;  /* 当前窗口内的元素和，用long long防溢出 */",
+      "    int min_len = INT_MAX;     /* 记录最小长度，初始化为最大值 */",
+      "    /* right从0开始，不断向右扩展 */",
+      "    for (int right = 0; right < n; right++) {",
+      "        /* 第1步：把新元素加入窗口 */",
+      "        window_sum += nums[right];",
+      "        /* 第2步：当窗口和>=target时，尝试收缩左边界 */",
+      "        while (window_sum >= target) {",
+      "            /* 当前窗口已经满足条件，先更新最小长度 */",
+      "            int current_len = right - left + 1;",
+      "            if (current_len < min_len) {",
+      "                min_len = current_len;",
+      "            }",
+      "            /* 再收缩左边界：把左边的元素移出窗口 */",
+      "            window_sum -= nums[left];",
+      "            left++;",
+      "        }",
+      "        /* 第3步：如果窗口和<target，继续扩展right（for循环自动处理） */",
+      "    }",
+      "    /* 如果没找到，返回0 */",
+      "    return (min_len == INT_MAX) ? 0 : min_len;",
+      "}",
+      "int main() {",
+      "    int nums[] = {2, 3, 1, 2, 4, 3};",
+      "    int n = 6;",
+      "    long long target = 7;",
+      "    int result = min_subarray_len(target, nums, n);",
+      "    printf(\"总和>= %lld 的最短子数组长度： %d\\n\", target, result);",
+      "    /* 输出： 2 */",
+      "    return 0;",
+      "}"
+    ],
+    "track_vars": {
+      "primary": [
+        "left",
+        "n",
+        "nums",
+        "right",
+        "target"
+      ],
+      "secondary": [
+        "_return",
+        "current_len",
+        "min_len",
+        "window_sum"
+      ]
+    },
+    "var_classes": {
+      "_return": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "current_len": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "left": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "min_len": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "n": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "nums": {
+        "category": "primary",
+        "type": "array"
+      },
+      "right": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "target": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "window_sum": {
+        "category": "secondary",
+        "type": "scalar"
+      }
+    },
+    "viz_type": "array",
+    "initial_data": {
+      "nums": [
+        2,
+        3,
+        1,
+        2,
+        4,
+        3
+      ]
+    },
+    "program_output": [
+      {
+        "after_step": 37,
+        "text": "总和>= 7 的最短子数组长度： 2"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step": 0,
+      "line": 36,
+      "type": "enter",
+      "func": "min_subarray_len",
+      "vars": {
+        "target": 7,
+        "nums": [
+          2,
+          3,
+          1,
+          2,
+          4,
+          3
+        ],
+        "n": 6
+      }
+    },
+    {
+      "step": 1,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "n": 6,
+        "right": 0
+      }
+    },
+    {
+      "step": 2,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "window_sum": 2
+      }
+    },
+    {
+      "step": 3,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "n": 6,
+        "right": 1
+      }
+    },
+    {
+      "step": 4,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "window_sum": 5
+      }
+    },
+    {
+      "step": 5,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "n": 6,
+        "right": 2
+      }
+    },
+    {
+      "step": 6,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "window_sum": 6
+      }
+    },
+    {
+      "step": 7,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "n": 6,
+        "right": 3
+      }
+    },
+    {
+      "step": 8,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "window_sum": 8
+      }
+    },
+    {
+      "step": 9,
+      "line": 17,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "target": 7,
+        "window_sum": 8
+      }
+    },
+    {
+      "step": 10,
+      "line": 20,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "current_len": 4,
+        "min_len": 2147483647
+      }
+    },
+    {
+      "step": 11,
+      "line": 21,
+      "type": "exec",
+      "vars": {
+        "min_len": 4
+      }
+    },
+    {
+      "step": 12,
+      "line": 24,
+      "type": "exec",
+      "vars": {
+        "window_sum": 6
+      }
+    },
+    {
+      "step": 13,
+      "line": 25,
+      "type": "exec",
+      "vars": {
+        "left": 1
+      }
+    },
+    {
+      "step": 14,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "n": 6,
+        "right": 4
+      }
+    },
+    {
+      "step": 15,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "window_sum": 10
+      }
+    },
+    {
+      "step": 16,
+      "line": 17,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "target": 7,
+        "window_sum": 10
+      }
+    },
+    {
+      "step": 17,
+      "line": 24,
+      "type": "exec",
+      "vars": {
+        "window_sum": 7
+      }
+    },
+    {
+      "step": 18,
+      "line": 25,
+      "type": "exec",
+      "vars": {
+        "left": 2
+      }
+    },
+    {
+      "step": 19,
+      "line": 17,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "target": 7,
+        "window_sum": 7
+      }
+    },
+    {
+      "step": 20,
+      "line": 20,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "current_len": 3,
+        "min_len": 4
+      }
+    },
+    {
+      "step": 21,
+      "line": 21,
+      "type": "exec",
+      "vars": {
+        "min_len": 3
+      }
+    },
+    {
+      "step": 22,
+      "line": 24,
+      "type": "exec",
+      "vars": {
+        "window_sum": 6
+      }
+    },
+    {
+      "step": 23,
+      "line": 25,
+      "type": "exec",
+      "vars": {
+        "left": 3
+      }
+    },
+    {
+      "step": 24,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "n": 6,
+        "right": 5
+      }
+    },
+    {
+      "step": 25,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "window_sum": 9
+      }
+    },
+    {
+      "step": 26,
+      "line": 17,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "target": 7,
+        "window_sum": 9
+      }
+    },
+    {
+      "step": 27,
+      "line": 24,
+      "type": "exec",
+      "vars": {
+        "window_sum": 7
+      }
+    },
+    {
+      "step": 28,
+      "line": 25,
+      "type": "exec",
+      "vars": {
+        "left": 4
+      }
+    },
+    {
+      "step": 29,
+      "line": 17,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "target": 7,
+        "window_sum": 7
+      }
+    },
+    {
+      "step": 30,
+      "line": 20,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "current_len": 2,
+        "min_len": 3
+      }
+    },
+    {
+      "step": 31,
+      "line": 21,
+      "type": "exec",
+      "vars": {
+        "min_len": 2
+      }
+    },
+    {
+      "step": 32,
+      "line": 24,
+      "type": "exec",
+      "vars": {
+        "window_sum": 3
+      }
+    },
+    {
+      "step": 33,
+      "line": 25,
+      "type": "exec",
+      "vars": {
+        "left": 5
+      }
+    },
+    {
+      "step": 34,
+      "line": 30,
+      "type": "exec",
+      "vars": {
+        "_return": 2
+      }
+    },
+    {
+      "step": 35,
+      "line": 30,
+      "type": "exit",
+      "func": "min_subarray_len",
+      "vars": {}
+    },
+    {
+      "step": 36,
+      "line": 32,
+      "type": "enter",
+      "func": "main",
+      "vars": {}
+    },
+    {
+      "step": 37,
+      "line": 39,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 38,
+      "line": 39,
+      "type": "exit",
+      "func": "main",
+      "vars": {}
+    }
+  ],
+  "total_steps": 39
+}

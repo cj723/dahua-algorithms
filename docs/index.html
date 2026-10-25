@@ -1,0 +1,2458 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#171b28">
+  <link rel="icon" href="assets/mascots/student-dog.png">
+  <title>大话算法 — 交互式算法学习地图</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #171b28;
+      --bg-card: #22283a;
+      --border: #2d3446;
+      --text: #c5ccda;
+      --text-dim: #8994a8;
+      --accent: #4a8fd4;
+      --accent-glow: rgba(74, 143, 212, 0.4);
+      --success: #98c379;
+      --warning: #e5c07b;
+      --path-inactive: #2a3040;
+      --path-active: #4a8fd4;
+    }
+
+    body {
+      font-family: -apple-system, 'PingFang SC', 'Noto Sans SC', 'Segoe UI', sans-serif;
+      background:
+        linear-gradient(180deg, #1b1f2d 0%, #171b28 42%, #141824 100%);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    a:focus-visible,
+    button:focus-visible,
+    input:focus-visible {
+      outline: 3px solid rgba(100, 174, 239, 0.62);
+      outline-offset: 3px;
+    }
+
+    .hero {
+      text-align: center;
+      padding: 38px 20px 12px;
+    }
+
+    .hero h1 {
+      font-size: 52px;
+      line-height: 1.05;
+      background: linear-gradient(135deg, #e9f2ff 0%, #64a8ee 54%, #8ccf9b 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 12px;
+      letter-spacing: 0;
+    }
+
+    .hero .subtitle {
+      font-size: 18px;
+      color: #a9b2c2;
+      margin-bottom: 16px;
+    }
+
+    .hero .badge-row {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .hero-actions {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 18px;
+      position: relative;
+      z-index: 120;
+    }
+
+    .continue-btn {
+      min-height: 42px;
+      padding: 0 18px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      border: 1px solid rgba(100, 174, 239, 0.56);
+      border-radius: 10px;
+      background: linear-gradient(145deg, #244b70, #203d5d);
+      color: #eef7ff;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 650;
+      box-shadow: 0 8px 24px rgba(32, 90, 140, 0.2);
+      white-space: nowrap;
+    }
+
+    .continue-btn:hover {
+      background: linear-gradient(145deg, #2b5b86, #244b70);
+    }
+
+    .search-shell {
+      position: relative;
+      width: min(360px, calc(100vw - 40px));
+      text-align: left;
+    }
+
+    .search-input {
+      width: 100%;
+      min-height: 42px;
+      padding: 0 14px 0 38px;
+      border: 1px solid rgba(137, 148, 168, 0.28);
+      border-radius: 10px;
+      background: rgba(27, 32, 47, 0.92);
+      color: #e7edf6;
+      font-size: 13px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.18);
+    }
+
+    .search-input::placeholder {
+      color: #7e899d;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 13px;
+      top: 11px;
+      color: #7f8ba1;
+      pointer-events: none;
+    }
+
+    .search-results {
+      display: none;
+      position: absolute;
+      top: calc(100% + 7px);
+      left: 0;
+      right: 0;
+      max-height: 340px;
+      overflow-y: auto;
+      padding: 7px;
+      border: 1px solid #354058;
+      border-radius: 12px;
+      background: rgba(24, 29, 43, 0.985);
+      box-shadow: 0 18px 48px rgba(0, 0, 0, 0.42);
+    }
+
+    .search-results.visible {
+      display: grid;
+      gap: 3px;
+    }
+
+    .search-result {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      padding: 9px 10px;
+      border-radius: 8px;
+      color: #d9e0ea;
+      text-decoration: none;
+      font-size: 13px;
+    }
+
+    .search-result:hover,
+    .search-result:focus-visible {
+      background: #242d42;
+    }
+
+    .search-result small {
+      color: #8590a3;
+      font-size: 11px;
+    }
+
+    .search-empty {
+      padding: 13px;
+      color: #8c96a9;
+      font-size: 12px;
+      text-align: center;
+    }
+
+    .hero .badge {
+      /* display: inline-block; background: rgba(74,143,212,0.085); border: 1px solid rgba(74,143,212,0.18);
+  color: #a9ccef; font-size: 12px; padding: 5px 13px; border-radius: 20px; */
+
+      /* 去除边框，减弱按钮感 */
+      border: none;
+      /* 使用非常柔和的半透明背景 */
+      background: rgba(255, 255, 255, 0.08);
+      /* 减小内边距，让背景更贴合文字 */
+      padding: 4px 10px;
+      /* 将大圆角改为小圆角 (如从 20px 改为 6px)，使其更像标签印章 */
+      border-radius: 6px;
+      font-size: 12px;
+      color: #8b92a5;
+      /* var(--text-secondary) */
+
+      /* 关键：彻底禁用鼠标交互，鼠标放上去不会有任何变化，消除可点击的错觉 */
+      user-select: none;
+      pointer-events: none;
+    }
+
+    .map-wrapper {
+      position: relative;
+      width: min(1120px, calc(100vw - 80px));
+      margin: 0 auto;
+      transform: translateX(40px);
+      padding: 14px 40px 120px;
+      min-height: 820px;
+    }
+
+    .map-svg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .map-svg path {
+      fill: none;
+      stroke-width: 2.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      transition: stroke 0.6s ease;
+    }
+
+    .path-bg {
+      stroke: #33405a;
+      stroke-dasharray: 7 7;
+      opacity: 0.68;
+    }
+
+    .path-glow {
+      stroke: var(--path-active);
+      stroke-dasharray: 1000;
+      stroke-dashoffset: 1000;
+      filter: drop-shadow(0 0 5px rgba(74, 143, 212, 0.34));
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .path-glow.active {
+      opacity: 1;
+      animation: pathFlow 2s ease forwards;
+    }
+
+    @keyframes pathFlow {
+      to {
+        stroke-dashoffset: 0;
+      }
+    }
+
+    .node {
+      position: absolute;
+      z-index: 10;
+      cursor: pointer;
+      transform: translate(-50%, -50%);
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      text-decoration: none;
+    }
+
+    .node:hover {
+      transform: translate(-50%, -50%) scale(1.12);
+      z-index: 100;
+    }
+
+    .node-inner {
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 780;
+      color: #fff;
+      position: relative;
+      transition: all 0.3s ease;
+      border: 3px solid transparent;
+    }
+
+    .node.unvisited .node-inner {
+      background: linear-gradient(145deg, #2a3040, #1e2336);
+      border-color: var(--path-inactive);
+      color: var(--text-dim);
+      box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .node.available .node-inner {
+      background: linear-gradient(145deg, #233d5c, #1a3050);
+      border-color: var(--accent);
+      color: #fff;
+      box-shadow: 0 0 0 4px rgba(74, 143, 212, 0.15), 0 4px 15px rgba(0, 0, 0, 0.3);
+      animation: nodePulse 2s ease-in-out infinite;
+    }
+
+    .node.completed .node-inner {
+      background: linear-gradient(145deg, #3d5c33, #2a4022);
+      border-color: var(--success);
+      color: #fff;
+      box-shadow: 0 0 0 4px rgba(152, 195, 121, 0.15);
+    }
+
+    .node.completed::after {
+      content: '✓';
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      width: 20px;
+      height: 20px;
+      background: var(--success);
+      border-radius: 50%;
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #1a1e2e;
+      font-weight: bold;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    @keyframes nodePulse {
+
+      0%,
+      100% {
+        box-shadow: 0 0 0 4px rgba(74, 143, 212, 0.15), 0 4px 15px rgba(0, 0, 0, 0.3);
+      }
+
+      50% {
+        box-shadow: 0 0 0 8px rgba(74, 143, 212, 0.08), 0 4px 20px rgba(74, 143, 212, 0.2);
+      }
+    }
+
+    .node-label {
+      position: absolute;
+      top: 68px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 13px;
+      color: #9ca8bb;
+      white-space: nowrap;
+      opacity: 0.94;
+      transition: all 0.3s ease;
+      text-align: center;
+      line-height: 1.3;
+      max-width: 158px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-weight: 560;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.42);
+    }
+
+    .node-mobile-meta,
+    .node-arrow {
+      display: none;
+    }
+
+    .node:hover .node-label {
+      color: var(--accent);
+      opacity: 1;
+    }
+
+    .hover-card {
+      position: fixed;
+      z-index: 200;
+      background: linear-gradient(145deg, #22283a, #1e2336);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      width: 280px;
+      pointer-events: none;
+      opacity: 0;
+      transform: translateY(10px) scale(0.95);
+      transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(74, 143, 212, 0.1);
+    }
+
+    .hover-card.visible {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    .hover-card .ch-num {
+      font-size: 12px;
+      color: var(--accent);
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .hover-card .ch-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+
+    .hover-card .ch-desc {
+      font-size: 13px;
+      color: var(--text-dim);
+      line-height: 1.5;
+      margin-bottom: 12px;
+    }
+
+    .hover-card .ch-meta {
+      display: flex;
+      gap: 12px;
+      font-size: 12px;
+      color: var(--text);
+    }
+
+    .hover-card .ch-demos {
+      background: rgba(74, 143, 212, 0.1);
+      color: var(--accent);
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    /* --- 预览面板主体 --- */
+    .preview-panel {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      width: 286px;
+
+      /* 1. 降低背景不透明度 (从 0.94 降到 0.5~0.6)，让毛玻璃效果透出来 */
+      background: linear-gradient(145deg, rgba(34, 40, 58, 0.6), rgba(24, 29, 44, 0.7));
+
+      /* 2. 加深背景模糊程度 */
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      /* 兼容 Safari */
+
+      /* 3. 边框保持半透明，模拟玻璃边缘切割反光 */
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 16px;
+      z-index: 50;
+
+      /* 4. 外阴影增强悬浮感 + 增加轻微的顶部内阴影 (inset) 模拟玻璃的高光边缘 */
+      box-shadow:
+        0 14px 42px rgba(0, 0, 0, 0.45),
+        inset 0 1px 1px rgba(255, 255, 255, 0.1);
+
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+
+    /* 5. 新增：鼠标悬停在面板上时的微动效，增加质感反馈 */
+    .preview-panel:hover {
+      transform: translateY(-4px);
+      box-shadow:
+        0 20px 48px rgba(0, 0, 0, 0.6),
+        inset 0 1px 1px rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .preview-panel.hidden {
+      opacity: 0;
+      transform: translateX(20px);
+      pointer-events: none;
+    }
+
+    .preview-panel h3 {
+      font-size: 13px;
+      color: var(--text-dim, #8b92a5);
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* --- 画布区域 --- */
+    .preview-canvas {
+      width: 100%;
+      height: 142px;
+
+      /* 将纯色背景改为半透明纯黑，让画布也带有一点通透感 */
+      background: rgba(0, 0, 0, 0.25);
+      border-radius: 12px;
+      /* 边框调弱一点，不喧宾夺主 */
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      margin-bottom: 14px;
+
+      /* 加一点内阴影，让画布看起来像是嵌在玻璃面板里的屏幕 */
+      box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    /* --- 文字与标签排版 --- */
+    .preview-info .p-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 6px;
+      letter-spacing: 0.5px;
+    }
+
+    .preview-info .p-desc {
+      font-size: 13px;
+      color: var(--text-dim, #8b92a5);
+      line-height: 1.5;
+      margin-bottom: 12px;
+    }
+
+    .preview-info .p-tags {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .preview-info .p-tag {
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      /* 原来的 10px 有点偏胶囊，6px 看起来更干练科技一点 */
+      background: rgba(74, 143, 212, 0.12);
+      color: var(--accent, #4a8fd4);
+      border: 1px solid rgba(74, 143, 212, 0.2);
+    }
+
+    .start-point {
+      position: absolute;
+      z-index: 10;
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+
+    .start-point:hover,
+    .end-point:hover,
+    .milestone-point:hover {
+      z-index: 80;
+    }
+
+    .start-point .start-icon {
+      width: 76px;
+      height: 82px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      border-radius: 22px;
+      background: linear-gradient(145deg, rgba(35, 49, 73, 0.88), rgba(20, 24, 36, 0.92));
+      border: 1px solid rgba(90, 167, 242, 0.24);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.36), inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+      animation: mascotFloat 3s ease-in-out infinite;
+      transition: scale 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+      transform-origin: center bottom;
+    }
+
+    @keyframes mascotFloat {
+
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-5px);
+      }
+    }
+
+    .start-point .start-icon::after,
+    .end-point .end-icon::after,
+    .milestone-point .milestone-icon::after {
+      content: "";
+      position: absolute;
+      inset: auto 10px 7px;
+      height: 18px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.26);
+      filter: blur(6px);
+    }
+
+    .start-point .start-label {
+      font-size: 12px;
+      color: #74aee8;
+      margin-top: 7px;
+      font-weight: 600;
+    }
+
+    .end-point {
+      position: absolute;
+      z-index: 10;
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+
+    .end-point .end-icon {
+      width: 94px;
+      height: 82px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      border-radius: 22px;
+      background: linear-gradient(145deg, rgba(41, 69, 52, 0.88), rgba(20, 28, 28, 0.92));
+      border: 1px solid rgba(152, 195, 121, 0.26);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.36), inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+      animation: mascotFloat 3.4s ease-in-out infinite;
+      transition: scale 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+      transform-origin: center bottom;
+    }
+
+    .end-point .end-label {
+      font-size: 12px;
+      color: #9bcf84;
+      margin-top: 7px;
+      font-weight: 600;
+    }
+
+    .milestone-point {
+      position: absolute;
+      z-index: 9;
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+
+    .milestone-point .milestone-icon {
+      width: 92px;
+      height: 78px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      border-radius: 20px;
+      border: 1px solid rgba(247, 190, 92, 0.22);
+      background: linear-gradient(145deg, rgba(52, 45, 34, 0.86), rgba(24, 27, 35, 0.92));
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.34), inset 0 0 0 1px rgba(255, 255, 255, 0.035);
+      animation: mascotFloat 3.25s ease-in-out infinite;
+      transition: scale 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+      transform-origin: center bottom;
+    }
+
+    .milestone-thinking .milestone-icon {
+      width: 98px;
+      background: linear-gradient(145deg, rgba(36, 51, 48, 0.86), rgba(21, 27, 34, 0.92));
+      border-color: rgba(101, 198, 181, 0.22);
+      animation-duration: 3.55s;
+    }
+
+    .milestone-label {
+      font-size: 12px;
+      margin-top: 7px;
+      font-weight: 600;
+      color: #e0b86c;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+    }
+
+    .milestone-thinking .milestone-label {
+      color: #75d1c2;
+    }
+
+    .start-point:hover .start-icon,
+    .end-point:hover .end-icon,
+    .milestone-point:hover .milestone-icon {
+      scale: 1.8;
+      box-shadow: 0 18px 42px rgba(0, 0, 0, 0.48), 0 0 0 1px rgba(255, 255, 255, 0.07) inset;
+      border-color: rgba(255, 255, 255, 0.24);
+    }
+
+    .mascot-img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      position: relative;
+      z-index: 1;
+      filter: saturate(0.76) brightness(0.78) contrast(0.94);
+      opacity: 0.88;
+      transition: transform 0.22s ease, filter 0.22s ease, opacity 0.22s ease;
+    }
+
+    .start-icon .mascot-img {
+      transform: scale(1.16) translateY(12px);
+    }
+
+    .end-icon .mascot-img {
+      transform: scale(1.18) translateY(12px);
+    }
+
+    .milestone-practice .mascot-img {
+      transform: scale(1.28) translateY(12px);
+    }
+
+    .milestone-thinking .mascot-img {
+      transform: scale(1.20) translateY(10px);
+    }
+
+    .start-point:hover .mascot-img,
+    .end-point:hover .mascot-img,
+    .milestone-point:hover .mascot-img {
+      filter: saturate(0.92) brightness(0.94) contrast(0.98);
+      opacity: 1;
+    }
+
+    .start-point:hover .mascot-img {
+      transform: scale(1.34) translateY(9px);
+    }
+
+    .end-point:hover .mascot-img {
+      transform: scale(1.34) translateY(9px);
+    }
+
+    .milestone-practice:hover .mascot-img {
+      transform: scale(1.42) translateY(8px);
+    }
+
+    .milestone-thinking:hover .mascot-img {
+      transform: scale(1.34) translateY(6px);
+    }
+/* --- 基础容器 --- */
+.progress-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  /* 稍微增加一点背景的深色比重，让亮色的进度条和数字更跳脱 */
+  background: linear-gradient(to top, rgba(15, 18, 27, 0.98), rgba(20, 24, 36, 0.9));
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 14px 28px; /* 稍微增加上下内边距，让呼吸感更好 */
+  z-index: 100;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.progress-inner {
+  max-width: 1400px; /* 适当放宽最大宽度，配合长屏幕 */
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+/* --- 1. 信息重组 (Stats) --- */
+.progress-stats {
+  display: flex;
+  gap: 32px; /* 拉开不同指标之间的间距 */
+  align-items: center;
+}
+
+.progress-stats .stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.progress-stats .stat-value {
+  font-size: 24px; /* 将数字放大 */
+  font-weight: 800; /* 加粗，形成块面感 */
+  color: #ffffff;
+  line-height: 1;
+  letter-spacing: 0.5px;
+}
+
+/* 强调“已通关”的数字，使用你的成功色（假设是类似截图的浅绿色） */
+.progress-stats .stat-value.highlight-success {
+  color: var(--success, #8cc63f);
+}
+
+.progress-stats .stat-label {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.4); /* 进一步调灰，退居次要层级 */
+  margin-top: 4px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* --- 2. 进度条 (Track & Fill) --- */
+.progress-track {
+  flex: 1;
+  height: 6px; /* 原来 8px 略显笨重，6px 看起来更精致 */
+  background: rgba(255, 255, 255, 0.05); /* 更柔和的底槽颜色 */
+  border-radius: 6px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.3); /* 内阴影增加轨道凹陷感 */
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent, #409eff), var(--success, #8cc63f));
+  border-radius: 6px;
+  transition: width 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+  position: relative;
+}
+
+/* --- 3. 章节圆点指示器 (Dots) --- */
+.progress-chapters {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* 放大点击热区（核心优化） */
+.dot-wrapper {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+/* 视觉上的小圆点 */
+.dot {
+  width: 6px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* Hover 反馈 */
+.dot-wrapper:hover .dot {
+  background: rgba(255, 255, 255, 0.6);
+  transform: scale(1.5); /* 悬停时稍微放大 */
+}
+
+/* 已完成状态 */
+.dot-wrapper.completed .dot {
+  background: var(--success, #8cc63f);
+}
+
+/* 当前高亮状态（外圈高亮） */
+.dot-wrapper.active .dot {
+  width: 10px;
+  height: 10px;
+  background: var(--accent, #409eff);
+  /* 使用 box-shadow 创建外发光和外圈，非常醒目 */
+  box-shadow: 
+    0 0 0 4px rgba(64, 158, 255, 0.25),
+    0 0 10px rgba(64, 158, 255, 0.6);
+}
+
+/* --- 重置按钮优化 --- */
+.reset-btn {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.5);
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-left: 12px;
+}
+
+.reset-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+    @keyframes progressShine {
+
+      0%,
+      100% {
+        opacity: 0;
+      }
+
+      50% {
+        opacity: 1;
+      }
+    }
+
+    .progress-chapters {
+      display: flex;
+      gap: 6px;
+    }
+
+    .progress-dot {
+      width: 10px;
+      height: 10px;
+      padding: 0;
+      border: 0;
+      border-radius: 50%;
+      background: var(--path-inactive);
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .progress-dot.completed {
+      background: var(--success);
+      box-shadow: 0 0 6px rgba(152, 195, 121, 0.4);
+    }
+
+    .progress-dot.current {
+      background: var(--accent);
+      box-shadow: 0 0 8px var(--accent-glow);
+      animation: dotPulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes dotPulse {
+
+      0%,
+      100% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.3);
+      }
+    }
+
+    .reset-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .reset-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    @media (max-width: 1100px) {
+      .preview-panel {
+        display: none;
+      }
+
+      .map-wrapper {
+        width: auto;
+        margin: 0 auto;
+        transform: none;
+        padding: 20px 20px 120px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding-bottom: 84px;
+      }
+
+      .hero {
+        padding: 25px 16px 12px;
+      }
+
+      .hero h1 {
+        font-size: 38px;
+      }
+
+      .hero .subtitle {
+        font-size: 15px;
+        line-height: 1.6;
+        margin-bottom: 12px;
+      }
+
+      .hero-actions {
+        flex-direction: column;
+        align-items: stretch;
+        margin-top: 16px;
+      }
+
+      .continue-btn,
+      .search-shell {
+        width: 100%;
+      }
+
+      .continue-btn,
+      .search-input {
+        min-height: 46px;
+      }
+
+      .map-wrapper {
+        position: relative;
+        width: auto;
+        height: auto !important;
+        min-height: 0;
+        margin: 8px 0 0;
+        padding: 8px 14px 110px;
+        display: grid;
+        gap: 9px;
+      }
+
+      .map-svg,
+      .start-point,
+      .end-point,
+      .milestone-point,
+      .hover-card {
+        display: none !important;
+      }
+
+      .map-wrapper .node {
+        position: relative;
+        inset: auto !important;
+        width: 100%;
+        min-height: 72px;
+        padding: 10px 12px;
+        display: grid;
+        grid-template-columns: 48px minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 12px;
+        transform: none;
+        border: 1px solid rgba(110, 126, 151, 0.2);
+        border-radius: 13px;
+        background: linear-gradient(145deg, rgba(35, 41, 59, 0.96), rgba(27, 32, 47, 0.96));
+        box-shadow: 0 8px 22px rgba(0, 0, 0, 0.12);
+      }
+
+      .map-wrapper .node:hover {
+        transform: none;
+        border-color: rgba(74, 143, 212, 0.56);
+      }
+
+      .map-wrapper .node.available {
+        border-color: rgba(74, 143, 212, 0.66);
+        background: linear-gradient(145deg, rgba(37, 61, 91, 0.96), rgba(27, 43, 66, 0.96));
+      }
+
+      .map-wrapper .node.completed {
+        border-color: rgba(152, 195, 121, 0.5);
+      }
+
+      .node-inner {
+        width: 44px;
+        height: 44px;
+        font-size: 12px;
+      }
+
+      .node-label {
+        position: static;
+        width: auto;
+        max-width: none;
+        transform: none;
+        margin: 0;
+        font-size: 14px;
+        line-height: 1.35;
+        font-weight: 650;
+        color: #cbd3df;
+        text-align: left;
+        white-space: normal;
+      }
+
+      .node-mobile-meta {
+        display: block;
+        margin-top: 5px;
+        color: #8994a8;
+        font-size: 11px;
+        font-weight: 500;
+      }
+
+      .node-arrow {
+        display: block;
+        color: #6e7a90;
+        font-size: 20px;
+      }
+
+      .node.completed::after {
+        top: 7px;
+        right: 9px;
+      }
+
+      .progress-stats .stat-value {
+        font-size: 18px;
+      }
+
+      .progress-chapters {
+        display: none;
+      }
+
+      .progress-bar {
+        padding: 10px 14px calc(10px + env(safe-area-inset-bottom));
+      }
+
+      .progress-inner {
+        gap: 13px;
+      }
+
+      .progress-stats {
+        gap: 16px;
+      }
+
+      .progress-stats .stat:nth-child(2) {
+        display: none;
+      }
+
+      .progress-track {
+        min-width: 60px;
+      }
+
+      .reset-btn {
+        margin-left: 0;
+        padding: 7px 10px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: 0.001ms !important;
+      }
+    }
+
+    .particle {
+      position: fixed;
+      pointer-events: none;
+      border-radius: 50%;
+      opacity: 0.14;
+      animation: floatUp linear infinite;
+    }
+
+    @keyframes floatUp {
+      0% {
+        transform: translateY(100vh) scale(0);
+        opacity: 0;
+      }
+
+      10% {
+        opacity: 0.14;
+      }
+
+      90% {
+        opacity: 0.14;
+      }
+
+      100% {
+        transform: translateY(-10vh) scale(1);
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="hero">
+    <h1>大话算法</h1>
+    <p class="subtitle"><span id="algorithmCount">124</span> 个算法演示 · 可视化执行 · 初学者友好</p>
+    <div class="badge-row">
+      <span class="badge">算法学习地图</span>
+      <span class="badge">理解动画 + 代码执行</span>
+      <span class="badge">纯前端 · 无需安装</span>
+    </div>
+    <div class="hero-actions">
+      <a class="continue-btn" id="continueBtn" href="chapters/ch00.html">▶ 从第 0 章开始</a>
+      <div class="search-shell">
+        <span class="search-icon" aria-hidden="true">⌕</span>
+        <label for="algorithmSearch" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);">搜索算法或章节</label>
+        <input class="search-input" id="algorithmSearch" type="search" placeholder="搜索算法或章节，例如：二分查找" autocomplete="off">
+        <div class="search-results" id="searchResults" role="listbox" aria-label="搜索结果"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="map-wrapper" id="mapWrapper">
+    <svg class="map-svg" id="mapSvg" preserveAspectRatio="none">
+      <path class="path-bg" id="pathBg" d=""></path>
+      <path class="path-glow" id="pathGlow" d=""></path>
+    </svg>
+  </div>
+
+  <div class="hover-card" id="hoverCard">
+    <div class="ch-num" id="cardNum">第0章</div>
+    <div class="ch-title" id="cardTitle">引言</div>
+    <div class="ch-desc" id="cardDesc">描述</div>
+    <div class="ch-meta">
+      <span>🎮 <span id="cardDemos">0</span> 个演示</span>
+      <span class="ch-demos" id="cardType">入门</span>
+    </div>
+  </div>
+
+  <div class="preview-panel" id="previewPanel">
+    <h3>🔮 算法预览</h3>
+    <canvas class="preview-canvas" id="previewCanvas" width="260" height="160"></canvas>
+    <div class="preview-info">
+      <div class="p-title" id="pTitle">悬停查看算法预览</div>
+      <div class="p-desc" id="pDesc">将鼠标悬停在地图节点上，查看该章节的算法动态演示</div>
+      <div class="p-tags" id="pTags"></div>
+    </div>
+  </div>
+
+  <div class="progress-bar">
+  <div class="progress-inner">
+    
+    <div class="progress-stats">
+      <div class="stat">
+        <div class="stat-value highlight-success" id="statCompleted">3</div>
+        <div class="stat-label">已通关</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value" id="statTotal">23</div>
+        <div class="stat-label">章节</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value" id="statDemos">17</div>
+        <div class="stat-label">已完成</div>
+      </div>
+    </div>
+    
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill" style="width: 15%"></div>
+    </div>
+    
+    <div class="progress-chapters" id="progressDots">
+      <div class="dot-wrapper completed" title="引言">
+        <div class="dot"></div>
+      </div>
+      <div class="dot-wrapper completed" title="算法每天都在用">
+        <div class="dot"></div>
+      </div>
+      <div class="dot-wrapper active" title="算法的度量衡">
+        <div class="dot"></div>
+      </div>
+      <div class="dot-wrapper" title="分而治之">
+        <div class="dot"></div>
+      </div>
+    </div>
+    
+    <button class="reset-btn" id="resetBtn" title="重置进度">↺ 重置</button>
+  </div>
+</div>
+
+  <script src="js/site-data.js?v=20260725"></script>
+  <script src="js/learning-state.js?v=20260725"></script>
+  <script>
+    const chapters = [
+      { id: 0, title: "引言——算法是什么？", demos: 2, desc: "算法的定义、五个特征与学习建议", color: "#4a8fd4", anim: "bulb" },
+      { id: 1, title: "算法——你每天都在用", demos: 4, desc: "顺序查找、冒泡排序、选择排序", color: "#4a8fd4", anim: "bubble_sort" },
+      { id: 2, title: "算法的度量衡", demos: 7, desc: "时间复杂度、空间复杂度、摊还分析、P vs NP", color: "#c678dd", anim: "bigO" },
+      { id: 3, title: "分而治之", demos: 3, desc: "归并排序、快速排序、Karatsuba乘法", color: "#4a8fd4", anim: "divide" },
+      { id: 4, title: "搜索的艺术", demos: 8, desc: "二分查找、插值查找、跳表、斐波那契查找", color: "#4a8fd4", anim: "binary_search" },
+      { id: 5, title: "线性排序", demos: 4, desc: "计数排序、基数排序、桶排序", color: "#4a8fd4", anim: "bucket" },
+      { id: 6, title: "排序的哲学", demos: 7, desc: "稳定性、工程快排、插入/希尔/堆排序", color: "#4a8fd4", anim: "stable" },
+      { id: 7, title: "贪心算法", demos: 3, desc: "活动选择、哈夫曼编码、最小生成树", color: "#e5c07b", anim: "greedy" },
+      { id: 8, title: "动态规划（上）", demos: 9, desc: "爬楼梯、硬币找零、0-1背包、LCS", color: "#e5c07b", anim: "climb_stairs" },
+      { id: 9, title: "动态规划（下）", demos: 6, desc: "编辑距离、矩阵链乘法、LIS优化", color: "#e5c07b", anim: "editDist" },
+      { id: 10, title: "回溯法", demos: 6, desc: "迷宫、全排列、N皇后、数独、剪枝", color: "#e5c07b", anim: "maze" },
+      { id: 11, title: "分支限界", demos: 2, desc: "BFS+剪枝、0-1背包、TSP", color: "#4a8fd4", anim: "bfs" },
+      { id: 12, title: "图的进阶", demos: 3, desc: "强连通分量、最大流、二分图匹配", color: "#98c379", anim: "flow" },
+      { id: 13, title: "最短路径的升级版", demos: 7, desc: "Dijkstra堆优化、Bellman-Ford、SPFA、Floyd、A*", color: "#98c379", anim: "shortest" },
+      { id: 14, title: "字符串匹配", demos: 7, desc: "BF、KMP、Rabin-Karp、Trie、AC自动机", color: "#c678dd", anim: "kmp" },
+      { id: 15, title: "高级数据结构", demos: 12, desc: "并查集、红黑树、线段树、树状数组", color: "#c678dd", anim: "rbtree" },
+      { id: 16, title: "位运算魔法", demos: 7, desc: "位运算技巧、位图、布隆过滤器", color: "#c678dd", anim: "bitwise" },
+      { id: 17, title: "概率算法", demos: 5, desc: "随机化快排、蓄水池抽样、蒙特卡洛", color: "#d19a66", anim: "monteCarlo" },
+      { id: 18, title: "算法在现实世界", demos: 6, desc: "推荐系统、PageRank、压缩、GPS、梯度下降", color: "#d19a66", anim: "gps" },
+      { id: 19, title: "链表与树的指尖舞蹈", demos: 4, desc: "反转链表、快慢指针、层序遍历、LCA", color: "#c678dd", anim: "linkedList" },
+      { id: 20, title: "动态规划的降维打击", demos: 3, desc: "打家劫舍、股票买卖、零钱兑换", color: "#e5c07b", anim: "rolling" },
+      { id: 21, title: "数组与字符串的灵活技巧", demos: 7, desc: "滑动窗口、双指针、单调栈、前缀和", color: "#d19a66", anim: "slidingWindow" },
+      { id: 22, title: "结语 · 封老师的最后一课", demos: 2, desc: "Graham扫描、欧几里得算法与学习寄语", color: "#98c379", anim: "firework" }
+    ];
+
+    const siteIndex = window.ALGO_SITE_INDEX || { algorithmCount: 124, chapters: [] };
+    siteIndex.chapters.forEach(indexed => {
+      const chapter = chapters.find(item => item.id === Number(indexed.id));
+      if (chapter) chapter.demos = indexed.algorithms.length;
+    });
+    document.getElementById('algorithmCount').textContent = siteIndex.algorithmCount || chapters.reduce((sum, chapter) => sum + chapter.demos, 0);
+
+    const MAP_WIDTH = 1180;
+    const ROW_GAP = 144;
+    const ROW_START_Y = 122;
+    const ROW_COUNTS = [5, 5, 5, 5, 3];
+    const TURN_OFFSET = 92;
+    const ROWS = ROW_COUNTS.map((count, idx) => {
+      const spacing = count >= 5 ? 215 : 220;
+      const dir = idx % 2 === 0 ? 1 : -1;
+      const total = (count - 1) * spacing;
+      return {
+        count,
+        y: ROW_START_Y + idx * ROW_GAP,
+        startX: MAP_WIDTH / 2 - dir * (total / 2 + TURN_OFFSET / 2),
+        spacing,
+        dir,
+      };
+    });
+
+    let learningState = DHLearning.load();
+    let progress = DHLearning.completedChapterIds(siteIndex, learningState);
+    let recommendedId = learningState.last ? learningState.last.chapter : (progress.length < chapters.length ? progress.length : chapters.length - 1);
+    let currentHover = -1, currentPreviewChapter = null, previewAnimId = null, previewFrame = 0;
+    const previewMotionEnabled = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const canvas = document.getElementById('previewCanvas'), ctx = canvas.getContext('2d');
+
+    function get_node_positions() {
+      const positions = []; let chIdx = 0;
+      ROWS.forEach(row => {
+        for (let i = 0; i < row.count && chIdx < chapters.length; i++) {
+          positions.push({ x: row.startX + row.dir * i * row.spacing, y: row.y, chapter: chapters[chIdx] });
+          chIdx++;
+        }
+      });
+      return positions;
+    }
+    const nodePositions = get_node_positions();
+    const PATH_VARIANTS = [
+      [-36, 28, -18],
+      [32, -34, 18],
+      [-20, -44, 26],
+      [40, 10, -36],
+      [-28, 42, 12],
+      [22, -18, -42],
+      [-46, 20, 38],
+      [18, 46, -24],
+      [-14, 34, -40],
+      [44, -28, 30],
+    ];
+    const TURN_VARIANTS = [
+      { side: 1, mid: -0.08 },
+      { side: -1, mid: 0.10 },
+      { side: 1, mid: 0.06 },
+      { side: -1, mid: -0.06 },
+    ];
+    const QUIET_TURN_SEGMENTS = new Set([5, 15, 20]);
+    const QUIET_PATH_SEGMENTS = new Set([4, 6, 14, 16, 19, 21]);
+    const ROW3_PATH_VARIANTS = new Map([
+      [16, PATH_VARIANTS[6]],
+      [17, PATH_VARIANTS[7]],
+      [18, PATH_VARIANTS[8]],
+      [19, PATH_VARIANTS[9]],
+    ]);
+    const ANCHORED_PATH_SEGMENTS = new Set([16, 17, 18, 19, 21]);
+
+    function curve_through(points) {
+      let path = '';
+      for (let i = 1; i < points.length; i++) {
+        const prev = points[i - 1], curr = points[i];
+        const dx = curr.x - prev.x;
+        path += ` C ${prev.x + dx * 0.42} ${prev.y}, ${curr.x - dx * 0.42} ${curr.y}, ${curr.x} ${curr.y}`;
+      }
+      return path;
+    }
+
+    function build_map() {
+      const wrapper = document.getElementById('mapWrapper'), svg = document.getElementById('mapSvg');
+      const maxX = wrapper.clientWidth;
+      const maxY = Math.max(...nodePositions.map(p => p.y)) + 100;
+      svg.setAttribute('viewBox', `0 0 ${maxX} ${maxY}`);
+      wrapper.style.height = `${maxY + 50}px`;
+      const scale_x = maxX / MAP_WIDTH;
+      const pathPositions = nodePositions.map(pos => ({ ...pos, x: pos.x * scale_x }));
+
+      let d = '';
+      pathPositions.forEach((pos, i) => {
+        if (i === 0) d += `M ${pos.x} ${pos.y}`;
+        else {
+          const prev = pathPositions[i - 1];
+          if (prev.y !== pos.y) {
+            const turn = TURN_VARIANTS[i % TURN_VARIANTS.length];
+            const dx = pos.x - prev.x;
+            const dy = pos.y - prev.y;
+            const side = Math.sign(dx || 1) * turn.side;
+            const turnAmp = QUIET_TURN_SEGMENTS.has(i) ? 0.34 : 1;
+            const points = [
+              prev,
+              { x: prev.x + dx * 0.24 + side * 34 * turnAmp, y: prev.y + dy * 0.25 },
+              { x: prev.x + dx * 0.50 - side * 22 * turnAmp, y: prev.y + dy * (0.50 + turn.mid * turnAmp) },
+              { x: prev.x + dx * 0.76 + side * 28 * turnAmp, y: prev.y + dy * 0.75 },
+              pos,
+            ];
+            d += curve_through(points);
+          } else {
+            const dx = pos.x - prev.x;
+            const bumpAmp = QUIET_PATH_SEGMENTS.has(i) ? 0.42 : 1;
+            const variant = ROW3_PATH_VARIANTS.get(i) || PATH_VARIANTS[i % PATH_VARIANTS.length];
+            const bumps = variant.map(v => v * bumpAmp);
+            const points = ANCHORED_PATH_SEGMENTS.has(i)
+              ? [
+                prev,
+                { x: prev.x + dx * 0.18, y: prev.y },
+                { x: prev.x + dx * 0.42, y: prev.y + bumps[0] },
+                { x: prev.x + dx * 0.58, y: prev.y + bumps[1] },
+                { x: prev.x + dx * 0.82, y: prev.y },
+                pos,
+              ]
+              : [
+                prev,
+                { x: prev.x + dx * 0.25, y: prev.y + bumps[0] },
+                { x: prev.x + dx * 0.52, y: prev.y + bumps[1] },
+                { x: prev.x + dx * 0.77, y: prev.y + bumps[2] },
+                pos,
+              ];
+            d += curve_through(points);
+          }
+        }
+      });
+      document.getElementById('pathBg').setAttribute('d', d);
+      document.getElementById('pathGlow').setAttribute('d', d);
+
+      const sPos = pathPositions[0], ePos = pathPositions[pathPositions.length - 1];
+      wrapper.insertAdjacentHTML('beforeend', `<div class="start-point" style="left:${sPos.x - 86}px;top:${sPos.y - 8}px"><div class="start-icon"><img class="mascot-img" src="assets/mascots/student-dog.png" alt="从零开始的算法学习者"></div><div class="start-label">从零开始</div></div>`);
+      wrapper.insertAdjacentHTML('beforeend', `<div class="end-point" style="left:${ePos.x + 98}px;top:${ePos.y + 10}px"><div class="end-icon"><img class="mascot-img" src="assets/mascots/engineer-dog.png" alt="稳稳上手的算法工程师"></div><div class="end-label">稳稳上手</div></div>`);
+      const practicePos = pathPositions.find(pos => pos.chapter.id === 14);
+      const thinkingPos = pathPositions.find(pos => pos.chapter.id === 19);
+      if (practicePos) {
+        wrapper.insertAdjacentHTML('beforeend', `<div class="milestone-point milestone-practice" style="left:${practicePos.x + 110}px;top:${practicePos.y + 12}px"><div class="milestone-icon"><img class="mascot-img" src="assets/mascots/practice-dog.png" alt="认真练习算法的学习者"></div><div class="milestone-label">认真练习</div></div>`);
+      }
+      if (thinkingPos) {
+        wrapper.insertAdjacentHTML('beforeend', `<div class="milestone-point milestone-thinking" style="left:${thinkingPos.x - 126}px;top:${thinkingPos.y + 34}px"><div class="milestone-icon"><img class="mascot-img" src="assets/mascots/thinking-dog.png" alt="在黑板前推演算法的学习者"></div><div class="milestone-label">推演理解</div></div>`);
+      }
+
+      nodePositions.forEach((pos, i) => {
+        const ch = pos.chapter, completed = progress.includes(ch.id), available = ch.id === recommendedId;
+        const state = completed ? 'completed' : (available ? 'available' : 'unvisited');
+        const node = document.createElement('a');
+        node.className = `node ${state}`;
+        node.style.cssText = `left:${pos.x * scale_x}px;top:${pos.y}px`;
+        node.dataset.id = ch.id;
+        node.href = `chapters/ch${String(ch.id).padStart(2, '0')}.html`;
+        node.setAttribute('aria-label', `第 ${ch.id} 章：${ch.title}，${ch.demos} 个演示`);
+        const statusText = completed ? '本章已完成' : (available ? '继续学习' : '可随时学习');
+        node.innerHTML = `<div class="node-inner" style="${completed || available ? `background:linear-gradient(145deg,${ch.color}1e,${ch.color}38);border-color:${ch.color};box-shadow:0 0 0 3px ${ch.color}1a,0 4px 14px rgba(0,0,0,0.32);` : ''}">${ch.id}</div><div class="node-label">${ch.title.split(' · ')[0].replace(/第\d+章\s*/, '')}<span class="node-mobile-meta">${ch.demos} 个演示 · ${statusText}</span></div><span class="node-arrow" aria-hidden="true">›</span>`;
+        node.addEventListener('mouseenter', e => show_hover_card(e, ch));
+        node.addEventListener('mouseleave', hide_hover_card);
+        node.addEventListener('click', event => {
+          event.preventDefault();
+          visit_chapter(ch.id);
+        });
+        wrapper.appendChild(node);
+      });
+    }
+
+    function show_hover_card(e, ch) {
+      const card = document.getElementById('hoverCard');
+      document.getElementById('cardNum').textContent = `第${ch.id}章`;
+      document.getElementById('cardTitle').textContent = ch.title;
+      document.getElementById('cardDesc').textContent = ch.desc;
+      document.getElementById('cardDemos').textContent = ch.demos;
+      document.getElementById('cardType').textContent = ch.tags ? ch.tags[0] : '算法';
+      const rect = e.currentTarget.getBoundingClientRect();
+      card.style.left = `${Math.min(rect.right + 15, window.innerWidth - 300)}px`;
+      card.style.top = `${rect.top - 20}px`;
+      card.classList.add('visible');
+      update_preview(ch);
+    }
+    function hide_hover_card() { document.getElementById('hoverCard').classList.remove('visible'); }
+
+    function update_preview(ch) {
+      currentPreviewChapter = ch;
+      if (window.matchMedia('(max-width: 1100px)').matches) {
+        if (previewAnimId) cancelAnimationFrame(previewAnimId);
+        previewAnimId = null;
+        return;
+      }
+      document.getElementById('previewPanel').classList.remove('hidden');
+      document.getElementById('pTitle').textContent = ch.title;
+      document.getElementById('pDesc').textContent = ch.desc;
+      document.getElementById('pTags').innerHTML = (ch.tags || []).map(t => `<span class="p-tag">${t}</span>`).join('');
+      if (previewAnimId) cancelAnimationFrame(previewAnimId);
+      previewFrame = 0;
+      start_preview_animation(ch);
+    }
+
+    function schedule_preview(animationFn) {
+      if (!previewMotionEnabled || document.hidden || window.matchMedia('(max-width: 1100px)').matches) return null;
+      return requestAnimationFrame(animationFn);
+    }
+
+    // ======================== 23个独立动画 ========================
+    const W = 260, H = 160;
+
+    function clear() { ctx.fillStyle = '#151926'; ctx.fillRect(0, 0, W, H); }
+    function label(text, color) {
+      ctx.fillStyle = 'rgba(21,25,38,0.85)'; ctx.fillRect(8, H - 28, 140, 22);
+      ctx.fillStyle = color || '#abb2bf'; ctx.font = '11px sans-serif'; ctx.textAlign = 'left';
+      ctx.fillText(text, 14, H - 12);
+    }
+
+    // ---- 第0章: 灯泡亮起 + 代码字符飘落 ----
+    function anim_bulb() {
+      const t = previewFrame * 0.03;
+      clear();
+      // Bulb
+      const brightness = Math.min(1, Math.sin(t * 0.5) * 0.5 + 0.5 + t * 0.05);
+      const bx = W / 2, by = 55, r = 28;
+      // Glow
+      if (brightness > 0.1) {
+        const grd = ctx.createRadialGradient(bx, by, 5, bx, by, r + 15);
+        grd.addColorStop(0, `rgba(255,220,100,${brightness * 0.6})`);
+        grd.addColorStop(1, 'rgba(255,220,100,0)');
+        ctx.fillStyle = grd; ctx.beginPath(); ctx.arc(bx, by, r + 15, 0, Math.PI * 2); ctx.fill();
+      }
+      // Bulb body
+      ctx.fillStyle = `rgba(255,220,100,${0.2 + brightness * 0.8})`;
+      ctx.beginPath(); ctx.arc(bx, by, r, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = `rgba(255,220,100,${0.3 + brightness * 0.7})`; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(bx, by, r, 0, Math.PI * 2); ctx.stroke();
+      // Base
+      ctx.fillStyle = '#5c6370'; ctx.fillRect(bx - 8, by + r - 2, 16, 10);
+      // Falling code chars
+      for (let i = 0; i < 15; i++) {
+        const y = ((t * 30 + i * 47) % (H + 30)) - 10;
+        const x = (Math.sin(i * 2.3 + t * 0.3) * 0.5 + 0.5) * (W - 20) + 10;
+        const chars = '01<>{}[];+-*/=';
+        ctx.fillStyle = `rgba(152,195,121,${0.1 + Math.sin(t + i) * 0.15})`;
+        ctx.font = '12px monospace'; ctx.fillText(chars[i % chars.length], x, y);
+      }
+      label('点亮算法思维', '#e5c07b');
+      previewFrame++; previewAnimId = schedule_preview(anim_bulb);
+    }
+
+    // ---- 第1章: 冒泡排序 ----
+    function anim_bubble_sort() {
+      const t = previewFrame * 0.04, bars = 12, bw = (W - 20) / bars;
+      const arr = [5, 2, 8, 1, 9, 3, 7, 4, 6, 10, 2, 8];
+      // Simulate bubble passes
+      const pass = Math.floor(t) % (bars + 2);
+      clear();
+      for (let i = 0; i < bars; i++) {
+        const h = arr[i] / 10 * (H - 50) + 15;
+        const x = 10 + i * bw, y = H - h - 15;
+        const isSwapping = i < bars - 1 && i === Math.floor((t * 2) % (bars - 1));
+        ctx.fillStyle = isSwapping ? '#e06c75' : (i < pass ? '#98c379' : '#4a8fd4');
+        ctx.fillRect(x + 1, y, bw - 2, h);
+      }
+      // Bubbles floating up
+      for (let i = 0; i < 5; i++) {
+        const by = H - 10 - ((t * 20 + i * 35) % (H - 20));
+        const bx = 20 + (i * 47) % (W - 40);
+        ctx.fillStyle = `rgba(74,143,212,${0.2 + Math.sin(t + i) * 0.15})`;
+        ctx.beginPath(); ctx.arc(bx, by, 4, 0, Math.PI * 2); ctx.fill();
+      }
+      label('冒泡排序', '#4a8fd4');
+      previewFrame++; previewAnimId = schedule_preview(anim_bubble_sort);
+    }
+
+    // ---- 第3章: 分而治之 ----
+    function anim_divide() {
+      const t = previewFrame * 0.03;
+      clear();
+      function draw_rect(x, y, w, h, depth) {
+        if (depth > 3 || w < 20 || h < 15) {
+          ctx.fillStyle = `hsl(${200 + depth * 30},60%,${40 + depth * 8}%)`;
+          ctx.fillRect(x, y, w, h);
+          ctx.strokeStyle = '#1e2336'; ctx.strokeRect(x, y, w, h);
+          return;
+        }
+        const split = (Math.sin(t + depth) * 0.5 + 0.5);
+        if (depth % 2 === 0) {
+          const mid = x + w * split;
+          draw_rect(x, y, mid - x, h, depth + 1);
+          draw_rect(mid, y, x + w - mid, h, depth + 1);
+        } else {
+          const mid = y + h * split;
+          draw_rect(x, y, w, mid - y, depth + 1);
+          draw_rect(x, mid, w, y + h - mid, depth + 1);
+        }
+      }
+      draw_rect(30, 25, W - 60, H - 50, 0);
+      label('分而治之', '#4a8fd4');
+      previewFrame++; previewAnimId = schedule_preview(anim_divide);
+    }
+
+    // ---- 第2章: Big-O 天平 ----
+    function anim_big_o() {
+      const t = previewFrame * 0.025;
+      clear();
+      // Balance scale
+      const cx = W / 2, cy = H / 2 + 10, armLen = 90;
+      const tilt = Math.sin(t) * 0.25;
+      ctx.strokeStyle = '#5c6370'; ctx.lineWidth = 3;
+      // Stand
+      ctx.beginPath(); ctx.moveTo(cx, cy + 30); ctx.lineTo(cx, cy - 40); ctx.stroke();
+      // Arm
+      const ax1 = cx - armLen * Math.cos(tilt), ay1 = cy - 40 - armLen * Math.sin(tilt);
+      const ax2 = cx + armLen * Math.cos(tilt), ay2 = cy - 40 + armLen * Math.sin(tilt);
+      ctx.beginPath(); ctx.moveTo(ax1, ay1); ctx.lineTo(ax2, ay2); ctx.stroke();
+      // Pans
+      ctx.strokeStyle = '#c678dd'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(ax1, ay1); ctx.lineTo(ax1 - 15, ay1 + 25); ctx.lineTo(ax1 + 15, ay1 + 25); ctx.closePath(); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(ax2, ay2); ctx.lineTo(ax2 - 15, ay2 + 25); ctx.lineTo(ax2 + 15, ay2 + 25); ctx.closePath(); ctx.stroke();
+      // Labels
+      ctx.fillStyle = '#c678dd'; ctx.font = 'bold 14px sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText('O(n²)', ax1, ay1 - 8); ctx.fillText('O(n)', ax2, ay2 - 8);
+      // Complexity curve in background
+      ctx.strokeStyle = 'rgba(198,120,221,0.15)'; ctx.lineWidth = 1;
+      ctx.beginPath(); for (let x = 0; x < W; x++) { const y = H - 10 - (x / W) * (x / W) * 80; if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y); } ctx.stroke();
+      label('复杂度度量', '#c678dd');
+      previewFrame++; previewAnimId = schedule_preview(anim_big_o);
+    }
+
+    // ---- 第4章: 二分查找 ----
+    function anim_binary_search() {
+      const t = previewFrame * 0.03;
+      clear();
+      const items = 16, iw = (W - 20) / items;
+      const target = 7;
+      // Simulate search state
+      const phase = Math.floor(t * 0.5) % 6;
+      let lo = 0, hi = items - 1, mid;
+      for (let p = 0; p <= phase; p++) { mid = Math.floor((lo + hi) / 2); if (mid < target) lo = mid + 1; else if (mid > target) hi = mid - 1; }
+      for (let i = 0; i < items; i++) {
+        const x = 10 + i * iw, y = H / 2 - 15;
+        let col = '#2a3040';
+        if (i >= lo && i <= hi) col = '#4a8fd4';
+        if (i === mid) col = '#e5c07b';
+        if (phase >= 5 && i === target) col = '#98c379';
+        ctx.fillStyle = col;
+        ctx.fillRect(x + 1, y, iw - 2, 30);
+        ctx.fillStyle = '#fff'; ctx.font = '10px sans-serif'; ctx.textAlign = 'center';
+        ctx.fillText(i, x + iw / 2, y + 20);
+      }
+      // Arrow
+      if (phase < 5) {
+        const ax = 10 + mid * iw + iw / 2;
+        ctx.fillStyle = '#e5c07b'; ctx.beginPath();
+        ctx.moveTo(ax - 5, H / 2 + 22); ctx.lineTo(ax + 5, H / 2 + 22); ctx.lineTo(ax, H / 2 + 30); ctx.fill();
+      }
+      label('二分查找', '#4a8fd4');
+      previewFrame++; previewAnimId = schedule_preview(anim_binary_search);
+    }
+
+    // ---- 第5章: 计数排序 桶 ----
+    function anim_bucket() {
+      const t = previewFrame * 0.035;
+      clear();
+      const buckets = 8, bw = (W - 30) / buckets, maxH = H - 60;
+      const counts = [2, 4, 1, 5, 3, 2, 4, 3];
+      for (let i = 0; i < buckets; i++) {
+        const h = counts[i] / 5 * maxH;
+        const x = 15 + i * bw;
+        // Bucket
+        ctx.fillStyle = 'rgba(74,143,212,0.15)'; ctx.fillRect(x, H - 20 - h, bw - 4, h);
+        ctx.strokeStyle = '#4a8fd4'; ctx.lineWidth = 1;
+        ctx.strokeRect(x, H - 20 - h, bw - 4, h);
+        // Falling numbers
+        const numCount = counts[i];
+        for (let n = 0; n < numCount; n++) {
+          const fallProgress = ((t + i * 0.3 + n * 0.5) % 3);
+          if (fallProgress < 1) {
+            const ny = 20 + fallProgress * (H - 50 - h);
+            ctx.fillStyle = `rgba(152,195,121,${1 - fallProgress * 0.3})`;
+            ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'center';
+            ctx.fillText(i + 1, x + (bw - 4) / 2, ny);
+          }
+        }
+      }
+      label('线性排序 · 桶', '#4a8fd4');
+      previewFrame++; previewAnimId = schedule_preview(anim_bucket);
+    }
+
+    // ---- 第6章: 排序稳定性 ----
+    function anim_stable() {
+      const t = previewFrame * 0.03;
+      clear();
+      const items = 8, iw = (W - 20) / items;
+      const data = [
+        { v: 3, c: '#e06c75', id: 'A' }, { v: 1, c: '#61afef', id: 'B' }, { v: 3, c: '#e06c75', id: 'C' },
+        { v: 2, c: '#98c379', id: 'D' }, { v: 1, c: '#61afef', id: 'E' }, { v: 2, c: '#98c379', id: 'F' },
+        { v: 3, c: '#e06c75', id: 'G' }, { v: 1, c: '#61afef', id: 'H' }
+      ];
+      // Sort by value, maintain stability
+      const sorted = [...data].sort((a, b) => a.v - b.v);
+      const swapPhase = Math.floor(t) % 10;
+      // Draw current state (interpolate between original and sorted)
+      for (let i = 0; i < items; i++) {
+        const targetIdx = sorted.indexOf(data[i]);
+        const progress = Math.min(1, Math.max(0, swapPhase - Math.abs(targetIdx - i) * 0.5));
+        const curX = 10 + i * iw + (targetIdx - i) * iw * progress;
+        const y = H / 2 - 20;
+        ctx.fillStyle = data[i].c; ctx.fillRect(curX + 2, y, iw - 4, 35);
+        ctx.fillStyle = '#fff'; ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'center';
+        ctx.fillText(data[i].v, curX + iw / 2, y + 22);
+        ctx.font = '9px sans-serif'; ctx.fillStyle = 'rgba(255,255,255,0.7)';
+        ctx.fillText(data[i].id, curX + iw / 2, y + 34);
+      }
+      label('稳定性保持', '#4a8fd4');
+      previewFrame++; previewAnimId = schedule_preview(anim_stable);
+    }
+
+    // ---- 第7章: 贪心 · 活动时间选择 ----
+    function anim_greedy() {
+      const t = previewFrame * 0.025;
+      clear();
+      // Timeline
+      const timelineY = H / 2 + 20;
+      ctx.strokeStyle = '#5c6370'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(20, timelineY); ctx.lineTo(W - 20, timelineY); ctx.stroke();
+      // Activities as horizontal bars
+      const acts = [
+        { s: 10, e: 40 }, { s: 30, e: 60 }, { s: 50, e: 80 }, { s: 70, e: 100 },
+        { s: 90, e: 130 }, { s: 120, e: 160 }, { s: 140, e: 180 }, { s: 170, e: 200 }
+      ];
+      const scale = (W - 40) / 220;
+      acts.forEach((act, i) => {
+        const x = 20 + act.s * scale;
+        const w = (act.e - act.s) * scale;
+        const y = timelineY - 45 + (i % 2) * 30;
+        const isSelected = i === 0 || i === 3 || i === 6;
+        const alpha = isSelected ? 0.8 : 0.25;
+        ctx.fillStyle = isSelected ? `rgba(229,192,123,${alpha})` : `rgba(92,99,112,${alpha})`;
+        ctx.fillRect(x, y, w, 18);
+        ctx.strokeStyle = isSelected ? '#e5c07b' : '#5c6370';
+        ctx.lineWidth = 1; ctx.strokeRect(x, y, w, 18);
+        if (isSelected) {
+          ctx.fillStyle = '#e5c07b'; ctx.font = '10px sans-serif'; ctx.textAlign = 'center';
+          ctx.fillText('✓', x + w / 2, y + 13);
+        }
+      });
+      // Greedy cursor
+      const cursorX = 20 + ((t * 20) % 220) * scale;
+      ctx.strokeStyle = '#e5c07b'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(cursorX, timelineY - 55); ctx.lineTo(cursorX, timelineY + 10); ctx.stroke();
+      label('贪心选择', '#e5c07b');
+      previewFrame++; previewAnimId = schedule_preview(anim_greedy);
+    }
+
+    // ---- 第8章: 爬楼梯 DP ----
+    function anim_climb_stairs() {
+      const t = previewFrame * 0.03;
+      clear();
+      const steps = 7, sw = (W - 40) / steps, baseY = H - 25;
+      // Draw stairs
+      for (let i = 0; i < steps; i++) {
+        const x = 20 + i * sw;
+        const y = baseY - i * 14;
+        ctx.fillStyle = i <= Math.floor(t * 0.8) % (steps + 2) ? '#e5c07b' : '#2a3040';
+        ctx.fillRect(x, y, sw - 2, 15);
+        ctx.strokeStyle = '#5c6370'; ctx.strokeRect(x, y, sw - 2, 15);
+        // DP value
+        if (i <= Math.floor(t * 0.8) % (steps + 2)) {
+          const dp = [1, 1, 2, 3, 5, 8, 13][i] || 1;
+          ctx.fillStyle = '#1e2336'; ctx.font = 'bold 10px sans-serif'; ctx.textAlign = 'center';
+          ctx.fillText(dp, x + sw / 2, y + 11);
+        }
+      }
+      // Person jumping
+      const jumpPhase = (t * 0.8) % (steps + 2);
+      const curStep = Math.floor(jumpPhase);
+      const px = 20 + curStep * sw + sw / 2;
+      const py = baseY - curStep * 14 - 20 - Math.sin((jumpPhase % 1) * Math.PI) * 15;
+      ctx.fillStyle = '#e5c07b';
+      ctx.beginPath(); ctx.arc(px, py, 6, 0, Math.PI * 2); ctx.fill();
+      // Trail
+      for (let i = 0; i < 3; i++) {
+        const trailT = Math.max(0, jumpPhase - 0.3 - i * 0.2);
+        const ts = Math.floor(trailT);
+        if (ts >= 0 && ts < steps) {
+          const tx = 20 + ts * sw + sw / 2;
+          const ty = baseY - ts * 14 - 20 - Math.sin((trailT % 1) * Math.PI) * 15;
+          ctx.fillStyle = `rgba(229,192,123,${0.3 - i * 0.1})`;
+          ctx.beginPath(); ctx.arc(tx, ty, 4 - i, 0, Math.PI * 2); ctx.fill();
+        }
+      }
+      label('爬楼梯 DP', '#e5c07b');
+      previewFrame++; previewAnimId = schedule_preview(anim_climb_stairs);
+    }
+
+    // ---- 第9章: 编辑距离矩阵 ----
+    function anim_edit_dist() {
+      const t = previewFrame * 0.025;
+      clear();
+      const s1 = 'ALGO', s2 = 'LOGO';
+      const cellSize = 32, startX = (W - (s2.length + 1) * cellSize) / 2, startY = 20;
+      // Matrix
+      for (let i = 0; i <= s1.length; i++) {
+        for (let j = 0; j <= s2.length; j++) {
+          const x = startX + j * cellSize, y = startY + i * cellSize;
+          const active = i + j <= Math.floor(t * 1.5) % ((s1.length + 1) * (s2.length + 1));
+          ctx.fillStyle = active ? `rgba(229,192,123,${0.15 + Math.sin(t + i + j) * 0.1})` : '#1e2336';
+          ctx.fillRect(x, y, cellSize - 2, cellSize - 2);
+          ctx.strokeStyle = active ? '#e5c07b' : '#2a3040'; ctx.lineWidth = 1; ctx.strokeRect(x, y, cellSize - 2, cellSize - 2);
+          if (i === 0 && j > 0) { ctx.fillStyle = '#61afef'; ctx.font = '10px sans-serif'; ctx.textAlign = 'center'; ctx.fillText(s2[j - 1], x + cellSize / 2, y + 20); }
+          else if (j === 0 && i > 0) { ctx.fillStyle = '#e06c75'; ctx.font = '10px sans-serif'; ctx.textAlign = 'center'; ctx.fillText(s1[i - 1], x + cellSize / 2, y + 20); }
+          else if (i > 0 && j > 0 && active) {
+            ctx.fillStyle = (s1[i - 1] === s2[j - 1]) ? '#98c379' : '#e5c07b';
+            ctx.font = 'bold 10px sans-serif'; ctx.textAlign = 'center';
+            const val = (i === j && s1[i - 1] === s2[j - 1]) ? i - 1 : Math.min(i, j) + 1;
+            ctx.fillText(val, x + cellSize / 2, y + 20);
+          }
+        }
+      }
+      label('编辑距离', '#e5c07b');
+      previewFrame++; previewAnimId = schedule_preview(anim_edit_dist);
+    }
+
+    // ---- 第10章: 迷宫回溯 ----
+    function anim_maze() {
+      const t = previewFrame * 0.025;
+      clear();
+      const cols = 15, rows = 10, cs = (W - 10) / cols, rs = (H - 10) / rows;
+      // Simple maze grid
+      const maze = [
+        [0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+        [0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0],
+        [0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0],
+        [1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0],
+        [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+        [0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0],
+        [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+        [1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0],
+        [0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+        [0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0]
+      ];
+      // Draw maze
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const x = 5 + c * cs, y = 5 + r * rs;
+          ctx.fillStyle = maze[r][c] ? '#2a3040' : '#1e2336';
+          ctx.fillRect(x, y, cs - 1, rs - 1);
+        }
+      }
+      // DFS path animation
+      const pathLen = Math.floor(t * 2) % 40;
+      const path = [[0, 0], [1, 0], [2, 0], [2, 1], [2, 2], [3, 2], [4, 2], [4, 3], [4, 4], [4, 5], [5, 5], [6, 5], [6, 6], [6, 7], [7, 7], [8, 7], [8, 8], [8, 9], [9, 9], [10, 9], [11, 9], [12, 9], [13, 9], [14, 9], [14, 10]];
+      for (let i = 0; i < Math.min(pathLen, path.length); i++) {
+        const [c, r] = path[i];
+        if (r < rows && c < cols) {
+          const x = 5 + c * cs, y = 5 + r * rs;
+          const alpha = 0.3 + 0.7 * (i / Math.min(pathLen, path.length));
+          ctx.fillStyle = `rgba(229,192,123,${alpha})`;
+          ctx.fillRect(x, y, cs - 1, rs - 1);
+        }
+      }
+      // Current position
+      if (pathLen < path.length) {
+        const [c, r] = path[pathLen];
+        const x = 5 + c * cs, y = 5 + r * rs;
+        ctx.fillStyle = '#e5c07b';
+        ctx.beginPath(); ctx.arc(x + cs / 2, y + rs / 2, 4, 0, Math.PI * 2); ctx.fill();
+      }
+      label('回溯 · 迷宫', '#e5c07b');
+      previewFrame++; previewAnimId = schedule_preview(anim_maze);
+    }
+
+    // ---- 第11章: BFS 分支限界 ----
+    function anim_bfs() {
+      const t = previewFrame * 0.025;
+      clear();
+      // Tree nodes
+      const nodes = [
+        { x: W / 2, y: 25, d: 0 }, { x: W / 2 - 50, y: 55, d: 1 }, { x: W / 2 + 50, y: 55, d: 1 },
+        { x: W / 2 - 80, y: 90, d: 2 }, { x: W / 2 - 20, y: 90, d: 2 }, { x: W / 2 + 20, y: 90, d: 2 }, { x: W / 2 + 80, y: 90, d: 2 },
+        { x: W / 2 - 90, y: 130, d: 3 }, { x: W / 2 - 50, y: 130, d: 3 }, { x: W / 2 - 10, y: 130, d: 3 }, { x: W / 2 + 30, y: 130, d: 3 }
+      ];
+      const edges = [[0, 1], [0, 2], [1, 3], [1, 4], [2, 5], [2, 6], [3, 7], [3, 8], [4, 9], [5, 10]];
+      const wave = Math.floor(t * 0.8) % 5;
+      // Draw edges
+      ctx.strokeStyle = 'rgba(74,143,212,0.2)'; ctx.lineWidth = 1;
+      edges.forEach(([a, b]) => {
+        ctx.beginPath(); ctx.moveTo(nodes[a].x, nodes[a].y); ctx.lineTo(nodes[b].x, nodes[b].y); ctx.stroke();
+      });
+      // Draw nodes
+      nodes.forEach((n, i) => {
+        const isActive = n.d <= wave;
+        const isCurrent = n.d === wave;
+        ctx.fillStyle = isCurrent ? '#4a8fd4' : (isActive ? '#233d5c' : '#1e2336');
+        ctx.beginPath(); ctx.arc(n.x, n.y, isCurrent ? 7 : 5, 0, Math.PI * 2); ctx.fill();
+        if (isCurrent) {
+          ctx.strokeStyle = '#4a8fd4'; ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.arc(n.x, n.y, 10, 0, Math.PI * 2); ctx.stroke();
+        }
+      });
+      // Queue indicator
+      ctx.fillStyle = '#4a8fd4'; ctx.font = '11px sans-serif'; ctx.textAlign = 'left';
+      ctx.fillText('队列:', 10, H - 10);
+      for (let i = 0; i < Math.min(wave + 1, 4); i++) {
+        ctx.fillStyle = `rgba(74,143,212,${0.4 + i * 0.2})`;
+        ctx.fillRect(45 + i * 18, H - 20, 14, 14);
+      }
+      label('BFS 层次展开', '#4a8fd4');
+      previewFrame++; previewAnimId = schedule_preview(anim_bfs);
+    }
+
+    // ---- 第12章: 网络流 ----
+    function anim_flow() {
+      const t = previewFrame * 0.03;
+      clear();
+      // Source, intermediate nodes, sink
+      const src = { x: 30, y: H / 2 }, sink = { x: W - 30, y: H / 2 };
+      const mids = [{ x: 90, y: 40 }, { x: 90, y: H / 2 }, { x: 90, y: H - 40 }, { x: 170, y: 40 }, { x: 170, y: H / 2 }, { x: 170, y: H - 40 }];
+      // Draw edges with flow animation
+      const draw_edge = (a, b, flow, cap) => {
+        ctx.strokeStyle = `rgba(152,195,121,${0.3 + flow * 0.5})`; ctx.lineWidth = 1 + flow * 2;
+        ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+        // Animated flow particles
+        const dx = b.x - a.x, dy = b.y - a.y, dist = Math.sqrt(dx * dx + dy * dy);
+        const particles = Math.floor(dist / 20);
+        for (let p = 0; p < particles; p++) {
+          const pt = ((t * 0.5 + p / particles) % 1);
+          const px = a.x + dx * pt, py = a.y + dy * pt;
+          ctx.fillStyle = `rgba(152,195,121,${0.5 + Math.sin(t * 3 + p) * 0.3})`;
+          ctx.beginPath(); ctx.arc(px, py, 2, 0, Math.PI * 2); ctx.fill();
+        }
+      };
+      mids.slice(0, 3).forEach(m => draw_edge(src, m, 0.6, 10));
+      mids.slice(0, 3).forEach((m, i) => draw_edge(m, mids[i + 3], 0.5, 8));
+      mids.slice(3).forEach(m => draw_edge(m, sink, 0.7, 10));
+      // Nodes
+      ctx.fillStyle = '#98c379'; ctx.beginPath(); ctx.arc(src.x, src.y, 10, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#1e2336'; ctx.font = 'bold 10px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('S', src.x, src.y + 4);
+      ctx.fillStyle = '#e06c75'; ctx.beginPath(); ctx.arc(sink.x, sink.y, 10, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#1e2336'; ctx.fillText('T', sink.x, sink.y + 4);
+      mids.forEach(m => { ctx.fillStyle = '#2a3040'; ctx.beginPath(); ctx.arc(m.x, m.y, 6, 0, Math.PI * 2); ctx.fill(); });
+      label('最大网络流', '#98c379');
+      previewFrame++; previewAnimId = schedule_preview(anim_flow);
+    }
+
+    // ---- 第13章: 最短路径 ----
+    function anim_shortest() {
+      const t = previewFrame * 0.025;
+      clear();
+      // Map-like nodes
+      const nodes = [
+        { x: 40, y: 40, label: 'A', d: 0 }, { x: 120, y: 30, label: 'B', d: 4 }, { x: 200, y: 50, label: 'C', d: 7 },
+        { x: 80, y: 90, label: 'D', d: 3 }, { x: 160, y: 100, label: 'E', d: 5 }, { x: 230, y: 110, label: 'F', d: 9 }
+      ];
+      const edges = [[0, 1, 4], [0, 3, 3], [1, 2, 2], [1, 4, 1], [3, 4, 2], [4, 5, 3], [2, 5, 5]];
+      // Draw edges
+      edges.forEach(([a, b, w]) => {
+        ctx.strokeStyle = 'rgba(152,195,121,0.2)'; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(nodes[a].x, nodes[a].y); ctx.lineTo(nodes[b].x, nodes[b].y); ctx.stroke();
+        const mx = (nodes[a].x + nodes[b].x) / 2, my = (nodes[a].y + nodes[b].y) / 2;
+        ctx.fillStyle = '#5c6370'; ctx.font = '9px sans-serif'; ctx.textAlign = 'center'; ctx.fillText(w, mx, my - 3);
+      });
+      // Highlight shortest path progressively
+      const pathEdges = [[0, 3], [3, 4], [4, 5]];
+      const pathPhase = Math.floor(t) % 5;
+      pathEdges.forEach(([a, b], i) => {
+        if (i < pathPhase) {
+          ctx.strokeStyle = '#98c379'; ctx.lineWidth = 3;
+          ctx.beginPath(); ctx.moveTo(nodes[a].x, nodes[a].y); ctx.lineTo(nodes[b].x, nodes[b].y); ctx.stroke();
+        }
+      });
+      // Nodes
+      nodes.forEach((n, i) => {
+        const isPath = [0, 3, 4, 5].includes(i);
+        ctx.fillStyle = isPath ? '#98c379' : '#2a3040';
+        ctx.beginPath(); ctx.arc(n.x, n.y, isPath ? 10 : 7, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#fff'; ctx.font = 'bold 10px sans-serif'; ctx.textAlign = 'center';
+        ctx.fillText(n.label, n.x, n.y + 4);
+        if (isPath && i <= pathPhase + 1) {
+          ctx.fillStyle = '#98c379'; ctx.font = '9px sans-serif';
+          ctx.fillText(`d=${n.d}`, n.x, n.y - 14);
+        }
+      });
+      label('最短路径', '#98c379');
+      previewFrame++; previewAnimId = schedule_preview(anim_shortest);
+    }
+
+    // ---- 第14章: KMP 字符串匹配 ----
+    function anim_kmp() {
+      const t = previewFrame * 0.03;
+      clear();
+      const text = 'ABABABCABAB', pattern = 'ABABC';
+      const charW = 20, startX = (W - text.length * charW) / 2;
+      const phase = Math.floor(t) % (text.length + 3);
+      // Draw text
+      ctx.font = 'bold 14px monospace'; ctx.textAlign = 'center';
+      for (let i = 0; i < text.length; i++) {
+        const x = startX + i * charW;
+        ctx.fillStyle = (i < phase) ? '#c678dd' : '#5c6370';
+        ctx.fillText(text[i], x + charW / 2, 45);
+      }
+      // Draw pattern sliding
+      const patStart = Math.min(phase, text.length - pattern.length);
+      const slide = (t % 1) * charW;
+      for (let i = 0; i < pattern.length; i++) {
+        const x = startX + (patStart) * charW + i * charW + (phase < text.length ? slide : 0);
+        const y = 75;
+        const match = i < phase - patStart;
+        ctx.fillStyle = match ? '#98c379' : '#c678dd';
+        ctx.fillRect(x + 2, y - 14, charW - 4, 20);
+        ctx.fillStyle = '#fff'; ctx.fillText(pattern[i], x + charW / 2, y);
+      }
+      // Arrow showing shift
+      if (phase < text.length) {
+        const ax = startX + patStart * charW + pattern.length * charW / 2;
+        ctx.strokeStyle = '#c678dd'; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(ax, 90); ctx.lineTo(ax + 10, 95); ctx.lineTo(ax, 100); ctx.stroke();
+      }
+      label('KMP 匹配', '#c678dd');
+      previewFrame++; previewAnimId = schedule_preview(anim_kmp);
+    }
+
+    // ---- 第15章: 红黑树 ----
+    function anim_rbtree() {
+      const t = previewFrame * 0.025;
+      clear();
+      // Simple BST with color
+      const tree = [
+        { x: W / 2, y: 25, v: 7, c: 'B', p: -1 },
+        { x: W / 2 - 50, y: 60, v: 3, c: 'R', p: 0 }, { x: W / 2 + 50, y: 60, v: 10, c: 'R', p: 0 },
+        { x: W / 2 - 80, y: 100, v: 1, c: 'B', p: 1 }, { x: W / 2 - 20, y: 100, v: 5, c: 'B', p: 1 },
+        { x: W / 2 + 30, y: 100, v: 8, c: 'B', p: 2 }, { x: W / 2 + 80, y: 100, v: 12, c: 'B', p: 2 }
+      ];
+      // Edges
+      ctx.strokeStyle = '#5c6370'; ctx.lineWidth = 1;
+      tree.forEach((n, i) => {
+        if (n.p >= 0) {
+          ctx.beginPath(); ctx.moveTo(tree[n.p].x, tree[n.p].y + 10); ctx.lineTo(n.x, n.y - 10); ctx.stroke();
+        }
+      });
+      // Rotation highlight
+      const rotNode = Math.floor(t) % tree.length;
+      // Nodes
+      tree.forEach((n, i) => {
+        const isRot = i === rotNode;
+        ctx.fillStyle = n.c === 'R' ? '#e06c75' : '#2a3040';
+        ctx.beginPath(); ctx.arc(n.x, n.y, isRot ? 13 : 10, 0, Math.PI * 2); ctx.fill();
+        if (isRot) {
+          ctx.strokeStyle = '#c678dd'; ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.arc(n.x, n.y, 15, 0, Math.PI * 2); ctx.stroke();
+        }
+        ctx.fillStyle = n.c === 'R' ? '#fff' : '#abb2bf';
+        ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'center'; ctx.fillText(n.v, n.x, n.y + 4);
+      });
+      label('红黑树', '#c678dd');
+      previewFrame++; previewAnimId = schedule_preview(anim_rbtree);
+    }
+
+    // ---- 第16章: 位运算 ----
+    function anim_bitwise() {
+      const t = previewFrame * 0.03;
+      clear();
+      const rows = 8, bh = 14, startY = 20;
+      for (let r = 0; r < rows; r++) {
+        const val = (r + 1) * 3 + Math.floor(t * 0.3) % 50;
+        const bits = val.toString(2).padStart(8, '0');
+        const startX = (W - bits.length * 22) / 2;
+        for (let i = 0; i < bits.length; i++) {
+          const x = startX + i * 22, y = startY + r * (bh + 4);
+          const flip = Math.sin(t * 2 + r + i * 0.5) > 0;
+          ctx.fillStyle = bits[i] === '1' ? (flip ? '#c678dd' : '#61afef') : '#2a3040';
+          ctx.fillRect(x, y, 18, bh);
+          ctx.fillStyle = bits[i] === '1' ? '#fff' : '#5c6370';
+          ctx.font = '10px monospace'; ctx.textAlign = 'center'; ctx.fillText(bits[i], x + 9, y + 11);
+        }
+      }
+      // Operation flash
+      const ops = ['&', '|', '^', '~', '<<', '>>'];
+      const op = ops[Math.floor(t) % ops.length];
+      ctx.fillStyle = 'rgba(198,120,221,0.2)'; ctx.fillRect(W / 2 - 20, H - 30, 40, 22);
+      ctx.fillStyle = '#c678dd'; ctx.font = 'bold 14px sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText(op, W / 2, H - 14);
+      label('位运算魔法', '#c678dd');
+      previewFrame++; previewAnimId = schedule_preview(anim_bitwise);
+    }
+
+    // ---- 第17章: 蒙特卡洛 ----
+    function anim_monte_carlo() {
+      const t = previewFrame * 0.03;
+      clear();
+      const cx = W / 2, cy = H / 2 + 5, r = 55;
+      // Square
+      ctx.strokeStyle = '#5c6370'; ctx.lineWidth = 1;
+      ctx.strokeRect(cx - r, cy - r, r * 2, r * 2);
+      // Circle
+      ctx.strokeStyle = '#d19a66'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.stroke();
+      // Random points
+      const total = 200;
+      const shown = Math.min(total, Math.floor(t * 10));
+      let inside = 0;
+      for (let i = 0; i < shown; i++) {
+        const seed = i * 997;
+        const px = cx - r + (Math.sin(seed) * 0.5 + 0.5) * r * 2;
+        const py = cy - r + (Math.cos(seed * 1.3) * 0.5 + 0.5) * r * 2;
+        const isIn = (px - cx) * (px - cx) + (py - cy) * (py - cy) < r * r;
+        if (isIn) inside++;
+        ctx.fillStyle = isIn ? '#d19a66' : '#5c6370';
+        ctx.beginPath(); ctx.arc(px, py, 1.5, 0, Math.PI * 2); ctx.fill();
+      }
+      // Estimate
+      if (shown > 0) {
+        const pi = (inside / shown * 4).toFixed(3);
+        ctx.fillStyle = '#d19a66'; ctx.font = '11px sans-serif'; ctx.textAlign = 'left';
+        ctx.fillText(`π ≈ ${pi}`, 10, H - 10);
+      }
+      label('蒙特卡洛', '#d19a66');
+      previewFrame++; previewAnimId = schedule_preview(anim_monte_carlo);
+    }
+
+    // ---- 第18章: GPS 导航 ----
+    function anim_gps() {
+      const t = previewFrame * 0.025;
+      clear();
+      // Roads
+      ctx.strokeStyle = '#2a3040'; ctx.lineWidth = 4;
+      const roads = [[20, 40, 120, 40], [120, 40, 120, 100], [120, 40, 220, 40], [220, 40, 220, 120], [20, 100, 120, 100], [120, 100, 220, 100], [20, 100, 20, 140], [120, 100, 120, 140]];
+      roads.forEach(([x1, y1, x2, y2]) => { ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); });
+      // Route
+      const route = [[20, 40], [120, 40], [120, 100], [120, 140]];
+      ctx.strokeStyle = '#d19a66'; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.moveTo(route[0][0], route[0][1]);
+      for (let i = 1; i < route.length; i++) ctx.lineTo(route[i][0], route[i][1]);
+      ctx.stroke();
+      // Moving car
+      const pathLen = route.length - 1;
+      const carPos = (t * 0.5) % pathLen;
+      const seg = Math.floor(carPos);
+      const frac = carPos - seg;
+      const cx = route[seg][0] + (route[seg + 1][0] - route[seg][0]) * frac;
+      const cy = route[seg][1] + (route[seg + 1][1] - route[seg][1]) * frac;
+      ctx.fillStyle = '#d19a66'; ctx.beginPath(); ctx.arc(cx, cy, 6, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#fff'; ctx.font = '8px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('🚗', cx, cy + 3);
+      // Destination
+      ctx.fillStyle = '#e06c75'; ctx.beginPath(); ctx.arc(route[route.length - 1][0], route[route.length - 1][1], 8, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#fff'; ctx.fillText('🏁', route[route.length - 1][0], route[route.length - 1][1] + 4);
+      label('GPS 导航', '#d19a66');
+      previewFrame++; previewAnimId = schedule_preview(anim_gps);
+    }
+
+    // ---- 第19章: 链表反转 ----
+    function anim_linked_list() {
+      const t = previewFrame * 0.03;
+      clear();
+      const nodes = 6, nw = 28, nh = 18, gap = 18;
+      const startX = (W - (nodes * (nw + gap) - gap)) / 2;
+      const y = H / 2 - 10;
+      // Draw nodes
+      for (let i = 0; i < nodes; i++) {
+        const x = startX + i * (nw + gap);
+        const isReversed = i < Math.floor(t * 0.6) % (nodes + 2);
+        ctx.fillStyle = isReversed ? '#c678dd' : '#2a3040';
+        ctx.fillRect(x, y, nw, nh);
+        ctx.strokeStyle = isReversed ? '#c678dd' : '#5c6370'; ctx.lineWidth = 1; ctx.strokeRect(x, y, nw, nh);
+        // Value
+        ctx.fillStyle = '#fff'; ctx.font = '10px sans-serif'; ctx.textAlign = 'center';
+        ctx.fillText(i + 1, x + nw / 2, y + 12);
+        // Arrow
+        if (i < nodes - 1) {
+          const ax = x + nw, ay = y + nh / 2;
+          ctx.strokeStyle = isReversed ? '#c678dd' : '#5c6370';
+          ctx.beginPath();
+          if (isReversed) {
+            ctx.moveTo(ax + gap, ay); ctx.lineTo(ax, ay);
+          } else {
+            ctx.moveTo(ax, ay); ctx.lineTo(ax + gap, ay);
+          }
+          ctx.stroke();
+          // Arrowhead
+          ctx.beginPath();
+          const hx = isReversed ? ax : ax + gap;
+          ctx.moveTo(hx, ay - 3); ctx.lineTo(hx + (isReversed ? -1 : 1) * 5, ay); ctx.lineTo(hx, ay + 3); ctx.fill();
+        }
+      }
+      label('链表反转', '#c678dd');
+      previewFrame++; previewAnimId = schedule_preview(anim_linked_list);
+    }
+
+    // ---- 第20章: 滚动数组 ----
+    function anim_rolling() {
+      const t = previewFrame * 0.03;
+      clear();
+      const arrW = 28, cols = 7;
+      const startX = (W - cols * arrW) / 2;
+      // 2D representation fading
+      for (let row = 0; row < 3; row++) {
+        const alpha = row === 2 ? 1 : Math.max(0, 1 - (t * 0.5) % 3 + row);
+        for (let c = 0; c < cols; c++) {
+          const x = startX + c * arrW, y = 30 + row * (arrW + 4);
+          const val = [1, 2, 3, 5, 8, 13, 21][c] || 1;
+          ctx.fillStyle = `rgba(229,192,123,${alpha * 0.3})`;
+          ctx.fillRect(x, y, arrW - 2, arrW - 2);
+          if (alpha > 0.3) {
+            ctx.fillStyle = `rgba(229,192,123,${alpha})`;
+            ctx.font = '10px sans-serif'; ctx.textAlign = 'center'; ctx.fillText(val, x + arrW / 2, y + 18);
+          }
+        }
+      }
+      // 1D rolling array overlay
+      const activeCol = Math.floor(t * 0.8) % cols;
+      for (let c = 0; c < cols; c++) {
+        const x = startX + c * arrW, y = H - 50;
+        const isActive = c === activeCol || c === activeCol - 1;
+        ctx.fillStyle = isActive ? '#e5c07b' : '#2a3040';
+        ctx.fillRect(x, y, arrW - 2, arrW - 2);
+        ctx.fillStyle = '#fff'; ctx.font = '10px sans-serif'; ctx.textAlign = 'center';
+        ctx.fillText([1, 2, 3, 5, 8, 13, 21][c] || 1, x + arrW / 2, y + 18);
+      }
+      // Arrow showing roll
+      ctx.strokeStyle = '#e5c07b'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(startX + cols * arrW + 5, H - 40); ctx.lineTo(startX + cols * arrW + 20, H - 40); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(startX + cols * arrW + 20, H - 43); ctx.lineTo(startX + cols * arrW + 25, H - 40); ctx.lineTo(startX + cols * arrW + 20, H - 37); ctx.fill();
+      label('降维打击', '#e5c07b');
+      previewFrame++; previewAnimId = schedule_preview(anim_rolling);
+    }
+
+    // ---- 第21章: 滑动窗口 ----
+    function anim_sliding_window() {
+      const t = previewFrame * 0.03;
+      clear();
+      const data = [3, 1, 4, 1, 5, 9, 2, 6, 5, 3, 5, 8];
+      const cw = 18, startX = (W - data.length * cw) / 2;
+      const winSize = 4;
+      const winStart = Math.floor(t * 0.6) % (data.length - winSize + 1);
+      // Draw array
+      for (let i = 0; i < data.length; i++) {
+        const x = startX + i * cw, y = H / 2 - 15;
+        const inWindow = i >= winStart && i < winStart + winSize;
+        ctx.fillStyle = inWindow ? '#d19a66' : '#2a3040';
+        ctx.fillRect(x, y, cw - 2, 28);
+        ctx.fillStyle = '#fff'; ctx.font = '10px sans-serif'; ctx.textAlign = 'center';
+        ctx.fillText(data[i], x + cw / 2, y + 18);
+      }
+      // Window brackets
+      ctx.strokeStyle = '#d19a66'; ctx.lineWidth = 2;
+      const wx1 = startX + winStart * cw - 3, wx2 = startX + (winStart + winSize) * cw - 3;
+      ctx.beginPath(); ctx.moveTo(wx1, H / 2 - 22); ctx.lineTo(wx1, H / 2 + 18); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(wx2, H / 2 - 22); ctx.lineTo(wx2, H / 2 + 18); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(wx1, H / 2 - 22); ctx.lineTo(wx1 + 10, H / 2 - 22); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(wx2 - 10, H / 2 - 22); ctx.lineTo(wx2, H / 2 - 22); ctx.stroke();
+      // Sum display
+      const sum = data.slice(winStart, winStart + winSize).reduce((a, b) => a + b, 0);
+      ctx.fillStyle = '#d19a66'; ctx.font = '11px sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText(`sum=${sum}`, W / 2, H - 15);
+      label('滑动窗口', '#d19a66');
+      previewFrame++; previewAnimId = schedule_preview(anim_sliding_window);
+    }
+
+    // ---- 第22章: 烟花庆祝 ----
+    function anim_firework() {
+      const t = previewFrame * 0.03;
+      clear();
+      // Background gradient
+      const grd = ctx.createLinearGradient(0, 0, 0, H);
+      grd.addColorStop(0, '#151926'); grd.addColorStop(1, '#1a2030');
+      ctx.fillStyle = grd; ctx.fillRect(0, 0, W, H);
+      // Multiple fireworks
+      for (let f = 0; f < 3; f++) {
+        const ft = (t + f * 2) % 5;
+        const fx = 50 + (f * 80 + Math.sin(f * 3) * 30) % (W - 100);
+        const fy = 40 + Math.sin(f * 2) * 20;
+        if (ft < 1) {
+          // Rising
+          const ry = H - 20 - ft * (H - fy - 20);
+          ctx.fillStyle = '#e5c07b'; ctx.beginPath(); ctx.arc(fx, ry, 2, 0, Math.PI * 2); ctx.fill();
+        } else if (ft < 4) {
+          // Explosion
+          const phase = ft - 1;
+          const particles = 16;
+          for (let p = 0; p < particles; p++) {
+            const angle = (p / particles) * Math.PI * 2;
+            const dist = phase * 40;
+            const px = fx + Math.cos(angle) * dist;
+            const py = fy + Math.sin(angle) * dist;
+            const alpha = 1 - phase / 3;
+            const colors = ['#e5c07b', '#98c379', '#4a8fd4', '#c678dd', '#e06c75'];
+            ctx.fillStyle = colors[p % colors.length].replace(')', `,${alpha})`).replace('rgb', 'rgba').replace('#', '');
+            ctx.fillStyle = colors[p % colors.length];
+            ctx.globalAlpha = alpha;
+            ctx.beginPath(); ctx.arc(px, py, 2 + Math.sin(p) * 1, 0, Math.PI * 2); ctx.fill();
+          }
+          ctx.globalAlpha = 1;
+        }
+      }
+      // Text
+      ctx.fillStyle = '#98c379'; ctx.font = 'bold 16px sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText('🎉 算法之旅', W / 2, H - 20);
+      label('毕业庆祝', '#98c379');
+      previewFrame++; previewAnimId = schedule_preview(anim_firework);
+    }
+
+    // Route to correct animation
+    function start_preview_animation(ch) {
+      const fn = window[`anim_${ch.anim}`];
+      if (fn) fn();
+      else { clear(); label('算法演示', '#abb2bf'); }
+    }
+
+    // ======================== 其余原有逻辑 ========================
+    function chapter_href(id, algorithm) {
+      const base = `chapters/ch${String(id).padStart(2, '0')}.html`;
+      return algorithm ? `${base}?algo=${encodeURIComponent(algorithm)}` : base;
+    }
+
+    function visit_chapter(id, algorithm = null) {
+      DHLearning.visitChapter(id);
+      if (algorithm) DHLearning.updateLast(id, algorithm, null, 0);
+      window.location.href = chapter_href(id, algorithm);
+    }
+
+    function update_continue_button() {
+      learningState = DHLearning.load();
+      const button = document.getElementById('continueBtn');
+      if (!learningState.last) {
+        button.href = chapter_href(0);
+        button.textContent = '▶ 从第 0 章开始';
+        return;
+      }
+      const chapter = chapters.find(item => item.id === learningState.last.chapter) || chapters[0];
+      button.href = chapter_href(chapter.id, learningState.last.algorithm);
+      button.textContent = `▶ 继续学习 · 第 ${chapter.id} 章`;
+      button.onclick = event => {
+        event.preventDefault();
+        visit_chapter(chapter.id, learningState.last.algorithm);
+      };
+    }
+
+    function update_progress_ui() {
+      learningState = DHLearning.load();
+      progress = DHLearning.completedChapterIds(siteIndex, learningState);
+      const firstIncomplete = chapters.find(chapter => !progress.includes(chapter.id));
+      recommendedId = learningState.last
+        ? learningState.last.chapter
+        : (firstIncomplete ? firstIncomplete.id : chapters.length - 1);
+      const completed = progress.length;
+      const demosDone = learningState.completedDemos.length;
+      document.getElementById('statCompleted').textContent = completed;
+      document.getElementById('statTotal').textContent = chapters.length;
+      document.getElementById('statDemos').textContent = demosDone;
+      document.getElementById('progressFill').style.width = `${(completed / chapters.length * 100).toFixed(1)}%`;
+      document.querySelectorAll('.node').forEach(node => {
+        const id = Number(node.dataset.id);
+        const isCompleted = progress.includes(id);
+        const isCurrent = id === recommendedId && !isCompleted;
+        node.classList.toggle('completed', isCompleted);
+        node.classList.toggle('available', isCurrent);
+        node.classList.toggle('unvisited', !isCompleted && !isCurrent);
+        const meta = node.querySelector('.node-mobile-meta');
+        const chapter = chapters.find(item => item.id === id);
+        if (meta && chapter) {
+          meta.textContent = `${chapter.demos} 个演示 · ${isCompleted ? '本章已完成' : (isCurrent ? '继续学习' : '可随时学习')}`;
+        }
+      });
+      const dots = document.getElementById('progressDots');
+      dots.innerHTML = '';
+      chapters.forEach(ch => {
+        const dot = document.createElement('button');
+        dot.type = 'button';
+        dot.className = 'progress-dot';
+        if (progress.includes(ch.id)) dot.classList.add('completed');
+        else if (ch.id === recommendedId) dot.classList.add('current');
+        dot.title = ch.title;
+        dot.setAttribute('aria-label', `定位到第 ${ch.id} 章：${ch.title}`);
+        dot.addEventListener('click', () => {
+          const n = document.querySelector(`.node[data-id="${ch.id}"]`);
+          if (n) n.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
+        dots.appendChild(dot);
+      });
+      update_continue_button();
+    }
+
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      if (confirm('确定要清空所有演示进度吗？')) {
+        DHLearning.reset();
+        location.reload();
+      }
+    });
+
+    function create_particles() {
+      if (!previewMotionEnabled || window.matchMedia('(max-width: 768px)').matches) return;
+      for (let i = 0; i < 24; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        const size = Math.random() * 9 + 6;
+        p.style.cssText = `width:${size}px;height:${size}px;left:${Math.random() * 100}vw;background:${['#4a8fd4', '#98c379', '#c678dd', '#e5c07b'][Math.floor(Math.random() * 4)]};animation-duration:${Math.random() * 10 + 10}s;animation-delay:${Math.random() * 5}s`;
+        document.body.appendChild(p);
+      }
+    }
+
+    const searchInput = document.getElementById('algorithmSearch');
+    const searchResults = document.getElementById('searchResults');
+    const searchable = [];
+    siteIndex.chapters.forEach(chapter => {
+      searchable.push({
+        chapter: Number(chapter.id),
+        key: null,
+        title: chapter.title,
+        meta: `第 ${chapter.id} 章`,
+      });
+      (chapter.algorithms || []).forEach(algo => searchable.push({
+        chapter: Number(chapter.id),
+        key: algo.key,
+        title: algo.title,
+        meta: `第 ${chapter.id} 章 · ${chapter.title}`,
+      }));
+    });
+
+    function close_search() {
+      searchResults.classList.remove('visible');
+      searchInput.setAttribute('aria-expanded', 'false');
+    }
+
+    function render_search_results(query) {
+      const normalized = query.trim().toLowerCase().replace(/\s+/g, '');
+      searchResults.innerHTML = '';
+      if (!normalized) {
+        close_search();
+        return;
+      }
+      const matches = searchable
+        .filter(item => `${item.title}${item.meta}`.toLowerCase().replace(/\s+/g, '').includes(normalized))
+        .slice(0, 9);
+      if (!matches.length) {
+        const empty = document.createElement('div');
+        empty.className = 'search-empty';
+        empty.textContent = '没有找到，换个关键词试试';
+        searchResults.appendChild(empty);
+      } else {
+        matches.forEach(item => {
+          const link = document.createElement('a');
+          link.className = 'search-result';
+          link.href = chapter_href(item.chapter, item.key);
+          const title = document.createElement('span');
+          title.textContent = item.title;
+          const meta = document.createElement('small');
+          meta.textContent = item.meta;
+          link.append(title, meta);
+          link.addEventListener('click', event => {
+            event.preventDefault();
+            visit_chapter(item.chapter, item.key);
+          });
+          searchResults.appendChild(link);
+        });
+      }
+      searchResults.classList.add('visible');
+      searchInput.setAttribute('aria-expanded', 'true');
+    }
+
+    searchInput.setAttribute('aria-expanded', 'false');
+    searchInput.addEventListener('input', () => render_search_results(searchInput.value));
+    searchInput.addEventListener('keydown', event => {
+      if (event.key === 'Escape') {
+        close_search();
+        searchInput.blur();
+      }
+    });
+    document.addEventListener('click', event => {
+      if (!event.target.closest('.search-shell')) close_search();
+    });
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden && previewAnimId) {
+        cancelAnimationFrame(previewAnimId);
+        previewAnimId = null;
+      } else if (!document.hidden && currentPreviewChapter) {
+        update_preview(currentPreviewChapter);
+      }
+    });
+
+    build_map();
+    update_progress_ui();
+    update_preview(chapters[0]);
+    create_particles();
+  </script>
+
+</body>
+
+</html>

@@ -1,0 +1,681 @@
+{
+  "meta": {
+    "algo": "01_循环累加",
+    "source_lines": [
+      "/* 循环累加 */",
+      "#include <stdio.h>",
+      "/* 循环累加法：O(n)。n 较大时结果可能超过 int 范围，因此用 long long 保存和。 */",
+      "long long sum_loop(int n) {",
+      "    long long sum = 0;",
+      "    for (int i = 1; i <= n; i++) {",
+      "        sum += i;",
+      "    }",
+      "    return sum;",
+      "}",
+      "int main(void) {",
+      "    int test_values[] = {10, 100, 10000, 1000000};",
+      "    int count = sizeof(test_values) / sizeof(test_values[0]);",
+      "    printf(\"方法一：循环累加（O(n)）\\n\");",
+      "    for (int k = 0; k < count; k++) {",
+      "        int n = test_values[k];",
+      "        printf(\"  1 + 2 + ... + %-7d = %lld\\n\", n, sum_loop(n));",
+      "    }",
+      "    return 0;",
+      "}"
+    ],
+    "track_vars": {
+      "primary": [
+        "count",
+        "i",
+        "k",
+        "n",
+        "sum"
+      ],
+      "secondary": [
+        "_return"
+      ]
+    },
+    "var_classes": {
+      "_return": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "count": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "i": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "k": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "n": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "sum": {
+        "category": "primary",
+        "type": "scalar"
+      }
+    },
+    "viz_type": "array",
+    "initial_data": {
+      "test_values": [
+        10,
+        100,
+        10000,
+        1000000
+      ]
+    },
+    "program_output": [
+      {
+        "after_step": 1,
+        "text": "方法一：循环累加（O(n)）"
+      },
+      {
+        "after_step": 25,
+        "text": "1 + 2 + ... + 10      = 55"
+      },
+      {
+        "after_step": 229,
+        "text": "1 + 2 + ... + 100     = 5050"
+      },
+      {
+        "after_step": 20000,
+        "text": "1 + 2 + ... + 10000   = 50005000 1 + 2 + ... + 1000000 = 500000500000"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step": 0,
+      "line": 11,
+      "type": "enter",
+      "func": "main",
+      "vars": {}
+    },
+    {
+      "step": 1,
+      "line": 15,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "count": 4,
+        "k": 0
+      }
+    },
+    {
+      "step": 2,
+      "line": 17,
+      "type": "enter",
+      "func": "sum_loop",
+      "vars": {
+        "n": 10
+      }
+    },
+    {
+      "step": 3,
+      "line": 6,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "n": 10
+      }
+    },
+    {
+      "step": 4,
+      "line": 7,
+      "type": "exec",
+      "vars": {
+        "sum": 1
+      }
+    },
+    {
+      "step": 5,
+      "line": 6,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "n": 10
+      }
+    },
+    {
+      "step": 6,
+      "line": 7,
+      "type": "exec",
+      "vars": {
+        "sum": 3
+      }
+    },
+    {
+      "step": 7,
+      "line": 6,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3,
+        "n": 10
+      }
+    },
+    {
+      "step": 8,
+      "line": 7,
+      "type": "exec",
+      "vars": {
+        "sum": 6
+      }
+    },
+    {
+      "step": 9,
+      "line": 6,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 4,
+        "n": 10
+      }
+    },
+    {
+      "step": 10,
+      "line": 7,
+      "type": "exec",
+      "vars": {
+        "sum": 10
+      }
+    },
+    {
+      "step": 11,
+      "line": 6,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 5,
+        "n": 10
+      }
+    },
+    {
+      "step": 12,
+      "line": 7,
+      "type": "exec",
+      "vars": {
+        "sum": 15
+      }
+    },
+    {
+      "step": 13,
+      "line": 6,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 6,
+        "n": 10
+      }
+    },
+    {
+      "step": 14,
+      "line": 7,
+      "type": "exec",
+      "vars": {
+        "sum": 21
+      }
+    },
+    {
+      "step": 15,
+      "line": 6,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 7,
+        "n": 10
+      }
+    },
+    {
+      "step": 16,
+      "line": 7,
+      "type": "exec",
+      "vars": {
+        "sum": 28
+      }
+    },
+    {
+      "step": 17,
+      "line": 6,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 8,
+        "n": 10
+      }
+    },
+    {
+      "step": 18,
+      "line": 7,
+      "type": "exec",
+      "vars": {
+        "sum": 36
+      }
+    },
+    {
+      "step": 19,
+      "line": 6,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 9,
+        "n": 10
+      }
+    },
+    {
+      "step": 20,
+      "line": 7,
+      "type": "exec",
+      "vars": {
+        "sum": 45
+      }
+    },
+    {
+      "step": 21,
+      "line": 6,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 10,
+        "n": 10
+      }
+    },
+    {
+      "step": 22,
+      "line": 7,
+      "type": "exec",
+      "vars": {
+        "sum": 55
+      }
+    },
+    {
+      "step": 23,
+      "line": 9,
+      "type": "exec",
+      "vars": {
+        "_return": 55
+      }
+    },
+    {
+      "step": 24,
+      "line": 9,
+      "type": "exit",
+      "func": "sum_loop",
+      "vars": {}
+    },
+    {
+      "step": 25,
+      "line": 15,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "count": 4,
+        "k": 1
+      }
+    },
+    {
+      "step": 26,
+      "line": 17,
+      "type": "enter",
+      "func": "sum_loop",
+      "vars": {
+        "n": 100
+      }
+    },
+    {
+      "step": 27,
+      "line": 6,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "n": 100
+      }
+    },
+    {
+      "step": 28,
+      "line": 7,
+      "type": "exec",
+      "vars": {
+        "sum": 1
+      }
+    },
+    {
+      "step": 29,
+      "line": 6,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "n": 100
+      }
+    },
+    {
+      "step": 30,
+      "line": 7,
+      "type": "exec",
+      "vars": {
+        "sum": 3
+      }
+    },
+    {
+      "step": 31,
+      "line": 6,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3,
+        "n": 100
+      }
+    },
+    {
+      "step": 32,
+      "line": 7,
+      "type": "exec",
+      "vars": {
+        "sum": 6
+      }
+    },
+    {
+      "step": 33,
+      "line": 6,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 4,
+        "n": 100
+      }
+    },
+    {
+      "step": 34,
+      "line": 7,
+      "type": "exec",
+      "vars": {
+        "sum": 10
+      }
+    },
+    {
+      "step": 35,
+      "type": "skip",
+      "skipped": 184,
+      "line": 0,
+      "vars": {}
+    },
+    {
+      "step": 36,
+      "line": 6,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 97,
+        "n": 100
+      }
+    },
+    {
+      "step": 37,
+      "line": 7,
+      "type": "exec",
+      "vars": {
+        "sum": 4753
+      }
+    },
+    {
+      "step": 38,
+      "line": 6,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 98,
+        "n": 100
+      }
+    },
+    {
+      "step": 39,
+      "line": 7,
+      "type": "exec",
+      "vars": {
+        "sum": 4851
+      }
+    },
+    {
+      "step": 40,
+      "line": 6,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 99,
+        "n": 100
+      }
+    },
+    {
+      "step": 41,
+      "line": 7,
+      "type": "exec",
+      "vars": {
+        "sum": 4950
+      }
+    },
+    {
+      "step": 42,
+      "line": 6,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 100,
+        "n": 100
+      }
+    },
+    {
+      "step": 43,
+      "line": 7,
+      "type": "exec",
+      "vars": {
+        "sum": 5050
+      }
+    },
+    {
+      "step": 44,
+      "line": 9,
+      "type": "exec",
+      "vars": {
+        "_return": 5050
+      }
+    },
+    {
+      "step": 45,
+      "line": 9,
+      "type": "exit",
+      "func": "sum_loop",
+      "vars": {}
+    },
+    {
+      "step": 46,
+      "line": 15,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "count": 4,
+        "k": 2
+      }
+    },
+    {
+      "step": 47,
+      "line": 17,
+      "type": "enter",
+      "func": "sum_loop",
+      "vars": {
+        "n": 10000
+      }
+    },
+    {
+      "step": 48,
+      "line": 6,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "n": 10000
+      }
+    },
+    {
+      "step": 49,
+      "line": 7,
+      "type": "exec",
+      "vars": {
+        "sum": 1
+      }
+    },
+    {
+      "step": 50,
+      "line": 6,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "n": 10000
+      }
+    },
+    {
+      "step": 51,
+      "line": 7,
+      "type": "exec",
+      "vars": {
+        "sum": 3
+      }
+    },
+    {
+      "step": 52,
+      "line": 6,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3,
+        "n": 10000
+      }
+    },
+    {
+      "step": 53,
+      "line": 7,
+      "type": "exec",
+      "vars": {
+        "sum": 6
+      }
+    },
+    {
+      "step": 54,
+      "line": 6,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 4,
+        "n": 10000
+      }
+    },
+    {
+      "step": 55,
+      "line": 7,
+      "type": "exec",
+      "vars": {
+        "sum": 10
+      }
+    },
+    {
+      "step": 56,
+      "type": "skip",
+      "skipped": 19752,
+      "line": 0,
+      "vars": {}
+    },
+    {
+      "step": 57,
+      "line": 6,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 9881,
+        "n": 10000
+      }
+    },
+    {
+      "step": 58,
+      "line": 7,
+      "type": "exec",
+      "vars": {
+        "sum": 48822021
+      }
+    },
+    {
+      "step": 59,
+      "line": 6,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 9882,
+        "n": 10000
+      }
+    },
+    {
+      "step": 60,
+      "line": 7,
+      "type": "exec",
+      "vars": {
+        "sum": 48831903
+      }
+    },
+    {
+      "step": 61,
+      "line": 6,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 9883,
+        "n": 10000
+      }
+    },
+    {
+      "step": 62,
+      "line": 7,
+      "type": "exec",
+      "vars": {
+        "sum": 48841786
+      }
+    },
+    {
+      "step": 63,
+      "line": 6,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 9884,
+        "n": 10000
+      }
+    },
+    {
+      "step": 64,
+      "line": 7,
+      "type": "exec",
+      "vars": {
+        "sum": 48851670
+      }
+    },
+    {
+      "step": 65,
+      "line": 6,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 9885,
+        "n": 10000
+      }
+    }
+  ],
+  "total_steps": 66
+}

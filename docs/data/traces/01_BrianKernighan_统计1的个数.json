@@ -1,0 +1,449 @@
+{
+  "meta": {
+    "algo": "01_BrianKernighan_统计1的个数",
+    "source_lines": [
+      "#include <stdio.h>",
+      "#include <stdlib.h>",
+      "#include <string.h>",
+      "/* 统计整数n的二进制表示中有多少个1 */",
+      "/* 思路：每次 n & (n-1) 清掉最低位的1，计数+1 */",
+      "/* 类比：拔萝卜——每次拔掉最矮的那个萝卜，数拔了几次 */",
+      "int count_bits(unsigned int n) {",
+      "    int count = 0;           /* 计数器初始化为0 */",
+      "    while (n != 0) {         /* 只要n不为0，说明还有1 */",
+      "        n = n & (n - 1);    /* 清掉最低位的1 */",
+      "        count++;             /* 计数加1 */",
+      "    }",
+      "    return count;            /* 返回1的个数 */",
+      "}",
+      "// 测试：Brian Kernighan 算法统计二进制中 1 的个数",
+      "int main() {",
+      "    printf(\"Brian Kernighan 算法：每次 n & (n-1) 消掉最低位的1\\n\\n\");",
+      "    printf(\"count_bits(0)  = %d  （0b0）\\n\", count_bits(0));",
+      "    printf(\"count_bits(7)  = %d  （0b111）\\n\", count_bits(7));",
+      "    printf(\"count_bits(15) = %d （0b1111）\\n\", count_bits(15));",
+      "    printf(\"count_bits(42) = %d （0b101010）\\n\", count_bits(42));",
+      "    printf(\"\\n时间复杂度 = O(1的个数)，比逐位检查的 O(log n) 更快\\n\");",
+      "    return 0;",
+      "}"
+    ],
+    "track_vars": {
+      "primary": [
+        "count",
+        "n"
+      ],
+      "secondary": [
+        "_return"
+      ]
+    },
+    "var_classes": {
+      "_return": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "count": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "n": {
+        "category": "primary",
+        "type": "scalar"
+      }
+    },
+    "viz_type": "array",
+    "initial_data": {},
+    "program_output": [
+      {
+        "after_step": 1,
+        "text": "Brian Kernighan 算法：每次 n & (n-1) 消掉最低位的1"
+      },
+      {
+        "after_step": 4,
+        "text": "count_bits(0)  = 0  （0b0）"
+      },
+      {
+        "after_step": 16,
+        "text": "count_bits(7)  = 3  （0b111）"
+      },
+      {
+        "after_step": 31,
+        "text": "count_bits(15) = 4 （0b1111）"
+      },
+      {
+        "after_step": 43,
+        "text": "count_bits(42) = 3 （0b101010） 时间复杂度 = O(1的个数)，比逐位检查的 O(log n) 更快"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step": 0,
+      "line": 16,
+      "type": "enter",
+      "func": "main",
+      "vars": {}
+    },
+    {
+      "step": 1,
+      "line": 18,
+      "type": "enter",
+      "func": "count_bits",
+      "vars": {
+        "n": 0
+      }
+    },
+    {
+      "step": 2,
+      "line": 13,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 3,
+      "line": 13,
+      "type": "exit",
+      "func": "count_bits",
+      "vars": {}
+    },
+    {
+      "step": 4,
+      "line": 19,
+      "type": "enter",
+      "func": "count_bits",
+      "vars": {
+        "n": 7
+      }
+    },
+    {
+      "step": 5,
+      "line": 9,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "n": 7
+      }
+    },
+    {
+      "step": 6,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "n": 6
+      }
+    },
+    {
+      "step": 7,
+      "line": 11,
+      "type": "exec",
+      "vars": {
+        "count": 1
+      }
+    },
+    {
+      "step": 8,
+      "line": 9,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "n": 6
+      }
+    },
+    {
+      "step": 9,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "n": 4
+      }
+    },
+    {
+      "step": 10,
+      "line": 11,
+      "type": "exec",
+      "vars": {
+        "count": 2
+      }
+    },
+    {
+      "step": 11,
+      "line": 9,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "n": 4
+      }
+    },
+    {
+      "step": 12,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "n": 0
+      }
+    },
+    {
+      "step": 13,
+      "line": 11,
+      "type": "exec",
+      "vars": {
+        "count": 3
+      }
+    },
+    {
+      "step": 14,
+      "line": 13,
+      "type": "exec",
+      "vars": {
+        "_return": 3
+      }
+    },
+    {
+      "step": 15,
+      "line": 13,
+      "type": "exit",
+      "func": "count_bits",
+      "vars": {}
+    },
+    {
+      "step": 16,
+      "line": 20,
+      "type": "enter",
+      "func": "count_bits",
+      "vars": {
+        "n": 15
+      }
+    },
+    {
+      "step": 17,
+      "line": 9,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "n": 15
+      }
+    },
+    {
+      "step": 18,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "n": 14
+      }
+    },
+    {
+      "step": 19,
+      "line": 11,
+      "type": "exec",
+      "vars": {
+        "count": 1
+      }
+    },
+    {
+      "step": 20,
+      "line": 9,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "n": 14
+      }
+    },
+    {
+      "step": 21,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "n": 12
+      }
+    },
+    {
+      "step": 22,
+      "line": 11,
+      "type": "exec",
+      "vars": {
+        "count": 2
+      }
+    },
+    {
+      "step": 23,
+      "line": 9,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "n": 12
+      }
+    },
+    {
+      "step": 24,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "n": 8
+      }
+    },
+    {
+      "step": 25,
+      "line": 11,
+      "type": "exec",
+      "vars": {
+        "count": 3
+      }
+    },
+    {
+      "step": 26,
+      "line": 9,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "n": 8
+      }
+    },
+    {
+      "step": 27,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "n": 0
+      }
+    },
+    {
+      "step": 28,
+      "line": 11,
+      "type": "exec",
+      "vars": {
+        "count": 4
+      }
+    },
+    {
+      "step": 29,
+      "line": 13,
+      "type": "exec",
+      "vars": {
+        "_return": 4
+      }
+    },
+    {
+      "step": 30,
+      "line": 13,
+      "type": "exit",
+      "func": "count_bits",
+      "vars": {}
+    },
+    {
+      "step": 31,
+      "line": 21,
+      "type": "enter",
+      "func": "count_bits",
+      "vars": {
+        "n": 42
+      }
+    },
+    {
+      "step": 32,
+      "line": 9,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "n": 42
+      }
+    },
+    {
+      "step": 33,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "n": 40
+      }
+    },
+    {
+      "step": 34,
+      "line": 11,
+      "type": "exec",
+      "vars": {
+        "count": 1
+      }
+    },
+    {
+      "step": 35,
+      "line": 9,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "n": 40
+      }
+    },
+    {
+      "step": 36,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "n": 32
+      }
+    },
+    {
+      "step": 37,
+      "line": 11,
+      "type": "exec",
+      "vars": {
+        "count": 2
+      }
+    },
+    {
+      "step": 38,
+      "line": 9,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "n": 32
+      }
+    },
+    {
+      "step": 39,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "n": 0
+      }
+    },
+    {
+      "step": 40,
+      "line": 11,
+      "type": "exec",
+      "vars": {
+        "count": 3
+      }
+    },
+    {
+      "step": 41,
+      "line": 13,
+      "type": "exec",
+      "vars": {
+        "_return": 3
+      }
+    },
+    {
+      "step": 42,
+      "line": 13,
+      "type": "exit",
+      "func": "count_bits",
+      "vars": {}
+    },
+    {
+      "step": 43,
+      "line": 23,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 44,
+      "line": 23,
+      "type": "exit",
+      "func": "main",
+      "vars": {}
+    }
+  ],
+  "total_steps": 45
+}

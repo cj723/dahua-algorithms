@@ -1,0 +1,375 @@
+{
+  "meta": {
+    "algo": "05_动态数组_摊还分析",
+    "source_lines": [
+      "#include <stdio.h>",
+      "#include <stdlib.h>",
+      "typedef struct {",
+      "    int *data;     // 实际存储数据的数组",
+      "    int size;      // 当前元素个数",
+      "    int capacity;  // 当前容量",
+      "} DynamicArray;",
+      "/* 创建动态数组 */",
+      "DynamicArray* create_array(int initial_capacity) {",
+      "    DynamicArray *arr = (DynamicArray *)malloc(sizeof(DynamicArray));",
+      "    if (arr == NULL) {",
+      "        return NULL;",
+      "    }",
+      "    arr->data = (int *)malloc(initial_capacity * sizeof(int));",
+      "    if (arr->data == NULL) {",
+      "        free(arr);",
+      "        return NULL;",
+      "    }",
+      "    arr->size = 0;",
+      "    arr->capacity = initial_capacity;",
+      "    return arr;",
+      "}",
+      "/* 添加元素（核心） */",
+      "void push_back(DynamicArray *arr, int value) {",
+      "    /* 如果满了，翻倍扩容 */",
+      "    if (arr->size == arr->capacity) {",
+      "        int new_capacity = arr->capacity * 2;  /* 容量翻倍 */",
+      "        int *temp = (int *)realloc(arr->data, new_capacity * sizeof(int));",
+      "        if (temp == NULL) {",
+      "            printf(\"  扩容失败：内存不足！\\n\");",
+      "            return;",
+      "        }",
+      "        arr->data = temp;  /* 确认成功后再赋值 */",
+      "        arr->capacity = new_capacity;",
+      "        printf(\"  扩容：新容量：%d\\n\", arr->capacity);",
+      "    }",
+      "    arr->data[arr->size++] = value;",
+      "}",
+      "/* 销毁 */",
+      "void destroy_array(DynamicArray *arr) {",
+      "    if (arr == NULL) {",
+      "        return;",
+      "    }",
+      "    free(arr->data);",
+      "    free(arr);",
+      "}",
+      "int main(void) {",
+      "    DynamicArray *arr = create_array(2);  /* 初始容量 2 */",
+      "    if (arr == NULL) {",
+      "        printf(\"创建动态数组失败！\\n\");",
+      "        return 1;",
+      "    }",
+      "    printf(\"往动态数组里塞 10 个元素：\\n\");",
+      "    for (int i = 1; i <= 10; i++) {",
+      "        printf(\"添加 %d → \", i);",
+      "        push_back(arr, i);",
+      "        printf(\"size=%d, capacity=%d\\n\", arr->size, arr->capacity);",
+      "    }",
+      "    destroy_array(arr);",
+      "    return 0;",
+      "}"
+    ],
+    "track_vars": {
+      "primary": [
+        "arr",
+        "i"
+      ],
+      "secondary": [
+        "_return",
+        "initial_capacity",
+        "value"
+      ]
+    },
+    "var_classes": {
+      "_return": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "arr": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "i": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "initial_capacity": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "value": {
+        "category": "secondary",
+        "type": "scalar"
+      }
+    },
+    "viz_type": "array",
+    "initial_data": {},
+    "program_output": [
+      {
+        "after_step": 6,
+        "text": "往动态数组里塞 10 个元素： 添加 1 → size=1, capacity=2 添加 2 → size=2, capacity=2 添加 3 → 扩容：新容量：4 size=3, capacity=4 添加 4 → size=4, capacity=4 添加 5 → 扩容：新容量：8 size=5, capacity=8 添加 6 → size=6, capacity=8 添加 7 → size=7, capacity=8 添加 8 → size=8, capacity=8 添加 9 → 扩容：新容量：16 size=9, capacity=16 添加 10 → size=10, capacity=16"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step": 0,
+      "line": 47,
+      "type": "enter",
+      "func": "main",
+      "vars": {}
+    },
+    {
+      "step": 1,
+      "line": 48,
+      "type": "enter",
+      "func": "create_array",
+      "vars": {
+        "initial_capacity": 2
+      }
+    },
+    {
+      "step": 2,
+      "line": 14,
+      "type": "exec",
+      "vars": {
+        "arr": 48027856
+      }
+    },
+    {
+      "step": 3,
+      "line": 19,
+      "type": "exec",
+      "vars": {
+        "arr": 48027856
+      }
+    },
+    {
+      "step": 4,
+      "line": 20,
+      "type": "exec",
+      "vars": {
+        "arr": 48027856
+      }
+    },
+    {
+      "step": 5,
+      "line": 21,
+      "type": "exit",
+      "func": "create_array",
+      "vars": {}
+    },
+    {
+      "step": 6,
+      "line": 54,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1
+      }
+    },
+    {
+      "step": 7,
+      "line": 56,
+      "type": "enter",
+      "func": "push_back",
+      "vars": {
+        "value": 1
+      }
+    },
+    {
+      "step": 8,
+      "line": 54,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2
+      }
+    },
+    {
+      "step": 9,
+      "line": 56,
+      "type": "enter",
+      "func": "push_back",
+      "vars": {
+        "value": 2
+      }
+    },
+    {
+      "step": 10,
+      "line": 54,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3
+      }
+    },
+    {
+      "step": 11,
+      "line": 56,
+      "type": "enter",
+      "func": "push_back",
+      "vars": {
+        "value": 3
+      }
+    },
+    {
+      "step": 12,
+      "line": 26,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 13,
+      "line": 54,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 4
+      }
+    },
+    {
+      "step": 14,
+      "line": 56,
+      "type": "enter",
+      "func": "push_back",
+      "vars": {
+        "value": 4
+      }
+    },
+    {
+      "step": 15,
+      "line": 54,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 5
+      }
+    },
+    {
+      "step": 16,
+      "line": 56,
+      "type": "enter",
+      "func": "push_back",
+      "vars": {
+        "value": 5
+      }
+    },
+    {
+      "step": 17,
+      "line": 26,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 18,
+      "line": 54,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 6
+      }
+    },
+    {
+      "step": 19,
+      "line": 56,
+      "type": "enter",
+      "func": "push_back",
+      "vars": {
+        "value": 6
+      }
+    },
+    {
+      "step": 20,
+      "line": 54,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 7
+      }
+    },
+    {
+      "step": 21,
+      "line": 56,
+      "type": "enter",
+      "func": "push_back",
+      "vars": {
+        "value": 7
+      }
+    },
+    {
+      "step": 22,
+      "line": 54,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 8
+      }
+    },
+    {
+      "step": 23,
+      "line": 56,
+      "type": "enter",
+      "func": "push_back",
+      "vars": {
+        "value": 8
+      }
+    },
+    {
+      "step": 24,
+      "line": 54,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 9
+      }
+    },
+    {
+      "step": 25,
+      "line": 56,
+      "type": "enter",
+      "func": "push_back",
+      "vars": {
+        "value": 9
+      }
+    },
+    {
+      "step": 26,
+      "line": 26,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 27,
+      "line": 54,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 10
+      }
+    },
+    {
+      "step": 28,
+      "line": 56,
+      "type": "enter",
+      "func": "push_back",
+      "vars": {
+        "value": 10
+      }
+    },
+    {
+      "step": 29,
+      "line": 60,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 30,
+      "line": 60,
+      "type": "exit",
+      "func": "main",
+      "vars": {}
+    }
+  ],
+  "total_steps": 31
+}

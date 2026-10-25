@@ -1,0 +1,398 @@
+{
+  "meta": {
+    "algo": "01_活动选择",
+    "source_lines": [
+      "#include <stdio.h>",
+      "#include <stdlib.h>",
+      "/* 活动结构体 */",
+      "typedef struct {",
+      "    int id;         /* 活动编号 */",
+      "    int start;      /* 开始时间 */",
+      "    int end;        /* 结束时间 */",
+      "} Activity;",
+      "/* 比较函数：按结束时间升序排列 */",
+      "int compare(const void *a, const void *b) {",
+      "    const Activity *x = (const Activity *)a;",
+      "    const Activity *y = (const Activity *)b;",
+      "    if (x->end != y->end) return (x->end > y->end) - (x->end < y->end);",
+      "    return (x->start > y->start) - (x->start < y->start);",
+      "}",
+      "/* 贪心求解活动选择 */",
+      "void activity_selection(Activity activities[], int n) {",
+      "    if (n <= 0) {",
+      "        printf(\"没有可安排的活动\\n\");",
+      "        return;",
+      "    }",
+      "    /* 第一步：按结束时间排序 */",
+      "    qsort(activities, n, sizeof(Activity), compare);",
+      "    printf(\"选择的活动序列：\\n\");",
+      "    /* 第二步：总是选第一个（结束最早的） */",
+      "    int count = 1;",
+      "    int last_end = activities[0].end;",
+      "    printf(\"  活动 %d：[%d, %d)\\n\",",
+      "           activities[0].id, activities[0].start, activities[0].end);",
+      "    /* 第三步：贪心选择后续活动 */",
+      "    for (int i = 1; i < n; i++) {",
+      "        if (activities[i].start >= last_end) {",
+      "            printf(\"  活动 %d：[%d, %d)\\n\",",
+      "                   activities[i].id, activities[i].start, activities[i].end);",
+      "            last_end = activities[i].end;",
+      "            count++;",
+      "        }",
+      "    }",
+      "    printf(\"总共可安排 %d 场活动\\n\", count);",
+      "}",
+      "int main(void) {",
+      "    Activity activities[] = {",
+      "        {1, 1, 4}, {2, 3, 5}, {3, 0, 6}, {4, 5, 7},",
+      "        {5, 3, 9}, {6, 5, 9}, {7, 6, 10}, {8, 8, 11},",
+      "        {9, 8, 12}, {10, 2, 14}, {11, 12, 16}",
+      "    };",
+      "    int n = sizeof(activities) / sizeof(activities[0]);",
+      "    activity_selection(activities, n);",
+      "    return 0;",
+      "}"
+    ],
+    "track_vars": {
+      "primary": [
+        "count",
+        "i",
+        "n"
+      ],
+      "secondary": [
+        "_return",
+        "activities",
+        "last_end"
+      ]
+    },
+    "var_classes": {
+      "_return": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "activities": {
+        "category": "secondary",
+        "type": "array"
+      },
+      "count": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "i": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "last_end": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "n": {
+        "category": "primary",
+        "type": "scalar"
+      }
+    },
+    "viz_type": "array",
+    "initial_data": {
+      "activities": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ]
+    },
+    "program_output": [
+      {
+        "after_step": 8,
+        "text": "选择的活动序列： 活动 1：[1, 4)"
+      },
+      {
+        "after_step": 12,
+        "text": "活动 4：[5, 7)"
+      },
+      {
+        "after_step": 19,
+        "text": "活动 8：[8, 11)"
+      },
+      {
+        "after_step": 25,
+        "text": "活动 11：[12, 16) 总共可安排 4 场活动"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step": 0,
+      "line": 41,
+      "type": "enter",
+      "func": "main",
+      "vars": {}
+    },
+    {
+      "step": 1,
+      "line": 48,
+      "type": "enter",
+      "func": "activity_selection",
+      "vars": {
+        "activities": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11
+        ],
+        "n": 11
+      }
+    },
+    {
+      "step": 2,
+      "line": 13,
+      "type": "cond",
+      "result": false,
+      "vars": {}
+    },
+    {
+      "step": 3,
+      "line": 14,
+      "type": "exec",
+      "vars": {
+        "_return": -1
+      }
+    },
+    {
+      "step": 4,
+      "line": 14,
+      "type": "exit",
+      "func": "compare",
+      "vars": {}
+    },
+    {
+      "step": 5,
+      "line": 13,
+      "type": "cond",
+      "result": false,
+      "vars": {}
+    },
+    {
+      "step": 6,
+      "line": 14,
+      "type": "exec",
+      "vars": {
+        "_return": -1
+      }
+    },
+    {
+      "step": 7,
+      "line": 14,
+      "type": "exit",
+      "func": "compare",
+      "vars": {}
+    },
+    {
+      "step": 8,
+      "line": 31,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "n": 11
+      }
+    },
+    {
+      "step": 9,
+      "line": 31,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "n": 11
+      }
+    },
+    {
+      "step": 10,
+      "line": 31,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3,
+        "n": 11
+      }
+    },
+    {
+      "step": 11,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3,
+        "last_end": 4
+      }
+    },
+    {
+      "step": 12,
+      "line": 35,
+      "type": "exec",
+      "vars": {
+        "last_end": 7
+      }
+    },
+    {
+      "step": 13,
+      "line": 36,
+      "type": "exec",
+      "vars": {
+        "count": 2
+      }
+    },
+    {
+      "step": 14,
+      "line": 31,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 4,
+        "n": 11
+      }
+    },
+    {
+      "step": 15,
+      "line": 31,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 5,
+        "n": 11
+      }
+    },
+    {
+      "step": 16,
+      "line": 31,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 6,
+        "n": 11
+      }
+    },
+    {
+      "step": 17,
+      "line": 31,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 7,
+        "n": 11
+      }
+    },
+    {
+      "step": 18,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 7,
+        "last_end": 7
+      }
+    },
+    {
+      "step": 19,
+      "line": 35,
+      "type": "exec",
+      "vars": {
+        "last_end": 11
+      }
+    },
+    {
+      "step": 20,
+      "line": 36,
+      "type": "exec",
+      "vars": {
+        "count": 3
+      }
+    },
+    {
+      "step": 21,
+      "line": 31,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 8,
+        "n": 11
+      }
+    },
+    {
+      "step": 22,
+      "line": 31,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 9,
+        "n": 11
+      }
+    },
+    {
+      "step": 23,
+      "line": 31,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 10,
+        "n": 11
+      }
+    },
+    {
+      "step": 24,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 10,
+        "last_end": 11
+      }
+    },
+    {
+      "step": 25,
+      "line": 35,
+      "type": "exec",
+      "vars": {
+        "last_end": 16
+      }
+    },
+    {
+      "step": 26,
+      "line": 36,
+      "type": "exec",
+      "vars": {
+        "count": 4
+      }
+    },
+    {
+      "step": 27,
+      "line": 49,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 28,
+      "line": 49,
+      "type": "exit",
+      "func": "main",
+      "vars": {}
+    }
+  ],
+  "total_steps": 29
+}

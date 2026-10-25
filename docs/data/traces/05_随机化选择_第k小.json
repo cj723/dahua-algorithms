@@ -1,0 +1,455 @@
+{
+  "meta": {
+    "algo": "05_随机化选择_第k小",
+    "source_lines": [
+      "/* 拉斯维加斯算法:随机化选择第k小的元素 */",
+      "/* 一定会返回正确结果,但运行时间随机 */",
+      "#include <stdio.h>",
+      "#include <stdlib.h>",
+      "#include <time.h>",
+      "/* 交换两个整数 */",
+      "void swap(int *a, int *b) {",
+      "    int temp = *a;",
+      "    *a = *b;",
+      "    *b = temp;",
+      "}",
+      "/* 随机化分区(和快排的分区一样) */",
+      "int partition(int arr[], int low, int high) {",
+      "    /* 随机选pivot--拉斯维加斯的关键 */",
+      "    /* rand() % n 只适合教学演示，不能用于安全或公平性敏感场景 */",
+      "    int random_idx = low + rand() % (high - low + 1);",
+      "    swap(&arr[random_idx], &arr[high]);",
+      "    int pivot = arr[high];",
+      "    int i = low - 1;",
+      "    for (int j = low; j < high; j++) {",
+      "        if (arr[j] < pivot) {",
+      "            i++;",
+      "            swap(&arr[i], &arr[j]);",
+      "        }",
+      "    }",
+      "    swap(&arr[i + 1], &arr[high]);",
+      "    return i + 1;",
+      "}",
+      "/* 随机化选择:找第k小的元素(k从1开始) */",
+      "/* 这是一个拉斯维加斯算法--结果一定正确，期望 O(n)，最坏仍可能 O(n^2) */",
+      "int randomized_select(int arr[], int low, int high, int k) {",
+      "    if (low == high) {  /* 只剩一个元素 */",
+      "        return arr[low];",
+      "    }",
+      "    /* 随机分区 */",
+      "    int pi = partition(arr, low, high);",
+      "    /* pi - low + 1 是pivot在当前子数组中的排名 */",
+      "    int rank = pi - low + 1;",
+      "    if (k == rank) {",
+      "        /* pivot就是第k小的元素!找到了! */",
+      "        return arr[pi];",
+      "    } else if (k < rank) {",
+      "        /* 第k小的元素在左边 */",
+      "        return randomized_select(arr, low, pi - 1, k);",
+      "    } else {",
+      "        /* 第k小的元素在右边,注意要调整k的值 */",
+      "        return randomized_select(arr, pi + 1, high, k - rank);",
+      "    }",
+      "}",
+      "int main() {",
+      "    int arr[] = {7, 10, 4, 3, 20, 15};",
+      "    int n = 6;",
+      "    int k = 3;  /* 找第3小的元素 */",
+      "    srand((unsigned int)time(NULL));",
+      "    if (k < 1 || k > n) {",
+      "        printf(\"k不合法\\n\");",
+      "        return 1;",
+      "    }",
+      "    /* 找第k小的元素 */",
+      "    int result = randomized_select(arr, 0, n - 1, k);",
+      "    printf(\"第%d小的元素是: %d\\n\", k, result);",
+      "    /* 应该输出 7 */",
+      "    return 0;",
+      "}"
+    ],
+    "track_vars": {
+      "primary": [
+        "arr",
+        "high",
+        "i",
+        "j",
+        "k",
+        "low",
+        "pivot"
+      ],
+      "secondary": [
+        "_return"
+      ]
+    },
+    "var_classes": {
+      "_return": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "arr": {
+        "category": "primary",
+        "type": "array"
+      },
+      "high": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "i": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "j": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "k": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "low": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "pivot": {
+        "category": "primary",
+        "type": "scalar"
+      }
+    },
+    "viz_type": "array",
+    "initial_data": {
+      "arr": [
+        7,
+        10,
+        4,
+        3,
+        20,
+        15
+      ]
+    },
+    "program_output": [
+      {
+        "after_step": 29,
+        "text": "第3小的元素是: 7"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step": 0,
+      "line": 50,
+      "type": "enter",
+      "func": "main",
+      "vars": {}
+    },
+    {
+      "step": 1,
+      "line": 60,
+      "type": "enter",
+      "func": "randomized_select",
+      "vars": {
+        "arr": [
+          7,
+          10,
+          4,
+          3,
+          20,
+          15
+        ],
+        "low": 0,
+        "high": 5,
+        "k": 3
+      }
+    },
+    {
+      "step": 2,
+      "line": 36,
+      "type": "enter",
+      "func": "partition",
+      "vars": {
+        "arr": [
+          7,
+          10,
+          4,
+          3,
+          20,
+          15
+        ],
+        "low": 0,
+        "high": 5
+      }
+    },
+    {
+      "step": 3,
+      "line": 20,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "high": 5,
+        "j": 0
+      }
+    },
+    {
+      "step": 4,
+      "line": 20,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "high": 5,
+        "j": 1
+      }
+    },
+    {
+      "step": 5,
+      "line": 20,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "high": 5,
+        "j": 2
+      }
+    },
+    {
+      "step": 6,
+      "line": 20,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "high": 5,
+        "j": 3
+      }
+    },
+    {
+      "step": 7,
+      "line": 21,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 3,
+        "pivot": 4
+      }
+    },
+    {
+      "step": 8,
+      "line": 22,
+      "type": "exec",
+      "vars": {
+        "i": 0
+      }
+    },
+    {
+      "step": 9,
+      "line": 20,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "high": 5,
+        "j": 4
+      }
+    },
+    {
+      "step": 10,
+      "line": 27,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 11,
+      "line": 27,
+      "type": "exit",
+      "func": "partition",
+      "vars": {}
+    },
+    {
+      "step": 12,
+      "line": 47,
+      "type": "enter",
+      "func": "randomized_select",
+      "vars": {
+        "arr": [
+          3,
+          4,
+          15,
+          7,
+          20,
+          10
+        ],
+        "low": 2,
+        "high": 5,
+        "k": 1
+      }
+    },
+    {
+      "step": 13,
+      "line": 36,
+      "type": "enter",
+      "func": "partition",
+      "vars": {
+        "arr": [
+          3,
+          4,
+          15,
+          7,
+          20,
+          10
+        ],
+        "low": 2,
+        "high": 5
+      }
+    },
+    {
+      "step": 14,
+      "line": 20,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "high": 5,
+        "j": 2
+      }
+    },
+    {
+      "step": 15,
+      "line": 20,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "high": 5,
+        "j": 3
+      }
+    },
+    {
+      "step": 16,
+      "line": 21,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 3,
+        "pivot": 10
+      }
+    },
+    {
+      "step": 17,
+      "line": 22,
+      "type": "exec",
+      "vars": {
+        "i": 2
+      }
+    },
+    {
+      "step": 18,
+      "line": 20,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "high": 5,
+        "j": 4
+      }
+    },
+    {
+      "step": 19,
+      "line": 27,
+      "type": "exec",
+      "vars": {
+        "_return": 3
+      }
+    },
+    {
+      "step": 20,
+      "line": 27,
+      "type": "exit",
+      "func": "partition",
+      "vars": {}
+    },
+    {
+      "step": 21,
+      "line": 44,
+      "type": "enter",
+      "func": "randomized_select",
+      "vars": {
+        "arr": [
+          3,
+          4,
+          7,
+          10,
+          20,
+          15
+        ],
+        "low": 2,
+        "high": 2,
+        "k": 1
+      }
+    },
+    {
+      "step": 22,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "high": 2,
+        "low": 2
+      }
+    },
+    {
+      "step": 23,
+      "line": 33,
+      "type": "exec",
+      "vars": {
+        "_return": 7
+      }
+    },
+    {
+      "step": 24,
+      "line": 33,
+      "type": "exit",
+      "func": "randomized_select",
+      "vars": {}
+    },
+    {
+      "step": 25,
+      "line": 44,
+      "type": "exec",
+      "vars": {
+        "_return": 7
+      }
+    },
+    {
+      "step": 26,
+      "line": 44,
+      "type": "exit",
+      "func": "randomized_select",
+      "vars": {}
+    },
+    {
+      "step": 27,
+      "line": 47,
+      "type": "exec",
+      "vars": {
+        "_return": 7
+      }
+    },
+    {
+      "step": 28,
+      "line": 47,
+      "type": "exit",
+      "func": "randomized_select",
+      "vars": {}
+    },
+    {
+      "step": 29,
+      "line": 63,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 30,
+      "line": 63,
+      "type": "exit",
+      "func": "main",
+      "vars": {}
+    }
+  ],
+  "total_steps": 31
+}
