@@ -1,0 +1,370 @@
+{
+  "meta": {
+    "algo": "02_双指针_两数之和",
+    "source_lines": [
+      "/* 双指针（左右指针）：有序数组两数之和 */",
+      "/* 类比：两个人从走廊两头往中间走 */",
+      "#include <stdio.h>",
+      "/* 在有序数组中找到两个数，使它们的和等于target */",
+      "/* 返回两个数的下标，存入result数组 */",
+      "/* 如果找不到，返回0 */",
+      "int two_sum_sorted(int nums[], int n, int target, int result[2]) {",
+      "    int left = 0;         /* 左指针，从头开始 */",
+      "    int right = n - 1;    /* 右指针，从尾开始 */",
+      "    while (left < right) {  /* 两个指针还没相遇 */",
+      "        long long sum = (long long)nums[left] + nums[right];",
+      "        if (sum == target) {",
+      "            /* 找到了！ */",
+      "            result[0] = left;",
+      "            result[1] = right;",
+      "            return 1;  /* 返回成功 */",
+      "        } else if (sum < target) {",
+      "            /* 和太小了，需要更大的数 */",
+      "            /* 数组是升序的，left++会让和变大 */",
+      "            left++;",
+      "        } else {",
+      "            /* 和太大了，需要更小的数 */",
+      "            /* right--会让和变小 */",
+      "            right--;",
+      "        }",
+      "    }",
+      "    return 0;  /* 没找到 */",
+      "}",
+      "int main() {",
+      "    int nums[] = {2, 7, 11, 15};",
+      "    int n = 4;",
+      "    int target = 9;",
+      "    int result[2];",
+      "    if (two_sum_sorted(nums, n, target, result)) {",
+      "        printf(\"下标： [%d, %d]\\n\", result[0], result[1]);",
+      "        /* 输出： [0, 1] */",
+      "    } else {",
+      "        printf(\"没找到\\n\");",
+      "    }",
+      "    return 0;",
+      "}"
+    ],
+    "track_vars": {
+      "primary": [
+        "left",
+        "n",
+        "nums",
+        "result",
+        "right",
+        "target"
+      ],
+      "secondary": [
+        "_return"
+      ]
+    },
+    "var_classes": {
+      "_return": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "left": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "n": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "nums": {
+        "category": "primary",
+        "type": "array"
+      },
+      "result": {
+        "category": "primary",
+        "type": "array"
+      },
+      "right": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "target": {
+        "category": "primary",
+        "type": "scalar"
+      }
+    },
+    "viz_type": "array",
+    "initial_data": {
+      "nums": [
+        2,
+        7,
+        11,
+        15
+      ],
+      "result": [
+        199150048,
+        2
+      ]
+    },
+    "program_output": [
+      {
+        "after_step": 24,
+        "text": "下标： [0, 1]"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step": 0,
+      "line": 29,
+      "type": "enter",
+      "func": "main",
+      "vars": {}
+    },
+    {
+      "step": 1,
+      "line": 33,
+      "type": "exec",
+      "vars": {
+        "result": [
+          199150048,
+          2
+        ]
+      }
+    },
+    {
+      "step": 2,
+      "line": 34,
+      "type": "enter",
+      "func": "two_sum_sorted",
+      "vars": {
+        "nums": [
+          2,
+          7,
+          11,
+          15
+        ],
+        "n": 4,
+        "target": 9,
+        "result": [
+          199150048,
+          2,
+          2,
+          7
+        ]
+      }
+    },
+    {
+      "step": 3,
+      "line": 10,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 0,
+        "right": 3
+      }
+    },
+    {
+      "step": 4,
+      "line": 24,
+      "type": "exec",
+      "vars": {
+        "right": 2
+      }
+    },
+    {
+      "step": 5,
+      "line": 10,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 0,
+        "right": 2
+      }
+    },
+    {
+      "step": 6,
+      "line": 24,
+      "type": "exec",
+      "vars": {
+        "right": 1
+      }
+    },
+    {
+      "step": 7,
+      "line": 10,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 0,
+        "right": 1
+      }
+    },
+    {
+      "step": 8,
+      "line": 12,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "target": 9
+      }
+    },
+    {
+      "step": 9,
+      "line": 14,
+      "type": "exec",
+      "vars": {
+        "result": [
+          0,
+          2,
+          2,
+          7
+        ]
+      }
+    },
+    {
+      "step": 10,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "result": [
+          0,
+          1,
+          2,
+          7
+        ]
+      }
+    },
+    {
+      "step": 11,
+      "line": 16,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 12,
+      "line": 16,
+      "type": "exit",
+      "func": "two_sum_sorted",
+      "vars": {}
+    },
+    {
+      "step": 13,
+      "line": 10,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 0,
+        "right": 3
+      }
+    },
+    {
+      "step": 14,
+      "line": 24,
+      "type": "exec",
+      "vars": {
+        "right": 2
+      }
+    },
+    {
+      "step": 15,
+      "line": 10,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 0,
+        "right": 2
+      }
+    },
+    {
+      "step": 16,
+      "line": 24,
+      "type": "exec",
+      "vars": {
+        "right": 1
+      }
+    },
+    {
+      "step": 17,
+      "line": 10,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 0,
+        "right": 1
+      }
+    },
+    {
+      "step": 18,
+      "line": 12,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "target": 9
+      }
+    },
+    {
+      "step": 19,
+      "line": 14,
+      "type": "exec",
+      "vars": {
+        "result": [
+          0,
+          1,
+          2,
+          7
+        ]
+      }
+    },
+    {
+      "step": 20,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "result": [
+          0,
+          1,
+          2,
+          7
+        ]
+      }
+    },
+    {
+      "step": 21,
+      "line": 16,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 22,
+      "line": 16,
+      "type": "exit",
+      "func": "two_sum_sorted",
+      "vars": {}
+    },
+    {
+      "step": 23,
+      "line": 34,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "n": 4,
+        "target": 9
+      }
+    },
+    {
+      "step": 24,
+      "line": 40,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 25,
+      "line": 40,
+      "type": "exit",
+      "func": "main",
+      "vars": {}
+    }
+  ],
+  "total_steps": 26
+}

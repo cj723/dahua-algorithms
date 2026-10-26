@@ -1,0 +1,410 @@
+{
+  "meta": {
+    "algo": "04_爬楼梯_双变量优化",
+    "source_lines": [
+      "#include <stdio.h>",
+      "int climb_stairs_optimized(int n) {",
+      "    if (n <= 0) return 0;",
+      "    if (n <= 2) return n;",
+      "    int prev2 = 1;  /* f(1) */",
+      "    int prev1 = 2;  /* f(2) */",
+      "    int cur = 0;",
+      "    for (int i = 3; i <= n; i++) {",
+      "        cur = prev1 + prev2;",
+      "        prev2 = prev1;",
+      "        prev1 = cur;",
+      "    }",
+      "    return prev1;",
+      "}",
+      "int main(void) {",
+      "    printf(\"爬 10 级台阶有 %d 种走法\\n\", climb_stairs_optimized(10));",
+      "    return 0;",
+      "}"
+    ],
+    "track_vars": {
+      "primary": [
+        "cur",
+        "i",
+        "n"
+      ],
+      "secondary": [
+        "_return",
+        "prev1",
+        "prev2"
+      ]
+    },
+    "var_classes": {
+      "_return": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "cur": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "i": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "n": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "prev1": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "prev2": {
+        "category": "secondary",
+        "type": "scalar"
+      }
+    },
+    "viz_type": "array",
+    "initial_data": {},
+    "program_output": [
+      {
+        "after_step": 38,
+        "text": "爬 10 级台阶有 89 种走法"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step": 0,
+      "line": 15,
+      "type": "enter",
+      "func": "main",
+      "vars": {}
+    },
+    {
+      "step": 1,
+      "line": 16,
+      "type": "enter",
+      "func": "climb_stairs_optimized",
+      "vars": {
+        "n": 10
+      }
+    },
+    {
+      "step": 2,
+      "line": 3,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "n": 10
+      }
+    },
+    {
+      "step": 3,
+      "line": 4,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "n": 10
+      }
+    },
+    {
+      "step": 4,
+      "line": 8,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3,
+        "n": 10
+      }
+    },
+    {
+      "step": 5,
+      "line": 9,
+      "type": "exec",
+      "vars": {
+        "cur": 3
+      }
+    },
+    {
+      "step": 6,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "prev2": 2
+      }
+    },
+    {
+      "step": 7,
+      "line": 11,
+      "type": "exec",
+      "vars": {
+        "prev1": 3
+      }
+    },
+    {
+      "step": 8,
+      "line": 8,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 4,
+        "n": 10
+      }
+    },
+    {
+      "step": 9,
+      "line": 9,
+      "type": "exec",
+      "vars": {
+        "cur": 5
+      }
+    },
+    {
+      "step": 10,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "prev2": 3
+      }
+    },
+    {
+      "step": 11,
+      "line": 11,
+      "type": "exec",
+      "vars": {
+        "prev1": 5
+      }
+    },
+    {
+      "step": 12,
+      "line": 8,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 5,
+        "n": 10
+      }
+    },
+    {
+      "step": 13,
+      "line": 9,
+      "type": "exec",
+      "vars": {
+        "cur": 8
+      }
+    },
+    {
+      "step": 14,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "prev2": 5
+      }
+    },
+    {
+      "step": 15,
+      "line": 11,
+      "type": "exec",
+      "vars": {
+        "prev1": 8
+      }
+    },
+    {
+      "step": 16,
+      "line": 8,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 6,
+        "n": 10
+      }
+    },
+    {
+      "step": 17,
+      "line": 9,
+      "type": "exec",
+      "vars": {
+        "cur": 13
+      }
+    },
+    {
+      "step": 18,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "prev2": 8
+      }
+    },
+    {
+      "step": 19,
+      "line": 11,
+      "type": "exec",
+      "vars": {
+        "prev1": 13
+      }
+    },
+    {
+      "step": 20,
+      "line": 8,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 7,
+        "n": 10
+      }
+    },
+    {
+      "step": 21,
+      "line": 9,
+      "type": "exec",
+      "vars": {
+        "cur": 21
+      }
+    },
+    {
+      "step": 22,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "prev2": 13
+      }
+    },
+    {
+      "step": 23,
+      "line": 11,
+      "type": "exec",
+      "vars": {
+        "prev1": 21
+      }
+    },
+    {
+      "step": 24,
+      "line": 8,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 8,
+        "n": 10
+      }
+    },
+    {
+      "step": 25,
+      "line": 9,
+      "type": "exec",
+      "vars": {
+        "cur": 34
+      }
+    },
+    {
+      "step": 26,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "prev2": 21
+      }
+    },
+    {
+      "step": 27,
+      "line": 11,
+      "type": "exec",
+      "vars": {
+        "prev1": 34
+      }
+    },
+    {
+      "step": 28,
+      "line": 8,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 9,
+        "n": 10
+      }
+    },
+    {
+      "step": 29,
+      "line": 9,
+      "type": "exec",
+      "vars": {
+        "cur": 55
+      }
+    },
+    {
+      "step": 30,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "prev2": 34
+      }
+    },
+    {
+      "step": 31,
+      "line": 11,
+      "type": "exec",
+      "vars": {
+        "prev1": 55
+      }
+    },
+    {
+      "step": 32,
+      "line": 8,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 10,
+        "n": 10
+      }
+    },
+    {
+      "step": 33,
+      "line": 9,
+      "type": "exec",
+      "vars": {
+        "cur": 89
+      }
+    },
+    {
+      "step": 34,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "prev2": 55
+      }
+    },
+    {
+      "step": 35,
+      "line": 11,
+      "type": "exec",
+      "vars": {
+        "prev1": 89
+      }
+    },
+    {
+      "step": 36,
+      "line": 13,
+      "type": "exec",
+      "vars": {
+        "_return": 89
+      }
+    },
+    {
+      "step": 37,
+      "line": 13,
+      "type": "exit",
+      "func": "climb_stairs_optimized",
+      "vars": {}
+    },
+    {
+      "step": 38,
+      "line": 17,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 39,
+      "line": 17,
+      "type": "exit",
+      "func": "main",
+      "vars": {}
+    }
+  ],
+  "total_steps": 40
+}

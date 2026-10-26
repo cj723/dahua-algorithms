@@ -1,0 +1,439 @@
+{
+  "meta": {
+    "algo": "02_矩阵链乘法",
+    "source_lines": [
+      "#include <stdio.h>",
+      "#include <limits.h>",
+      "#include <string.h>",
+      "#define MAX_N 100",
+      "long long matrix_chain_order(int p[], int n) {",
+      "    if (n <= 0 || n > MAX_N) {",
+      "        return -1; /* 输入非法 */",
+      "    }",
+      "    /* n 个矩阵，维度数组 p 有 n + 1 个元素 */",
+      "    /* dp[i][j] 表示第 i 到第 j 个矩阵的最小乘法次数 */",
+      "    /* 用 long long 防止维度相乘溢出（1000×1000×1000 就已经是 10 亿级别了） */",
+      "    long long dp[MAX_N + 1][MAX_N + 1];",
+      "    /* 初始化：单个矩阵不需要乘法 */",
+      "    memset(dp, 0, sizeof(dp));",
+      "    /* len 是链的长度，从 2 开始（至少两个矩阵才有乘法） */",
+      "    for (int len = 2; len <= n; len++) {",
+      "        for (int i = 1; i <= n - len + 1; i++) {",
+      "            int j = i + len - 1;",
+      "            dp[i][j] = LLONG_MAX;",
+      "            /* 在 i..j 之间找最优切分点 k */",
+      "            for (int k = i; k < j; k++) {",
+      "                long long cost = dp[i][k] + dp[k + 1][j]",
+      "                               + (long long)p[i - 1] * p[k] * p[j];",
+      "                if (cost < dp[i][j]) {",
+      "                    dp[i][j] = cost;",
+      "                }",
+      "            }",
+      "        }",
+      "    }",
+      "    return dp[1][n];",
+      "}",
+      "int main(void) {",
+      "    /* 4 个矩阵：A1（10×100），A2（100×5），A3（5×50），A4（50×1） */",
+      "    int p[] = {10, 100, 5, 50, 1};",
+      "    int n = 4;",
+      "    printf(\"最少乘法次数：%lld\\n\", matrix_chain_order(p, n));",
+      "    /* 输出 1750（比随便加括号省多了） */",
+      "    return 0;",
+      "}"
+    ],
+    "track_vars": {
+      "primary": [
+        "dp",
+        "i",
+        "j",
+        "k",
+        "len",
+        "n"
+      ],
+      "secondary": [
+        "_return",
+        "p"
+      ]
+    },
+    "var_classes": {
+      "_return": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "dp": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "i": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "j": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "k": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "len": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "n": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "p": {
+        "category": "secondary",
+        "type": "array"
+      }
+    },
+    "viz_type": "array",
+    "initial_data": {
+      "p": [
+        10,
+        100,
+        5,
+        50,
+        1
+      ]
+    },
+    "program_output": [
+      {
+        "after_step": 30,
+        "text": "最少乘法次数：1750"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step": 0,
+      "line": 32,
+      "type": "enter",
+      "func": "main",
+      "vars": {}
+    },
+    {
+      "step": 1,
+      "line": 36,
+      "type": "enter",
+      "func": "matrix_chain_order",
+      "vars": {
+        "p": [
+          10,
+          100,
+          5,
+          50,
+          1
+        ],
+        "n": 4
+      }
+    },
+    {
+      "step": 2,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "len": 2,
+        "n": 4
+      }
+    },
+    {
+      "step": 3,
+      "line": 17,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "len": 2,
+        "n": 4
+      }
+    },
+    {
+      "step": 4,
+      "line": 21,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 2,
+        "k": 1
+      }
+    },
+    {
+      "step": 5,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "dp": 1796041568,
+        "i": 1,
+        "j": 2
+      }
+    },
+    {
+      "step": 6,
+      "line": 17,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "len": 2,
+        "n": 4
+      }
+    },
+    {
+      "step": 7,
+      "line": 21,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 3,
+        "k": 2
+      }
+    },
+    {
+      "step": 8,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "dp": 1796041568,
+        "i": 2,
+        "j": 3
+      }
+    },
+    {
+      "step": 9,
+      "line": 17,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3,
+        "len": 2,
+        "n": 4
+      }
+    },
+    {
+      "step": 10,
+      "line": 21,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 4,
+        "k": 3
+      }
+    },
+    {
+      "step": 11,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "dp": 1796041568,
+        "i": 3,
+        "j": 4
+      }
+    },
+    {
+      "step": 12,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "len": 3,
+        "n": 4
+      }
+    },
+    {
+      "step": 13,
+      "line": 17,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "len": 3,
+        "n": 4
+      }
+    },
+    {
+      "step": 14,
+      "line": 21,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 3,
+        "k": 1
+      }
+    },
+    {
+      "step": 15,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "dp": 1796041568,
+        "i": 1,
+        "j": 3
+      }
+    },
+    {
+      "step": 16,
+      "line": 21,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 3,
+        "k": 2
+      }
+    },
+    {
+      "step": 17,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "dp": 1796041568,
+        "i": 1,
+        "j": 3
+      }
+    },
+    {
+      "step": 18,
+      "line": 17,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "len": 3,
+        "n": 4
+      }
+    },
+    {
+      "step": 19,
+      "line": 21,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 4,
+        "k": 2
+      }
+    },
+    {
+      "step": 20,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "dp": 1796041568,
+        "i": 2,
+        "j": 4
+      }
+    },
+    {
+      "step": 21,
+      "line": 21,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 4,
+        "k": 3
+      }
+    },
+    {
+      "step": 22,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "len": 4,
+        "n": 4
+      }
+    },
+    {
+      "step": 23,
+      "line": 17,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "len": 4,
+        "n": 4
+      }
+    },
+    {
+      "step": 24,
+      "line": 21,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 4,
+        "k": 1
+      }
+    },
+    {
+      "step": 25,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "dp": 1796041568,
+        "i": 1,
+        "j": 4
+      }
+    },
+    {
+      "step": 26,
+      "line": 21,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 4,
+        "k": 2
+      }
+    },
+    {
+      "step": 27,
+      "line": 21,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 4,
+        "k": 3
+      }
+    },
+    {
+      "step": 28,
+      "line": 30,
+      "type": "exec",
+      "vars": {
+        "_return": 1750
+      }
+    },
+    {
+      "step": 29,
+      "line": 30,
+      "type": "exit",
+      "func": "matrix_chain_order",
+      "vars": {}
+    },
+    {
+      "step": 30,
+      "line": 38,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 31,
+      "line": 38,
+      "type": "exit",
+      "func": "main",
+      "vars": {}
+    }
+  ],
+  "total_steps": 32
+}

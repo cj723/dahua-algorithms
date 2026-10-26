@@ -1,0 +1,80 @@
+{
+  "meta": {
+    "algo": "03_异或交换",
+    "source_lines": [
+      "#include <stdio.h>",
+      "#include <stdlib.h>",
+      "#include <string.h>",
+      "/* 不使用临时变量，交换a和b的值 */",
+      "/* 利用异或的性质：a ^ a = 0, a ^ 0 = a */",
+      "/* 类比：两个人交换礼物，用纸箱中转——先放进去，再拿出来 */",
+      "void swap(int *a, int *b) {",
+      "    if (a == b) return;  /* 防止同一个地址异或自己变成0 */",
+      "    *a = *a ^ *b;       /* 第1步：a变成\"a和b的异或值\" */",
+      "    *b = *a ^ *b;       /* 第2步：b = (a^b) ^ b = a，b拿到了原来的a */",
+      "    *a = *a ^ *b;       /* 第3步：a = (a^b) ^ a = b，a拿到了原来的b */",
+      "}",
+      "/* ===== 自动生成的测试入口 ===== */",
+      "int main() {",
+      "    int a = 5;",
+      "    int b = 3;",
+      "    printf(\"交换前：a=%d, b=%d\\n\", a, b);",
+      "    swap(&a, &b);",
+      "    printf(\"交换后：a=%d, b=%d\\n\", a, b);",
+      "    return 0;",
+      "}"
+    ],
+    "track_vars": {
+      "primary": [],
+      "secondary": [
+        "_return"
+      ]
+    },
+    "var_classes": {
+      "_return": {
+        "category": "secondary",
+        "type": "scalar"
+      }
+    },
+    "viz_type": "array",
+    "initial_data": {},
+    "program_output": [
+      {
+        "after_step": 1,
+        "text": "交换前：a=5, b=3 交换后：a=3, b=5"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step": 0,
+      "line": 14,
+      "type": "enter",
+      "func": "main",
+      "vars": {}
+    },
+    {
+      "step": 1,
+      "line": 8,
+      "type": "cond",
+      "result": false,
+      "vars": {}
+    },
+    {
+      "step": 2,
+      "line": 20,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 3,
+      "line": 20,
+      "type": "exit",
+      "func": "main",
+      "vars": {}
+    }
+  ],
+  "total_steps": 4
+}

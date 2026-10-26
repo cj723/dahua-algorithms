@@ -1,0 +1,243 @@
+{
+  "meta": {
+    "algo": "02_高斯公式求和",
+    "source_lines": [
+      "/* 高斯公式求和 */",
+      "#include <stdio.h>",
+      "/* 数学公式法：O(1)。先转成 long long，避免 n * (n + 1) 在 int 中溢出。 */",
+      "long long sum_formula(int n) {",
+      "    return (long long)n * (n + 1) / 2;",
+      "}",
+      "int main(void) {",
+      "    int test_values[] = {10, 100, 10000, 1000000};",
+      "    int count = sizeof(test_values) / sizeof(test_values[0]);",
+      "    printf(\"方法二：数学公式（O(1)）\\n\");",
+      "    for (int k = 0; k < count; k++) {",
+      "        int n = test_values[k];",
+      "        printf(\"  1 + 2 + ... + %-7d = %lld\\n\", n, sum_formula(n));",
+      "    }",
+      "    return 0;",
+      "}"
+    ],
+    "track_vars": {
+      "primary": [
+        "count",
+        "k",
+        "n"
+      ],
+      "secondary": [
+        "_return"
+      ]
+    },
+    "var_classes": {
+      "_return": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "count": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "k": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "n": {
+        "category": "primary",
+        "type": "scalar"
+      }
+    },
+    "viz_type": "array",
+    "initial_data": {
+      "test_values": [
+        10,
+        100,
+        10000,
+        1000000
+      ]
+    },
+    "program_output": [
+      {
+        "after_step": 1,
+        "text": "方法二：数学公式（O(1)）"
+      },
+      {
+        "after_step": 5,
+        "text": "1 + 2 + ... + 10      = 55"
+      },
+      {
+        "after_step": 9,
+        "text": "1 + 2 + ... + 100     = 5050"
+      },
+      {
+        "after_step": 13,
+        "text": "1 + 2 + ... + 10000   = 50005000"
+      },
+      {
+        "after_step": 17,
+        "text": "1 + 2 + ... + 1000000 = 500000500000"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step": 0,
+      "line": 7,
+      "type": "enter",
+      "func": "main",
+      "vars": {}
+    },
+    {
+      "step": 1,
+      "line": 11,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "count": 4,
+        "k": 0
+      }
+    },
+    {
+      "step": 2,
+      "line": 13,
+      "type": "enter",
+      "func": "sum_formula",
+      "vars": {
+        "n": 10
+      }
+    },
+    {
+      "step": 3,
+      "line": 5,
+      "type": "exec",
+      "vars": {
+        "_return": 55
+      }
+    },
+    {
+      "step": 4,
+      "line": 5,
+      "type": "exit",
+      "func": "sum_formula",
+      "vars": {}
+    },
+    {
+      "step": 5,
+      "line": 11,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "count": 4,
+        "k": 1
+      }
+    },
+    {
+      "step": 6,
+      "line": 13,
+      "type": "enter",
+      "func": "sum_formula",
+      "vars": {
+        "n": 100
+      }
+    },
+    {
+      "step": 7,
+      "line": 5,
+      "type": "exec",
+      "vars": {
+        "_return": 5050
+      }
+    },
+    {
+      "step": 8,
+      "line": 5,
+      "type": "exit",
+      "func": "sum_formula",
+      "vars": {}
+    },
+    {
+      "step": 9,
+      "line": 11,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "count": 4,
+        "k": 2
+      }
+    },
+    {
+      "step": 10,
+      "line": 13,
+      "type": "enter",
+      "func": "sum_formula",
+      "vars": {
+        "n": 10000
+      }
+    },
+    {
+      "step": 11,
+      "line": 5,
+      "type": "exec",
+      "vars": {
+        "_return": 50005000
+      }
+    },
+    {
+      "step": 12,
+      "line": 5,
+      "type": "exit",
+      "func": "sum_formula",
+      "vars": {}
+    },
+    {
+      "step": 13,
+      "line": 11,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "count": 4,
+        "k": 3
+      }
+    },
+    {
+      "step": 14,
+      "line": 13,
+      "type": "enter",
+      "func": "sum_formula",
+      "vars": {
+        "n": 1000000
+      }
+    },
+    {
+      "step": 15,
+      "line": 5,
+      "type": "exec",
+      "vars": {
+        "_return": 1784293664
+      }
+    },
+    {
+      "step": 16,
+      "line": 5,
+      "type": "exit",
+      "func": "sum_formula",
+      "vars": {}
+    },
+    {
+      "step": 17,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 18,
+      "line": 15,
+      "type": "exit",
+      "func": "main",
+      "vars": {}
+    }
+  ],
+  "total_steps": 19
+}

@@ -1,0 +1,865 @@
+{
+  "meta": {
+    "algo": "04_最近公共祖先",
+    "source_lines": [
+      "#include <stdio.h>",
+      "#include <stdlib.h>",
+      "struct TreeNode {",
+      "    int val;",
+      "    struct TreeNode *left;",
+      "    struct TreeNode *right;",
+      "};",
+      "struct TreeNode* lowest_common_ancestor(struct TreeNode* root,",
+      "                                       struct TreeNode* p,",
+      "                                       struct TreeNode* q) {",
+      "    /* 递归终止条件：到了空节点，或者找到了 p 或 q */",
+      "    if (root == NULL || root == p || root == q) {",
+      "        return root;",
+      "    }",
+      "    /* 1. 问左副手：左边有 p 或 q 吗？ */",
+      "    struct TreeNode* left = lowest_common_ancestor(root->left, p, q);",
+      "    /* 2. 问右副手：右边有 p 或 q 吗？ */",
+      "    struct TreeNode* right = lowest_common_ancestor(root->right, p, q);",
+      "    /* 3. 根据汇报结果做决策（处理当前节点逻辑，典型的后序位置） */",
+      "    if (left != NULL && right != NULL) {",
+      "        /* 左右两边各找到了一个，那我就是最近公共祖先！ */",
+      "        return root;",
+      "    }",
+      "    if (left != NULL) {",
+      "        /* 只有左边找到了，那就把左边的结果原样往上报 */",
+      "        return left;",
+      "    }",
+      "    if (right != NULL) {",
+      "        /* 只有右边找到了，那就把右边的结果原样往上报 */",
+      "        return right;",
+      "    }",
+      "    /* 左右都没找到 */",
+      "    return NULL;",
+      "}",
+      "/* 测试：最近公共祖先 */",
+      "int main() {",
+      "    /*",
+      "     * 构建树：",
+      "     *       3",
+      "     *     /   \\",
+      "     *    5     1",
+      "     *   / \\   / \\",
+      "     *  6   2 0   8",
+      "     */",
+      "    struct TreeNode nodes[7];",
+      "    for (int i = 0; i < 7; i++) {",
+      "        nodes[i].left = nodes[i].right = NULL;",
+      "    }",
+      "    nodes[0].val = 3; nodes[0].left = &nodes[1]; nodes[0].right = &nodes[2];",
+      "    nodes[1].val = 5; nodes[1].left = &nodes[3]; nodes[1].right = &nodes[4];",
+      "    nodes[2].val = 1; nodes[2].left = &nodes[5]; nodes[2].right = &nodes[6];",
+      "    nodes[3].val = 6;",
+      "    nodes[4].val = 2;",
+      "    nodes[5].val = 0;",
+      "    nodes[6].val = 8;",
+      "    struct TreeNode *lca = lowest_common_ancestor(&nodes[0], &nodes[3], &nodes[4]);",
+      "    printf(\"6 和 2 的 LCA: %d（期望 5）\\n\", lca->val);",
+      "    lca = lowest_common_ancestor(&nodes[0], &nodes[3], &nodes[6]);",
+      "    printf(\"6 和 8 的 LCA: %d（期望 3）\\n\", lca->val);",
+      "    return 0;",
+      "}"
+    ],
+    "track_vars": {
+      "primary": [
+        "i",
+        "root"
+      ],
+      "secondary": [
+        "_return",
+        "lca",
+        "p",
+        "q"
+      ]
+    },
+    "var_classes": {
+      "_return": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "i": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "lca": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "p": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "q": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "root": {
+        "category": "primary",
+        "type": "tree"
+      }
+    },
+    "viz_type": "array",
+    "initial_data": {},
+    "program_output": [
+      {
+        "after_step": 38,
+        "text": "6 和 2 的 LCA: 5（期望 5）"
+      },
+      {
+        "after_step": 70,
+        "text": "6 和 8 的 LCA: 3（期望 3）"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step": 0,
+      "line": 36,
+      "type": "enter",
+      "func": "main",
+      "vars": {}
+    },
+    {
+      "step": 1,
+      "line": 46,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0
+      }
+    },
+    {
+      "step": 2,
+      "line": 46,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1
+      }
+    },
+    {
+      "step": 3,
+      "line": 46,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2
+      }
+    },
+    {
+      "step": 4,
+      "line": 46,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3
+      }
+    },
+    {
+      "step": 5,
+      "line": 46,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 4
+      }
+    },
+    {
+      "step": 6,
+      "line": 46,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 5
+      }
+    },
+    {
+      "step": 7,
+      "line": 46,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 6
+      }
+    },
+    {
+      "step": 8,
+      "line": 56,
+      "type": "enter",
+      "func": "lowest_common_ancestor",
+      "vars": {
+        "root": [
+          3,
+          [
+            5,
+            [
+              6,
+              null,
+              null
+            ],
+            [
+              2,
+              null,
+              null
+            ]
+          ],
+          [
+            1,
+            [
+              0,
+              null,
+              null
+            ],
+            [
+              8,
+              null,
+              null
+            ]
+          ]
+        ],
+        "p": 6,
+        "q": 2
+      }
+    },
+    {
+      "step": 9,
+      "line": 16,
+      "type": "enter",
+      "func": "lowest_common_ancestor",
+      "vars": {
+        "root": [
+          5,
+          [
+            6,
+            null,
+            null
+          ],
+          [
+            2,
+            null,
+            null
+          ]
+        ],
+        "p": 6,
+        "q": 2
+      }
+    },
+    {
+      "step": 10,
+      "line": 16,
+      "type": "enter",
+      "func": "lowest_common_ancestor",
+      "vars": {
+        "root": [
+          6,
+          null,
+          null
+        ],
+        "p": 6,
+        "q": 2
+      }
+    },
+    {
+      "step": 11,
+      "line": 12,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 12,
+      "line": 13,
+      "type": "exit",
+      "func": "lowest_common_ancestor",
+      "vars": {}
+    },
+    {
+      "step": 13,
+      "line": 18,
+      "type": "enter",
+      "func": "lowest_common_ancestor",
+      "vars": {
+        "root": [
+          2,
+          null,
+          null
+        ],
+        "p": 6,
+        "q": 2
+      }
+    },
+    {
+      "step": 14,
+      "line": 12,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 15,
+      "line": 13,
+      "type": "exit",
+      "func": "lowest_common_ancestor",
+      "vars": {}
+    },
+    {
+      "step": 16,
+      "line": 20,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 17,
+      "line": 22,
+      "type": "exit",
+      "func": "lowest_common_ancestor",
+      "vars": {}
+    },
+    {
+      "step": 18,
+      "line": 18,
+      "type": "enter",
+      "func": "lowest_common_ancestor",
+      "vars": {
+        "root": [
+          1,
+          [
+            0,
+            null,
+            null
+          ],
+          [
+            8,
+            null,
+            null
+          ]
+        ],
+        "p": 6,
+        "q": 2
+      }
+    },
+    {
+      "step": 19,
+      "line": 16,
+      "type": "enter",
+      "func": "lowest_common_ancestor",
+      "vars": {
+        "root": [
+          0,
+          null,
+          null
+        ],
+        "p": 6,
+        "q": 2
+      }
+    },
+    {
+      "step": 20,
+      "line": 16,
+      "type": "enter",
+      "func": "lowest_common_ancestor",
+      "vars": {
+        "root": null,
+        "p": 6,
+        "q": 2
+      }
+    },
+    {
+      "step": 21,
+      "line": 12,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 22,
+      "line": 13,
+      "type": "exit",
+      "func": "lowest_common_ancestor",
+      "vars": {}
+    },
+    {
+      "step": 23,
+      "line": 18,
+      "type": "enter",
+      "func": "lowest_common_ancestor",
+      "vars": {
+        "root": null,
+        "p": 6,
+        "q": 2
+      }
+    },
+    {
+      "step": 24,
+      "line": 12,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 25,
+      "line": 13,
+      "type": "exit",
+      "func": "lowest_common_ancestor",
+      "vars": {}
+    },
+    {
+      "step": 26,
+      "line": 33,
+      "type": "exit",
+      "func": "lowest_common_ancestor",
+      "vars": {}
+    },
+    {
+      "step": 27,
+      "line": 18,
+      "type": "enter",
+      "func": "lowest_common_ancestor",
+      "vars": {
+        "root": [
+          8,
+          null,
+          null
+        ],
+        "p": 6,
+        "q": 2
+      }
+    },
+    {
+      "step": 28,
+      "line": 16,
+      "type": "enter",
+      "func": "lowest_common_ancestor",
+      "vars": {
+        "root": null,
+        "p": 6,
+        "q": 2
+      }
+    },
+    {
+      "step": 29,
+      "line": 12,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 30,
+      "line": 13,
+      "type": "exit",
+      "func": "lowest_common_ancestor",
+      "vars": {}
+    },
+    {
+      "step": 31,
+      "line": 18,
+      "type": "enter",
+      "func": "lowest_common_ancestor",
+      "vars": {
+        "root": null,
+        "p": 6,
+        "q": 2
+      }
+    },
+    {
+      "step": 32,
+      "line": 12,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 33,
+      "line": 13,
+      "type": "exit",
+      "func": "lowest_common_ancestor",
+      "vars": {}
+    },
+    {
+      "step": 34,
+      "line": 33,
+      "type": "exit",
+      "func": "lowest_common_ancestor",
+      "vars": {}
+    },
+    {
+      "step": 35,
+      "line": 33,
+      "type": "exit",
+      "func": "lowest_common_ancestor",
+      "vars": {}
+    },
+    {
+      "step": 36,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 37,
+      "line": 26,
+      "type": "exit",
+      "func": "lowest_common_ancestor",
+      "vars": {}
+    },
+    {
+      "step": 38,
+      "line": 58,
+      "type": "enter",
+      "func": "lowest_common_ancestor",
+      "vars": {
+        "root": [
+          3,
+          [
+            5,
+            [
+              6,
+              null,
+              null
+            ],
+            [
+              2,
+              null,
+              null
+            ]
+          ],
+          [
+            1,
+            [
+              0,
+              null,
+              null
+            ],
+            [
+              8,
+              null,
+              null
+            ]
+          ]
+        ],
+        "p": 6,
+        "q": 8
+      }
+    },
+    {
+      "step": 39,
+      "line": 16,
+      "type": "enter",
+      "func": "lowest_common_ancestor",
+      "vars": {
+        "root": [
+          5,
+          [
+            6,
+            null,
+            null
+          ],
+          [
+            2,
+            null,
+            null
+          ]
+        ],
+        "p": 6,
+        "q": 8
+      }
+    },
+    {
+      "step": 40,
+      "line": 16,
+      "type": "enter",
+      "func": "lowest_common_ancestor",
+      "vars": {
+        "root": [
+          6,
+          null,
+          null
+        ],
+        "p": 6,
+        "q": 8
+      }
+    },
+    {
+      "step": 41,
+      "line": 12,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 42,
+      "line": 13,
+      "type": "exit",
+      "func": "lowest_common_ancestor",
+      "vars": {}
+    },
+    {
+      "step": 43,
+      "line": 18,
+      "type": "enter",
+      "func": "lowest_common_ancestor",
+      "vars": {
+        "root": [
+          2,
+          null,
+          null
+        ],
+        "p": 6,
+        "q": 8
+      }
+    },
+    {
+      "step": 44,
+      "line": 16,
+      "type": "enter",
+      "func": "lowest_common_ancestor",
+      "vars": {
+        "root": null,
+        "p": 6,
+        "q": 8
+      }
+    },
+    {
+      "step": 45,
+      "line": 12,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 46,
+      "line": 13,
+      "type": "exit",
+      "func": "lowest_common_ancestor",
+      "vars": {}
+    },
+    {
+      "step": 47,
+      "line": 18,
+      "type": "enter",
+      "func": "lowest_common_ancestor",
+      "vars": {
+        "root": null,
+        "p": 6,
+        "q": 8
+      }
+    },
+    {
+      "step": 48,
+      "line": 12,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 49,
+      "line": 13,
+      "type": "exit",
+      "func": "lowest_common_ancestor",
+      "vars": {}
+    },
+    {
+      "step": 50,
+      "line": 33,
+      "type": "exit",
+      "func": "lowest_common_ancestor",
+      "vars": {}
+    },
+    {
+      "step": 51,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 52,
+      "line": 26,
+      "type": "exit",
+      "func": "lowest_common_ancestor",
+      "vars": {}
+    },
+    {
+      "step": 53,
+      "line": 18,
+      "type": "enter",
+      "func": "lowest_common_ancestor",
+      "vars": {
+        "root": [
+          1,
+          [
+            0,
+            null,
+            null
+          ],
+          [
+            8,
+            null,
+            null
+          ]
+        ],
+        "p": 6,
+        "q": 8
+      }
+    },
+    {
+      "step": 54,
+      "line": 16,
+      "type": "enter",
+      "func": "lowest_common_ancestor",
+      "vars": {
+        "root": [
+          0,
+          null,
+          null
+        ],
+        "p": 6,
+        "q": 8
+      }
+    },
+    {
+      "step": 55,
+      "line": 16,
+      "type": "enter",
+      "func": "lowest_common_ancestor",
+      "vars": {
+        "root": null,
+        "p": 6,
+        "q": 8
+      }
+    },
+    {
+      "step": 56,
+      "line": 12,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 57,
+      "line": 13,
+      "type": "exit",
+      "func": "lowest_common_ancestor",
+      "vars": {}
+    },
+    {
+      "step": 58,
+      "line": 18,
+      "type": "enter",
+      "func": "lowest_common_ancestor",
+      "vars": {
+        "root": null,
+        "p": 6,
+        "q": 8
+      }
+    },
+    {
+      "step": 59,
+      "line": 12,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 60,
+      "line": 13,
+      "type": "exit",
+      "func": "lowest_common_ancestor",
+      "vars": {}
+    },
+    {
+      "step": 61,
+      "line": 33,
+      "type": "exit",
+      "func": "lowest_common_ancestor",
+      "vars": {}
+    },
+    {
+      "step": 62,
+      "line": 18,
+      "type": "enter",
+      "func": "lowest_common_ancestor",
+      "vars": {
+        "root": [
+          8,
+          null,
+          null
+        ],
+        "p": 6,
+        "q": 8
+      }
+    },
+    {
+      "step": 63,
+      "line": 12,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 64,
+      "line": 13,
+      "type": "exit",
+      "func": "lowest_common_ancestor",
+      "vars": {}
+    },
+    {
+      "step": 65,
+      "line": 28,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 66,
+      "line": 30,
+      "type": "exit",
+      "func": "lowest_common_ancestor",
+      "vars": {}
+    },
+    {
+      "step": 67,
+      "line": 20,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 68,
+      "line": 22,
+      "type": "exit",
+      "func": "lowest_common_ancestor",
+      "vars": {}
+    },
+    {
+      "step": 69,
+      "line": 58,
+      "type": "exec",
+      "vars": {
+        "lca": 1833380320
+      }
+    },
+    {
+      "step": 70,
+      "line": 60,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 71,
+      "line": 60,
+      "type": "exit",
+      "func": "main",
+      "vars": {}
+    }
+  ],
+  "total_steps": 72
+}

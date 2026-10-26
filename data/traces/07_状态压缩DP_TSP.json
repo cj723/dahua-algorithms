@@ -1,0 +1,2088 @@
+{
+  "meta": {
+    "algo": "07_状态压缩DP_TSP",
+    "source_lines": [
+      "#include <stdio.h>",
+      "#include <stdlib.h>",
+      "#include <string.h>",
+      "/* 状态压缩DP示意（旅行商问题的简化版） */",
+      "/* 假设有4个城市，编号0-3 */",
+      "#define MAXN 4           /* 城市数 */",
+      "#define INF 999999       /* 无穷大 */",
+      "int dist[MAXN][MAXN] = { /* 距离矩阵 */",
+      "    {0, 10, 15, 20},",
+      "    {10,  0, 35, 25},",
+      "    {15, 35,  0, 30},",
+      "    {20, 25, 30,  0}",
+      "};",
+      "int dp[16][MAXN];  /* dp[S][i]：已经访问集合S，当前在城市i的最短距离 */",
+      "                   /* S用4位二进制表示，最多2^4=16种状态 */",
+      "int tsp() {",
+      "    int S, full;",
+      "    /* 初始化所有状态为无穷大 */",
+      "    for (S = 0; S < (1 << MAXN); S++) {",
+      "        for (int i = 0; i < MAXN; i++) {",
+      "            dp[S][i] = INF;",
+      "        }",
+      "    }",
+      "    /* 起点：从城市0出发，状态为0001 */",
+      "    dp[1][0] = 0;  /* 1 = 0001，表示只访问了城市0 */",
+      "    /* 状态转移 */",
+      "    full = (1 << MAXN) - 1;  /* 1111，表示所有城市都访问了 */",
+      "    for (S = 1; S <= full; S++) {           /* 遍历所有状态 */",
+      "        for (int i = 0; i < MAXN; i++) {    /* 当前所在城市 */",
+      "            if (dp[S][i] == INF) continue;  /* 这个状态不可达 */",
+      "            if (!((S >> i) & 1)) continue;   /* 确认城市i在集合S中 */",
+      "            for (int j = 0; j < MAXN; j++) { /* 尝试去下一个城市 */",
+      "                if ((S >> j) & 1) continue;  /* 如果j已在集合中，跳过 */",
+      "                /* S | (1 << j)：把城市j加入访问集合 */",
+      "                int newS = S | (1 << j);",
+      "                if (dp[S][i] + dist[i][j] < dp[newS][j]) {",
+      "                    dp[newS][j] = dp[S][i] + dist[i][j];",
+      "                }",
+      "            }",
+      "        }",
+      "    }",
+      "    /* 找到访问所有城市后的最短距离 */",
+      "    int ans = INF;",
+      "    for (int i = 0; i < MAXN; i++) {",
+      "        if (dp[full][i] + dist[i][0] < ans) {",
+      "            ans = dp[full][i] + dist[i][0];  /* 加上回到起点的距离 */",
+      "        }",
+      "    }",
+      "    return ans;",
+      "}",
+      "int main() {",
+      "    printf(\"最短路径长度： %d\\n\", tsp());",
+      "    return 0;",
+      "}"
+    ],
+    "track_vars": {
+      "primary": [
+        "ans",
+        "dp",
+        "i",
+        "j"
+      ],
+      "secondary": [
+        "_return",
+        "full",
+        "newS"
+      ]
+    },
+    "var_classes": {
+      "_return": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "ans": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "dp": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "full": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "i": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "j": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "newS": {
+        "category": "secondary",
+        "type": "scalar"
+      }
+    },
+    "viz_type": "array",
+    "initial_data": {},
+    "program_output": [
+      {
+        "after_step": 272,
+        "text": "最短路径长度： 80"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step": 0,
+      "line": 51,
+      "type": "enter",
+      "func": "main",
+      "vars": {}
+    },
+    {
+      "step": 1,
+      "line": 19,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 2,
+      "line": 20,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0
+      }
+    },
+    {
+      "step": 3,
+      "line": 20,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1
+      }
+    },
+    {
+      "step": 4,
+      "line": 20,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2
+      }
+    },
+    {
+      "step": 5,
+      "line": 20,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3
+      }
+    },
+    {
+      "step": 6,
+      "line": 19,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 7,
+      "line": 20,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0
+      }
+    },
+    {
+      "step": 8,
+      "line": 20,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1
+      }
+    },
+    {
+      "step": 9,
+      "line": 20,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2
+      }
+    },
+    {
+      "step": 10,
+      "line": 20,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3
+      }
+    },
+    {
+      "step": 11,
+      "type": "skip",
+      "skipped": 60,
+      "line": 0,
+      "vars": {}
+    },
+    {
+      "step": 12,
+      "line": 19,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 13,
+      "line": 20,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0
+      }
+    },
+    {
+      "step": 14,
+      "line": 20,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1
+      }
+    },
+    {
+      "step": 15,
+      "line": 20,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2
+      }
+    },
+    {
+      "step": 16,
+      "line": 20,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3
+      }
+    },
+    {
+      "step": 17,
+      "line": 19,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 18,
+      "line": 20,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0
+      }
+    },
+    {
+      "step": 19,
+      "line": 20,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1
+      }
+    },
+    {
+      "step": 20,
+      "line": 20,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2
+      }
+    },
+    {
+      "step": 21,
+      "line": 20,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3
+      }
+    },
+    {
+      "step": 22,
+      "line": 27,
+      "type": "exec",
+      "vars": {
+        "full": 15
+      }
+    },
+    {
+      "step": 23,
+      "line": 28,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "full": 15
+      }
+    },
+    {
+      "step": 24,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0
+      }
+    },
+    {
+      "step": 25,
+      "line": 30,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "dp": 75661388,
+        "i": 0
+      }
+    },
+    {
+      "step": 26,
+      "line": 31,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "i": 0
+      }
+    },
+    {
+      "step": 27,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 0
+      }
+    },
+    {
+      "step": 28,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 1
+      }
+    },
+    {
+      "step": 29,
+      "line": 33,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "j": 1
+      }
+    },
+    {
+      "step": 30,
+      "line": 36,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "dp": 75661388,
+        "i": 0,
+        "j": 1,
+        "newS": 3
+      }
+    },
+    {
+      "step": 31,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 2
+      }
+    },
+    {
+      "step": 32,
+      "line": 33,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "j": 2
+      }
+    },
+    {
+      "step": 33,
+      "line": 36,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "dp": 75661388,
+        "i": 0,
+        "j": 2,
+        "newS": 5
+      }
+    },
+    {
+      "step": 34,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 3
+      }
+    },
+    {
+      "step": 35,
+      "line": 33,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "j": 3
+      }
+    },
+    {
+      "step": 36,
+      "line": 36,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "dp": 75661388,
+        "i": 0,
+        "j": 3,
+        "newS": 9
+      }
+    },
+    {
+      "step": 37,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1
+      }
+    },
+    {
+      "step": 38,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2
+      }
+    },
+    {
+      "step": 39,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3
+      }
+    },
+    {
+      "step": 40,
+      "line": 28,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "full": 15
+      }
+    },
+    {
+      "step": 41,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0
+      }
+    },
+    {
+      "step": 42,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1
+      }
+    },
+    {
+      "step": 43,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2
+      }
+    },
+    {
+      "step": 44,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3
+      }
+    },
+    {
+      "step": 45,
+      "line": 28,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "full": 15
+      }
+    },
+    {
+      "step": 46,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0
+      }
+    },
+    {
+      "step": 47,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1
+      }
+    },
+    {
+      "step": 48,
+      "line": 30,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "dp": 75661388,
+        "i": 1
+      }
+    },
+    {
+      "step": 49,
+      "line": 31,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "i": 1
+      }
+    },
+    {
+      "step": 50,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 0
+      }
+    },
+    {
+      "step": 51,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 1
+      }
+    },
+    {
+      "step": 52,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 2
+      }
+    },
+    {
+      "step": 53,
+      "line": 33,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "j": 2
+      }
+    },
+    {
+      "step": 54,
+      "line": 36,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "dp": 75661388,
+        "i": 1,
+        "j": 2,
+        "newS": 7
+      }
+    },
+    {
+      "step": 55,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 3
+      }
+    },
+    {
+      "step": 56,
+      "line": 33,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "j": 3
+      }
+    },
+    {
+      "step": 57,
+      "line": 36,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "dp": 75661388,
+        "i": 1,
+        "j": 3,
+        "newS": 11
+      }
+    },
+    {
+      "step": 58,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2
+      }
+    },
+    {
+      "step": 59,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3
+      }
+    },
+    {
+      "step": 60,
+      "line": 28,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "full": 15
+      }
+    },
+    {
+      "step": 61,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0
+      }
+    },
+    {
+      "step": 62,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1
+      }
+    },
+    {
+      "step": 63,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2
+      }
+    },
+    {
+      "step": 64,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3
+      }
+    },
+    {
+      "step": 65,
+      "line": 28,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "full": 15
+      }
+    },
+    {
+      "step": 66,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0
+      }
+    },
+    {
+      "step": 67,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1
+      }
+    },
+    {
+      "step": 68,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2
+      }
+    },
+    {
+      "step": 69,
+      "line": 30,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "dp": 75661388,
+        "i": 2
+      }
+    },
+    {
+      "step": 70,
+      "line": 31,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "i": 2
+      }
+    },
+    {
+      "step": 71,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 0
+      }
+    },
+    {
+      "step": 72,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 1
+      }
+    },
+    {
+      "step": 73,
+      "line": 33,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "j": 1
+      }
+    },
+    {
+      "step": 74,
+      "line": 36,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "dp": 75661388,
+        "i": 2,
+        "j": 1,
+        "newS": 7
+      }
+    },
+    {
+      "step": 75,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 2
+      }
+    },
+    {
+      "step": 76,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 3
+      }
+    },
+    {
+      "step": 77,
+      "line": 33,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "j": 3
+      }
+    },
+    {
+      "step": 78,
+      "line": 36,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "dp": 75661388,
+        "i": 2,
+        "j": 3,
+        "newS": 13
+      }
+    },
+    {
+      "step": 79,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3
+      }
+    },
+    {
+      "step": 80,
+      "line": 28,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "full": 15
+      }
+    },
+    {
+      "step": 81,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0
+      }
+    },
+    {
+      "step": 82,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1
+      }
+    },
+    {
+      "step": 83,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2
+      }
+    },
+    {
+      "step": 84,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3
+      }
+    },
+    {
+      "step": 85,
+      "line": 28,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "full": 15
+      }
+    },
+    {
+      "step": 86,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0
+      }
+    },
+    {
+      "step": 87,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1
+      }
+    },
+    {
+      "step": 88,
+      "line": 30,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "dp": 75661388,
+        "i": 1
+      }
+    },
+    {
+      "step": 89,
+      "line": 31,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "i": 1
+      }
+    },
+    {
+      "step": 90,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 0
+      }
+    },
+    {
+      "step": 91,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 1
+      }
+    },
+    {
+      "step": 92,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 2
+      }
+    },
+    {
+      "step": 93,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 3
+      }
+    },
+    {
+      "step": 94,
+      "line": 33,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "j": 3
+      }
+    },
+    {
+      "step": 95,
+      "line": 36,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "dp": 75661388,
+        "i": 1,
+        "j": 3,
+        "newS": 15
+      }
+    },
+    {
+      "step": 96,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2
+      }
+    },
+    {
+      "step": 97,
+      "line": 30,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "dp": 75661388,
+        "i": 2
+      }
+    },
+    {
+      "step": 98,
+      "line": 31,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "i": 2
+      }
+    },
+    {
+      "step": 99,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 0
+      }
+    },
+    {
+      "step": 100,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 1
+      }
+    },
+    {
+      "step": 101,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 2
+      }
+    },
+    {
+      "step": 102,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 3
+      }
+    },
+    {
+      "step": 103,
+      "line": 33,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "j": 3
+      }
+    },
+    {
+      "step": 104,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3
+      }
+    },
+    {
+      "step": 105,
+      "line": 28,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "full": 15
+      }
+    },
+    {
+      "step": 106,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0
+      }
+    },
+    {
+      "step": 107,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1
+      }
+    },
+    {
+      "step": 108,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2
+      }
+    },
+    {
+      "step": 109,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3
+      }
+    },
+    {
+      "step": 110,
+      "line": 28,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "full": 15
+      }
+    },
+    {
+      "step": 111,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0
+      }
+    },
+    {
+      "step": 112,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1
+      }
+    },
+    {
+      "step": 113,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2
+      }
+    },
+    {
+      "step": 114,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3
+      }
+    },
+    {
+      "step": 115,
+      "line": 30,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "dp": 75661388,
+        "i": 3
+      }
+    },
+    {
+      "step": 116,
+      "line": 31,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "i": 3
+      }
+    },
+    {
+      "step": 117,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 0
+      }
+    },
+    {
+      "step": 118,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 1
+      }
+    },
+    {
+      "step": 119,
+      "line": 33,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "j": 1
+      }
+    },
+    {
+      "step": 120,
+      "line": 36,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "dp": 75661388,
+        "i": 3,
+        "j": 1,
+        "newS": 11
+      }
+    },
+    {
+      "step": 121,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 2
+      }
+    },
+    {
+      "step": 122,
+      "line": 33,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "j": 2
+      }
+    },
+    {
+      "step": 123,
+      "line": 36,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "dp": 75661388,
+        "i": 3,
+        "j": 2,
+        "newS": 13
+      }
+    },
+    {
+      "step": 124,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 3
+      }
+    },
+    {
+      "step": 125,
+      "line": 28,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "full": 15
+      }
+    },
+    {
+      "step": 126,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0
+      }
+    },
+    {
+      "step": 127,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1
+      }
+    },
+    {
+      "step": 128,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2
+      }
+    },
+    {
+      "step": 129,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3
+      }
+    },
+    {
+      "step": 130,
+      "line": 28,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "full": 15
+      }
+    },
+    {
+      "step": 131,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0
+      }
+    },
+    {
+      "step": 132,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1
+      }
+    },
+    {
+      "step": 133,
+      "line": 30,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "dp": 75661388,
+        "i": 1
+      }
+    },
+    {
+      "step": 134,
+      "line": 31,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "i": 1
+      }
+    },
+    {
+      "step": 135,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 0
+      }
+    },
+    {
+      "step": 136,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 1
+      }
+    },
+    {
+      "step": 137,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 2
+      }
+    },
+    {
+      "step": 138,
+      "line": 33,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "j": 2
+      }
+    },
+    {
+      "step": 139,
+      "line": 36,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "dp": 75661388,
+        "i": 1,
+        "j": 2,
+        "newS": 15
+      }
+    },
+    {
+      "step": 140,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 3
+      }
+    },
+    {
+      "step": 141,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2
+      }
+    },
+    {
+      "step": 142,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3
+      }
+    },
+    {
+      "step": 143,
+      "line": 30,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "dp": 75661388,
+        "i": 3
+      }
+    },
+    {
+      "step": 144,
+      "line": 31,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "i": 3
+      }
+    },
+    {
+      "step": 145,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 0
+      }
+    },
+    {
+      "step": 146,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 1
+      }
+    },
+    {
+      "step": 147,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 2
+      }
+    },
+    {
+      "step": 148,
+      "line": 33,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "j": 2
+      }
+    },
+    {
+      "step": 149,
+      "line": 36,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "dp": 75661388,
+        "i": 3,
+        "j": 2,
+        "newS": 15
+      }
+    },
+    {
+      "step": 150,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 3
+      }
+    },
+    {
+      "step": 151,
+      "line": 28,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "full": 15
+      }
+    },
+    {
+      "step": 152,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0
+      }
+    },
+    {
+      "step": 153,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1
+      }
+    },
+    {
+      "step": 154,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2
+      }
+    },
+    {
+      "step": 155,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3
+      }
+    },
+    {
+      "step": 156,
+      "line": 28,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "full": 15
+      }
+    },
+    {
+      "step": 157,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0
+      }
+    },
+    {
+      "step": 158,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1
+      }
+    },
+    {
+      "step": 159,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2
+      }
+    },
+    {
+      "step": 160,
+      "line": 30,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "dp": 75661388,
+        "i": 2
+      }
+    },
+    {
+      "step": 161,
+      "line": 31,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "i": 2
+      }
+    },
+    {
+      "step": 162,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 0
+      }
+    },
+    {
+      "step": 163,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 1
+      }
+    },
+    {
+      "step": 164,
+      "line": 33,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "j": 1
+      }
+    },
+    {
+      "step": 165,
+      "line": 36,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "dp": 75661388,
+        "i": 2,
+        "j": 1,
+        "newS": 15
+      }
+    },
+    {
+      "step": 166,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 2
+      }
+    },
+    {
+      "step": 167,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 3
+      }
+    },
+    {
+      "step": 168,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3
+      }
+    },
+    {
+      "step": 169,
+      "line": 30,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "dp": 75661388,
+        "i": 3
+      }
+    },
+    {
+      "step": 170,
+      "line": 31,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "i": 3
+      }
+    },
+    {
+      "step": 171,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 0
+      }
+    },
+    {
+      "step": 172,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 1
+      }
+    },
+    {
+      "step": 173,
+      "line": 33,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "j": 1
+      }
+    },
+    {
+      "step": 174,
+      "line": 36,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "dp": 75661388,
+        "i": 3,
+        "j": 1,
+        "newS": 15
+      }
+    },
+    {
+      "step": 175,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 2
+      }
+    },
+    {
+      "step": 176,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 3
+      }
+    },
+    {
+      "step": 177,
+      "line": 28,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "full": 15
+      }
+    },
+    {
+      "step": 178,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0
+      }
+    },
+    {
+      "step": 179,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1
+      }
+    },
+    {
+      "step": 180,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2
+      }
+    },
+    {
+      "step": 181,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3
+      }
+    },
+    {
+      "step": 182,
+      "line": 28,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "full": 15
+      }
+    },
+    {
+      "step": 183,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0
+      }
+    },
+    {
+      "step": 184,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1
+      }
+    },
+    {
+      "step": 185,
+      "line": 30,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "dp": 75661388,
+        "i": 1
+      }
+    },
+    {
+      "step": 186,
+      "line": 31,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "i": 1
+      }
+    },
+    {
+      "step": 187,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 0
+      }
+    },
+    {
+      "step": 188,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 1
+      }
+    },
+    {
+      "step": 189,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 2
+      }
+    },
+    {
+      "step": 190,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 3
+      }
+    },
+    {
+      "step": 191,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2
+      }
+    },
+    {
+      "step": 192,
+      "line": 30,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "dp": 75661388,
+        "i": 2
+      }
+    },
+    {
+      "step": 193,
+      "line": 31,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "i": 2
+      }
+    },
+    {
+      "step": 194,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 0
+      }
+    },
+    {
+      "step": 195,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 1
+      }
+    },
+    {
+      "step": 196,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 2
+      }
+    },
+    {
+      "step": 197,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 3
+      }
+    },
+    {
+      "step": 198,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3
+      }
+    },
+    {
+      "step": 199,
+      "line": 30,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "dp": 75661388,
+        "i": 3
+      }
+    },
+    {
+      "step": 200,
+      "line": 31,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "i": 3
+      }
+    },
+    {
+      "step": 201,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 0
+      }
+    },
+    {
+      "step": 202,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 1
+      }
+    },
+    {
+      "step": 203,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 2
+      }
+    },
+    {
+      "step": 204,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 3
+      }
+    },
+    {
+      "step": 205,
+      "line": 44,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0
+      }
+    },
+    {
+      "step": 206,
+      "line": 44,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1
+      }
+    },
+    {
+      "step": 207,
+      "line": 45,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "ans": 999999,
+        "dp": 75661388,
+        "full": 15,
+        "i": 1
+      }
+    },
+    {
+      "step": 208,
+      "line": 46,
+      "type": "exec",
+      "vars": {
+        "ans": 80
+      }
+    },
+    {
+      "step": 209,
+      "line": 44,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2
+      }
+    },
+    {
+      "step": 210,
+      "line": 44,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3
+      }
+    },
+    {
+      "step": 211,
+      "line": 49,
+      "type": "exec",
+      "vars": {
+        "_return": 80
+      }
+    },
+    {
+      "step": 212,
+      "line": 49,
+      "type": "exit",
+      "func": "tsp",
+      "vars": {}
+    },
+    {
+      "step": 213,
+      "line": 53,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 214,
+      "line": 53,
+      "type": "exit",
+      "func": "main",
+      "vars": {}
+    }
+  ],
+  "total_steps": 215
+}

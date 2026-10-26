@@ -1,0 +1,1142 @@
+{
+  "meta": {
+    "algo": "02_随机化快排",
+    "source_lines": [
+      "/* 随机化快速排序 */",
+      "/* 类比:抽签--随机选一个基准值,避免极端情况 */",
+      "#include <stdio.h>",
+      "#include <stdlib.h>",
+      "#include <time.h>",
+      "/* 交换两个整数 */",
+      "void swap(int *a, int *b) {",
+      "    int temp = *a;",
+      "    *a = *b;",
+      "    *b = temp;",
+      "}",
+      "/* 随机化分区函数 */",
+      "/* 返回pivot最终的位置 */",
+      "int randomized_partition(int arr[], int low, int high) {",
+      "    /* 关键:随机选择一个pivot,而不是固定选第一个或最后一个 */",
+      "    /* rand() % n 只适合教学演示，工程中要注意 RAND_MAX、取模偏差和随机数质量 */",
+      "    int random_index = low + rand() % (high - low + 1);",
+      "    /* 把随机选的元素换到最后,方便后面的分区操作 */",
+      "    swap(&arr[random_index], &arr[high]);",
+      "    int pivot = arr[high];  /* 以最后一个元素为pivot */",
+      "    int i = low - 1;        /* i指向\"小于pivot区域\"的末尾 */",
+      "    /* 遍历数组,把小于pivot的元素都交换到左边 */",
+      "    for (int j = low; j < high; j++) {",
+      "        if (arr[j] < pivot) {   /* 当前元素小于pivot */",
+      "            i++;                /* 扩大\"小元素区域\" */",
+      "            swap(&arr[i], &arr[j]);  /* 交换到左边 */",
+      "        }",
+      "    }",
+      "    /* 把pivot放到正确的位置 */",
+      "    swap(&arr[i + 1], &arr[high]);",
+      "    return i + 1;  /* 返回pivot的位置 */",
+      "}",
+      "/* 随机化快速排序 */",
+      "void randomized_quicksort(int arr[], int low, int high) {",
+      "    if (low < high) {  /* 递归终止条件:子数组长度为1 */",
+      "        /* 分区:找到pivot的正确位置 */",
+      "        int pi = randomized_partition(arr, low, high);",
+      "        /* 递归排序左半部分 */",
+      "        randomized_quicksort(arr, low, pi - 1);",
+      "        /* 递归排序右半部分 */",
+      "        randomized_quicksort(arr, pi + 1, high);",
+      "    }",
+      "}",
+      "/* 测试代码 */",
+      "int main() {",
+      "    int arr[] = {5, 3, 8, 1, 9, 2, 7, 4, 6};",
+      "    int n = 9;",
+      "    /* 初始化随机数种子 */",
+      "    srand((unsigned int)time(NULL));",
+      "    printf(\"排序前: \");",
+      "    for (int i = 0; i < n; i++) printf(\"%d \", arr[i]);",
+      "    printf(\"\\n\");",
+      "    randomized_quicksort(arr, 0, n - 1);",
+      "    printf(\"排序后: \");",
+      "    for (int i = 0; i < n; i++) printf(\"%d \", arr[i]);",
+      "    printf(\"\\n\");",
+      "    return 0;",
+      "}"
+    ],
+    "track_vars": {
+      "primary": [
+        "arr",
+        "high",
+        "i",
+        "j",
+        "low",
+        "pivot"
+      ],
+      "secondary": [
+        "_return"
+      ]
+    },
+    "var_classes": {
+      "_return": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "arr": {
+        "category": "primary",
+        "type": "array"
+      },
+      "high": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "i": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "j": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "low": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "pivot": {
+        "category": "primary",
+        "type": "scalar"
+      }
+    },
+    "viz_type": "array",
+    "initial_data": {
+      "arr": [
+        5,
+        3,
+        8,
+        1,
+        9,
+        2,
+        7,
+        4,
+        6
+      ]
+    },
+    "program_output": [
+      {
+        "after_step": 1,
+        "text": "排序前: 5 3 8 1 9 2 7 4 6"
+      },
+      {
+        "after_step": 84,
+        "text": "排序后: 1 2 3 4 5 6 7 8 9"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step": 0,
+      "line": 45,
+      "type": "enter",
+      "func": "main",
+      "vars": {}
+    },
+    {
+      "step": 1,
+      "line": 53,
+      "type": "enter",
+      "func": "randomized_quicksort",
+      "vars": {
+        "arr": [
+          5,
+          3,
+          8,
+          1,
+          9,
+          2,
+          7,
+          4,
+          6
+        ],
+        "low": 0,
+        "high": 8
+      }
+    },
+    {
+      "step": 2,
+      "line": 35,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "high": 8,
+        "low": 0
+      }
+    },
+    {
+      "step": 3,
+      "line": 37,
+      "type": "enter",
+      "func": "randomized_partition",
+      "vars": {
+        "arr": [
+          5,
+          3,
+          8,
+          1,
+          9,
+          2,
+          7,
+          4,
+          6
+        ],
+        "low": 0,
+        "high": 8
+      }
+    },
+    {
+      "step": 4,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "high": 8,
+        "j": 0
+      }
+    },
+    {
+      "step": 5,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 0,
+        "pivot": 7
+      }
+    },
+    {
+      "step": 6,
+      "line": 25,
+      "type": "exec",
+      "vars": {
+        "i": 0
+      }
+    },
+    {
+      "step": 7,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "high": 8,
+        "j": 1
+      }
+    },
+    {
+      "step": 8,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 1,
+        "pivot": 7
+      }
+    },
+    {
+      "step": 9,
+      "line": 25,
+      "type": "exec",
+      "vars": {
+        "i": 1
+      }
+    },
+    {
+      "step": 10,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "high": 8,
+        "j": 2
+      }
+    },
+    {
+      "step": 11,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "high": 8,
+        "j": 3
+      }
+    },
+    {
+      "step": 12,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 3,
+        "pivot": 7
+      }
+    },
+    {
+      "step": 13,
+      "line": 25,
+      "type": "exec",
+      "vars": {
+        "i": 2
+      }
+    },
+    {
+      "step": 14,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "high": 8,
+        "j": 4
+      }
+    },
+    {
+      "step": 15,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "high": 8,
+        "j": 5
+      }
+    },
+    {
+      "step": 16,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 5,
+        "pivot": 7
+      }
+    },
+    {
+      "step": 17,
+      "line": 25,
+      "type": "exec",
+      "vars": {
+        "i": 3
+      }
+    },
+    {
+      "step": 18,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "high": 8,
+        "j": 6
+      }
+    },
+    {
+      "step": 19,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 6,
+        "pivot": 7
+      }
+    },
+    {
+      "step": 20,
+      "line": 25,
+      "type": "exec",
+      "vars": {
+        "i": 4
+      }
+    },
+    {
+      "step": 21,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "high": 8,
+        "j": 7
+      }
+    },
+    {
+      "step": 22,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 7,
+        "pivot": 7
+      }
+    },
+    {
+      "step": 23,
+      "line": 25,
+      "type": "exec",
+      "vars": {
+        "i": 5
+      }
+    },
+    {
+      "step": 24,
+      "line": 31,
+      "type": "exec",
+      "vars": {
+        "_return": 6
+      }
+    },
+    {
+      "step": 25,
+      "line": 31,
+      "type": "exit",
+      "func": "randomized_partition",
+      "vars": {}
+    },
+    {
+      "step": 26,
+      "line": 39,
+      "type": "enter",
+      "func": "randomized_quicksort",
+      "vars": {
+        "arr": [
+          5,
+          3,
+          1,
+          2,
+          6,
+          4,
+          7,
+          8,
+          9
+        ],
+        "low": 0,
+        "high": 5
+      }
+    },
+    {
+      "step": 27,
+      "line": 35,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "high": 5,
+        "low": 0
+      }
+    },
+    {
+      "step": 28,
+      "line": 37,
+      "type": "enter",
+      "func": "randomized_partition",
+      "vars": {
+        "arr": [
+          5,
+          3,
+          1,
+          2,
+          6,
+          4,
+          7,
+          8,
+          9
+        ],
+        "low": 0,
+        "high": 5
+      }
+    },
+    {
+      "step": 29,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "high": 5,
+        "j": 0
+      }
+    },
+    {
+      "step": 30,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "high": 5,
+        "j": 1
+      }
+    },
+    {
+      "step": 31,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "high": 5,
+        "j": 2
+      }
+    },
+    {
+      "step": 32,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "high": 5,
+        "j": 3
+      }
+    },
+    {
+      "step": 33,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "high": 5,
+        "j": 4
+      }
+    },
+    {
+      "step": 34,
+      "line": 31,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 35,
+      "line": 31,
+      "type": "exit",
+      "func": "randomized_partition",
+      "vars": {}
+    },
+    {
+      "step": 36,
+      "line": 39,
+      "type": "enter",
+      "func": "randomized_quicksort",
+      "vars": {
+        "arr": [
+          1,
+          3,
+          4,
+          2,
+          6,
+          5,
+          7,
+          8,
+          9
+        ],
+        "low": 0,
+        "high": -1
+      }
+    },
+    {
+      "step": 37,
+      "line": 41,
+      "type": "enter",
+      "func": "randomized_quicksort",
+      "vars": {
+        "arr": [
+          1,
+          3,
+          4,
+          2,
+          6,
+          5,
+          7,
+          8,
+          9
+        ],
+        "low": 1,
+        "high": 5
+      }
+    },
+    {
+      "step": 38,
+      "line": 35,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "high": 5,
+        "low": 1
+      }
+    },
+    {
+      "step": 39,
+      "line": 37,
+      "type": "enter",
+      "func": "randomized_partition",
+      "vars": {
+        "arr": [
+          1,
+          3,
+          4,
+          2,
+          6,
+          5,
+          7,
+          8,
+          9
+        ],
+        "low": 1,
+        "high": 5
+      }
+    },
+    {
+      "step": 40,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "high": 5,
+        "j": 1
+      }
+    },
+    {
+      "step": 41,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 1,
+        "pivot": 6
+      }
+    },
+    {
+      "step": 42,
+      "line": 25,
+      "type": "exec",
+      "vars": {
+        "i": 1
+      }
+    },
+    {
+      "step": 43,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "high": 5,
+        "j": 2
+      }
+    },
+    {
+      "step": 44,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 2,
+        "pivot": 6
+      }
+    },
+    {
+      "step": 45,
+      "line": 25,
+      "type": "exec",
+      "vars": {
+        "i": 2
+      }
+    },
+    {
+      "step": 46,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "high": 5,
+        "j": 3
+      }
+    },
+    {
+      "step": 47,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 3,
+        "pivot": 6
+      }
+    },
+    {
+      "step": 48,
+      "line": 25,
+      "type": "exec",
+      "vars": {
+        "i": 3
+      }
+    },
+    {
+      "step": 49,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "high": 5,
+        "j": 4
+      }
+    },
+    {
+      "step": 50,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 4,
+        "pivot": 6
+      }
+    },
+    {
+      "step": 51,
+      "line": 25,
+      "type": "exec",
+      "vars": {
+        "i": 4
+      }
+    },
+    {
+      "step": 52,
+      "line": 31,
+      "type": "exec",
+      "vars": {
+        "_return": 5
+      }
+    },
+    {
+      "step": 53,
+      "line": 31,
+      "type": "exit",
+      "func": "randomized_partition",
+      "vars": {}
+    },
+    {
+      "step": 54,
+      "line": 39,
+      "type": "enter",
+      "func": "randomized_quicksort",
+      "vars": {
+        "arr": [
+          1,
+          3,
+          4,
+          2,
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "low": 1,
+        "high": 4
+      }
+    },
+    {
+      "step": 55,
+      "line": 35,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "high": 4,
+        "low": 1
+      }
+    },
+    {
+      "step": 56,
+      "line": 37,
+      "type": "enter",
+      "func": "randomized_partition",
+      "vars": {
+        "arr": [
+          1,
+          3,
+          4,
+          2,
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "low": 1,
+        "high": 4
+      }
+    },
+    {
+      "step": 57,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "high": 4,
+        "j": 1
+      }
+    },
+    {
+      "step": 58,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "high": 4,
+        "j": 2
+      }
+    },
+    {
+      "step": 59,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "high": 4,
+        "j": 3
+      }
+    },
+    {
+      "step": 60,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 3,
+        "pivot": 3
+      }
+    },
+    {
+      "step": 61,
+      "line": 25,
+      "type": "exec",
+      "vars": {
+        "i": 1
+      }
+    },
+    {
+      "step": 62,
+      "line": 31,
+      "type": "exec",
+      "vars": {
+        "_return": 2
+      }
+    },
+    {
+      "step": 63,
+      "line": 31,
+      "type": "exit",
+      "func": "randomized_partition",
+      "vars": {}
+    },
+    {
+      "step": 64,
+      "line": 39,
+      "type": "enter",
+      "func": "randomized_quicksort",
+      "vars": {
+        "arr": [
+          1,
+          2,
+          3,
+          5,
+          4,
+          6,
+          7,
+          8,
+          9
+        ],
+        "low": 1,
+        "high": 1
+      }
+    },
+    {
+      "step": 65,
+      "line": 41,
+      "type": "enter",
+      "func": "randomized_quicksort",
+      "vars": {
+        "arr": [
+          1,
+          2,
+          3,
+          5,
+          4,
+          6,
+          7,
+          8,
+          9
+        ],
+        "low": 3,
+        "high": 4
+      }
+    },
+    {
+      "step": 66,
+      "line": 35,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "high": 4,
+        "low": 3
+      }
+    },
+    {
+      "step": 67,
+      "line": 37,
+      "type": "enter",
+      "func": "randomized_partition",
+      "vars": {
+        "arr": [
+          1,
+          2,
+          3,
+          5,
+          4,
+          6,
+          7,
+          8,
+          9
+        ],
+        "low": 3,
+        "high": 4
+      }
+    },
+    {
+      "step": 68,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "high": 4,
+        "j": 3
+      }
+    },
+    {
+      "step": 69,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 3,
+        "pivot": 5
+      }
+    },
+    {
+      "step": 70,
+      "line": 25,
+      "type": "exec",
+      "vars": {
+        "i": 3
+      }
+    },
+    {
+      "step": 71,
+      "line": 31,
+      "type": "exec",
+      "vars": {
+        "_return": 4
+      }
+    },
+    {
+      "step": 72,
+      "line": 31,
+      "type": "exit",
+      "func": "randomized_partition",
+      "vars": {}
+    },
+    {
+      "step": 73,
+      "line": 39,
+      "type": "enter",
+      "func": "randomized_quicksort",
+      "vars": {
+        "arr": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "low": 3,
+        "high": 3
+      }
+    },
+    {
+      "step": 74,
+      "line": 41,
+      "type": "enter",
+      "func": "randomized_quicksort",
+      "vars": {
+        "arr": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "low": 5,
+        "high": 4
+      }
+    },
+    {
+      "step": 75,
+      "line": 41,
+      "type": "enter",
+      "func": "randomized_quicksort",
+      "vars": {
+        "arr": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "low": 6,
+        "high": 5
+      }
+    },
+    {
+      "step": 76,
+      "line": 41,
+      "type": "enter",
+      "func": "randomized_quicksort",
+      "vars": {
+        "arr": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "low": 7,
+        "high": 8
+      }
+    },
+    {
+      "step": 77,
+      "line": 35,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "high": 8,
+        "low": 7
+      }
+    },
+    {
+      "step": 78,
+      "line": 37,
+      "type": "enter",
+      "func": "randomized_partition",
+      "vars": {
+        "arr": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "low": 7,
+        "high": 8
+      }
+    },
+    {
+      "step": 79,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "high": 8,
+        "j": 7
+      }
+    },
+    {
+      "step": 80,
+      "line": 31,
+      "type": "exec",
+      "vars": {
+        "_return": 7
+      }
+    },
+    {
+      "step": 81,
+      "line": 31,
+      "type": "exit",
+      "func": "randomized_partition",
+      "vars": {}
+    },
+    {
+      "step": 82,
+      "line": 39,
+      "type": "enter",
+      "func": "randomized_quicksort",
+      "vars": {
+        "arr": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "low": 7,
+        "high": 6
+      }
+    },
+    {
+      "step": 83,
+      "line": 41,
+      "type": "enter",
+      "func": "randomized_quicksort",
+      "vars": {
+        "arr": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "low": 8,
+        "high": 8
+      }
+    },
+    {
+      "step": 84,
+      "line": 57,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 85,
+      "line": 57,
+      "type": "exit",
+      "func": "main",
+      "vars": {}
+    }
+  ],
+  "total_steps": 86
+}

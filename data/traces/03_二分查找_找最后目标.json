@@ -1,0 +1,668 @@
+{
+  "meta": {
+    "algo": "03_二分查找_找最后目标",
+    "source_lines": [
+      "#include <stdio.h>",
+      "/* 找最后一个等于 target 的位置 */",
+      "int find_last(int arr[], int n, int target) {",
+      "    int left = 0, right = n - 1;",
+      "    int result = -1;",
+      "    while (left <= right) {",
+      "        int mid = left + (right - left) / 2;",
+      "        if (arr[mid] == target) {",
+      "            result = mid;       /* 记住这个位置 */",
+      "            left = mid + 1;     /* 继续往右找，看看后面有没有更晚出现的 */",
+      "        } else if (arr[mid] < target) {",
+      "            left = mid + 1;",
+      "        } else {",
+      "            right = mid - 1;",
+      "        }",
+      "    }",
+      "    return result;",
+      "}",
+      "// 测试：找最后一个出现的位置（数组含重复元素）",
+      "int main(void) {",
+      "    int arr[] = {1, 2, 2, 2, 3, 3, 4, 5, 5, 5, 5, 6};",
+      "    int n = sizeof(arr) / sizeof(arr[0]);",
+      "    printf(\"数组：\");",
+      "    for (int i = 0; i < n; i++) printf(\"%d \", arr[i]);",
+      "    printf(\"\\n\\n\");",
+      "    // 重复元素：找最后一个出现位置",
+      "    printf(\"find_last(2) → 位置 %d（期望 3）\\n\", find_last(arr, n, 2));",
+      "    printf(\"find_last(5) → 位置 %d（期望 10）\\n\", find_last(arr, n, 5));",
+      "    printf(\"find_last(3) → 位置 %d（期望 5）\\n\", find_last(arr, n, 3));",
+      "    // 不存在的元素",
+      "    printf(\"find_last(9) → 位置 %d（未找到）\\n\", find_last(arr, n, 9));",
+      "    return 0;",
+      "}"
+    ],
+    "track_vars": {
+      "primary": [
+        "arr",
+        "left",
+        "mid",
+        "n",
+        "result",
+        "right",
+        "target"
+      ],
+      "secondary": [
+        "_return"
+      ]
+    },
+    "var_classes": {
+      "_return": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "arr": {
+        "category": "primary",
+        "type": "array"
+      },
+      "left": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "mid": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "n": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "result": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "right": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "target": {
+        "category": "primary",
+        "type": "scalar"
+      }
+    },
+    "viz_type": "array",
+    "initial_data": {
+      "arr": [
+        1,
+        2,
+        2,
+        2,
+        3,
+        3,
+        4,
+        5,
+        5,
+        5,
+        5,
+        6
+      ]
+    },
+    "program_output": [
+      {
+        "after_step": 1,
+        "text": "数组：1 2 2 2 3 3 4 5 5 5 5 6"
+      },
+      {
+        "after_step": 16,
+        "text": "find_last(2) → 位置 3（期望 3）"
+      },
+      {
+        "after_step": 31,
+        "text": "find_last(5) → 位置 10（期望 10）"
+      },
+      {
+        "after_step": 42,
+        "text": "find_last(3) → 位置 5（期望 5）"
+      },
+      {
+        "after_step": 53,
+        "text": "find_last(9) → 位置 -1（未找到）"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step": 0,
+      "line": 20,
+      "type": "enter",
+      "func": "main",
+      "vars": {}
+    },
+    {
+      "step": 1,
+      "line": 27,
+      "type": "enter",
+      "func": "find_last",
+      "vars": {
+        "arr": [
+          1,
+          2,
+          2,
+          2,
+          3,
+          3,
+          4,
+          5,
+          5,
+          5,
+          5,
+          6
+        ],
+        "n": 12,
+        "target": 2
+      }
+    },
+    {
+      "step": 2,
+      "line": 6,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 0,
+        "right": 11
+      }
+    },
+    {
+      "step": 3,
+      "line": 14,
+      "type": "exec",
+      "vars": {
+        "right": 4
+      }
+    },
+    {
+      "step": 4,
+      "line": 6,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 0,
+        "right": 4
+      }
+    },
+    {
+      "step": 5,
+      "line": 8,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "mid": 2,
+        "target": 2
+      }
+    },
+    {
+      "step": 6,
+      "line": 9,
+      "type": "exec",
+      "vars": {
+        "result": 2
+      }
+    },
+    {
+      "step": 7,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "left": 3
+      }
+    },
+    {
+      "step": 8,
+      "line": 6,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 3,
+        "right": 4
+      }
+    },
+    {
+      "step": 9,
+      "line": 8,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "mid": 3,
+        "target": 2
+      }
+    },
+    {
+      "step": 10,
+      "line": 9,
+      "type": "exec",
+      "vars": {
+        "result": 3
+      }
+    },
+    {
+      "step": 11,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "left": 4
+      }
+    },
+    {
+      "step": 12,
+      "line": 6,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 4,
+        "right": 4
+      }
+    },
+    {
+      "step": 13,
+      "line": 14,
+      "type": "exec",
+      "vars": {
+        "right": 3
+      }
+    },
+    {
+      "step": 14,
+      "line": 17,
+      "type": "exec",
+      "vars": {
+        "_return": 3
+      }
+    },
+    {
+      "step": 15,
+      "line": 17,
+      "type": "exit",
+      "func": "find_last",
+      "vars": {}
+    },
+    {
+      "step": 16,
+      "line": 28,
+      "type": "enter",
+      "func": "find_last",
+      "vars": {
+        "arr": [
+          1,
+          2,
+          2,
+          2,
+          3,
+          3,
+          4,
+          5,
+          5,
+          5,
+          5,
+          6
+        ],
+        "n": 12,
+        "target": 5
+      }
+    },
+    {
+      "step": 17,
+      "line": 6,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 0,
+        "right": 11
+      }
+    },
+    {
+      "step": 18,
+      "line": 12,
+      "type": "exec",
+      "vars": {
+        "left": 6
+      }
+    },
+    {
+      "step": 19,
+      "line": 6,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 6,
+        "right": 11
+      }
+    },
+    {
+      "step": 20,
+      "line": 8,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "mid": 8,
+        "target": 5
+      }
+    },
+    {
+      "step": 21,
+      "line": 9,
+      "type": "exec",
+      "vars": {
+        "result": 8
+      }
+    },
+    {
+      "step": 22,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "left": 9
+      }
+    },
+    {
+      "step": 23,
+      "line": 6,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 9,
+        "right": 11
+      }
+    },
+    {
+      "step": 24,
+      "line": 8,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "mid": 10,
+        "target": 5
+      }
+    },
+    {
+      "step": 25,
+      "line": 9,
+      "type": "exec",
+      "vars": {
+        "result": 10
+      }
+    },
+    {
+      "step": 26,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "left": 11
+      }
+    },
+    {
+      "step": 27,
+      "line": 6,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 11,
+        "right": 11
+      }
+    },
+    {
+      "step": 28,
+      "line": 14,
+      "type": "exec",
+      "vars": {
+        "right": 10
+      }
+    },
+    {
+      "step": 29,
+      "line": 17,
+      "type": "exec",
+      "vars": {
+        "_return": 10
+      }
+    },
+    {
+      "step": 30,
+      "line": 17,
+      "type": "exit",
+      "func": "find_last",
+      "vars": {}
+    },
+    {
+      "step": 31,
+      "line": 29,
+      "type": "enter",
+      "func": "find_last",
+      "vars": {
+        "arr": [
+          1,
+          2,
+          2,
+          2,
+          3,
+          3,
+          4,
+          5,
+          5,
+          5,
+          5,
+          6
+        ],
+        "n": 12,
+        "target": 3
+      }
+    },
+    {
+      "step": 32,
+      "line": 6,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 0,
+        "right": 11
+      }
+    },
+    {
+      "step": 33,
+      "line": 8,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "mid": 5,
+        "target": 3
+      }
+    },
+    {
+      "step": 34,
+      "line": 9,
+      "type": "exec",
+      "vars": {
+        "result": 5
+      }
+    },
+    {
+      "step": 35,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "left": 6
+      }
+    },
+    {
+      "step": 36,
+      "line": 6,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 6,
+        "right": 11
+      }
+    },
+    {
+      "step": 37,
+      "line": 14,
+      "type": "exec",
+      "vars": {
+        "right": 7
+      }
+    },
+    {
+      "step": 38,
+      "line": 6,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 6,
+        "right": 7
+      }
+    },
+    {
+      "step": 39,
+      "line": 14,
+      "type": "exec",
+      "vars": {
+        "right": 5
+      }
+    },
+    {
+      "step": 40,
+      "line": 17,
+      "type": "exec",
+      "vars": {
+        "_return": 5
+      }
+    },
+    {
+      "step": 41,
+      "line": 17,
+      "type": "exit",
+      "func": "find_last",
+      "vars": {}
+    },
+    {
+      "step": 42,
+      "line": 31,
+      "type": "enter",
+      "func": "find_last",
+      "vars": {
+        "arr": [
+          1,
+          2,
+          2,
+          2,
+          3,
+          3,
+          4,
+          5,
+          5,
+          5,
+          5,
+          6
+        ],
+        "n": 12,
+        "target": 9
+      }
+    },
+    {
+      "step": 43,
+      "line": 6,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 0,
+        "right": 11
+      }
+    },
+    {
+      "step": 44,
+      "line": 12,
+      "type": "exec",
+      "vars": {
+        "left": 6
+      }
+    },
+    {
+      "step": 45,
+      "line": 6,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 6,
+        "right": 11
+      }
+    },
+    {
+      "step": 46,
+      "line": 12,
+      "type": "exec",
+      "vars": {
+        "left": 9
+      }
+    },
+    {
+      "step": 47,
+      "line": 6,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 9,
+        "right": 11
+      }
+    },
+    {
+      "step": 48,
+      "line": 12,
+      "type": "exec",
+      "vars": {
+        "left": 11
+      }
+    },
+    {
+      "step": 49,
+      "line": 6,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 11,
+        "right": 11
+      }
+    },
+    {
+      "step": 50,
+      "line": 12,
+      "type": "exec",
+      "vars": {
+        "left": 12
+      }
+    },
+    {
+      "step": 51,
+      "line": 17,
+      "type": "exec",
+      "vars": {
+        "_return": -1
+      }
+    },
+    {
+      "step": 52,
+      "line": 17,
+      "type": "exit",
+      "func": "find_last",
+      "vars": {}
+    },
+    {
+      "step": 53,
+      "line": 32,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 54,
+      "line": 32,
+      "type": "exit",
+      "func": "main",
+      "vars": {}
+    }
+  ],
+  "total_steps": 55
+}

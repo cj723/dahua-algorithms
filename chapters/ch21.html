@@ -1,0 +1,5297 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#171b28">
+<link rel="icon" href="../assets/mascots/student-dog.png">
+<title>第21章 数组与字符串的灵活技巧 · 大话算法</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #1e2336;
+  --panel: #1a1f30;
+  --panel-deep: #151920;
+  --surface: #21283a;
+  --border: #30384c;
+  --text: #d7dae0;
+  --text-soft: #abb4c3;
+  --text-dim: #929caf;
+  --accent: #59a8ee;
+  --accent-soft: #243f5e;
+  --success: #98c379;
+  --control-height: 64px;
+}
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Noto Sans SC', 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text-soft);
+  overflow: hidden;
+}
+button, input, summary { font: inherit; }
+button:focus-visible, a:focus-visible, input:focus-visible, summary:focus-visible, [tabindex]:focus-visible {
+  outline: 3px solid rgba(89,168,238,.58);
+  outline-offset: 2px;
+}
+.header {
+  height: 65px;
+  background: rgba(23,28,43,.96);
+  padding: 0 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  position: relative;
+  z-index: 30;
+}
+.back-link {
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 13px;
+  white-space: nowrap;
+}
+.back-link:hover { text-decoration: underline; }
+.chapter-heading { min-width: 0; flex: 1; }
+.chapter-kicker { color: var(--text-dim); font-size: 12px; margin-bottom: 2px; }
+.chapter-heading h1 {
+  font-size: 19px;
+  line-height: 1.25;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.chapter-status {
+  min-width: 138px;
+  display: grid;
+  gap: 5px;
+}
+.chapter-status-text { color: var(--text-dim); font-size: 11px; text-align: right; }
+.chapter-status-track { height: 4px; background: #252c3e; border-radius: 99px; overflow: hidden; }
+.chapter-status-fill {
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, var(--accent), var(--success));
+  border-radius: inherit;
+  transition: width .3s ease;
+}
+.chapter-nav { display: flex; gap: 6px; }
+.chapter-nav a, .chapter-nav span {
+  min-width: 36px;
+  height: 36px;
+  padding: 0 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-soft);
+  text-decoration: none;
+  font-size: 12px;
+}
+.chapter-nav a:hover { border-color: var(--accent); color: var(--text); background: #202b40; }
+.chapter-nav .disabled { opacity: .35; cursor: default; }
+.mobile-view-switcher { display: none; }
+.main { display: flex; height: calc(100dvh - 65px); min-height: 0; }
+.code-panel {
+  width: 45%;
+  min-width: 360px;
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.code-header {
+  background: var(--panel);
+  padding: 9px 14px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.algo-tabs {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  flex: 1;
+  min-width: 0;
+}
+.algo-tab, .mode-tab {
+  border: 1px solid var(--border);
+  background: #22283a;
+  color: var(--text-dim);
+  border-radius: 7px;
+  cursor: pointer;
+  transition: background .18s ease, border-color .18s ease, color .18s ease;
+}
+.algo-tab { padding: 6px 11px; font-size: 12px; position: relative; }
+.algo-tab:hover, .mode-tab:hover { color: var(--text); border-color: #48536b; }
+.algo-tab.active, .mode-tab.active {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: #e8f3ff;
+}
+.algo-tab.completed::after {
+  content: '✓';
+  margin-left: 6px;
+  color: var(--success);
+  font-weight: 800;
+}
+.breakpoint-hint {
+  color: #737e92;
+  font-size: 11px;
+  line-height: 29px;
+  white-space: nowrap;
+}
+.mode-tabs {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: #171c2b;
+  border-bottom: 1px solid var(--border);
+}
+.mode-tabs.visible { display: flex; }
+.mode-label { font-size: 12px; color: var(--text-dim); margin-right: 2px; }
+.mode-tab { padding: 5px 12px; border-radius: 999px; font-size: 12px; }
+.code-body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  font-family: 'SFMono-Regular', 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+  font-size: var(--code-font-size, 15px);
+  line-height: 1.8;
+  scrollbar-color: #3b455c transparent;
+}
+.code-line { display: flex; min-width: max-content; padding: 0 16px 0 7px; position: relative; }
+.code-line:hover { background: #22283a; }
+.code-line.active {
+  background: rgba(73,164,238,.32);
+  border-left: 3px solid var(--accent);
+  box-shadow: inset 0 0 16px rgba(73,164,238,.18);
+}
+.code-line.executed { background: rgba(73,164,238,.035); }
+.code-line.setup { background: rgba(127,132,142,.045); color: #667084; }
+.line-num {
+  width: 42px;
+  border: 0;
+  background: transparent;
+  text-align: right;
+  color: #748096;
+  padding-right: 12px;
+  user-select: none;
+  flex-shrink: 0;
+  position: relative;
+  cursor: pointer;
+}
+.line-num:hover { color: var(--accent); }
+.line-num .breakpoint {
+  position: absolute;
+  left: 3px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #e05561;
+}
+.line-content { flex: 1; white-space: pre; }
+.kw, .num { color: #F3A862; }
+.fn { color: #59a8ee; }
+.var { color: #D980FA; }
+.str { color: #74C589; }
+.cmt { color: #71939a; font-style: italic; }
+.right-panel { flex: 1; display: flex; flex-direction: column; min-width: 0; min-height: 0; overflow: hidden; }
+.viz-panel {
+  flex: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 20px;
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
+}
+.viz-panel canvas { width: 100%; height: 100%; display: block; }
+body.concept-mode .viz-panel { flex: 1 1 auto; padding: 6px 20px; }
+body.concept-mode .vars-panel { flex: 0 1 168px; padding: 8px 18px; }
+body.concept-mode .output-panel { flex: 0 1 68px; padding: 6px 16px; }
+body.concept-mode .callstack { display: none; }
+.callstack {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  max-width: calc(100% - 24px);
+  background: rgba(33,38,54,.92);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 12px;
+  pointer-events: none;
+}
+.callstack-title, .vars-panel h3, .output-panel h3 { color: var(--text-dim); }
+.callstack-title { margin-bottom: 4px; }
+.callstack-item { color: var(--accent); padding: 2px 0; }
+.callstack-item::before { content: '▸ '; color: #68758a; }
+.vars-panel {
+  flex: 2;
+  background: var(--panel);
+  padding: 10px 18px;
+  border-top: 1px solid var(--border);
+  overflow-y: auto;
+  min-height: 0;
+}
+.output-panel {
+  flex: 1;
+  background: var(--panel-deep);
+  border-top: 1px solid var(--border);
+  padding: 8px 16px;
+  overflow-y: auto;
+  min-height: 0;
+  font-family: 'SFMono-Regular', 'JetBrains Mono', monospace;
+  font-size: var(--output-font-size, 13px);
+  color: var(--text-dim);
+}
+.output-panel h3 {
+  font-size: 12px;
+  margin-bottom: 4px;
+  position: sticky;
+  top: 0;
+  background: var(--panel-deep);
+  padding-bottom: 4px;
+  z-index: 1;
+}
+.output-line { padding: 1px 0; white-space: pre-wrap; word-break: break-word; }
+.vars-panel h3 { font-size: 13px; margin-bottom: 9px; }
+.var-grid { display: flex; flex-direction: column; gap: 6px; }
+.var-section-title { font-size: 11px; color: var(--text-dim); margin: 8px 0 4px; }
+.var-section:first-child .var-section-title { margin-top: 0; }
+.var-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.var-item {
+  background: #22283a;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 6px 13px;
+  font-family: monospace;
+  font-size: var(--var-font-size, 14px);
+}
+.var-name { color: var(--accent); }
+.var-val { color: var(--text); font-weight: 650; }
+.var-changed { animation: varPulse .5s ease; border-color: var(--accent); }
+.var-highlight { border-color: var(--accent); background: var(--accent-soft); }
+@keyframes varPulse { 0% { background: var(--accent-soft); } 100% { background: #22283a; } }
+.var-toggle { font-size: 12px; color: var(--text-dim); cursor: pointer; padding: 4px 0; user-select: none; }
+.control-bar {
+  min-height: var(--control-height);
+  flex-shrink: 0;
+  background: var(--panel);
+  border-top: 1px solid var(--border);
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+  z-index: 20;
+}
+.transport-controls { display: flex; align-items: center; gap: 7px; }
+.btn {
+  min-height: 38px;
+  background: #22283a;
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  white-space: nowrap;
+}
+.btn:hover:not(:disabled) { background: #2a3247; border-color: #4c5872; }
+.btn:disabled { opacity: .36; cursor: not-allowed; }
+.btn-primary { min-width: 82px; background: var(--accent-soft); border-color: var(--accent); }
+.btn-active { background: #285176; border-color: #77bfff; }
+.step-info {
+  margin-left: auto;
+  min-width: 68px;
+  font-size: 12px;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+.step-info strong { color: var(--text); }
+.settings-menu { position: relative; }
+.settings-menu summary {
+  list-style: none;
+  min-height: 38px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-soft);
+  cursor: pointer;
+  font-size: 12px;
+  user-select: none;
+}
+.settings-menu summary::-webkit-details-marker { display: none; }
+.settings-menu[open] summary { border-color: var(--accent); background: var(--accent-soft); color: var(--text); }
+.settings-popover {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 10px);
+  width: 250px;
+  padding: 14px;
+  display: grid;
+  gap: 12px;
+  background: rgba(23,28,43,.98);
+  border: 1px solid #3a465f;
+  border-radius: 12px;
+  box-shadow: 0 16px 42px rgba(0,0,0,.38);
+}
+.setting-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.setting-row label, .shortcut-help { font-size: 12px; color: var(--text-dim); }
+.speed-slider { width: 130px; accent-color: var(--accent); }
+.font-control { display: flex; align-items: center; gap: 6px; }
+.btn-sm { min-height: 32px; padding: 5px 10px; font-size: 12px; }
+.settings-divider { height: 1px; background: var(--border); }
+.shortcut-help { line-height: 1.65; }
+
+@media (max-width: 1050px) {
+  .code-panel { width: 42%; min-width: 320px; }
+  .chapter-status { display: none; }
+  .breakpoint-hint { display: none; }
+  .btn { padding-inline: 10px; }
+}
+
+@media (max-width: 900px) {
+  body { overflow: auto; padding-bottom: 72px; }
+  .header {
+    height: auto;
+    min-height: 60px;
+    padding: 8px 12px;
+    gap: 10px;
+    position: sticky;
+    top: 0;
+  }
+  .back-link { font-size: 0; width: 36px; height: 36px; display: grid; place-items: center; }
+  .back-link::before { content: '←'; font-size: 21px; }
+  .chapter-kicker { font-size: 10px; }
+  .chapter-heading h1 { font-size: 16px; }
+  .chapter-nav a, .chapter-nav span { width: 34px; min-width: 34px; padding: 0; font-size: 0; }
+  .chapter-nav a:first-child::before, .chapter-nav span:first-child::before { content: '‹'; font-size: 22px; }
+  .chapter-nav a:last-child::before, .chapter-nav span:last-child::before { content: '›'; font-size: 22px; }
+  .mobile-view-switcher {
+    position: sticky;
+    top: 60px;
+    z-index: 25;
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 4px;
+    padding: 7px 10px;
+    background: rgba(23,28,43,.97);
+    border-bottom: 1px solid var(--border);
+  }
+  .mobile-view-switcher button {
+    min-height: 38px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text-dim);
+  }
+  .mobile-view-switcher button.active {
+    color: #e8f3ff;
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+  .main { display: block; height: auto; min-height: calc(100dvh - 114px); }
+  .code-panel, .right-panel { width: 100%; min-width: 0; border: 0; }
+  .code-panel { height: calc(100dvh - 186px); }
+  .code-header { padding: 8px 10px; overflow: hidden; }
+  .algo-tabs { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 3px; scrollbar-width: thin; }
+  .algo-tab { flex: 0 0 auto; min-height: 38px; }
+  .mode-tabs { padding: 7px 10px; overflow-x: auto; }
+  .code-body { min-height: 0; font-size: max(13px,var(--code-font-size,15px)); }
+  .code-line { padding-right: 12px; }
+  .right-panel { min-height: calc(100dvh - 186px); overflow: visible; }
+  .viz-panel { height: calc(100dvh - 186px); min-height: 430px; flex: none !important; padding: 8px 10px !important; }
+  .vars-panel { min-height: 50dvh; padding: 14px; }
+  .output-panel { min-height: 28dvh; padding: 12px 14px; }
+  body[data-mobile-view="animation"] .code-panel,
+  body[data-mobile-view="animation"] .vars-panel,
+  body[data-mobile-view="animation"] .output-panel { display: none; }
+  body[data-mobile-view="code"] .right-panel > :not(.control-bar),
+  body[data-mobile-view="code"] .vars-panel,
+  body[data-mobile-view="code"] .output-panel { display: none; }
+  body[data-mobile-view="code"] .right-panel { min-height: 0; }
+  body[data-mobile-view="data"] .code-panel,
+  body[data-mobile-view="data"] .viz-panel { display: none; }
+  body[data-mobile-view="data"] .right-panel { min-height: calc(100dvh - 186px); }
+  .control-bar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    min-height: 72px;
+    padding: 9px max(10px,env(safe-area-inset-right)) calc(9px + env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left));
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 -10px 30px rgba(9,12,20,.36);
+  }
+  .transport-controls { gap: 7px; }
+  #btn-reset { display: none; }
+  .btn { min-width: 48px; min-height: 44px; padding: 8px 10px; font-size: 0; }
+  #btn-back::after { content: '◀'; font-size: 16px; }
+  #btn-play { min-width: 92px; font-size: 14px; }
+  #btn-step::after { content: '▶'; font-size: 16px; }
+  .step-info { margin-left: 0; min-width: 52px; text-align: center; font-size: 11px; }
+  .step-info .step-prefix { display: none; }
+  .settings-menu summary { width: 44px; min-height: 44px; padding: 0; justify-content: center; font-size: 0; }
+  .settings-menu summary::before { content: '⚙'; font-size: 17px; }
+  .settings-popover { right: -2px; width: min(280px,calc(100vw - 20px)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: .001ms !important;
+  }
+}
+</style>
+</head>
+<body data-mobile-view="animation">
+
+<header class="header">
+  <a class="back-link" href="../index.html" aria-label="返回学习地图">← 学习地图</a>
+  <div class="chapter-heading">
+    <div class="chapter-kicker">第21章</div>
+    <h1>数组与字符串的灵活技巧</h1>
+  </div>
+  <div class="chapter-status" aria-label="本章学习进度">
+    <div class="chapter-status-text" id="chapter-progress-text">0 / 0 个演示完成</div>
+    <div class="chapter-status-track"><div class="chapter-status-fill" id="chapter-progress-fill"></div></div>
+  </div>
+  <nav class="chapter-nav" aria-label="章节导航">
+    <a href="ch20.html" aria-label="上一章：动态规划的降维打击" title="上一章：动态规划的降维打击">上一章</a>
+    <a href="ch22.html" aria-label="下一章：结语 · 封老师的最后一课" title="下一章：结语 · 封老师的最后一课">下一章</a>
+  </nav>
+</header>
+
+<div class="mobile-view-switcher" role="tablist" aria-label="学习视图">
+  <button type="button" class="active" data-mobile-view="animation" role="tab" aria-selected="true">动画</button>
+  <button type="button" data-mobile-view="code" role="tab" aria-selected="false">代码</button>
+  <button type="button" data-mobile-view="data" role="tab" aria-selected="false">变量</button>
+</div>
+
+<main class="main">
+  <section class="code-panel" aria-label="算法代码">
+    <div class="code-header">
+      <div class="algo-tabs" id="algo-tabs" role="tablist" aria-label="本章算法"></div>
+      <span class="breakpoint-hint">点击行号可设断点</span>
+    </div>
+    <div class="mode-tabs" id="mode-tabs" role="tablist" aria-label="演示模式"></div>
+    <div class="code-body" id="code-body" aria-label="代码执行过程"></div>
+  </section>
+
+  <section class="right-panel" aria-label="算法可视化与状态">
+    <div class="viz-panel">
+      <canvas id="viz-canvas" width="800" height="300" role="img" aria-label="算法执行动画"></canvas>
+      <div class="callstack" id="callstack"><div class="callstack-title">调用栈</div></div>
+    </div>
+    <div class="vars-panel">
+      <h3>变量状态</h3>
+      <div class="var-grid" id="var-grid"></div>
+    </div>
+    <div class="output-panel" id="output-panel">
+      <h3>程序输出</h3>
+      <div id="output-content" aria-live="polite"></div>
+    </div>
+
+    <div class="control-bar" aria-label="播放控制">
+      <div class="transport-controls">
+        <button class="btn" id="btn-reset" type="button" aria-label="重置当前演示" title="重置当前演示">⏮ 重置</button>
+        <button class="btn" id="btn-back" type="button" aria-label="上一步" title="上一步">◀ 后退</button>
+        <button class="btn btn-primary" id="btn-play" type="button" aria-label="播放或暂停">▶ 播放</button>
+        <button class="btn" id="btn-step" type="button" aria-label="下一步" title="下一步">⏭ 单步</button>
+      </div>
+      <div class="step-info" aria-live="polite">
+        <span class="step-prefix">步骤 </span><strong id="step-cur">0</strong> / <strong id="step-total">0</strong>
+      </div>
+      <details class="settings-menu">
+        <summary aria-label="播放设置">⚙ 设置</summary>
+        <div class="settings-popover">
+          <div class="setting-row">
+            <label for="speed-slider">播放速度</label>
+            <input type="range" class="speed-slider" id="speed-slider" min="1" max="10" value="5" aria-valuetext="速度 5">
+          </div>
+          <div class="setting-row">
+            <span class="mode-label">代码字体</span>
+            <div class="font-control">
+              <button class="btn btn-sm" type="button" id="font-dec" aria-label="减小代码字体">A−</button>
+              <button class="btn btn-sm" type="button" id="font-inc" aria-label="增大代码字体">A＋</button>
+            </div>
+          </div>
+          <button class="btn" id="btn-to-bp" type="button">运行到断点</button>
+          <div class="settings-divider"></div>
+          <div class="shortcut-help">页面空白处：空格播放/暂停，← → 单步，R 重置</div>
+        </div>
+      </details>
+    </div>
+  </section>
+</main>
+
+<script src="../js/learning-state.js?v=20260725"></script>
+<script src="../js/engine.js?v=20260725-ux2"></script>
+<script src="../js/viz-renderers.js?v=20260725-layout-audit"></script>
+<script>
+const CHAPTER_NUM = 21;
+const ALGOS = {
+  "01_滑动窗口_最短子数组": {
+    "title": "滑动窗口（最短子数组）",
+    "defaultMode": "concept",
+    "modeLabels": {
+      "concept": "理解动画",
+      "trace": "代码执行"
+    },
+    "modes": {
+      "concept": {
+        "title": "滑动窗口（最短子数组）",
+        "source": [
+          "算法: 滑动窗口最短子数组",
+          "输入: nums=[2,3,1,2,4,3], target=7",
+          "输出: 和至少为 7 的最短长度",
+          "",
+          "right 向右扩展窗口",
+          "window_sum += nums[right]",
+          "当 window_sum >= target:",
+          "    记录当前长度",
+          "    left 向右收缩窗口"
+        ],
+        "important_vars": {
+          "left": "左边界",
+          "right": "右边界",
+          "window_sum": "窗口和",
+          "best": "最短长度",
+          "phase": "阶段"
+        },
+        "track_vars": {
+          "primary": [
+            "left",
+            "right",
+            "window_sum",
+            "best",
+            "phase"
+          ],
+          "secondary": []
+        },
+        "var_classes": {
+          "left": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "right": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "window_sum": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "best": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "phase": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "concept": {
+            "category": "secondary",
+            "type": "concept"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 5,
+            "text": "理解动画：正整数数组里窗口和随 right 扩展变大, 达标后再用 left 收缩。"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 5,
+            "type": "exec",
+            "vars": {
+              "left": 0,
+              "right": 0,
+              "window_sum": "2",
+              "best": "-",
+              "phase": "right 扩展, 窗口和=2, 还不够 7",
+              "concept": {
+                "kind": "array_process",
+                "mode": "linear_search",
+                "title": "滑动窗口",
+                "values": [
+                  2,
+                  3,
+                  1,
+                  2,
+                  4,
+                  3
+                ],
+                "range": [
+                  0,
+                  0
+                ],
+                "compare": [
+                  0
+                ],
+                "phase": "right 扩展, 窗口和=2, 还不够 7"
+              }
+            }
+          },
+          {
+            "step": 1,
+            "line": 5,
+            "type": "exec",
+            "vars": {
+              "left": 0,
+              "right": 3,
+              "window_sum": "8",
+              "best": "4",
+              "phase": "窗口 [2,3,1,2] 达标, 先记录长度 4",
+              "concept": {
+                "kind": "array_process",
+                "mode": "linear_search",
+                "title": "滑动窗口",
+                "values": [
+                  2,
+                  3,
+                  1,
+                  2,
+                  4,
+                  3
+                ],
+                "range": [
+                  0,
+                  3
+                ],
+                "compare": [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                "phase": "窗口 [2,3,1,2] 达标, 先记录长度 4"
+              }
+            }
+          },
+          {
+            "step": 2,
+            "line": 8,
+            "type": "exec",
+            "vars": {
+              "left": 1,
+              "right": 3,
+              "window_sum": "6",
+              "best": "4",
+              "phase": "移出左端 2 后不达标, 继续扩展 right",
+              "concept": {
+                "kind": "array_process",
+                "mode": "linear_search",
+                "title": "滑动窗口",
+                "values": [
+                  2,
+                  3,
+                  1,
+                  2,
+                  4,
+                  3
+                ],
+                "range": [
+                  1,
+                  3
+                ],
+                "compare": [
+                  1,
+                  2,
+                  3
+                ],
+                "phase": "移出左端 2 后不达标, 继续扩展 right"
+              }
+            }
+          },
+          {
+            "step": 3,
+            "line": 7,
+            "type": "exec",
+            "vars": {
+              "left": 2,
+              "right": 4,
+              "window_sum": "7",
+              "best": "3",
+              "phase": "窗口 [1,2,4] 达标, 最短长度变成 3",
+              "concept": {
+                "kind": "array_process",
+                "mode": "linear_search",
+                "title": "滑动窗口",
+                "values": [
+                  2,
+                  3,
+                  1,
+                  2,
+                  4,
+                  3
+                ],
+                "range": [
+                  2,
+                  4
+                ],
+                "compare": [
+                  2,
+                  3,
+                  4
+                ],
+                "phase": "窗口 [1,2,4] 达标, 最短长度变成 3"
+              }
+            }
+          },
+          {
+            "step": 4,
+            "line": 8,
+            "type": "exec",
+            "vars": {
+              "left": 4,
+              "right": 5,
+              "window_sum": "7",
+              "best": "2",
+              "phase": "最后窗口 [4,3] 达标, 答案更新为 2",
+              "concept": {
+                "kind": "array_process",
+                "mode": "linear_search",
+                "title": "滑动窗口",
+                "values": [
+                  2,
+                  3,
+                  1,
+                  2,
+                  4,
+                  3
+                ],
+                "range": [
+                  4,
+                  5
+                ],
+                "compare": [
+                  4,
+                  5
+                ],
+                "phase": "最后窗口 [4,3] 达标, 答案更新为 2"
+              }
+            }
+          }
+        ]
+      },
+      "trace": {
+        "title": "滑动窗口（最短子数组）",
+        "source": [
+          "/* 滑动窗口：长度最小的子数组 */",
+          "/* 总和>=target的最短连续子数组长度 */",
+          "/* 类比：火车车窗看风景——窗口不断滑动，找到最佳视角 */",
+          "#include <stdio.h>",
+          "#include <limits.h>",
+          "",
+          "/* 返回总和>=target的最短子数组长度 */",
+          "/* 如果不存在返回0 */",
+          "int min_subarray_len(long long target, int nums[], int n) {",
+          "    int left = 0;              /* 窗口左边界 */",
+          "    long long window_sum = 0;  /* 当前窗口内的元素和，用long long防溢出 */",
+          "    int min_len = INT_MAX;     /* 记录最小长度，初始化为最大值 */",
+          "    ",
+          "    /* right从0开始，不断向右扩展 */",
+          "    for (int right = 0; right < n; right++) {",
+          "        /* 第1步：把新元素加入窗口 */",
+          "        window_sum += nums[right];",
+          "        ",
+          "        /* 第2步：当窗口和>=target时，尝试收缩左边界 */",
+          "        while (window_sum >= target) {",
+          "            /* 当前窗口已经满足条件，先更新最小长度 */",
+          "            int current_len = right - left + 1;",
+          "            if (current_len < min_len) {",
+          "                min_len = current_len;",
+          "            }",
+          "            /* 再收缩左边界：把左边的元素移出窗口 */",
+          "            window_sum -= nums[left];",
+          "            left++;",
+          "        }",
+          "        /* 第3步：如果窗口和<target，继续扩展right（for循环自动处理） */",
+          "    }",
+          "    ",
+          "    /* 如果没找到，返回0 */",
+          "    return (min_len == INT_MAX) ? 0 : min_len;",
+          "}",
+          "",
+          "int main() {",
+          "    int nums[] = {2, 3, 1, 2, 4, 3};",
+          "    int n = 6;",
+          "    long long target = 7;",
+          "    ",
+          "    int result = min_subarray_len(target, nums, n);",
+          "    printf(\"总和>= %lld 的最短子数组长度： %d\\n\", target, result);",
+          "    /* 输出： 2 */",
+          "    ",
+          "    return 0;",
+          "}",
+          ""
+        ],
+        "important_vars": {
+          "left": "索引",
+          "right": "索引",
+          "n": "参数",
+          "result": "变量",
+          "nums": "数据"
+        },
+        "track_vars": {
+          "primary": [
+            "left",
+            "n",
+            "nums",
+            "right",
+            "target"
+          ],
+          "secondary": [
+            "_return",
+            "current_len",
+            "min_len",
+            "window_sum"
+          ]
+        },
+        "var_classes": {
+          "_return": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "current_len": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "left": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "min_len": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "n": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "nums": {
+            "category": "primary",
+            "type": "array"
+          },
+          "right": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "target": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "window_sum": {
+            "category": "secondary",
+            "type": "scalar"
+          }
+        },
+        "initial_data": {
+          "nums": [
+            2,
+            3,
+            1,
+            2,
+            4,
+            3
+          ]
+        },
+        "program_output": [
+          {
+            "after_step": 14,
+            "text": "总和>= 7 的最短子数组长度： 2"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 36,
+            "type": "enter",
+            "func": "min_subarray_len",
+            "vars": {
+              "target": 7,
+              "nums": [
+                2,
+                3,
+                1,
+                2,
+                4,
+                3
+              ],
+              "n": 6
+            }
+          },
+          {
+            "step": 1,
+            "line": 13,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "n": 6,
+              "right": 0
+            }
+          },
+          {
+            "step": 2,
+            "line": 13,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "n": 6,
+              "right": 2
+            }
+          },
+          {
+            "step": 3,
+            "line": 17,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "target": 7,
+              "window_sum": 8
+            }
+          },
+          {
+            "step": 4,
+            "line": 24,
+            "type": "exec",
+            "vars": {
+              "window_sum": 6
+            }
+          },
+          {
+            "step": 5,
+            "line": 17,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "target": 7,
+              "window_sum": 10
+            }
+          },
+          {
+            "step": 6,
+            "line": 20,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "current_len": 3,
+              "min_len": 4
+            }
+          },
+          {
+            "step": 7,
+            "line": 13,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "n": 6,
+              "right": 5
+            }
+          },
+          {
+            "step": 8,
+            "line": 24,
+            "type": "exec",
+            "vars": {
+              "window_sum": 7
+            }
+          },
+          {
+            "step": 9,
+            "line": 21,
+            "type": "exec",
+            "vars": {
+              "min_len": 2
+            }
+          },
+          {
+            "step": 10,
+            "line": 30,
+            "type": "exit",
+            "func": "min_subarray_len",
+            "vars": {}
+          },
+          {
+            "step": 11,
+            "line": 32,
+            "type": "enter",
+            "func": "main",
+            "vars": {}
+          },
+          {
+            "step": 12,
+            "line": 39,
+            "type": "exec",
+            "vars": {
+              "_return": 0
+            }
+          },
+          {
+            "step": 13,
+            "line": 39,
+            "type": "exit",
+            "func": "main",
+            "vars": {
+              "right": "-",
+              "current_len": "-",
+              "min_len": "-",
+              "n": "-",
+              "target": "-",
+              "window_sum": "-",
+              "nums": "-",
+              "phase": "程序执行完成，结果见下方输出"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "02_双指针_两数之和": {
+    "title": "双指针（两数之和）",
+    "defaultMode": "concept",
+    "modeLabels": {
+      "concept": "理解动画",
+      "trace": "代码执行"
+    },
+    "modes": {
+      "concept": {
+        "title": "双指针（两数之和）",
+        "source": [
+          "算法: 有序数组两数之和",
+          "输入: nums=[2,7,11,15], target=9",
+          "left 从左端出发, right 从右端出发",
+          "sum 太大: right 左移",
+          "sum 太小: left 右移",
+          "sum 等于 target: 找到答案"
+        ],
+        "important_vars": {
+          "left": "左指针",
+          "right": "右指针",
+          "sum": "当前和",
+          "phase": "阶段"
+        },
+        "track_vars": {
+          "primary": [
+            "left",
+            "right",
+            "sum",
+            "phase"
+          ],
+          "secondary": []
+        },
+        "var_classes": {
+          "left": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "right": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "sum": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "phase": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "concept": {
+            "category": "secondary",
+            "type": "concept"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 3,
+            "text": "理解动画：数组有序时, 每次移动一个指针都能排除一批不可能组合。"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 3,
+            "type": "exec",
+            "vars": {
+              "left": 0,
+              "right": 3,
+              "sum": "17",
+              "phase": "2+15 太大, right 左移",
+              "concept": {
+                "kind": "array_process",
+                "mode": "binary",
+                "title": "双指针两数之和",
+                "values": [
+                  2,
+                  7,
+                  11,
+                  15
+                ],
+                "range": [
+                  0,
+                  3
+                ],
+                "compare": [
+                  0,
+                  3
+                ],
+                "target": 9,
+                "phase": "2+15 太大, right 左移"
+              }
+            }
+          },
+          {
+            "step": 1,
+            "line": 4,
+            "type": "exec",
+            "vars": {
+              "left": 0,
+              "right": 2,
+              "sum": "13",
+              "phase": "2+11 仍太大, right 继续左移",
+              "concept": {
+                "kind": "array_process",
+                "mode": "binary",
+                "title": "双指针两数之和",
+                "values": [
+                  2,
+                  7,
+                  11,
+                  15
+                ],
+                "range": [
+                  0,
+                  2
+                ],
+                "compare": [
+                  0,
+                  2
+                ],
+                "target": 9,
+                "phase": "2+11 仍太大, right 继续左移"
+              }
+            }
+          },
+          {
+            "step": 2,
+            "line": 6,
+            "type": "exec",
+            "vars": {
+              "left": 0,
+              "right": 1,
+              "sum": "9",
+              "phase": "2+7 正好等于 9, 找到下标 [0,1]",
+              "concept": {
+                "kind": "array_process",
+                "mode": "binary",
+                "title": "双指针两数之和",
+                "values": [
+                  2,
+                  7,
+                  11,
+                  15
+                ],
+                "range": [
+                  0,
+                  1
+                ],
+                "compare": [
+                  0,
+                  1
+                ],
+                "target": 9,
+                "phase": "2+7 正好等于 9, 找到下标 [0,1]"
+              }
+            }
+          }
+        ]
+      },
+      "trace": {
+        "title": "双指针（两数之和）",
+        "source": [
+          "/* 双指针（左右指针）：有序数组两数之和 */",
+          "/* 类比：两个人从走廊两头往中间走 */",
+          "#include <stdio.h>",
+          "",
+          "/* 在有序数组中找到两个数，使它们的和等于target */",
+          "/* 返回两个数的下标，存入result数组 */",
+          "/* 如果找不到，返回0 */",
+          "int two_sum_sorted(int nums[], int n, int target, int result[2]) {",
+          "    int left = 0;         /* 左指针，从头开始 */",
+          "    int right = n - 1;    /* 右指针，从尾开始 */",
+          "    ",
+          "    while (left < right) {  /* 两个指针还没相遇 */",
+          "        long long sum = (long long)nums[left] + nums[right];",
+          "        ",
+          "        if (sum == target) {",
+          "            /* 找到了！ */",
+          "            result[0] = left;",
+          "            result[1] = right;",
+          "            return 1;  /* 返回成功 */",
+          "        } else if (sum < target) {",
+          "            /* 和太小了，需要更大的数 */",
+          "            /* 数组是升序的，left++会让和变大 */",
+          "            left++;",
+          "        } else {",
+          "            /* 和太大了，需要更小的数 */",
+          "            /* right--会让和变小 */",
+          "            right--;",
+          "        }",
+          "    }",
+          "    ",
+          "    return 0;  /* 没找到 */",
+          "}",
+          "",
+          "int main() {",
+          "    int nums[] = {2, 7, 11, 15};",
+          "    int n = 4;",
+          "    int target = 9;",
+          "    int result[2];",
+          "    ",
+          "    if (two_sum_sorted(nums, n, target, result)) {",
+          "        printf(\"下标： [%d, %d]\\n\", result[0], result[1]);",
+          "        /* 输出： [0, 1] */",
+          "    } else {",
+          "        printf(\"没找到\\n\");",
+          "    }",
+          "    ",
+          "    return 0;",
+          "}",
+          ""
+        ],
+        "important_vars": {
+          "left": "索引",
+          "right": "索引",
+          "n": "参数",
+          "target": "参数",
+          "nums": "数据",
+          "result": "数据"
+        },
+        "track_vars": {
+          "primary": [
+            "left",
+            "n",
+            "nums",
+            "result",
+            "right",
+            "target"
+          ],
+          "secondary": [
+            "_return"
+          ]
+        },
+        "var_classes": {
+          "_return": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "left": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "n": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "nums": {
+            "category": "primary",
+            "type": "array"
+          },
+          "result": {
+            "category": "primary",
+            "type": "array"
+          },
+          "right": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "target": {
+            "category": "primary",
+            "type": "scalar"
+          }
+        },
+        "initial_data": {
+          "nums": [
+            2,
+            7,
+            11,
+            15
+          ],
+          "result": [
+            199150048,
+            2
+          ]
+        },
+        "program_output": [
+          {
+            "after_step": 14,
+            "text": "下标： [0, 1]"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 29,
+            "type": "enter",
+            "func": "main",
+            "vars": {}
+          },
+          {
+            "step": 1,
+            "line": 33,
+            "type": "exec",
+            "vars": {
+              "result": [
+                199150048,
+                2
+              ]
+            }
+          },
+          {
+            "step": 2,
+            "line": 34,
+            "type": "enter",
+            "func": "two_sum_sorted",
+            "vars": {
+              "nums": [
+                2,
+                7,
+                11,
+                15
+              ],
+              "n": 4,
+              "target": 9,
+              "result": [
+                199150048,
+                2,
+                2,
+                7
+              ]
+            }
+          },
+          {
+            "step": 3,
+            "line": 24,
+            "type": "exec",
+            "vars": {
+              "right": 2
+            }
+          },
+          {
+            "step": 4,
+            "line": 10,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "left": 0,
+              "right": 1
+            }
+          },
+          {
+            "step": 5,
+            "line": 15,
+            "type": "exec",
+            "vars": {
+              "result": [
+                0,
+                1,
+                2,
+                7
+              ]
+            }
+          },
+          {
+            "step": 6,
+            "line": 16,
+            "type": "exit",
+            "func": "two_sum_sorted",
+            "vars": {}
+          },
+          {
+            "step": 7,
+            "line": 10,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "left": 0,
+              "right": 3
+            }
+          },
+          {
+            "step": 8,
+            "line": 10,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "left": 0,
+              "right": 2
+            }
+          },
+          {
+            "step": 9,
+            "line": 12,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "target": 9
+            }
+          },
+          {
+            "step": 10,
+            "line": 16,
+            "type": "exec",
+            "vars": {
+              "_return": 1
+            }
+          },
+          {
+            "step": 11,
+            "line": 16,
+            "type": "exit",
+            "func": "two_sum_sorted",
+            "vars": {}
+          },
+          {
+            "step": 12,
+            "line": 40,
+            "type": "exec",
+            "vars": {
+              "_return": 0
+            }
+          },
+          {
+            "step": 13,
+            "line": 40,
+            "type": "exit",
+            "func": "main",
+            "vars": {
+              "right": "-",
+              "left": "-",
+              "n": "-",
+              "target": "-",
+              "result": "-",
+              "nums": "-",
+              "phase": "程序执行完成，结果见下方输出"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "03_快慢指针_中点与倒数": {
+    "title": "快慢指针（中点与倒数）",
+    "defaultMode": "concept",
+    "modeLabels": {
+      "concept": "理解动画",
+      "trace": "代码执行"
+    },
+    "modes": {
+      "concept": {
+        "title": "快慢指针（中点与倒数）",
+        "source": [
+          "算法: 快慢指针两个变体",
+          "变体一: fast 每次两步, slow 每次一步, 找中点",
+          "变体二: fast 先走 k 步, 再和 slow 同速, 找倒数第 k 个"
+        ],
+        "important_vars": {
+          "phase": "阶段",
+          "slow": "slow",
+          "fast": "fast"
+        },
+        "track_vars": {
+          "primary": [
+            "phase",
+            "slow",
+            "fast"
+          ],
+          "secondary": []
+        },
+        "var_classes": {
+          "list": {
+            "category": "primary",
+            "type": "list"
+          },
+          "phase": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "slow": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "fast": {
+            "category": "primary",
+            "type": "scalar"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 5,
+            "text": "理解动画：快慢指针的本质是制造距离差, 让 slow 停在我们想要的位置。"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 2,
+            "type": "exec",
+            "vars": {
+              "list": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "slow": 0,
+              "fast": 0,
+              "phase": "找中点: slow 和 fast 都从头出发"
+            }
+          },
+          {
+            "step": 1,
+            "line": 2,
+            "type": "exec",
+            "vars": {
+              "list": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "slow": 1,
+              "fast": 2,
+              "phase": "fast 走两步, slow 走一步"
+            }
+          },
+          {
+            "step": 2,
+            "line": 2,
+            "type": "exec",
+            "vars": {
+              "list": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "slow": 2,
+              "fast": 4,
+              "phase": "fast 到末尾时, slow 正好停在中点 3"
+            }
+          },
+          {
+            "step": 3,
+            "line": 3,
+            "type": "exec",
+            "vars": {
+              "list": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "slow": 0,
+              "fast": 2,
+              "phase": "找倒数第 2 个: fast 先领先 2 步"
+            }
+          },
+          {
+            "step": 4,
+            "line": 3,
+            "type": "exec",
+            "vars": {
+              "list": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "slow": 3,
+              "fast": -1,
+              "phase": "fast 到 NULL 时, slow 停在倒数第 2 个节点 4"
+            }
+          }
+        ]
+      },
+      "trace": {
+        "title": "快慢指针（中点与倒数）",
+        "source": [
+          "#include <stdio.h>",
+          "#include <stdlib.h>",
+          "",
+          "struct ListNode {",
+          "    int val;",
+          "    struct ListNode *next;",
+          "};",
+          "",
+          "/* 快慢指针变体一：寻找链表的中点 */",
+          "struct ListNode *find_middle(struct ListNode *head) {",
+          "    struct ListNode *slow = head;",
+          "    struct ListNode *fast = head;",
+          "    while (fast != NULL && fast->next != NULL) {",
+          "        slow = slow->next;",
+          "        fast = fast->next->next;",
+          "    }",
+          "    return slow;  /* fast到末尾时，slow正好在中点 */",
+          "}",
+          "",
+          "/* 快慢指针变体二：寻找倒数第k个节点 */",
+          "struct ListNode *find_kth_from_end(struct ListNode *head, int k) {",
+          "    struct ListNode *fast = head;",
+          "    struct ListNode *slow = head;",
+          "    /* fast先出发k步 */",
+          "    for (int i = 0; i < k; i++) {",
+          "        if (fast == NULL) return NULL;  /* k超过链表长度 */",
+          "        fast = fast->next;",
+          "    }",
+          "    /* 两人同速走到底 */",
+          "    while (fast != NULL) {",
+          "        slow = slow->next;",
+          "        fast = fast->next;",
+          "    }",
+          "    return slow;  /* fast到末尾时，slow在倒数第k个 */",
+          "}",
+          "",
+          "/* 测试：快慢指针 */",
+          "int main() {",
+          "    /* 构建链表 1 → 2 → 3 → 4 → 5 → NULL */",
+          "    struct ListNode nodes[5];",
+          "    for (int i = 0; i < 5; i++) {",
+          "        nodes[i].val = i + 1;",
+          "        nodes[i].next = (i < 4) ? &nodes[i+1] : NULL;",
+          "    }",
+          "",
+          "    struct ListNode *mid = find_middle(&nodes[0]);",
+          "    printf(\"链表中点：%d（期望 3）\\n\", mid->val);",
+          "",
+          "    struct ListNode *kth = find_kth_from_end(&nodes[0], 2);",
+          "    printf(\"倒数第2个：%d（期望 4）\\n\", kth->val);",
+          "",
+          "    kth = find_kth_from_end(&nodes[0], 1);",
+          "    printf(\"倒数第1个：%d（期望 5）\\n\", kth->val);",
+          "",
+          "    return 0;",
+          "}",
+          ""
+        ],
+        "important_vars": {
+          "i": "索引"
+        },
+        "track_vars": {
+          "primary": [
+            "i"
+          ],
+          "secondary": [
+            "_return",
+            "kth"
+          ]
+        },
+        "var_classes": {
+          "_return": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "i": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "kth": {
+            "category": "secondary",
+            "type": "scalar"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 6,
+            "text": "链表中点：3（期望 3） 倒数第2个：4（期望 4） 倒数第1个：5（期望 5）"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 34,
+            "type": "enter",
+            "func": "main",
+            "vars": {}
+          },
+          {
+            "step": 1,
+            "line": 37,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 0
+            }
+          },
+          {
+            "step": 2,
+            "line": 37,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 1
+            }
+          },
+          {
+            "step": 3,
+            "line": 37,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 2
+            }
+          },
+          {
+            "step": 4,
+            "line": 37,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 3
+            }
+          },
+          {
+            "step": 5,
+            "line": 37,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 4
+            }
+          },
+          {
+            "step": 6,
+            "line": 45,
+            "type": "exec",
+            "vars": {
+              "kth": 1860430472
+            }
+          },
+          {
+            "step": 7,
+            "line": 47,
+            "type": "exec",
+            "vars": {
+              "_return": 0
+            }
+          },
+          {
+            "step": 8,
+            "line": 47,
+            "type": "exit",
+            "func": "main",
+            "vars": {}
+          }
+        ]
+      }
+    }
+  },
+  "04_双指针_三数之和": {
+    "title": "双指针（三数之和）",
+    "defaultMode": "concept",
+    "modeLabels": {
+      "concept": "理解动画",
+      "trace": "代码执行"
+    },
+    "modes": {
+      "concept": {
+        "title": "双指针（三数之和）",
+        "source": [
+          "算法: 三数之和",
+          "先排序: [-4,-1,-1,0,1,2]",
+          "固定 nums[i]",
+          "在右侧用 left/right 找两数之和",
+          "跳过重复值, 避免重复三元组"
+        ],
+        "important_vars": {
+          "i": "固定下标",
+          "sum": "三数和",
+          "phase": "阶段"
+        },
+        "track_vars": {
+          "primary": [
+            "i",
+            "sum",
+            "phase"
+          ],
+          "secondary": []
+        },
+        "var_classes": {
+          "i": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "sum": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "phase": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "concept": {
+            "category": "secondary",
+            "type": "concept"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 5,
+            "text": "理解动画：三数之和先排序, 再把问题化成“固定一个数 + 两数之和”。"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 2,
+            "type": "exec",
+            "vars": {
+              "i": 0,
+              "sum": "-4",
+              "phase": "固定 -4, 右侧再找两个数",
+              "concept": {
+                "kind": "array_process",
+                "mode": "quick",
+                "title": "三数之和",
+                "values": [
+                  -4,
+                  -1,
+                  -1,
+                  0,
+                  1,
+                  2
+                ],
+                "range": [
+                  0,
+                  5
+                ],
+                "compare": [
+                  0
+                ],
+                "sorted": [
+                  0
+                ],
+                "phase": "固定 -4, 右侧再找两个数"
+              }
+            }
+          },
+          {
+            "step": 1,
+            "line": 4,
+            "type": "exec",
+            "vars": {
+              "i": 1,
+              "sum": "-3",
+              "phase": "-4 + -1 + 2 太小, left 右移",
+              "concept": {
+                "kind": "array_process",
+                "mode": "quick",
+                "title": "三数之和",
+                "values": [
+                  -4,
+                  -1,
+                  -1,
+                  0,
+                  1,
+                  2
+                ],
+                "range": [
+                  1,
+                  5
+                ],
+                "compare": [
+                  1,
+                  5
+                ],
+                "sorted": [
+                  1
+                ],
+                "phase": "-4 + -1 + 2 太小, left 右移"
+              }
+            }
+          },
+          {
+            "step": 2,
+            "line": 3,
+            "type": "exec",
+            "vars": {
+              "i": 1,
+              "sum": "-1",
+              "phase": "固定 -1, 目标变成找两个数和为 1",
+              "concept": {
+                "kind": "array_process",
+                "mode": "quick",
+                "title": "三数之和",
+                "values": [
+                  -4,
+                  -1,
+                  -1,
+                  0,
+                  1,
+                  2
+                ],
+                "range": [
+                  1,
+                  5
+                ],
+                "compare": [
+                  1
+                ],
+                "sorted": [
+                  1
+                ],
+                "phase": "固定 -1, 目标变成找两个数和为 1"
+              }
+            }
+          },
+          {
+            "step": 3,
+            "line": 4,
+            "type": "exec",
+            "vars": {
+              "i": 1,
+              "sum": "0",
+              "phase": "找到 [-1,-1,2]",
+              "concept": {
+                "kind": "array_process",
+                "mode": "quick",
+                "title": "三数之和",
+                "values": [
+                  -4,
+                  -1,
+                  -1,
+                  0,
+                  1,
+                  2
+                ],
+                "range": [
+                  2,
+                  5
+                ],
+                "compare": [
+                  1,
+                  2,
+                  5
+                ],
+                "sorted": [
+                  1
+                ],
+                "phase": "找到 [-1,-1,2]"
+              }
+            }
+          },
+          {
+            "step": 4,
+            "line": 4,
+            "type": "exec",
+            "vars": {
+              "i": 1,
+              "sum": "0",
+              "phase": "继续找到 [-1,0,1], 并跳过重复固定值",
+              "concept": {
+                "kind": "array_process",
+                "mode": "quick",
+                "title": "三数之和",
+                "values": [
+                  -4,
+                  -1,
+                  -1,
+                  0,
+                  1,
+                  2
+                ],
+                "range": [
+                  3,
+                  4
+                ],
+                "compare": [
+                  1,
+                  3,
+                  4
+                ],
+                "sorted": [
+                  1
+                ],
+                "phase": "继续找到 [-1,0,1], 并跳过重复固定值"
+              }
+            }
+          }
+        ]
+      },
+      "trace": {
+        "title": "双指针（三数之和）",
+        "source": [
+          "/* 三数之和：找出所有和为0的三元组 */",
+          "/* 固定一个数 + 双指针找另外两个 */",
+          "#include <stdio.h>",
+          "#include <stdlib.h>",
+          "",
+          "/* 比较函数，用于qsort排序 */",
+          "int compare(const void *a, const void *b) {",
+          "    int x = *(int *)a, y = *(int *)b;",
+          "    if (x < y) return -1;",
+          "    if (x > y) return 1;",
+          "    return 0;",
+          "}",
+          "",
+          "/* 三数之和 */",
+          "/* 结果存入results数组，返回找到的三元组个数 */",
+          "/* max_results用于防止结果数组越界 */",
+          "int three_sum(int nums[], int n, int results[][3], int max_results) {",
+          "    int count = 0;  /* 结果计数 */",
+          "    ",
+          "    /* 第1步：排序 */",
+          "    qsort(nums, n, sizeof(int), compare);",
+          "    ",
+          "    /* 第2步：遍历每个元素作为第一个数 */",
+          "    for (int i = 0; i < n - 2; i++) {",
+          "        /* 剪枝：如果当前数>0，后面的数都更大，不可能和为0 */",
+          "        if (nums[i] > 0) break;",
+          "        ",
+          "        /* 跳过重复的第一个数 */",
+          "        if (i > 0 && nums[i] == nums[i - 1]) continue;",
+          "        ",
+          "        /* 第3步：双指针找另外两个数 */",
+          "        int left = i + 1;       /* 左指针从i+1开始 */",
+          "        int right = n - 1;      /* 右指针从末尾开始 */",
+          "        ",
+          "        while (left < right) {",
+          "            /* 三个int连加极易整数溢出。严谨做法是转long long再判断。",
+          "             * 只需把第一个操作数强转为long long，后两个会自动提升，避免中间结果溢出。",
+          "             * 面试白板上写出这种防溢出细节，面试官会对你的工程素养刮目相看。 */",
+          "            long long sum = (long long)nums[i] + (long long)nums[left] + (long long)nums[right];",
+          "            ",
+          "            if (sum == 0) {",
+          "                /* 找到了一个三元组 */",
+          "                if (count < max_results) {",
+          "                    results[count][0] = nums[i];",
+          "                    results[count][1] = nums[left];",
+          "                    results[count][2] = nums[right];",
+          "                    count++;",
+          "                } else {",
+          "                    return count;  /* 结果数组满了，避免越界 */",
+          "                }",
+          "                ",
+          "                /* 跳过重复的左指针元素 */",
+          "                while (left < right && nums[left] == nums[left + 1]) left++;",
+          "                /* 跳过重复的右指针元素 */",
+          "                while (left < right && nums[right] == nums[right - 1]) right--;",
+          "                ",
+          "                /* 同时移动两个指针 */",
+          "                left++;",
+          "                right--;",
+          "            } else if (sum < 0) {",
+          "                /* 和太小，左指针右移 */",
+          "                left++;",
+          "            } else {",
+          "                /* 和太大，右指针左移 */",
+          "                right--;",
+          "            }",
+          "        }",
+          "    }",
+          "    ",
+          "    return count;",
+          "}",
+          "",
+          "int main() {",
+          "    int nums[] = {-1, 0, 1, 2, -1, -4};",
+          "    int n = 6;",
+          "    int results[100][3];  /* 存放结果 */",
+          "    int max_results = sizeof(results) / sizeof(results[0]);",
+          "    int count, i;",
+          "    ",
+          "    count = three_sum(nums, n, results, max_results);",
+          "    ",
+          "    printf(\"和为0的三元组：\\n\");",
+          "    for (i = 0; i < count; i++) {",
+          "        printf(\"[%d, %d, %d]\\n\", results[i][0], results[i][1], results[i][2]);",
+          "    }",
+          "    ",
+          "    return 0;",
+          "}",
+          ""
+        ],
+        "important_vars": {
+          "x": "参数",
+          "count": "参数",
+          "i": "索引",
+          "left": "索引",
+          "right": "索引",
+          "n": "参数",
+          "nums": "数据",
+          "results": "数据"
+        },
+        "track_vars": {
+          "primary": [
+            "count",
+            "i",
+            "left",
+            "n",
+            "nums",
+            "right"
+          ],
+          "secondary": [
+            "_return",
+            "max_results",
+            "results",
+            "x"
+          ]
+        },
+        "var_classes": {
+          "_return": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "count": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "i": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "left": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "max_results": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "n": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "nums": {
+            "category": "primary",
+            "type": "array"
+          },
+          "results": {
+            "category": "secondary",
+            "type": "grid"
+          },
+          "right": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "x": {
+            "category": "secondary",
+            "type": "scalar"
+          }
+        },
+        "initial_data": {
+          "nums": [
+            -1,
+            0,
+            1,
+            2,
+            -1,
+            -4
+          ],
+          "results": [
+            [
+              -1619163224,
+              1,
+              222119448
+            ],
+            [
+              2,
+              1830102488,
+              1
+            ],
+            [
+              0,
+              0,
+              1830102488
+            ],
+            [
+              1,
+              479,
+              0
+            ],
+            [
+              199150064,
+              2,
+              1830104224
+            ],
+            [
+              1,
+              1,
+              0
+            ],
+            [
+              199150048,
+              2,
+              199150064
+            ],
+            [
+              2,
+              1830104224,
+              1
+            ],
+            [
+              1,
+              0,
+              199150048
+            ],
+            [
+              2,
+              -16,
+              -1
+            ],
+            [
+              212183368,
+              2,
+              7908
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              -256,
+              -1,
+              0
+            ],
+            [
+              0,
+              196329568,
+              2
+            ],
+            [
+              196333104,
+              2,
+              1830103712
+            ],
+            [
+              1,
+              -1619654184,
+              1
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1830102816,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              1830102864,
+              1
+            ],
+            [
+              1830102944,
+              1,
+              6032
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              1830102816,
+              1
+            ],
+            [
+              1830102944,
+              1,
+              0
+            ],
+            [
+              0,
+              1830103008,
+              1
+            ],
+            [
+              1830102928,
+              1,
+              160
+            ],
+            [
+              0,
+              1830103088,
+              1
+            ],
+            [
+              0,
+              0,
+              1830102865
+            ],
+            [
+              1,
+              1830103009,
+              1
+            ],
+            [
+              1830102816,
+              1,
+              46907408
+            ],
+            [
+              1,
+              1830102864,
+              1
+            ],
+            [
+              46920368,
+              1,
+              46907392
+            ],
+            [
+              1,
+              131072,
+              0
+            ],
+            [
+              46938048,
+              1,
+              1
+            ],
+            [
+              0,
+              1830102928,
+              1
+            ],
+            [
+              1830103090,
+              1,
+              1830102864
+            ],
+            [
+              1,
+              1830102816,
+              1
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              1830103008
+            ],
+            [
+              1,
+              1830103090,
+              1
+            ],
+            [
+              1830102816,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              12,
+              0
+            ],
+            [
+              -303073590,
+              657660211,
+              -593332841
+            ],
+            [
+              1290964505,
+              0,
+              0
+            ],
+            [
+              1830102816,
+              1,
+              222114016
+            ],
+            [
+              2,
+              45,
+              1476395008
+            ],
+            [
+              1830102816,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              1830102816
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ],
+            [
+              0,
+              515,
+              0
+            ],
+            [
+              4608,
+              0,
+              1830103528
+            ],
+            [
+              1,
+              1830103504,
+              1
+            ],
+            [
+              -1619697592,
+              1,
+              48695008
+            ],
+            [
+              1,
+              10,
+              0
+            ],
+            [
+              868352,
+              0,
+              393216
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              199150048,
+              2,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1830103768,
+              1,
+              0
+            ],
+            [
+              0,
+              125280,
+              0
+            ],
+            [
+              2,
+              0,
+              196329504
+            ],
+            [
+              2,
+              196335408,
+              2
+            ],
+            [
+              1830103536,
+              1,
+              -1619479252
+            ],
+            [
+              1,
+              199135944,
+              2
+            ],
+            [
+              40,
+              0,
+              8
+            ],
+            [
+              0,
+              212183392,
+              2
+            ],
+            [
+              1107296256,
+              0,
+              -1619482288
+            ],
+            [
+              1,
+              222104256,
+              2
+            ],
+            [
+              1830103592,
+              1,
+              199135944
+            ],
+            [
+              2,
+              1,
+              0
+            ],
+            [
+              1830103712,
+              1,
+              -1619483236
+            ],
+            [
+              1,
+              1830103648,
+              1
+            ],
+            [
+              212183392,
+              2,
+              1073741824
+            ],
+            [
+              0,
+              -1619482668,
+              1
+            ],
+            [
+              222104224,
+              2,
+              196333057
+            ],
+            [
+              2,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              199150064
+            ],
+            [
+              2,
+              1830104224,
+              1
+            ]
+          ]
+        },
+        "program_output": [
+          {
+            "after_step": 14,
+            "text": "和为0的三元组： [-1, -1, 2] [-1, 0, 1]"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 61,
+            "type": "enter",
+            "func": "main",
+            "vars": {}
+          },
+          {
+            "step": 1,
+            "line": 64,
+            "type": "exec",
+            "vars": {
+              "results": [
+                [
+                  -1619163224,
+                  1,
+                  222119448
+                ],
+                [
+                  2,
+                  1830102488,
+                  1
+                ],
+                [
+                  0,
+                  0,
+                  1830102488
+                ],
+                [
+                  1,
+                  479,
+                  0
+                ],
+                [
+                  199150064,
+                  2,
+                  1830104224
+                ],
+                [
+                  1,
+                  1,
+                  0
+                ],
+                [
+                  199150048,
+                  2,
+                  199150064
+                ],
+                [
+                  2,
+                  1830104224,
+                  1
+                ],
+                [
+                  1,
+                  0,
+                  199150048
+                ],
+                [
+                  2,
+                  -16,
+                  -1
+                ],
+                [
+                  212183368,
+                  2,
+                  7908
+                ],
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  -256,
+                  -1,
+                  0
+                ],
+                [
+                  0,
+                  196329568,
+                  2
+                ],
+                [
+                  196333104,
+                  2,
+                  1830103712
+                ],
+                [
+                  1,
+                  -1619654184,
+                  1
+                ],
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  1830102816,
+                  1,
+                  0
+                ],
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  1830102864,
+                  1
+                ],
+                [
+                  1830102944,
+                  1,
+                  6032
+                ],
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  1830102816,
+                  1
+                ],
+                [
+                  1830102944,
+                  1,
+                  0
+                ],
+                [
+                  0,
+                  1830103008,
+                  1
+                ],
+                [
+                  1830102928,
+                  1,
+                  160
+                ],
+                [
+                  0,
+                  1830103088,
+                  1
+                ],
+                [
+                  0,
+                  0,
+                  1830102865
+                ],
+                [
+                  1,
+                  1830103009,
+                  1
+                ],
+                [
+                  1830102816,
+                  1,
+                  46907408
+                ],
+                [
+                  1,
+                  1830102864,
+                  1
+                ],
+                [
+                  46920368,
+                  1,
+                  46907392
+                ],
+                [
+                  1,
+                  131072,
+                  0
+                ],
+                [
+                  46938048,
+                  1,
+                  1
+                ],
+                [
+                  0,
+                  1830102928,
+                  1
+                ],
+                [
+                  1830103090,
+                  1,
+                  1830102864
+                ],
+                [
+                  1,
+                  1830102816,
+                  1
+                ],
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  0,
+                  1830103008
+                ],
+                [
+                  1,
+                  1830103090,
+                  1
+                ],
+                [
+                  1830102816,
+                  1,
+                  0
+                ],
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  1,
+                  12,
+                  0
+                ],
+                [
+                  -303073590,
+                  657660211,
+                  -593332841
+                ],
+                [
+                  1290964505,
+                  0,
+                  0
+                ],
+                [
+                  1830102816,
+                  1,
+                  222114016
+                ],
+                [
+                  2,
+                  45,
+                  1476395008
+                ],
+                [
+                  1830102816,
+                  1,
+                  0
+                ],
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  0,
+                  1830102816
+                ],
+                [
+                  1,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  0,
+                  1
+                ],
+                [
+                  0,
+                  515,
+                  0
+                ],
+                [
+                  4608,
+                  0,
+                  1830103528
+                ],
+                [
+                  1,
+                  1830103504,
+                  1
+                ],
+                [
+                  -1619697592,
+                  1,
+                  48695008
+                ],
+                [
+                  1,
+                  10,
+                  0
+                ],
+                [
+                  868352,
+                  0,
+                  393216
+                ],
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  199150048,
+                  2,
+                  0
+                ],
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  1830103768,
+                  1,
+                  0
+                ],
+                [
+                  0,
+                  125280,
+                  0
+                ],
+                [
+                  2,
+                  0,
+                  196329504
+                ],
+                [
+                  2,
+                  196335408,
+                  2
+                ],
+                [
+                  1830103536,
+                  1,
+                  -1619479252
+                ],
+                [
+                  1,
+                  199135944,
+                  2
+                ],
+                [
+                  40,
+                  0,
+                  8
+                ],
+                [
+                  0,
+                  212183392,
+                  2
+                ],
+                [
+                  1107296256,
+                  0,
+                  -1619482288
+                ],
+                [
+                  1,
+                  222104256,
+                  2
+                ],
+                [
+                  1830103592,
+                  1,
+                  199135944
+                ],
+                [
+                  2,
+                  1,
+                  0
+                ],
+                [
+                  1830103712,
+                  1,
+                  -1619483236
+                ],
+                [
+                  1,
+                  1830103648,
+                  1
+                ],
+                [
+                  212183392,
+                  2,
+                  1073741824
+                ],
+                [
+                  0,
+                  -1619482668,
+                  1
+                ],
+                [
+                  222104224,
+                  2,
+                  196333057
+                ],
+                [
+                  2,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  0,
+                  199150064
+                ],
+                [
+                  2,
+                  1830104224,
+                  1
+                ]
+              ]
+            }
+          },
+          {
+            "step": 2,
+            "line": 67,
+            "type": "enter",
+            "func": "three_sum",
+            "vars": {
+              "nums": [
+                -1,
+                0,
+                1,
+                2,
+                -1,
+                -4
+              ],
+              "n": 6,
+              "results": [
+                1830102464,
+                1830102476,
+                1830102488,
+                1830102500,
+                1830102512,
+                1830102524
+              ],
+              "max_results": 100
+            }
+          },
+          {
+            "step": 3,
+            "line": 10,
+            "type": "exit",
+            "func": "compare",
+            "vars": {}
+          },
+          {
+            "step": 4,
+            "line": 8,
+            "type": "cond",
+            "result": false,
+            "vars": {
+              "x": 2
+            }
+          },
+          {
+            "step": 5,
+            "line": 28,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "left": 1,
+              "right": 5
+            }
+          },
+          {
+            "step": 6,
+            "line": 52,
+            "type": "exec",
+            "vars": {
+              "left": 5
+            }
+          },
+          {
+            "step": 7,
+            "line": 37,
+            "type": "exec",
+            "vars": {
+              "results": [
+                [
+                  -1
+                ]
+              ]
+            }
+          },
+          {
+            "step": 8,
+            "line": 28,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "left": 3,
+              "right": 4
+            }
+          },
+          {
+            "step": 9,
+            "line": 44,
+            "type": "cond",
+            "result": false,
+            "vars": {
+              "left": 3,
+              "right": 4
+            }
+          },
+          {
+            "step": 10,
+            "line": 24,
+            "type": "cond",
+            "result": false,
+            "vars": {
+              "i": 3
+            }
+          },
+          {
+            "step": 11,
+            "line": 59,
+            "type": "exit",
+            "func": "three_sum",
+            "vars": {}
+          },
+          {
+            "step": 12,
+            "line": 72,
+            "type": "exec",
+            "vars": {
+              "_return": 0
+            }
+          },
+          {
+            "step": 13,
+            "line": 72,
+            "type": "exit",
+            "func": "main",
+            "vars": {
+              "right": "-",
+              "results": "-",
+              "left": "-",
+              "i": "-",
+              "n": "-",
+              "x": "-",
+              "max_results": "-",
+              "nums": "-",
+              "phase": "程序执行完成，结果见下方输出"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "05_单调栈_下一个更大": {
+    "title": "单调栈（下一个更大）",
+    "defaultMode": "concept",
+    "modeLabels": {
+      "concept": "理解动画",
+      "trace": "代码执行"
+    },
+    "modes": {
+      "concept": {
+        "title": "单调栈（下一个更大）",
+        "source": [
+          "算法: 单调栈找下一个更大元素",
+          "栈里保存还没找到答案的下标",
+          "新元素比栈顶大时, 它就是栈顶的答案",
+          "弹出并记录答案, 当前下标再入栈"
+        ],
+        "important_vars": {
+          "stack": "状态",
+          "phase": "状态"
+        },
+        "track_vars": {
+          "primary": [
+            "stack",
+            "phase"
+          ],
+          "secondary": []
+        },
+        "var_classes": {
+          "stack": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "phase": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "concept": {
+            "category": "secondary",
+            "type": "concept"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 5,
+            "text": "理解动画：单调栈保存还没找到答案的人, 新来的高个子会一次解决多个矮个子。"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 3,
+            "type": "exec",
+            "vars": {
+              "stack": "2",
+              "phase": "i=0, 2 入栈等待答案",
+              "concept": {
+                "kind": "dp_table",
+                "title": "单调栈",
+                "subtitle": "上排是答案, 下排是栈中等待的人",
+                "grid": [
+                  [
+                    -1,
+                    -1,
+                    -1,
+                    -1,
+                    -1
+                  ],
+                  [
+                    2,
+                    "",
+                    "",
+                    "",
+                    ""
+                  ]
+                ],
+                "rowLabels": [
+                  "result",
+                  "stack"
+                ],
+                "colLabels": [
+                  "0",
+                  "1",
+                  "2",
+                  "3",
+                  "4"
+                ],
+                "active": [
+                  1,
+                  0
+                ],
+                "refs": [],
+                "badges": [
+                  "nums: 2,1,2,4,3"
+                ]
+              }
+            }
+          },
+          {
+            "step": 1,
+            "line": 3,
+            "type": "exec",
+            "vars": {
+              "stack": "2,1",
+              "phase": "i=1, 1 不比 2 大, 也入栈",
+              "concept": {
+                "kind": "dp_table",
+                "title": "单调栈",
+                "subtitle": "上排是答案, 下排是栈中等待的人",
+                "grid": [
+                  [
+                    -1,
+                    -1,
+                    -1,
+                    -1,
+                    -1
+                  ],
+                  [
+                    2,
+                    1,
+                    "",
+                    "",
+                    ""
+                  ]
+                ],
+                "rowLabels": [
+                  "result",
+                  "stack"
+                ],
+                "colLabels": [
+                  "0",
+                  "1",
+                  "2",
+                  "3",
+                  "4"
+                ],
+                "active": [
+                  1,
+                  1
+                ],
+                "refs": [],
+                "badges": [
+                  "nums: 2,1,2,4,3"
+                ]
+              }
+            }
+          },
+          {
+            "step": 2,
+            "line": 3,
+            "type": "exec",
+            "vars": {
+              "stack": "2,2",
+              "phase": "i=2, 2 是 nums[1] 的下一个更大元素",
+              "concept": {
+                "kind": "dp_table",
+                "title": "单调栈",
+                "subtitle": "上排是答案, 下排是栈中等待的人",
+                "grid": [
+                  [
+                    -1,
+                    2,
+                    -1,
+                    -1,
+                    -1
+                  ],
+                  [
+                    2,
+                    2,
+                    "",
+                    "",
+                    ""
+                  ]
+                ],
+                "rowLabels": [
+                  "result",
+                  "stack"
+                ],
+                "colLabels": [
+                  "0",
+                  "1",
+                  "2",
+                  "3",
+                  "4"
+                ],
+                "active": [
+                  0,
+                  1
+                ],
+                "refs": [],
+                "badges": [
+                  "nums: 2,1,2,4,3"
+                ]
+              }
+            }
+          },
+          {
+            "step": 3,
+            "line": 3,
+            "type": "exec",
+            "vars": {
+              "stack": "4",
+              "phase": "i=3, 4 连续解决 nums[2] 和 nums[0]",
+              "concept": {
+                "kind": "dp_table",
+                "title": "单调栈",
+                "subtitle": "上排是答案, 下排是栈中等待的人",
+                "grid": [
+                  [
+                    4,
+                    2,
+                    4,
+                    -1,
+                    -1
+                  ],
+                  [
+                    4,
+                    "",
+                    "",
+                    "",
+                    ""
+                  ]
+                ],
+                "rowLabels": [
+                  "result",
+                  "stack"
+                ],
+                "colLabels": [
+                  "0",
+                  "1",
+                  "2",
+                  "3",
+                  "4"
+                ],
+                "active": [
+                  0,
+                  0
+                ],
+                "refs": [],
+                "badges": [
+                  "nums: 2,1,2,4,3"
+                ]
+              }
+            }
+          },
+          {
+            "step": 4,
+            "line": 3,
+            "type": "exec",
+            "vars": {
+              "stack": "4,3",
+              "phase": "i=4, 3 入栈; 栈里剩下的右侧没有更大元素",
+              "concept": {
+                "kind": "dp_table",
+                "title": "单调栈",
+                "subtitle": "上排是答案, 下排是栈中等待的人",
+                "grid": [
+                  [
+                    4,
+                    2,
+                    4,
+                    -1,
+                    -1
+                  ],
+                  [
+                    4,
+                    3,
+                    "",
+                    "",
+                    ""
+                  ]
+                ],
+                "rowLabels": [
+                  "result",
+                  "stack"
+                ],
+                "colLabels": [
+                  "0",
+                  "1",
+                  "2",
+                  "3",
+                  "4"
+                ],
+                "active": [
+                  1,
+                  1
+                ],
+                "refs": [],
+                "badges": [
+                  "nums: 2,1,2,4,3"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "trace": {
+        "title": "单调栈（下一个更大）",
+        "source": [
+          "/* 单调栈：下一个更大元素 */",
+          "/* 类比：排队时等待右边第一个比自己高的人 */",
+          "#include <stdio.h>",
+          "",
+          "#define MAXN 1000",
+          "",
+          "/* 找每个元素右边第一个比它大的元素 */",
+          "/* 结果存入result数组 */",
+          "void next_greater_element(int nums[], int n, int result[]) {",
+          "    int stack[MAXN];    /* 栈，存放下标（不是存值！） */",
+          "    int top = -1;       /* 栈顶指针，-1表示栈空 */",
+          "",
+          "    /* 示例代码用固定数组，真实工程中可改成动态分配 */",
+          "    if (n > MAXN) {",
+          "        return;",
+          "    }",
+          "    ",
+          "    /* 初始化结果数组为-1 */",
+          "    for (int i = 0; i < n; i++) {",
+          "        result[i] = -1;",
+          "    }",
+          "    ",
+          "    /* 从左往右遍历：当前元素可能成为前面某些元素的答案 */",
+          "    for (int i = 0; i < n; i++) {",
+          "        /* 当前元素比栈顶元素更大时，栈顶元素的答案就是当前元素 */",
+          "        while (top >= 0 && nums[i] > nums[stack[top]]) {",
+          "            result[stack[top]] = nums[i];",
+          "            top--;  /* 栈顶元素已经找到答案，弹出 */",
+          "        }",
+          "        ",
+          "        /* 当前下标入栈，等待未来更大的元素 */",
+          "        top++;",
+          "        stack[top] = i;",
+          "    }",
+          "}",
+          "",
+          "int main() {",
+          "    int nums[] = {2, 1, 2, 4, 3};",
+          "    int n = 5;",
+          "    int result[5];",
+          "    ",
+          "    next_greater_element(nums, n, result);",
+          "    ",
+          "    printf(\"下一个更大元素：\\n\");",
+          "    for (int i = 0; i < n; i++) {",
+          "        printf(\"nums[%d]=%d -> %d\\n\", i, nums[i], result[i]);",
+          "    }",
+          "    ",
+          "    return 0;",
+          "}",
+          ""
+        ],
+        "important_vars": {
+          "i": "索引",
+          "n": "参数",
+          "nums": "数据",
+          "result": "数据"
+        },
+        "track_vars": {
+          "primary": [
+            "i",
+            "n",
+            "nums",
+            "result"
+          ],
+          "secondary": [
+            "_return",
+            "stack",
+            "top"
+          ]
+        },
+        "var_classes": {
+          "_return": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "i": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "n": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "nums": {
+            "category": "primary",
+            "type": "array"
+          },
+          "result": {
+            "category": "primary",
+            "type": "array"
+          },
+          "stack": {
+            "category": "secondary",
+            "type": "array"
+          },
+          "top": {
+            "category": "secondary",
+            "type": "scalar"
+          }
+        },
+        "initial_data": {
+          "nums": [
+            2,
+            1,
+            2,
+            4,
+            3
+          ],
+          "result": [
+            1,
+            1,
+            0,
+            199150048,
+            2
+          ],
+          "stack": [
+            -213130648,
+            2,
+            -213131248,
+            2,
+            -213034608
+          ]
+        },
+        "program_output": [
+          {
+            "after_step": 14,
+            "text": "下一个更大元素： nums[0]=2 -> 4 nums[1]=1 -> 2 nums[2]=2 -> 4 nums[3]=4 -> -1 nums[4]=3 -> -1"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 30,
+            "type": "enter",
+            "func": "main",
+            "vars": {}
+          },
+          {
+            "step": 1,
+            "line": 33,
+            "type": "exec",
+            "vars": {
+              "result": [
+                1,
+                1,
+                0,
+                199150048,
+                2
+              ]
+            }
+          },
+          {
+            "step": 2,
+            "line": 34,
+            "type": "enter",
+            "func": "next_greater_element",
+            "vars": {
+              "nums": [
+                2,
+                1,
+                2,
+                4,
+                3
+              ],
+              "n": 5,
+              "result": [
+                1,
+                1,
+                0,
+                199150048,
+                2
+              ]
+            }
+          },
+          {
+            "step": 3,
+            "line": 15,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 1,
+              "n": 5
+            }
+          },
+          {
+            "step": 4,
+            "line": 15,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 3,
+              "n": 5
+            }
+          },
+          {
+            "step": 5,
+            "line": 16,
+            "type": "exec",
+            "vars": {
+              "result": [
+                -1,
+                -1,
+                -1,
+                -1,
+                -1
+              ]
+            }
+          },
+          {
+            "step": 6,
+            "line": 19,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 1,
+              "n": 5
+            }
+          },
+          {
+            "step": 7,
+            "line": 21,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 2,
+              "top": 1
+            }
+          },
+          {
+            "step": 8,
+            "line": 19,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 3,
+              "n": 5
+            }
+          },
+          {
+            "step": 9,
+            "line": 23,
+            "type": "exec",
+            "vars": {
+              "top": -1
+            }
+          },
+          {
+            "step": 10,
+            "line": 19,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 4,
+              "n": 5
+            }
+          },
+          {
+            "step": 11,
+            "line": 36,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 1,
+              "n": 5
+            }
+          },
+          {
+            "step": 12,
+            "line": 39,
+            "type": "exec",
+            "vars": {
+              "_return": 0
+            }
+          },
+          {
+            "step": 13,
+            "line": 39,
+            "type": "exit",
+            "func": "main",
+            "vars": {
+              "i": "-",
+              "n": "-",
+              "result": "-",
+              "top": "-",
+              "nums": "-",
+              "phase": "程序执行完成，结果见下方输出"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "06_前缀和": {
+    "title": "前缀和",
+    "defaultMode": "concept",
+    "modeLabels": {
+      "concept": "理解动画",
+      "trace": "代码执行"
+    },
+    "modes": {
+      "concept": {
+        "title": "前缀和",
+        "source": [
+          "算法: 前缀和",
+          "prefix[0] = 0",
+          "prefix[i+1] = prefix[i] + nums[i]",
+          "区间和 = prefix[right+1] - prefix[left]"
+        ],
+        "important_vars": {
+          "range": "状态",
+          "phase": "状态"
+        },
+        "track_vars": {
+          "primary": [
+            "range",
+            "phase"
+          ],
+          "secondary": []
+        },
+        "var_classes": {
+          "range": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "phase": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "concept": {
+            "category": "secondary",
+            "type": "concept"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 3,
+            "text": "理解动画：前缀和把区间求和变成两个前缀值相减。"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 3,
+            "type": "exec",
+            "vars": {
+              "range": "prefix[0]=0",
+              "phase": "先放一个哨兵 0, 方便处理从 0 开始的区间",
+              "concept": {
+                "kind": "dp_table",
+                "title": "前缀和",
+                "subtitle": "多存一个 0, 区间查询就变成一次减法",
+                "grid": [
+                  [
+                    0,
+                    1,
+                    3,
+                    6,
+                    10,
+                    15
+                  ],
+                  [
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    ""
+                  ]
+                ],
+                "rowLabels": [
+                  "prefix",
+                  "nums"
+                ],
+                "colLabels": [
+                  "0",
+                  "1",
+                  "2",
+                  "3",
+                  "4",
+                  "5"
+                ],
+                "active": [
+                  0,
+                  0
+                ],
+                "refs": [],
+                "badges": [
+                  "prefix[0]=0"
+                ]
+              }
+            }
+          },
+          {
+            "step": 1,
+            "line": 3,
+            "type": "exec",
+            "vars": {
+              "range": "prefix[3]=6",
+              "phase": "prefix[3] 表示 nums[0..2] 的和",
+              "concept": {
+                "kind": "dp_table",
+                "title": "前缀和",
+                "subtitle": "多存一个 0, 区间查询就变成一次减法",
+                "grid": [
+                  [
+                    0,
+                    1,
+                    3,
+                    6,
+                    10,
+                    15
+                  ],
+                  [
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    ""
+                  ]
+                ],
+                "rowLabels": [
+                  "prefix",
+                  "nums"
+                ],
+                "colLabels": [
+                  "0",
+                  "1",
+                  "2",
+                  "3",
+                  "4",
+                  "5"
+                ],
+                "active": [
+                  0,
+                  3
+                ],
+                "refs": [
+                  [
+                    1,
+                    0
+                  ],
+                  [
+                    1,
+                    1
+                  ],
+                  [
+                    1,
+                    2
+                  ]
+                ],
+                "badges": [
+                  "prefix[3]=6"
+                ]
+              }
+            }
+          },
+          {
+            "step": 2,
+            "line": 3,
+            "type": "exec",
+            "vars": {
+              "range": "区间[1,3]",
+              "phase": "区间 [1,3] = prefix[4] - prefix[1] = 10 - 1 = 9",
+              "concept": {
+                "kind": "dp_table",
+                "title": "前缀和",
+                "subtitle": "多存一个 0, 区间查询就变成一次减法",
+                "grid": [
+                  [
+                    0,
+                    1,
+                    3,
+                    6,
+                    10,
+                    15
+                  ],
+                  [
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    ""
+                  ]
+                ],
+                "rowLabels": [
+                  "prefix",
+                  "nums"
+                ],
+                "colLabels": [
+                  "0",
+                  "1",
+                  "2",
+                  "3",
+                  "4",
+                  "5"
+                ],
+                "active": [
+                  0,
+                  4
+                ],
+                "refs": [
+                  [
+                    0,
+                    1
+                  ],
+                  [
+                    0,
+                    4
+                  ],
+                  [
+                    1,
+                    1
+                  ],
+                  [
+                    1,
+                    2
+                  ],
+                  [
+                    1,
+                    3
+                  ]
+                ],
+                "badges": [
+                  "区间[1,3]"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "trace": {
+        "title": "前缀和",
+        "source": [
+          "/* 前缀和：快速查询任意区间的和 */",
+          "/* 类比：记账——每天的余额就是前缀和 */",
+          "#include <stdio.h>",
+          "",
+          "/* 构建前缀和数组 */",
+          "/* prefix_sum[i] = nums[0] + nums[1] + ... + nums[i-1] */",
+          "/* 注意：prefix_sum[0] = 0，方便计算 */",
+          "void build_prefix_sum(int nums[], int n, long long prefix_sum[]) {",
+          "    prefix_sum[0] = 0;  /* 哨兵：前0个元素的和是0 */",
+          "    for (int i = 0; i < n; i++) {",
+          "        prefix_sum[i + 1] = prefix_sum[i] + nums[i];",
+          "    }",
+          "}",
+          "",
+          "/* 查询区间[left, right]的和（闭区间） */",
+          "/* 时间复杂度：$O(1)$！ */",
+          "long long range_sum(long long prefix_sum[], int left, int right) {",
+          "    return prefix_sum[right + 1] - prefix_sum[left];",
+          "}",
+          "",
+          "int main() {",
+          "    int nums[] = {1, 2, 3, 4, 5};",
+          "    int n = 5;",
+          "    long long prefix_sum[6];  /* n+1个元素，第0个是哨兵 */",
+          "    ",
+          "    build_prefix_sum(nums, n, prefix_sum);",
+          "    ",
+          "    /* 查询各种区间的和 */",
+          "    printf(\"区间[0, 2]的和： %lld\\n\", range_sum(prefix_sum, 0, 2));  /* 1+2+3=6 */",
+          "    printf(\"区间[1, 3]的和： %lld\\n\", range_sum(prefix_sum, 1, 3));  /* 2+3+4=9 */",
+          "    printf(\"区间[2, 4]的和： %lld\\n\", range_sum(prefix_sum, 2, 4));  /* 3+4+5=12 */",
+          "    ",
+          "    return 0;",
+          "}",
+          ""
+        ],
+        "important_vars": {
+          "i": "索引",
+          "n": "参数",
+          "nums": "数据"
+        },
+        "track_vars": {
+          "primary": [
+            "i",
+            "left",
+            "n",
+            "nums",
+            "right"
+          ],
+          "secondary": [
+            "_return",
+            "prefix_sum"
+          ]
+        },
+        "var_classes": {
+          "_return": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "i": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "left": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "n": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "nums": {
+            "category": "primary",
+            "type": "array"
+          },
+          "prefix_sum": {
+            "category": "secondary",
+            "type": "array"
+          },
+          "right": {
+            "category": "primary",
+            "type": "scalar"
+          }
+        },
+        "initial_data": {
+          "nums": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "prefix_sum": [
+            0,
+            0,
+            199150064,
+            1798155424,
+            1
+          ]
+        },
+        "program_output": [
+          {
+            "after_step": 14,
+            "text": "区间[0, 2]的和： 6 区间[1, 3]的和： 9 区间[2, 4]的和： 12"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 18,
+            "type": "enter",
+            "func": "main",
+            "vars": {}
+          },
+          {
+            "step": 1,
+            "line": 22,
+            "type": "enter",
+            "func": "build_prefix_sum",
+            "vars": {
+              "nums": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "n": 5,
+              "prefix_sum": [
+                0,
+                0,
+                199150064,
+                1798155424,
+                1
+              ]
+            }
+          },
+          {
+            "step": 2,
+            "line": 8,
+            "type": "exec",
+            "vars": {
+              "prefix_sum": [
+                0,
+                0,
+                199150064,
+                1798155424,
+                1
+              ]
+            }
+          },
+          {
+            "step": 3,
+            "line": 10,
+            "type": "exec",
+            "vars": {
+              "prefix_sum": [
+                0,
+                1,
+                199150064,
+                1798155424,
+                1
+              ]
+            }
+          },
+          {
+            "step": 4,
+            "line": 9,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 2,
+              "n": 5
+            }
+          },
+          {
+            "step": 5,
+            "line": 9,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 3,
+              "n": 5
+            }
+          },
+          {
+            "step": 6,
+            "line": 9,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 4,
+              "n": 5
+            }
+          },
+          {
+            "step": 7,
+            "line": 24,
+            "type": "enter",
+            "func": "range_sum",
+            "vars": {
+              "prefix_sum": [
+                0,
+                1,
+                3
+              ],
+              "left": 0,
+              "right": 2
+            }
+          },
+          {
+            "step": 8,
+            "line": 16,
+            "type": "exit",
+            "func": "range_sum",
+            "vars": {}
+          },
+          {
+            "step": 9,
+            "line": 16,
+            "type": "exec",
+            "vars": {
+              "_return": 9
+            }
+          },
+          {
+            "step": 10,
+            "line": 16,
+            "type": "exit",
+            "func": "range_sum",
+            "vars": {}
+          },
+          {
+            "step": 11,
+            "line": 16,
+            "type": "exit",
+            "func": "range_sum",
+            "vars": {}
+          },
+          {
+            "step": 12,
+            "line": 27,
+            "type": "exec",
+            "vars": {
+              "_return": 0
+            }
+          },
+          {
+            "step": 13,
+            "line": 27,
+            "type": "exit",
+            "func": "main",
+            "vars": {
+              "right": "-",
+              "left": "-",
+              "prefix_sum": "-",
+              "i": "-",
+              "n": "-",
+              "nums": "-",
+              "phase": "程序执行完成，结果见下方输出"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "07_差分数组": {
+    "title": "差分数组",
+    "defaultMode": "concept",
+    "modeLabels": {
+      "concept": "理解动画",
+      "trace": "代码执行"
+    },
+    "modes": {
+      "concept": {
+        "title": "差分数组",
+        "source": [
+          "算法: 差分数组",
+          "diff[0] = nums[0]",
+          "diff[i] = nums[i] - nums[i-1]",
+          "区间 [l,r] 加 val:",
+          "    diff[l] += val",
+          "    diff[r+1] -= val",
+          "最后对 diff 求前缀和还原数组"
+        ],
+        "important_vars": {
+          "operation": "状态",
+          "phase": "状态"
+        },
+        "track_vars": {
+          "primary": [
+            "operation",
+            "phase"
+          ],
+          "secondary": []
+        },
+        "var_classes": {
+          "operation": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "phase": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "concept": {
+            "category": "secondary",
+            "type": "concept"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 3,
+            "text": "理解动画：差分数组把区间加法压缩成两个端点的变化。"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 4,
+            "type": "exec",
+            "vars": {
+              "operation": "构建 diff",
+              "phase": "原数组相邻差都为 1",
+              "concept": {
+                "kind": "dp_table",
+                "title": "差分数组",
+                "subtitle": "区间修改只动两个端点, 最后统一还原",
+                "grid": [
+                  [
+                    1,
+                    2,
+                    3,
+                    4,
+                    5
+                  ],
+                  [
+                    1,
+                    1,
+                    1,
+                    1,
+                    1
+                  ],
+                  [
+                    "",
+                    "",
+                    "",
+                    "",
+                    ""
+                  ]
+                ],
+                "rowLabels": [
+                  "nums",
+                  "diff",
+                  "result"
+                ],
+                "colLabels": [
+                  "0",
+                  "1",
+                  "2",
+                  "3",
+                  "4"
+                ],
+                "active": [
+                  1,
+                  0
+                ],
+                "refs": [],
+                "badges": [
+                  "构建 diff"
+                ]
+              }
+            }
+          },
+          {
+            "step": 1,
+            "line": 4,
+            "type": "exec",
+            "vars": {
+              "operation": "diff[1]+=10",
+              "phase": "区间 [1,3] 加 10, 只改 diff[1] 和 diff[4]",
+              "concept": {
+                "kind": "dp_table",
+                "title": "差分数组",
+                "subtitle": "区间修改只动两个端点, 最后统一还原",
+                "grid": [
+                  [
+                    1,
+                    2,
+                    3,
+                    4,
+                    5
+                  ],
+                  [
+                    1,
+                    11,
+                    1,
+                    1,
+                    -9
+                  ],
+                  [
+                    "",
+                    "",
+                    "",
+                    "",
+                    ""
+                  ]
+                ],
+                "rowLabels": [
+                  "nums",
+                  "diff",
+                  "result"
+                ],
+                "colLabels": [
+                  "0",
+                  "1",
+                  "2",
+                  "3",
+                  "4"
+                ],
+                "active": [
+                  1,
+                  1
+                ],
+                "refs": [
+                  [
+                    1,
+                    1
+                  ],
+                  [
+                    1,
+                    4
+                  ]
+                ],
+                "badges": [
+                  "diff[1]+=10",
+                  "diff[4]-=10"
+                ]
+              }
+            }
+          },
+          {
+            "step": 2,
+            "line": 4,
+            "type": "exec",
+            "vars": {
+              "operation": "还原结果",
+              "phase": "最后做前缀和, 中间一段整体加了 10",
+              "concept": {
+                "kind": "dp_table",
+                "title": "差分数组",
+                "subtitle": "区间修改只动两个端点, 最后统一还原",
+                "grid": [
+                  [
+                    1,
+                    2,
+                    3,
+                    4,
+                    5
+                  ],
+                  [
+                    1,
+                    11,
+                    1,
+                    1,
+                    -9
+                  ],
+                  [
+                    1,
+                    12,
+                    13,
+                    14,
+                    5
+                  ]
+                ],
+                "rowLabels": [
+                  "nums",
+                  "diff",
+                  "result"
+                ],
+                "colLabels": [
+                  "0",
+                  "1",
+                  "2",
+                  "3",
+                  "4"
+                ],
+                "active": [
+                  2,
+                  3
+                ],
+                "refs": [
+                  [
+                    2,
+                    1
+                  ],
+                  [
+                    2,
+                    2
+                  ],
+                  [
+                    2,
+                    3
+                  ]
+                ],
+                "badges": [
+                  "还原结果"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "trace": {
+        "title": "差分数组",
+        "source": [
+          "/* 差分数组：快速对区间进行批量加减操作 */",
+          "/* 类比：每天的收支记录——修改收支比修改余额方便 */",
+          "",
+          "#include <stdio.h>",
+          "",
+          "/* 构建差分数组 */",
+          "/* diff[i] = nums[i] - nums[i-1] */",
+          "/* diff[0] = nums[0] */",
+          "void build_diff_array(int nums[], int n, long long diff[]) {",
+          "    if (n <= 0) return;",
+          "    diff[0] = nums[0];",
+          "    for (int i = 1; i < n; i++) {",
+          "        diff[i] = (long long)nums[i] - nums[i - 1];",
+          "    }",
+          "}",
+          "",
+          "/* 对区间[left, right]的所有元素加上val */",
+          "/* 只需要修改diff[left]和diff[right+1]两个位置！ */",
+          "void range_add(long long diff[], int n, int left, int right, long long val) {",
+          "    if (left < 0 || right >= n || left > right) return;  /* 简单防御 */",
+          "    diff[left] += val;           /* left位置开始加val */",
+          "    if (right + 1 < n) {",
+          "        diff[right + 1] -= val;  /* right+1位置减去val，抵消前面的加 */",
+          "    }",
+          "}",
+          "",
+          "/* 从差分数组还原原始数组（对差分数组求前缀和） */",
+          "void restore_array(long long diff[], int n, long long result[]) {",
+          "    if (n <= 0) return;",
+          "    result[0] = diff[0];",
+          "    for (int i = 1; i < n; i++) {",
+          "        result[i] = result[i - 1] + diff[i];",
+          "    }",
+          "}",
+          "",
+          "int main() {",
+          "    int nums[] = {1, 2, 3, 4, 5};",
+          "    int n = 5;",
+          "    long long diff[5];",
+          "    long long result[5];",
+          "    ",
+          "    build_diff_array(nums, n, diff);",
+          "    ",
+          "    /* 对区间[1, 3]的所有元素加10 */",
+          "    /* 原始数组变成：[1, 12, 13, 14, 5] */",
+          "    range_add(diff, n, 1, 3, 10);",
+          "    ",
+          "    /* 还原数组 */",
+          "    restore_array(diff, n, result);",
+          "    ",
+          "    printf(\"修改后： \");",
+          "    for (int i = 0; i < n; i++) {",
+          "        printf(\"%lld \", result[i]);",
+          "    }",
+          "    printf(\"\\n\");",
+          "    /* 输出： 1 12 13 14 5 */",
+          "",
+          "    ",
+          "    return 0;",
+          "}",
+          ""
+        ],
+        "important_vars": {
+          "i": "索引",
+          "n": "参数",
+          "nums": "数据"
+        },
+        "track_vars": {
+          "primary": [
+            "i",
+            "left",
+            "n",
+            "nums",
+            "result",
+            "right",
+            "val"
+          ],
+          "secondary": [
+            "_return",
+            "diff"
+          ]
+        },
+        "var_classes": {
+          "_return": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "diff": {
+            "category": "secondary",
+            "type": "array"
+          },
+          "i": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "left": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "n": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "nums": {
+            "category": "primary",
+            "type": "array"
+          },
+          "result": {
+            "category": "primary",
+            "type": "array"
+          },
+          "right": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "val": {
+            "category": "primary",
+            "type": "scalar"
+          }
+        },
+        "initial_data": {
+          "nums": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "diff": [
+            0,
+            199150064,
+            1876569248,
+            1,
+            199150048
+          ],
+          "result": [
+            1073741824,
+            -1619482668,
+            222104224,
+            196333057,
+            0
+          ]
+        },
+        "program_output": [
+          {
+            "after_step": 14,
+            "text": "修改后： 1 12 13 14 5"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 31,
+            "type": "enter",
+            "func": "main",
+            "vars": {}
+          },
+          {
+            "step": 1,
+            "line": 36,
+            "type": "enter",
+            "func": "build_diff_array",
+            "vars": {
+              "nums": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "n": 5,
+              "diff": [
+                0,
+                199150064,
+                1876569248,
+                1,
+                199150048
+              ]
+            }
+          },
+          {
+            "step": 2,
+            "line": 8,
+            "type": "cond",
+            "result": false,
+            "vars": {
+              "n": 5
+            }
+          },
+          {
+            "step": 3,
+            "line": 11,
+            "type": "exec",
+            "vars": {
+              "diff": [
+                1,
+                1,
+                1876569248,
+                1,
+                199150048
+              ]
+            }
+          },
+          {
+            "step": 4,
+            "line": 11,
+            "type": "exec",
+            "vars": {
+              "diff": [
+                1,
+                1,
+                1,
+                1,
+                199150048
+              ]
+            }
+          },
+          {
+            "step": 5,
+            "line": 39,
+            "type": "enter",
+            "func": "range_add",
+            "vars": {
+              "diff": [
+                1,
+                1,
+                1
+              ],
+              "n": 5,
+              "left": 1,
+              "right": 3,
+              "val": 10
+            }
+          },
+          {
+            "step": 6,
+            "line": 17,
+            "type": "cond",
+            "result": false,
+            "vars": {
+              "left": 1,
+              "n": 5,
+              "right": 3
+            }
+          },
+          {
+            "step": 7,
+            "line": 41,
+            "type": "enter",
+            "func": "restore_array",
+            "vars": {
+              "diff": [
+                1,
+                11,
+                1,
+                1,
+                -9
+              ],
+              "n": 5,
+              "result": [
+                1073741824,
+                -1619482668,
+                222104224,
+                196333057,
+                0
+              ]
+            }
+          },
+          {
+            "step": 8,
+            "line": 27,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 1,
+              "n": 5
+            }
+          },
+          {
+            "step": 9,
+            "line": 28,
+            "type": "exec",
+            "vars": {
+              "result": [
+                1,
+                12,
+                13,
+                196333057,
+                0
+              ]
+            }
+          },
+          {
+            "step": 10,
+            "line": 27,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 4,
+              "n": 5
+            }
+          },
+          {
+            "step": 11,
+            "line": 43,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 2,
+              "n": 5
+            }
+          },
+          {
+            "step": 12,
+            "line": 48,
+            "type": "exec",
+            "vars": {
+              "_return": 0
+            }
+          },
+          {
+            "step": 13,
+            "line": 48,
+            "type": "exit",
+            "func": "main",
+            "vars": {
+              "diff": "-",
+              "right": "-",
+              "left": "-",
+              "val": "-",
+              "i": "-",
+              "n": "-",
+              "result": "-",
+              "nums": "-",
+              "phase": "程序执行完成，结果见下方输出"
+            }
+          }
+        ]
+      }
+    }
+  }
+};
+const firstKey = Object.keys(ALGOS)[0];
+const requestedKey = new URLSearchParams(location.search).get('algo');
+const savedAtOpen = DHLearning.load();
+let currentKey = ALGOS[requestedKey]
+  ? requestedKey
+  : (savedAtOpen.last && savedAtOpen.last.chapter === CHAPTER_NUM && ALGOS[savedAtOpen.last.algorithm]
+      ? savedAtOpen.last.algorithm
+      : firstKey);
+let currentMode = null;
+const engine = new TraceEngine('viz-canvas', 'code-body', 'var-grid', 'callstack');
+const tabsEl = document.getElementById('algo-tabs');
+const modeTabsEl = document.getElementById('mode-tabs');
+
+function has_modes(algo) {
+  return algo && algo.modes && typeof algo.modes === 'object';
+}
+
+function mode_label(rawAlgo, mode) {
+  const labels = rawAlgo.modeLabels || {};
+  if (labels[mode]) return labels[mode];
+  if (mode === 'concept') return '理解动画';
+  if (mode === 'trace') return '代码执行';
+  return mode;
+}
+
+function resolve_algo(rawAlgo) {
+  if (!has_modes(rawAlgo)) return rawAlgo;
+  const mode = currentMode || rawAlgo.defaultMode || Object.keys(rawAlgo.modes)[0];
+  return rawAlgo.modes[mode] || rawAlgo.modes[rawAlgo.defaultMode] || Object.values(rawAlgo.modes)[0];
+}
+
+function is_concept_algo(algo) {
+  if (!algo) return false;
+  const classes = algo.var_classes || {};
+  if (Object.values(classes).some(info => info && info.type === 'concept')) return true;
+  return (algo.steps || []).some(step => step.vars && step.vars.concept);
+}
+
+function update_tab_states() {
+  const completed = new Set(DHLearning.load().completedDemos);
+  tabsEl.querySelectorAll('.algo-tab').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.key === currentKey);
+    btn.classList.toggle('completed', completed.has(DHLearning.demoId(CHAPTER_NUM, btn.dataset.key)));
+    btn.setAttribute('aria-selected', String(btn.dataset.key === currentKey));
+  });
+}
+
+function update_chapter_progress() {
+  const state = DHLearning.load();
+  const completed = new Set(state.completedDemos);
+  const keys = Object.keys(ALGOS);
+  const done = keys.filter(key => completed.has(DHLearning.demoId(CHAPTER_NUM, key))).length;
+  document.getElementById('chapter-progress-text').textContent = `${done} / ${keys.length} 个演示完成`;
+  document.getElementById('chapter-progress-fill').style.width = `${keys.length ? done / keys.length * 100 : 0}%`;
+  update_tab_states();
+}
+
+function render_mode_tabs(rawAlgo) {
+  modeTabsEl.innerHTML = '';
+  if (!has_modes(rawAlgo)) {
+    modeTabsEl.classList.remove('visible');
+    currentMode = null;
+    return;
+  }
+  modeTabsEl.classList.add('visible');
+  const label = document.createElement('span');
+  label.className = 'mode-label';
+  label.textContent = '学习方式';
+  modeTabsEl.appendChild(label);
+  const activeMode = currentMode || rawAlgo.defaultMode || Object.keys(rawAlgo.modes)[0];
+  Object.keys(rawAlgo.modes).forEach(mode => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'mode-tab' + (mode === activeMode ? ' active' : '');
+    btn.textContent = mode_label(rawAlgo, mode);
+    btn.setAttribute('role', 'tab');
+    btn.setAttribute('aria-selected', String(mode === activeMode));
+    btn.addEventListener('click', () => {
+      if (currentMode === mode) return;
+      currentMode = mode;
+      load_current_algo(false);
+      if (matchMedia('(max-width: 900px)').matches) {
+        set_mobile_view(mode === 'trace' ? 'code' : 'animation');
+      }
+    });
+    modeTabsEl.appendChild(btn);
+  });
+}
+
+function load_current_algo(allowRestore = true) {
+  const rawAlgo = ALGOS[currentKey];
+  const beforeLoad = DHLearning.load().last;
+  if (has_modes(rawAlgo)) {
+    const savedMode = beforeLoad && beforeLoad.chapter === CHAPTER_NUM && beforeLoad.algorithm === currentKey
+      ? beforeLoad.mode
+      : null;
+    if (!currentMode) currentMode = savedMode && rawAlgo.modes[savedMode]
+      ? savedMode
+      : (rawAlgo.defaultMode || Object.keys(rawAlgo.modes)[0]);
+  } else {
+    currentMode = null;
+  }
+  render_mode_tabs(rawAlgo);
+  const activeAlgo = resolve_algo(rawAlgo);
+  document.body.classList.toggle('concept-mode', currentMode === 'concept' || is_concept_algo(activeAlgo));
+  engine.stop_play();
+  engine.load(activeAlgo);
+  try {
+    const currentUrl = new URL(location.href);
+    currentUrl.searchParams.set('algo', currentKey);
+    history.replaceState(null, '', currentUrl.href);
+  } catch (_) {
+    // file:// 预览环境可能限制 history API，不影响演示本身。
+  }
+  update_tab_states();
+
+  if (
+    allowRestore
+    && beforeLoad
+    && beforeLoad.chapter === CHAPTER_NUM
+    && beforeLoad.algorithm === currentKey
+    && beforeLoad.mode === currentMode
+    && beforeLoad.step > 0
+    && activeAlgo.steps.length
+  ) {
+    const restoreStep = Math.min(beforeLoad.step, activeAlgo.steps.length - 1);
+    requestAnimationFrame(() => engine.go_to_step(restoreStep));
+  }
+}
+
+Object.entries(ALGOS).forEach(([key, algo]) => {
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'algo-tab';
+  btn.dataset.key = key;
+  btn.textContent = algo.title;
+  btn.setAttribute('role', 'tab');
+  btn.setAttribute('aria-selected', String(key === currentKey));
+  btn.addEventListener('click', () => {
+    if (currentKey === key) return;
+    currentKey = key;
+    currentMode = has_modes(algo) ? (algo.defaultMode || Object.keys(algo.modes)[0]) : null;
+    load_current_algo(true);
+  });
+  tabsEl.appendChild(btn);
+});
+
+document.addEventListener('dh:stepchange', event => {
+  const detail = event.detail || {};
+  DHLearning.updateLast(CHAPTER_NUM, currentKey, currentMode, detail.currentStep);
+  if (detail.atEnd) DHLearning.markDemoComplete(CHAPTER_NUM, currentKey);
+  update_chapter_progress();
+});
+
+document.getElementById('btn-play').addEventListener('click', () => engine.playing ? engine.stop_play() : engine.start_play());
+document.getElementById('btn-step').addEventListener('click', () => { engine.stop_play(); engine.step_forward(); });
+document.getElementById('btn-reset').addEventListener('click', () => engine.reset());
+document.getElementById('btn-back').addEventListener('click', () => { engine.stop_play(); engine.step_backward(); });
+document.getElementById('btn-to-bp').addEventListener('click', () => { engine.stop_play(); engine.play_to_bp(); });
+
+const speedSlider = document.getElementById('speed-slider');
+const savedSpeed = localStorage.getItem('dh_speed');
+if (savedSpeed !== null) speedSlider.value = savedSpeed;
+speedSlider.setAttribute('aria-valuetext', `速度 ${speedSlider.value}`);
+speedSlider.addEventListener('input', () => {
+  localStorage.setItem('dh_speed', speedSlider.value);
+  speedSlider.setAttribute('aria-valuetext', `速度 ${speedSlider.value}`);
+  if (engine.playing) { clearTimeout(engine.playTimer); engine._play_loop(); }
+});
+speedSlider.addEventListener('keydown', event => {
+  if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+  event.preventDefault();
+  event.stopPropagation();
+  const direction = event.key === 'ArrowRight' ? 1 : -1;
+  speedSlider.value = String(Math.max(Number(speedSlider.min), Math.min(Number(speedSlider.max), Number(speedSlider.value) + direction)));
+  speedSlider.dispatchEvent(new Event('input', { bubbles: true }));
+});
+document.getElementById('font-dec').addEventListener('click', () => engine.font_dec());
+document.getElementById('font-inc').addEventListener('click', () => engine.font_inc());
+
+document.addEventListener('keydown', event => {
+  const target = event.target;
+  if (target && target.closest && target.closest('button,input,select,textarea,a,summary,[contenteditable="true"]')) return;
+  if (event.key === ' ') {
+    event.preventDefault();
+    engine.playing ? engine.stop_play() : engine.start_play();
+  } else if (event.key === 'ArrowRight') {
+    event.preventDefault();
+    engine.stop_play();
+    engine.step_forward();
+  } else if (event.key === 'ArrowLeft') {
+    event.preventDefault();
+    engine.stop_play();
+    engine.step_backward();
+  } else if (event.key.toLowerCase() === 'r' && !event.metaKey && !event.ctrlKey && !event.altKey) {
+    engine.reset();
+  }
+});
+
+function set_mobile_view(view) {
+  document.body.dataset.mobileView = view;
+  document.querySelectorAll('.mobile-view-switcher button').forEach(btn => {
+    const active = btn.dataset.mobileView === view;
+    btn.classList.toggle('active', active);
+    btn.setAttribute('aria-selected', String(active));
+  });
+  if (view === 'animation' && engine.currentStep >= 0) {
+    requestAnimationFrame(() => engine.go_to_step(engine.currentStep));
+  }
+}
+
+document.querySelectorAll('.mobile-view-switcher button').forEach(btn => {
+  btn.addEventListener('click', () => set_mobile_view(btn.dataset.mobileView));
+});
+
+DHLearning.visitChapter(CHAPTER_NUM);
+update_chapter_progress();
+load_current_algo(true);
+</script>
+</body>
+</html>

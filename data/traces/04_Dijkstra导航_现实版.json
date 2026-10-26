@@ -1,0 +1,1559 @@
+{
+  "meta": {
+    "algo": "04_Dijkstra导航_现实版",
+    "source_lines": [
+      "#include <stdio.h>",
+      "#include <limits.h>",
+      "#include <string.h>",
+      "/*",
+      " * Dijkstra算法简化版",
+      " *",
+      " * 类比：你站在上海某个路口，想去东方明珠",
+      " * 每到一个路口，你就问\"从出发到这里走了多久？\"",
+      " * 然后选最快的那条路继续走",
+      " */",
+      "#define V 6          /* 路口数量 */",
+      "#define INF 99999    /* 无穷大（不通） */",
+      "int min_distance(int dist[], int visited[]) {",
+      "    int min = INF, min_index = -1;",
+      "    int v;",
+      "    for (v = 0; v < V; v++) {",
+      "        if (!visited[v] && dist[v] < min) {",
+      "            min = dist[v];",
+      "            min_index = v;",
+      "        }",
+      "    }",
+      "    return min_index;",
+      "}",
+      "void dijkstra(int graph[V][V], int src) {",
+      "    int dist[V];     /* 从起点到每个路口的最短时间 */",
+      "    int visited[V];  /* 是否已经\"走过\" */",
+      "    int count, u, v;",
+      "    /* 初始化：所有路口都是\"无穷远\" */",
+      "    for (int i = 0; i < V; i++) {",
+      "        dist[i] = INF;",
+      "        visited[i] = 0;",
+      "    }",
+      "    dist[src] = 0;  /* 起点到自己的距离是0 */",
+      "    for (count = 0; count < V - 1; count++) {",
+      "        /* 找当前最近的未访问路口 */",
+      "        u = min_distance(dist, visited);",
+      "        if (u == -1) break;",
+      "        visited[u] = 1;",
+      "        /* 更新u的所有邻居的距离 */",
+      "        for (v = 0; v < V; v++) {",
+      "            if (!visited[v] && graph[u][v] && ",
+      "                dist[u] + graph[u][v] < dist[v]) {",
+      "                dist[v] = dist[u] + graph[u][v];",
+      "            }",
+      "        }",
+      "    }",
+      "    printf(\"从路口%d出发的最短时间：\\n\", src);",
+      "    for (int i = 0; i < V; i++) {",
+      "        printf(\"  到路口%d: %d 分钟\\n\", i, dist[i]);",
+      "    }",
+      "}",
+      "int main() {",
+      "    /* 邻接矩阵：graph[i][j] 表示从i到j的通行时间（分钟） */",
+      "    /* 本例假设所有通行时间都是正整数，0表示不通；如果允许0权边，应改用INF或邻接表表示无边 */",
+      "    int graph[V][V] = {",
+      "    /*    0    1    2    3    4    5  */",
+      "        {  0,   4,   2,   0,   0,   0 },  /* 路口0 */",
+      "        {  4,   0,   1,   5,   0,   0 },  /* 路口1 */",
+      "        {  2,   1,   0,   8,  10,   0 },  /* 路口2 */",
+      "        {  0,   5,   8,   0,   2,   6 },  /* 路口3 */",
+      "        {  0,   0,  10,   2,   0,   3 },  /* 路口4 */",
+      "        {  0,   0,   0,   6,   3,   0 }   /* 路口5 */",
+      "    };",
+      "    dijkstra(graph, 0);  /* 从路口0出发 */",
+      "    return 0;",
+      "}"
+    ],
+    "track_vars": {
+      "primary": [
+        "dist",
+        "i",
+        "min",
+        "visited"
+      ],
+      "secondary": [
+        "_return",
+        "min_index",
+        "src",
+        "u",
+        "v"
+      ]
+    },
+    "var_classes": {
+      "_return": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "dist": {
+        "category": "primary",
+        "type": "array"
+      },
+      "i": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "min": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "min_index": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "src": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "u": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "v": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "visited": {
+        "category": "primary",
+        "type": "array"
+      }
+    },
+    "viz_type": "array",
+    "initial_data": {
+      "visited": [
+        196333104,
+        2,
+        199135944,
+        2,
+        196329568,
+        2
+      ],
+      "dist": [
+        1799989712,
+        1,
+        -1617033592,
+        1,
+        199135944,
+        2
+      ]
+    },
+    "program_output": [
+      {
+        "after_step": 140,
+        "text": "从路口0出发的最短时间： 到路口0: 0 分钟 到路口1: 3 分钟 到路口2: 2 分钟 到路口3: 8 分钟 到路口4: 10 分钟 到路口5: 13 分钟"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step": 0,
+      "line": 52,
+      "type": "enter",
+      "func": "main",
+      "vars": {}
+    },
+    {
+      "step": 1,
+      "line": 64,
+      "type": "enter",
+      "func": "dijkstra",
+      "vars": {
+        "src": 0
+      }
+    },
+    {
+      "step": 2,
+      "line": 25,
+      "type": "exec",
+      "vars": {
+        "dist": [
+          1799989712,
+          1,
+          -1617033592,
+          1,
+          199135944,
+          2
+        ]
+      }
+    },
+    {
+      "step": 3,
+      "line": 26,
+      "type": "exec",
+      "vars": {
+        "visited": [
+          196333104,
+          2,
+          199135944,
+          2,
+          196329568,
+          2
+        ]
+      }
+    },
+    {
+      "step": 4,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0
+      }
+    },
+    {
+      "step": 5,
+      "line": 30,
+      "type": "exec",
+      "vars": {
+        "dist": [
+          99999,
+          1,
+          -1617033592,
+          1,
+          199135944,
+          2
+        ]
+      }
+    },
+    {
+      "step": 6,
+      "line": 31,
+      "type": "exec",
+      "vars": {
+        "visited": [
+          0,
+          2,
+          199135944,
+          2,
+          196329568,
+          2
+        ]
+      }
+    },
+    {
+      "step": 7,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1
+      }
+    },
+    {
+      "step": 8,
+      "line": 30,
+      "type": "exec",
+      "vars": {
+        "dist": [
+          99999,
+          99999,
+          -1617033592,
+          1,
+          199135944,
+          2
+        ]
+      }
+    },
+    {
+      "step": 9,
+      "line": 31,
+      "type": "exec",
+      "vars": {
+        "visited": [
+          0,
+          0,
+          199135944,
+          2,
+          196329568,
+          2
+        ]
+      }
+    },
+    {
+      "step": 10,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2
+      }
+    },
+    {
+      "step": 11,
+      "line": 30,
+      "type": "exec",
+      "vars": {
+        "dist": [
+          99999,
+          99999,
+          99999,
+          1,
+          199135944,
+          2
+        ]
+      }
+    },
+    {
+      "step": 12,
+      "line": 31,
+      "type": "exec",
+      "vars": {
+        "visited": [
+          0,
+          0,
+          0,
+          2,
+          196329568,
+          2
+        ]
+      }
+    },
+    {
+      "step": 13,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3
+      }
+    },
+    {
+      "step": 14,
+      "line": 30,
+      "type": "exec",
+      "vars": {
+        "dist": [
+          99999,
+          99999,
+          99999,
+          99999,
+          199135944,
+          2
+        ]
+      }
+    },
+    {
+      "step": 15,
+      "line": 31,
+      "type": "exec",
+      "vars": {
+        "visited": [
+          0,
+          0,
+          0,
+          0,
+          196329568,
+          2
+        ]
+      }
+    },
+    {
+      "step": 16,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 4
+      }
+    },
+    {
+      "step": 17,
+      "line": 30,
+      "type": "exec",
+      "vars": {
+        "dist": [
+          99999,
+          99999,
+          99999,
+          99999,
+          99999,
+          2
+        ]
+      }
+    },
+    {
+      "step": 18,
+      "line": 31,
+      "type": "exec",
+      "vars": {
+        "visited": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          2
+        ]
+      }
+    },
+    {
+      "step": 19,
+      "line": 29,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 5
+      }
+    },
+    {
+      "step": 20,
+      "line": 30,
+      "type": "exec",
+      "vars": {
+        "dist": [
+          99999,
+          99999,
+          99999,
+          99999,
+          99999,
+          99999
+        ]
+      }
+    },
+    {
+      "step": 21,
+      "line": 31,
+      "type": "exec",
+      "vars": {
+        "visited": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "step": 22,
+      "line": 33,
+      "type": "exec",
+      "vars": {
+        "dist": [
+          0,
+          99999,
+          99999,
+          99999,
+          99999,
+          99999
+        ]
+      }
+    },
+    {
+      "step": 23,
+      "line": 34,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 24,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "v": 0
+      }
+    },
+    {
+      "step": 25,
+      "line": 17,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "min": 99999,
+        "v": 0
+      }
+    },
+    {
+      "step": 26,
+      "line": 18,
+      "type": "exec",
+      "vars": {
+        "min": 0
+      }
+    },
+    {
+      "step": 27,
+      "line": 19,
+      "type": "exec",
+      "vars": {
+        "min_index": 0
+      }
+    },
+    {
+      "step": 28,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "v": 1
+      }
+    },
+    {
+      "step": 29,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "v": 2
+      }
+    },
+    {
+      "step": 30,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "v": 3
+      }
+    },
+    {
+      "step": 31,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "v": 4
+      }
+    },
+    {
+      "step": 32,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "v": 5
+      }
+    },
+    {
+      "step": 33,
+      "line": 22,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 34,
+      "line": 22,
+      "type": "exit",
+      "func": "min_distance",
+      "vars": {}
+    },
+    {
+      "step": 35,
+      "line": 36,
+      "type": "exec",
+      "vars": {
+        "u": 0
+      }
+    },
+    {
+      "step": 36,
+      "line": 37,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "u": 0
+      }
+    },
+    {
+      "step": 37,
+      "line": 38,
+      "type": "exec",
+      "vars": {
+        "visited": [
+          1,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "step": 38,
+      "line": 40,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 39,
+      "line": 40,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 40,
+      "line": 43,
+      "type": "exec",
+      "vars": {
+        "dist": [
+          0,
+          4,
+          99999,
+          99999,
+          99999,
+          99999
+        ]
+      }
+    },
+    {
+      "step": 41,
+      "line": 40,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 42,
+      "line": 43,
+      "type": "exec",
+      "vars": {
+        "dist": [
+          0,
+          4,
+          2,
+          99999,
+          99999,
+          99999
+        ]
+      }
+    },
+    {
+      "step": 43,
+      "line": 40,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 44,
+      "line": 40,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 45,
+      "line": 40,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 46,
+      "line": 34,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 47,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "v": 0
+      }
+    },
+    {
+      "step": 48,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "v": 1
+      }
+    },
+    {
+      "step": 49,
+      "line": 17,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "min": 99999,
+        "v": 1
+      }
+    },
+    {
+      "step": 50,
+      "line": 18,
+      "type": "exec",
+      "vars": {
+        "min": 4
+      }
+    },
+    {
+      "step": 51,
+      "line": 19,
+      "type": "exec",
+      "vars": {
+        "min_index": 1
+      }
+    },
+    {
+      "step": 52,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "v": 2
+      }
+    },
+    {
+      "step": 53,
+      "line": 17,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "min": 4,
+        "v": 2
+      }
+    },
+    {
+      "step": 54,
+      "line": 18,
+      "type": "exec",
+      "vars": {
+        "min": 2
+      }
+    },
+    {
+      "step": 55,
+      "line": 19,
+      "type": "exec",
+      "vars": {
+        "min_index": 2
+      }
+    },
+    {
+      "step": 56,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "v": 3
+      }
+    },
+    {
+      "step": 57,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "v": 4
+      }
+    },
+    {
+      "step": 58,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "v": 5
+      }
+    },
+    {
+      "step": 59,
+      "line": 22,
+      "type": "exec",
+      "vars": {
+        "_return": 2
+      }
+    },
+    {
+      "step": 60,
+      "line": 22,
+      "type": "exit",
+      "func": "min_distance",
+      "vars": {}
+    },
+    {
+      "step": 61,
+      "line": 36,
+      "type": "exec",
+      "vars": {
+        "u": 2
+      }
+    },
+    {
+      "step": 62,
+      "line": 37,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "u": 2
+      }
+    },
+    {
+      "step": 63,
+      "line": 38,
+      "type": "exec",
+      "vars": {
+        "visited": [
+          1,
+          0,
+          1,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "step": 64,
+      "line": 40,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 65,
+      "line": 40,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 66,
+      "line": 43,
+      "type": "exec",
+      "vars": {
+        "dist": [
+          0,
+          3,
+          2,
+          99999,
+          99999,
+          99999
+        ]
+      }
+    },
+    {
+      "step": 67,
+      "line": 40,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 68,
+      "line": 40,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 69,
+      "line": 43,
+      "type": "exec",
+      "vars": {
+        "dist": [
+          0,
+          3,
+          2,
+          10,
+          99999,
+          99999
+        ]
+      }
+    },
+    {
+      "step": 70,
+      "line": 40,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 71,
+      "line": 43,
+      "type": "exec",
+      "vars": {
+        "dist": [
+          0,
+          3,
+          2,
+          10,
+          12,
+          99999
+        ]
+      }
+    },
+    {
+      "step": 72,
+      "line": 40,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 73,
+      "line": 34,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 74,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "v": 0
+      }
+    },
+    {
+      "step": 75,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "v": 1
+      }
+    },
+    {
+      "step": 76,
+      "line": 17,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "min": 99999,
+        "v": 1
+      }
+    },
+    {
+      "step": 77,
+      "line": 18,
+      "type": "exec",
+      "vars": {
+        "min": 3
+      }
+    },
+    {
+      "step": 78,
+      "line": 19,
+      "type": "exec",
+      "vars": {
+        "min_index": 1
+      }
+    },
+    {
+      "step": 79,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "v": 2
+      }
+    },
+    {
+      "step": 80,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "v": 3
+      }
+    },
+    {
+      "step": 81,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "v": 4
+      }
+    },
+    {
+      "step": 82,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "v": 5
+      }
+    },
+    {
+      "step": 83,
+      "line": 22,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 84,
+      "line": 22,
+      "type": "exit",
+      "func": "min_distance",
+      "vars": {}
+    },
+    {
+      "step": 85,
+      "line": 36,
+      "type": "exec",
+      "vars": {
+        "u": 1
+      }
+    },
+    {
+      "step": 86,
+      "line": 37,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "u": 1
+      }
+    },
+    {
+      "step": 87,
+      "line": 38,
+      "type": "exec",
+      "vars": {
+        "visited": [
+          1,
+          1,
+          1,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "step": 88,
+      "line": 40,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 89,
+      "line": 40,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 90,
+      "line": 40,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 91,
+      "line": 40,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 92,
+      "line": 43,
+      "type": "exec",
+      "vars": {
+        "dist": [
+          0,
+          3,
+          2,
+          8,
+          12,
+          99999
+        ]
+      }
+    },
+    {
+      "step": 93,
+      "line": 40,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 94,
+      "line": 40,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 95,
+      "line": 34,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 96,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "v": 0
+      }
+    },
+    {
+      "step": 97,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "v": 1
+      }
+    },
+    {
+      "step": 98,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "v": 2
+      }
+    },
+    {
+      "step": 99,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "v": 3
+      }
+    },
+    {
+      "step": 100,
+      "line": 17,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "min": 99999,
+        "v": 3
+      }
+    },
+    {
+      "step": 101,
+      "line": 18,
+      "type": "exec",
+      "vars": {
+        "min": 8
+      }
+    },
+    {
+      "step": 102,
+      "line": 19,
+      "type": "exec",
+      "vars": {
+        "min_index": 3
+      }
+    },
+    {
+      "step": 103,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "v": 4
+      }
+    },
+    {
+      "step": 104,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "v": 5
+      }
+    },
+    {
+      "step": 105,
+      "line": 22,
+      "type": "exec",
+      "vars": {
+        "_return": 3
+      }
+    },
+    {
+      "step": 106,
+      "line": 22,
+      "type": "exit",
+      "func": "min_distance",
+      "vars": {}
+    },
+    {
+      "step": 107,
+      "line": 36,
+      "type": "exec",
+      "vars": {
+        "u": 3
+      }
+    },
+    {
+      "step": 108,
+      "line": 37,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "u": 3
+      }
+    },
+    {
+      "step": 109,
+      "line": 38,
+      "type": "exec",
+      "vars": {
+        "visited": [
+          1,
+          1,
+          1,
+          1,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "step": 110,
+      "line": 40,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 111,
+      "line": 40,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 112,
+      "line": 40,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 113,
+      "line": 40,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 114,
+      "line": 40,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 115,
+      "line": 43,
+      "type": "exec",
+      "vars": {
+        "dist": [
+          0,
+          3,
+          2,
+          8,
+          10,
+          99999
+        ]
+      }
+    },
+    {
+      "step": 116,
+      "line": 40,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 117,
+      "line": 43,
+      "type": "exec",
+      "vars": {
+        "dist": [
+          0,
+          3,
+          2,
+          8,
+          10,
+          14
+        ]
+      }
+    },
+    {
+      "step": 118,
+      "line": 34,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 119,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "v": 0
+      }
+    },
+    {
+      "step": 120,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "v": 1
+      }
+    },
+    {
+      "step": 121,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "v": 2
+      }
+    },
+    {
+      "step": 122,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "v": 3
+      }
+    },
+    {
+      "step": 123,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "v": 4
+      }
+    },
+    {
+      "step": 124,
+      "line": 17,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "min": 99999,
+        "v": 4
+      }
+    },
+    {
+      "step": 125,
+      "line": 18,
+      "type": "exec",
+      "vars": {
+        "min": 10
+      }
+    },
+    {
+      "step": 126,
+      "line": 19,
+      "type": "exec",
+      "vars": {
+        "min_index": 4
+      }
+    },
+    {
+      "step": 127,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "v": 5
+      }
+    },
+    {
+      "step": 128,
+      "line": 22,
+      "type": "exec",
+      "vars": {
+        "_return": 4
+      }
+    },
+    {
+      "step": 129,
+      "line": 22,
+      "type": "exit",
+      "func": "min_distance",
+      "vars": {}
+    },
+    {
+      "step": 130,
+      "line": 36,
+      "type": "exec",
+      "vars": {
+        "u": 4
+      }
+    },
+    {
+      "step": 131,
+      "line": 37,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "u": 4
+      }
+    },
+    {
+      "step": 132,
+      "line": 38,
+      "type": "exec",
+      "vars": {
+        "visited": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          0
+        ]
+      }
+    },
+    {
+      "step": 133,
+      "line": 40,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 134,
+      "line": 40,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 135,
+      "line": 40,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 136,
+      "line": 40,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 137,
+      "line": 40,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 138,
+      "line": 40,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 139,
+      "line": 43,
+      "type": "exec",
+      "vars": {
+        "dist": [
+          0,
+          3,
+          2,
+          8,
+          10,
+          13
+        ]
+      }
+    },
+    {
+      "step": 140,
+      "line": 48,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0
+      }
+    },
+    {
+      "step": 141,
+      "line": 48,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1
+      }
+    },
+    {
+      "step": 142,
+      "line": 48,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2
+      }
+    },
+    {
+      "step": 143,
+      "line": 48,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3
+      }
+    },
+    {
+      "step": 144,
+      "line": 48,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 4
+      }
+    },
+    {
+      "step": 145,
+      "line": 48,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 5
+      }
+    },
+    {
+      "step": 146,
+      "line": 65,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 147,
+      "line": 65,
+      "type": "exit",
+      "func": "main",
+      "vars": {}
+    }
+  ],
+  "total_steps": 148
+}

@@ -1,0 +1,5091 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#171b28">
+<link rel="icon" href="../assets/mascots/student-dog.png">
+<title>第7章 贪心算法 · 大话算法</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #1e2336;
+  --panel: #1a1f30;
+  --panel-deep: #151920;
+  --surface: #21283a;
+  --border: #30384c;
+  --text: #d7dae0;
+  --text-soft: #abb4c3;
+  --text-dim: #929caf;
+  --accent: #59a8ee;
+  --accent-soft: #243f5e;
+  --success: #98c379;
+  --control-height: 64px;
+}
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Noto Sans SC', 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text-soft);
+  overflow: hidden;
+}
+button, input, summary { font: inherit; }
+button:focus-visible, a:focus-visible, input:focus-visible, summary:focus-visible, [tabindex]:focus-visible {
+  outline: 3px solid rgba(89,168,238,.58);
+  outline-offset: 2px;
+}
+.header {
+  height: 65px;
+  background: rgba(23,28,43,.96);
+  padding: 0 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  position: relative;
+  z-index: 30;
+}
+.back-link {
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 13px;
+  white-space: nowrap;
+}
+.back-link:hover { text-decoration: underline; }
+.chapter-heading { min-width: 0; flex: 1; }
+.chapter-kicker { color: var(--text-dim); font-size: 12px; margin-bottom: 2px; }
+.chapter-heading h1 {
+  font-size: 19px;
+  line-height: 1.25;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.chapter-status {
+  min-width: 138px;
+  display: grid;
+  gap: 5px;
+}
+.chapter-status-text { color: var(--text-dim); font-size: 11px; text-align: right; }
+.chapter-status-track { height: 4px; background: #252c3e; border-radius: 99px; overflow: hidden; }
+.chapter-status-fill {
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, var(--accent), var(--success));
+  border-radius: inherit;
+  transition: width .3s ease;
+}
+.chapter-nav { display: flex; gap: 6px; }
+.chapter-nav a, .chapter-nav span {
+  min-width: 36px;
+  height: 36px;
+  padding: 0 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-soft);
+  text-decoration: none;
+  font-size: 12px;
+}
+.chapter-nav a:hover { border-color: var(--accent); color: var(--text); background: #202b40; }
+.chapter-nav .disabled { opacity: .35; cursor: default; }
+.mobile-view-switcher { display: none; }
+.main { display: flex; height: calc(100dvh - 65px); min-height: 0; }
+.code-panel {
+  width: 45%;
+  min-width: 360px;
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.code-header {
+  background: var(--panel);
+  padding: 9px 14px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.algo-tabs {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  flex: 1;
+  min-width: 0;
+}
+.algo-tab, .mode-tab {
+  border: 1px solid var(--border);
+  background: #22283a;
+  color: var(--text-dim);
+  border-radius: 7px;
+  cursor: pointer;
+  transition: background .18s ease, border-color .18s ease, color .18s ease;
+}
+.algo-tab { padding: 6px 11px; font-size: 12px; position: relative; }
+.algo-tab:hover, .mode-tab:hover { color: var(--text); border-color: #48536b; }
+.algo-tab.active, .mode-tab.active {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: #e8f3ff;
+}
+.algo-tab.completed::after {
+  content: '✓';
+  margin-left: 6px;
+  color: var(--success);
+  font-weight: 800;
+}
+.breakpoint-hint {
+  color: #737e92;
+  font-size: 11px;
+  line-height: 29px;
+  white-space: nowrap;
+}
+.mode-tabs {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: #171c2b;
+  border-bottom: 1px solid var(--border);
+}
+.mode-tabs.visible { display: flex; }
+.mode-label { font-size: 12px; color: var(--text-dim); margin-right: 2px; }
+.mode-tab { padding: 5px 12px; border-radius: 999px; font-size: 12px; }
+.code-body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  font-family: 'SFMono-Regular', 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+  font-size: var(--code-font-size, 15px);
+  line-height: 1.8;
+  scrollbar-color: #3b455c transparent;
+}
+.code-line { display: flex; min-width: max-content; padding: 0 16px 0 7px; position: relative; }
+.code-line:hover { background: #22283a; }
+.code-line.active {
+  background: rgba(73,164,238,.32);
+  border-left: 3px solid var(--accent);
+  box-shadow: inset 0 0 16px rgba(73,164,238,.18);
+}
+.code-line.executed { background: rgba(73,164,238,.035); }
+.code-line.setup { background: rgba(127,132,142,.045); color: #667084; }
+.line-num {
+  width: 42px;
+  border: 0;
+  background: transparent;
+  text-align: right;
+  color: #748096;
+  padding-right: 12px;
+  user-select: none;
+  flex-shrink: 0;
+  position: relative;
+  cursor: pointer;
+}
+.line-num:hover { color: var(--accent); }
+.line-num .breakpoint {
+  position: absolute;
+  left: 3px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #e05561;
+}
+.line-content { flex: 1; white-space: pre; }
+.kw, .num { color: #F3A862; }
+.fn { color: #59a8ee; }
+.var { color: #D980FA; }
+.str { color: #74C589; }
+.cmt { color: #71939a; font-style: italic; }
+.right-panel { flex: 1; display: flex; flex-direction: column; min-width: 0; min-height: 0; overflow: hidden; }
+.viz-panel {
+  flex: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 20px;
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
+}
+.viz-panel canvas { width: 100%; height: 100%; display: block; }
+body.concept-mode .viz-panel { flex: 1 1 auto; padding: 6px 20px; }
+body.concept-mode .vars-panel { flex: 0 1 168px; padding: 8px 18px; }
+body.concept-mode .output-panel { flex: 0 1 68px; padding: 6px 16px; }
+body.concept-mode .callstack { display: none; }
+.callstack {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  max-width: calc(100% - 24px);
+  background: rgba(33,38,54,.92);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 12px;
+  pointer-events: none;
+}
+.callstack-title, .vars-panel h3, .output-panel h3 { color: var(--text-dim); }
+.callstack-title { margin-bottom: 4px; }
+.callstack-item { color: var(--accent); padding: 2px 0; }
+.callstack-item::before { content: '▸ '; color: #68758a; }
+.vars-panel {
+  flex: 2;
+  background: var(--panel);
+  padding: 10px 18px;
+  border-top: 1px solid var(--border);
+  overflow-y: auto;
+  min-height: 0;
+}
+.output-panel {
+  flex: 1;
+  background: var(--panel-deep);
+  border-top: 1px solid var(--border);
+  padding: 8px 16px;
+  overflow-y: auto;
+  min-height: 0;
+  font-family: 'SFMono-Regular', 'JetBrains Mono', monospace;
+  font-size: var(--output-font-size, 13px);
+  color: var(--text-dim);
+}
+.output-panel h3 {
+  font-size: 12px;
+  margin-bottom: 4px;
+  position: sticky;
+  top: 0;
+  background: var(--panel-deep);
+  padding-bottom: 4px;
+  z-index: 1;
+}
+.output-line { padding: 1px 0; white-space: pre-wrap; word-break: break-word; }
+.vars-panel h3 { font-size: 13px; margin-bottom: 9px; }
+.var-grid { display: flex; flex-direction: column; gap: 6px; }
+.var-section-title { font-size: 11px; color: var(--text-dim); margin: 8px 0 4px; }
+.var-section:first-child .var-section-title { margin-top: 0; }
+.var-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.var-item {
+  background: #22283a;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 6px 13px;
+  font-family: monospace;
+  font-size: var(--var-font-size, 14px);
+}
+.var-name { color: var(--accent); }
+.var-val { color: var(--text); font-weight: 650; }
+.var-changed { animation: varPulse .5s ease; border-color: var(--accent); }
+.var-highlight { border-color: var(--accent); background: var(--accent-soft); }
+@keyframes varPulse { 0% { background: var(--accent-soft); } 100% { background: #22283a; } }
+.var-toggle { font-size: 12px; color: var(--text-dim); cursor: pointer; padding: 4px 0; user-select: none; }
+.control-bar {
+  min-height: var(--control-height);
+  flex-shrink: 0;
+  background: var(--panel);
+  border-top: 1px solid var(--border);
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+  z-index: 20;
+}
+.transport-controls { display: flex; align-items: center; gap: 7px; }
+.btn {
+  min-height: 38px;
+  background: #22283a;
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  white-space: nowrap;
+}
+.btn:hover:not(:disabled) { background: #2a3247; border-color: #4c5872; }
+.btn:disabled { opacity: .36; cursor: not-allowed; }
+.btn-primary { min-width: 82px; background: var(--accent-soft); border-color: var(--accent); }
+.btn-active { background: #285176; border-color: #77bfff; }
+.step-info {
+  margin-left: auto;
+  min-width: 68px;
+  font-size: 12px;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+.step-info strong { color: var(--text); }
+.settings-menu { position: relative; }
+.settings-menu summary {
+  list-style: none;
+  min-height: 38px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-soft);
+  cursor: pointer;
+  font-size: 12px;
+  user-select: none;
+}
+.settings-menu summary::-webkit-details-marker { display: none; }
+.settings-menu[open] summary { border-color: var(--accent); background: var(--accent-soft); color: var(--text); }
+.settings-popover {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 10px);
+  width: 250px;
+  padding: 14px;
+  display: grid;
+  gap: 12px;
+  background: rgba(23,28,43,.98);
+  border: 1px solid #3a465f;
+  border-radius: 12px;
+  box-shadow: 0 16px 42px rgba(0,0,0,.38);
+}
+.setting-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.setting-row label, .shortcut-help { font-size: 12px; color: var(--text-dim); }
+.speed-slider { width: 130px; accent-color: var(--accent); }
+.font-control { display: flex; align-items: center; gap: 6px; }
+.btn-sm { min-height: 32px; padding: 5px 10px; font-size: 12px; }
+.settings-divider { height: 1px; background: var(--border); }
+.shortcut-help { line-height: 1.65; }
+
+@media (max-width: 1050px) {
+  .code-panel { width: 42%; min-width: 320px; }
+  .chapter-status { display: none; }
+  .breakpoint-hint { display: none; }
+  .btn { padding-inline: 10px; }
+}
+
+@media (max-width: 900px) {
+  body { overflow: auto; padding-bottom: 72px; }
+  .header {
+    height: auto;
+    min-height: 60px;
+    padding: 8px 12px;
+    gap: 10px;
+    position: sticky;
+    top: 0;
+  }
+  .back-link { font-size: 0; width: 36px; height: 36px; display: grid; place-items: center; }
+  .back-link::before { content: '←'; font-size: 21px; }
+  .chapter-kicker { font-size: 10px; }
+  .chapter-heading h1 { font-size: 16px; }
+  .chapter-nav a, .chapter-nav span { width: 34px; min-width: 34px; padding: 0; font-size: 0; }
+  .chapter-nav a:first-child::before, .chapter-nav span:first-child::before { content: '‹'; font-size: 22px; }
+  .chapter-nav a:last-child::before, .chapter-nav span:last-child::before { content: '›'; font-size: 22px; }
+  .mobile-view-switcher {
+    position: sticky;
+    top: 60px;
+    z-index: 25;
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 4px;
+    padding: 7px 10px;
+    background: rgba(23,28,43,.97);
+    border-bottom: 1px solid var(--border);
+  }
+  .mobile-view-switcher button {
+    min-height: 38px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text-dim);
+  }
+  .mobile-view-switcher button.active {
+    color: #e8f3ff;
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+  .main { display: block; height: auto; min-height: calc(100dvh - 114px); }
+  .code-panel, .right-panel { width: 100%; min-width: 0; border: 0; }
+  .code-panel { height: calc(100dvh - 186px); }
+  .code-header { padding: 8px 10px; overflow: hidden; }
+  .algo-tabs { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 3px; scrollbar-width: thin; }
+  .algo-tab { flex: 0 0 auto; min-height: 38px; }
+  .mode-tabs { padding: 7px 10px; overflow-x: auto; }
+  .code-body { min-height: 0; font-size: max(13px,var(--code-font-size,15px)); }
+  .code-line { padding-right: 12px; }
+  .right-panel { min-height: calc(100dvh - 186px); overflow: visible; }
+  .viz-panel { height: calc(100dvh - 186px); min-height: 430px; flex: none !important; padding: 8px 10px !important; }
+  .vars-panel { min-height: 50dvh; padding: 14px; }
+  .output-panel { min-height: 28dvh; padding: 12px 14px; }
+  body[data-mobile-view="animation"] .code-panel,
+  body[data-mobile-view="animation"] .vars-panel,
+  body[data-mobile-view="animation"] .output-panel { display: none; }
+  body[data-mobile-view="code"] .right-panel > :not(.control-bar),
+  body[data-mobile-view="code"] .vars-panel,
+  body[data-mobile-view="code"] .output-panel { display: none; }
+  body[data-mobile-view="code"] .right-panel { min-height: 0; }
+  body[data-mobile-view="data"] .code-panel,
+  body[data-mobile-view="data"] .viz-panel { display: none; }
+  body[data-mobile-view="data"] .right-panel { min-height: calc(100dvh - 186px); }
+  .control-bar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    min-height: 72px;
+    padding: 9px max(10px,env(safe-area-inset-right)) calc(9px + env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left));
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 -10px 30px rgba(9,12,20,.36);
+  }
+  .transport-controls { gap: 7px; }
+  #btn-reset { display: none; }
+  .btn { min-width: 48px; min-height: 44px; padding: 8px 10px; font-size: 0; }
+  #btn-back::after { content: '◀'; font-size: 16px; }
+  #btn-play { min-width: 92px; font-size: 14px; }
+  #btn-step::after { content: '▶'; font-size: 16px; }
+  .step-info { margin-left: 0; min-width: 52px; text-align: center; font-size: 11px; }
+  .step-info .step-prefix { display: none; }
+  .settings-menu summary { width: 44px; min-height: 44px; padding: 0; justify-content: center; font-size: 0; }
+  .settings-menu summary::before { content: '⚙'; font-size: 17px; }
+  .settings-popover { right: -2px; width: min(280px,calc(100vw - 20px)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: .001ms !important;
+  }
+}
+</style>
+</head>
+<body data-mobile-view="animation">
+
+<header class="header">
+  <a class="back-link" href="../index.html" aria-label="返回学习地图">← 学习地图</a>
+  <div class="chapter-heading">
+    <div class="chapter-kicker">第7章</div>
+    <h1>贪心算法</h1>
+  </div>
+  <div class="chapter-status" aria-label="本章学习进度">
+    <div class="chapter-status-text" id="chapter-progress-text">0 / 0 个演示完成</div>
+    <div class="chapter-status-track"><div class="chapter-status-fill" id="chapter-progress-fill"></div></div>
+  </div>
+  <nav class="chapter-nav" aria-label="章节导航">
+    <a href="ch06.html" aria-label="上一章：排序的哲学" title="上一章：排序的哲学">上一章</a>
+    <a href="ch08.html" aria-label="下一章：动态规划（上）" title="下一章：动态规划（上）">下一章</a>
+  </nav>
+</header>
+
+<div class="mobile-view-switcher" role="tablist" aria-label="学习视图">
+  <button type="button" class="active" data-mobile-view="animation" role="tab" aria-selected="true">动画</button>
+  <button type="button" data-mobile-view="code" role="tab" aria-selected="false">代码</button>
+  <button type="button" data-mobile-view="data" role="tab" aria-selected="false">变量</button>
+</div>
+
+<main class="main">
+  <section class="code-panel" aria-label="算法代码">
+    <div class="code-header">
+      <div class="algo-tabs" id="algo-tabs" role="tablist" aria-label="本章算法"></div>
+      <span class="breakpoint-hint">点击行号可设断点</span>
+    </div>
+    <div class="mode-tabs" id="mode-tabs" role="tablist" aria-label="演示模式"></div>
+    <div class="code-body" id="code-body" aria-label="代码执行过程"></div>
+  </section>
+
+  <section class="right-panel" aria-label="算法可视化与状态">
+    <div class="viz-panel">
+      <canvas id="viz-canvas" width="800" height="300" role="img" aria-label="算法执行动画"></canvas>
+      <div class="callstack" id="callstack"><div class="callstack-title">调用栈</div></div>
+    </div>
+    <div class="vars-panel">
+      <h3>变量状态</h3>
+      <div class="var-grid" id="var-grid"></div>
+    </div>
+    <div class="output-panel" id="output-panel">
+      <h3>程序输出</h3>
+      <div id="output-content" aria-live="polite"></div>
+    </div>
+
+    <div class="control-bar" aria-label="播放控制">
+      <div class="transport-controls">
+        <button class="btn" id="btn-reset" type="button" aria-label="重置当前演示" title="重置当前演示">⏮ 重置</button>
+        <button class="btn" id="btn-back" type="button" aria-label="上一步" title="上一步">◀ 后退</button>
+        <button class="btn btn-primary" id="btn-play" type="button" aria-label="播放或暂停">▶ 播放</button>
+        <button class="btn" id="btn-step" type="button" aria-label="下一步" title="下一步">⏭ 单步</button>
+      </div>
+      <div class="step-info" aria-live="polite">
+        <span class="step-prefix">步骤 </span><strong id="step-cur">0</strong> / <strong id="step-total">0</strong>
+      </div>
+      <details class="settings-menu">
+        <summary aria-label="播放设置">⚙ 设置</summary>
+        <div class="settings-popover">
+          <div class="setting-row">
+            <label for="speed-slider">播放速度</label>
+            <input type="range" class="speed-slider" id="speed-slider" min="1" max="10" value="5" aria-valuetext="速度 5">
+          </div>
+          <div class="setting-row">
+            <span class="mode-label">代码字体</span>
+            <div class="font-control">
+              <button class="btn btn-sm" type="button" id="font-dec" aria-label="减小代码字体">A−</button>
+              <button class="btn btn-sm" type="button" id="font-inc" aria-label="增大代码字体">A＋</button>
+            </div>
+          </div>
+          <button class="btn" id="btn-to-bp" type="button">运行到断点</button>
+          <div class="settings-divider"></div>
+          <div class="shortcut-help">页面空白处：空格播放/暂停，← → 单步，R 重置</div>
+        </div>
+      </details>
+    </div>
+  </section>
+</main>
+
+<script src="../js/learning-state.js?v=20260725"></script>
+<script src="../js/engine.js?v=20260725-ux2"></script>
+<script src="../js/viz-renderers.js?v=20260725-layout-audit"></script>
+<script>
+const CHAPTER_NUM = 7;
+const ALGOS = {
+  "01_活动选择": {
+    "title": "活动选择",
+    "defaultMode": "concept",
+    "modeLabels": {
+      "concept": "理解动画",
+      "trace": "代码执行"
+    },
+    "modes": {
+      "concept": {
+        "title": "活动选择",
+        "source": [
+          "算法: 活动选择",
+          "输入: 若干活动 [start, end)",
+          "按结束时间从早到晚排序",
+          "先选择结束最早的活动",
+          "继续扫描后续活动",
+          "如果 start >= last_end, 就选择它",
+          "否则跳过它"
+        ],
+        "important_vars": {
+          "stage": "状态",
+          "last_end": "状态",
+          "selected": "状态"
+        },
+        "track_vars": {
+          "primary": [
+            "stage",
+            "last_end",
+            "selected"
+          ],
+          "secondary": []
+        },
+        "var_classes": {
+          "stage": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "last_end": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "selected": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "concept": {
+            "category": "secondary",
+            "type": "concept"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 7,
+            "text": "概念动画：活动选择的贪心关键是“每次选结束最早的可兼容活动”。"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 3,
+            "type": "exec",
+            "vars": {
+              "stage": "按结束时间排序",
+              "last_end": 0,
+              "selected": "-",
+              "concept": {
+                "kind": "activity_selection",
+                "title": "活动选择",
+                "activities": [
+                  {
+                    "id": "A",
+                    "start": 1,
+                    "end": 4
+                  },
+                  {
+                    "id": "B",
+                    "start": 3,
+                    "end": 5
+                  },
+                  {
+                    "id": "C",
+                    "start": 0,
+                    "end": 6
+                  },
+                  {
+                    "id": "D",
+                    "start": 5,
+                    "end": 7
+                  },
+                  {
+                    "id": "E",
+                    "start": 3,
+                    "end": 9
+                  },
+                  {
+                    "id": "F",
+                    "start": 5,
+                    "end": 9
+                  },
+                  {
+                    "id": "G",
+                    "start": 6,
+                    "end": 10
+                  },
+                  {
+                    "id": "H",
+                    "start": 8,
+                    "end": 11
+                  },
+                  {
+                    "id": "I",
+                    "start": 8,
+                    "end": 12
+                  },
+                  {
+                    "id": "J",
+                    "start": 2,
+                    "end": 14
+                  },
+                  {
+                    "id": "K",
+                    "start": 12,
+                    "end": 16
+                  }
+                ],
+                "current": null,
+                "selected": [],
+                "lastEnd": 0,
+                "phase": "结束越早, 留给后面的时间越多"
+              }
+            }
+          },
+          {
+            "step": 1,
+            "line": 4,
+            "type": "exec",
+            "vars": {
+              "stage": "选 A",
+              "last_end": 4,
+              "selected": "A",
+              "concept": {
+                "kind": "activity_selection",
+                "title": "活动选择",
+                "activities": [
+                  {
+                    "id": "A",
+                    "start": 1,
+                    "end": 4
+                  },
+                  {
+                    "id": "B",
+                    "start": 3,
+                    "end": 5
+                  },
+                  {
+                    "id": "C",
+                    "start": 0,
+                    "end": 6
+                  },
+                  {
+                    "id": "D",
+                    "start": 5,
+                    "end": 7
+                  },
+                  {
+                    "id": "E",
+                    "start": 3,
+                    "end": 9
+                  },
+                  {
+                    "id": "F",
+                    "start": 5,
+                    "end": 9
+                  },
+                  {
+                    "id": "G",
+                    "start": 6,
+                    "end": 10
+                  },
+                  {
+                    "id": "H",
+                    "start": 8,
+                    "end": 11
+                  },
+                  {
+                    "id": "I",
+                    "start": 8,
+                    "end": 12
+                  },
+                  {
+                    "id": "J",
+                    "start": 2,
+                    "end": 14
+                  },
+                  {
+                    "id": "K",
+                    "start": 12,
+                    "end": 16
+                  }
+                ],
+                "current": "A",
+                "selected": [
+                  "A"
+                ],
+                "lastEnd": 4,
+                "phase": "A 结束最早, 先选它"
+              }
+            }
+          },
+          {
+            "step": 2,
+            "line": 7,
+            "type": "exec",
+            "vars": {
+              "stage": "跳过 B/C",
+              "last_end": 4,
+              "selected": "A",
+              "concept": {
+                "kind": "activity_selection",
+                "title": "活动选择",
+                "activities": [
+                  {
+                    "id": "A",
+                    "start": 1,
+                    "end": 4
+                  },
+                  {
+                    "id": "B",
+                    "start": 3,
+                    "end": 5
+                  },
+                  {
+                    "id": "C",
+                    "start": 0,
+                    "end": 6
+                  },
+                  {
+                    "id": "D",
+                    "start": 5,
+                    "end": 7
+                  },
+                  {
+                    "id": "E",
+                    "start": 3,
+                    "end": 9
+                  },
+                  {
+                    "id": "F",
+                    "start": 5,
+                    "end": 9
+                  },
+                  {
+                    "id": "G",
+                    "start": 6,
+                    "end": 10
+                  },
+                  {
+                    "id": "H",
+                    "start": 8,
+                    "end": 11
+                  },
+                  {
+                    "id": "I",
+                    "start": 8,
+                    "end": 12
+                  },
+                  {
+                    "id": "J",
+                    "start": 2,
+                    "end": 14
+                  },
+                  {
+                    "id": "K",
+                    "start": 12,
+                    "end": 16
+                  }
+                ],
+                "current": "C",
+                "selected": [
+                  "A"
+                ],
+                "lastEnd": 4,
+                "phase": "B、C 都在 A 结束前开始, 冲突"
+              }
+            }
+          },
+          {
+            "step": 3,
+            "line": 6,
+            "type": "exec",
+            "vars": {
+              "stage": "选 D",
+              "last_end": 7,
+              "selected": "A,D",
+              "concept": {
+                "kind": "activity_selection",
+                "title": "活动选择",
+                "activities": [
+                  {
+                    "id": "A",
+                    "start": 1,
+                    "end": 4
+                  },
+                  {
+                    "id": "B",
+                    "start": 3,
+                    "end": 5
+                  },
+                  {
+                    "id": "C",
+                    "start": 0,
+                    "end": 6
+                  },
+                  {
+                    "id": "D",
+                    "start": 5,
+                    "end": 7
+                  },
+                  {
+                    "id": "E",
+                    "start": 3,
+                    "end": 9
+                  },
+                  {
+                    "id": "F",
+                    "start": 5,
+                    "end": 9
+                  },
+                  {
+                    "id": "G",
+                    "start": 6,
+                    "end": 10
+                  },
+                  {
+                    "id": "H",
+                    "start": 8,
+                    "end": 11
+                  },
+                  {
+                    "id": "I",
+                    "start": 8,
+                    "end": 12
+                  },
+                  {
+                    "id": "J",
+                    "start": 2,
+                    "end": 14
+                  },
+                  {
+                    "id": "K",
+                    "start": 12,
+                    "end": 16
+                  }
+                ],
+                "current": "D",
+                "selected": [
+                  "A",
+                  "D"
+                ],
+                "lastEnd": 7,
+                "phase": "D 从 5 开始, 不和 A 冲突"
+              }
+            }
+          },
+          {
+            "step": 4,
+            "line": 7,
+            "type": "exec",
+            "vars": {
+              "stage": "跳过 E/F/G",
+              "last_end": 7,
+              "selected": "A,D",
+              "concept": {
+                "kind": "activity_selection",
+                "title": "活动选择",
+                "activities": [
+                  {
+                    "id": "A",
+                    "start": 1,
+                    "end": 4
+                  },
+                  {
+                    "id": "B",
+                    "start": 3,
+                    "end": 5
+                  },
+                  {
+                    "id": "C",
+                    "start": 0,
+                    "end": 6
+                  },
+                  {
+                    "id": "D",
+                    "start": 5,
+                    "end": 7
+                  },
+                  {
+                    "id": "E",
+                    "start": 3,
+                    "end": 9
+                  },
+                  {
+                    "id": "F",
+                    "start": 5,
+                    "end": 9
+                  },
+                  {
+                    "id": "G",
+                    "start": 6,
+                    "end": 10
+                  },
+                  {
+                    "id": "H",
+                    "start": 8,
+                    "end": 11
+                  },
+                  {
+                    "id": "I",
+                    "start": 8,
+                    "end": 12
+                  },
+                  {
+                    "id": "J",
+                    "start": 2,
+                    "end": 14
+                  },
+                  {
+                    "id": "K",
+                    "start": 12,
+                    "end": 16
+                  }
+                ],
+                "current": "G",
+                "selected": [
+                  "A",
+                  "D"
+                ],
+                "lastEnd": 7,
+                "phase": "它们都早于 7 开始, 会撞上 D"
+              }
+            }
+          },
+          {
+            "step": 5,
+            "line": 6,
+            "type": "exec",
+            "vars": {
+              "stage": "选 H",
+              "last_end": 11,
+              "selected": "A,D,H",
+              "concept": {
+                "kind": "activity_selection",
+                "title": "活动选择",
+                "activities": [
+                  {
+                    "id": "A",
+                    "start": 1,
+                    "end": 4
+                  },
+                  {
+                    "id": "B",
+                    "start": 3,
+                    "end": 5
+                  },
+                  {
+                    "id": "C",
+                    "start": 0,
+                    "end": 6
+                  },
+                  {
+                    "id": "D",
+                    "start": 5,
+                    "end": 7
+                  },
+                  {
+                    "id": "E",
+                    "start": 3,
+                    "end": 9
+                  },
+                  {
+                    "id": "F",
+                    "start": 5,
+                    "end": 9
+                  },
+                  {
+                    "id": "G",
+                    "start": 6,
+                    "end": 10
+                  },
+                  {
+                    "id": "H",
+                    "start": 8,
+                    "end": 11
+                  },
+                  {
+                    "id": "I",
+                    "start": 8,
+                    "end": 12
+                  },
+                  {
+                    "id": "J",
+                    "start": 2,
+                    "end": 14
+                  },
+                  {
+                    "id": "K",
+                    "start": 12,
+                    "end": 16
+                  }
+                ],
+                "current": "H",
+                "selected": [
+                  "A",
+                  "D",
+                  "H"
+                ],
+                "lastEnd": 11,
+                "phase": "H 从 8 开始, 可以接在 D 后面"
+              }
+            }
+          },
+          {
+            "step": 6,
+            "line": 6,
+            "type": "exec",
+            "vars": {
+              "stage": "选 K",
+              "last_end": 16,
+              "selected": "A,D,H,K",
+              "concept": {
+                "kind": "activity_selection",
+                "title": "活动选择",
+                "activities": [
+                  {
+                    "id": "A",
+                    "start": 1,
+                    "end": 4
+                  },
+                  {
+                    "id": "B",
+                    "start": 3,
+                    "end": 5
+                  },
+                  {
+                    "id": "C",
+                    "start": 0,
+                    "end": 6
+                  },
+                  {
+                    "id": "D",
+                    "start": 5,
+                    "end": 7
+                  },
+                  {
+                    "id": "E",
+                    "start": 3,
+                    "end": 9
+                  },
+                  {
+                    "id": "F",
+                    "start": 5,
+                    "end": 9
+                  },
+                  {
+                    "id": "G",
+                    "start": 6,
+                    "end": 10
+                  },
+                  {
+                    "id": "H",
+                    "start": 8,
+                    "end": 11
+                  },
+                  {
+                    "id": "I",
+                    "start": 8,
+                    "end": 12
+                  },
+                  {
+                    "id": "J",
+                    "start": 2,
+                    "end": 14
+                  },
+                  {
+                    "id": "K",
+                    "start": 12,
+                    "end": 16
+                  }
+                ],
+                "current": "K",
+                "selected": [
+                  "A",
+                  "D",
+                  "H",
+                  "K"
+                ],
+                "lastEnd": 16,
+                "phase": "K 从 12 开始, 最终安排 4 场"
+              }
+            }
+          }
+        ]
+      },
+      "trace": {
+        "title": "活动选择",
+        "source": [
+          "#include <stdio.h>",
+          "#include <stdlib.h>",
+          "/* 活动结构体 */",
+          "typedef struct {",
+          "    int id;         /* 活动编号 */",
+          "    int start;      /* 开始时间 */",
+          "    int end;        /* 结束时间 */",
+          "} Activity;",
+          "/* 比较函数：按结束时间升序排列 */",
+          "int compare(const void *a, const void *b) {",
+          "    const Activity *x = (const Activity *)a;",
+          "    const Activity *y = (const Activity *)b;",
+          "    if (x->end != y->end) return (x->end > y->end) - (x->end < y->end);",
+          "    return (x->start > y->start) - (x->start < y->start);",
+          "}",
+          "/* 贪心求解活动选择 */",
+          "void activity_selection(Activity activities[], int n) {",
+          "    if (n <= 0) {",
+          "        printf(\"没有可安排的活动\\n\");",
+          "        return;",
+          "    }",
+          "    /* 第一步：按结束时间排序 */",
+          "    qsort(activities, n, sizeof(Activity), compare);",
+          "    printf(\"选择的活动序列：\\n\");",
+          "    /* 第二步：总是选第一个（结束最早的） */",
+          "    int count = 1;",
+          "    int last_end = activities[0].end;",
+          "    printf(\"  活动 %d：[%d, %d)\\n\",",
+          "           activities[0].id, activities[0].start, activities[0].end);",
+          "    /* 第三步：贪心选择后续活动 */",
+          "    for (int i = 1; i < n; i++) {",
+          "        if (activities[i].start >= last_end) {",
+          "            printf(\"  活动 %d：[%d, %d)\\n\",",
+          "                   activities[i].id, activities[i].start, activities[i].end);",
+          "            last_end = activities[i].end;",
+          "            count++;",
+          "        }",
+          "    }",
+          "    printf(\"总共可安排 %d 场活动\\n\", count);",
+          "}",
+          "int main(void) {",
+          "    Activity activities[] = {",
+          "        {1, 1, 4}, {2, 3, 5}, {3, 0, 6}, {4, 5, 7},",
+          "        {5, 3, 9}, {6, 5, 9}, {7, 6, 10}, {8, 8, 11},",
+          "        {9, 8, 12}, {10, 2, 14}, {11, 12, 16}",
+          "    };",
+          "    int n = sizeof(activities) / sizeof(activities[0]);",
+          "    activity_selection(activities, n);",
+          "    return 0;",
+          "}"
+        ],
+        "important_vars": {
+          "count": "参数",
+          "i": "索引",
+          "n": "参数"
+        },
+        "track_vars": {
+          "primary": [
+            "count",
+            "i",
+            "n"
+          ],
+          "secondary": [
+            "_return",
+            "activities",
+            "last_end"
+          ]
+        },
+        "var_classes": {
+          "_return": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "activities": {
+            "category": "secondary",
+            "type": "array"
+          },
+          "count": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "i": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "last_end": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "n": {
+            "category": "primary",
+            "type": "scalar"
+          }
+        },
+        "initial_data": {
+          "activities": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11
+          ]
+        },
+        "program_output": [
+          {
+            "after_step": 8,
+            "text": "选择的活动序列： 活动 1：[1, 4)"
+          },
+          {
+            "after_step": 12,
+            "text": "活动 4：[5, 7)"
+          },
+          {
+            "after_step": 19,
+            "text": "活动 8：[8, 11)"
+          },
+          {
+            "after_step": 25,
+            "text": "活动 11：[12, 16) 总共可安排 4 场活动"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 41,
+            "type": "enter",
+            "func": "main",
+            "vars": {}
+          },
+          {
+            "step": 1,
+            "line": 48,
+            "type": "enter",
+            "func": "activity_selection",
+            "vars": {
+              "activities": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11
+              ],
+              "n": 11
+            }
+          },
+          {
+            "step": 2,
+            "line": 13,
+            "type": "cond",
+            "result": false,
+            "vars": {}
+          },
+          {
+            "step": 3,
+            "line": 14,
+            "type": "exec",
+            "vars": {
+              "_return": -1
+            }
+          },
+          {
+            "step": 4,
+            "line": 14,
+            "type": "exit",
+            "func": "compare",
+            "vars": {}
+          },
+          {
+            "step": 5,
+            "line": 13,
+            "type": "cond",
+            "result": false,
+            "vars": {}
+          },
+          {
+            "step": 6,
+            "line": 14,
+            "type": "exec",
+            "vars": {
+              "_return": -1
+            }
+          },
+          {
+            "step": 7,
+            "line": 14,
+            "type": "exit",
+            "func": "compare",
+            "vars": {}
+          },
+          {
+            "step": 8,
+            "line": 31,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 1,
+              "n": 11
+            }
+          },
+          {
+            "step": 9,
+            "line": 31,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 2,
+              "n": 11
+            }
+          },
+          {
+            "step": 10,
+            "line": 31,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 3,
+              "n": 11
+            }
+          },
+          {
+            "step": 11,
+            "line": 32,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 3,
+              "last_end": 4
+            }
+          },
+          {
+            "step": 12,
+            "line": 35,
+            "type": "exec",
+            "vars": {
+              "last_end": 7
+            }
+          },
+          {
+            "step": 13,
+            "line": 36,
+            "type": "exec",
+            "vars": {
+              "count": 2
+            }
+          },
+          {
+            "step": 14,
+            "line": 31,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 4,
+              "n": 11
+            }
+          },
+          {
+            "step": 15,
+            "line": 31,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 5,
+              "n": 11
+            }
+          },
+          {
+            "step": 16,
+            "line": 31,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 6,
+              "n": 11
+            }
+          },
+          {
+            "step": 17,
+            "line": 31,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 7,
+              "n": 11
+            }
+          },
+          {
+            "step": 18,
+            "line": 32,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 7,
+              "last_end": 7
+            }
+          },
+          {
+            "step": 19,
+            "line": 35,
+            "type": "exec",
+            "vars": {
+              "last_end": 11
+            }
+          },
+          {
+            "step": 20,
+            "line": 36,
+            "type": "exec",
+            "vars": {
+              "count": 3
+            }
+          },
+          {
+            "step": 21,
+            "line": 31,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 8,
+              "n": 11
+            }
+          },
+          {
+            "step": 22,
+            "line": 31,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 9,
+              "n": 11
+            }
+          },
+          {
+            "step": 23,
+            "line": 31,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 10,
+              "n": 11
+            }
+          },
+          {
+            "step": 24,
+            "line": 32,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 10,
+              "last_end": 11
+            }
+          },
+          {
+            "step": 25,
+            "line": 35,
+            "type": "exec",
+            "vars": {
+              "last_end": 16
+            }
+          },
+          {
+            "step": 26,
+            "line": 36,
+            "type": "exec",
+            "vars": {
+              "count": 4
+            }
+          },
+          {
+            "step": 27,
+            "line": 49,
+            "type": "exec",
+            "vars": {
+              "_return": 0
+            }
+          },
+          {
+            "step": 28,
+            "line": 49,
+            "type": "exit",
+            "func": "main",
+            "vars": {}
+          }
+        ]
+      }
+    }
+  },
+  "02_哈夫曼编码": {
+    "title": "哈夫曼编码",
+    "defaultMode": "concept",
+    "modeLabels": {
+      "concept": "理解动画",
+      "trace": "代码执行"
+    },
+    "modes": {
+      "concept": {
+        "title": "哈夫曼编码",
+        "source": [
+          "算法: 哈夫曼编码",
+          "输入: 字符及出现频率",
+          "把所有字符放入最小堆",
+          "重复:",
+          "    取出频率最小的两个节点",
+          "    合并成一个新节点",
+          "    新节点放回最小堆",
+          "只剩一个节点时, 哈夫曼树完成"
+        ],
+        "important_vars": {
+          "stage": "状态",
+          "heap": "状态",
+          "picked": "状态"
+        },
+        "track_vars": {
+          "primary": [
+            "stage",
+            "heap",
+            "picked"
+          ],
+          "secondary": []
+        },
+        "var_classes": {
+          "stage": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "heap": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "picked": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "concept": {
+            "category": "secondary",
+            "type": "concept"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 6,
+            "text": "概念动画：哈夫曼编码的贪心策略是反复合并当前频率最小的两个节点。"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 2,
+            "type": "exec",
+            "vars": {
+              "stage": "初始频率",
+              "heap": "a45 b13 c12 d16 e9 f5",
+              "picked": "-",
+              "concept": {
+                "kind": "huffman",
+                "title": "哈夫曼编码",
+                "heap": [
+                  "a45",
+                  "b13",
+                  "c12",
+                  "d16",
+                  "e9",
+                  "f5"
+                ],
+                "picked": [],
+                "phase": "高频字符应该靠近根, 低频字符可以走短编码"
+              }
+            }
+          },
+          {
+            "step": 1,
+            "line": 4,
+            "type": "exec",
+            "vars": {
+              "stage": "合并 f5 和 e9",
+              "heap": "c12 b13 d16 ef14 a45",
+              "picked": "f5 + e9",
+              "concept": {
+                "kind": "huffman",
+                "title": "哈夫曼编码",
+                "heap": [
+                  "c12",
+                  "b13",
+                  "d16",
+                  "ef14",
+                  "a45"
+                ],
+                "picked": [
+                  "f5",
+                  "e9"
+                ],
+                "phase": "每次只拿最小的两个, 合成 14"
+              }
+            }
+          },
+          {
+            "step": 2,
+            "line": 4,
+            "type": "exec",
+            "vars": {
+              "stage": "合并 c12 和 b13",
+              "heap": "ef14 d16 bc25 a45",
+              "picked": "c12 + b13",
+              "concept": {
+                "kind": "huffman",
+                "title": "哈夫曼编码",
+                "heap": [
+                  "ef14",
+                  "d16",
+                  "bc25",
+                  "a45"
+                ],
+                "picked": [
+                  "c12",
+                  "b13"
+                ],
+                "phase": "第二次仍然只看当前最小的两个"
+              }
+            }
+          },
+          {
+            "step": 3,
+            "line": 4,
+            "type": "exec",
+            "vars": {
+              "stage": "合并 ef14 和 d16",
+              "heap": "bc25 efd30 a45",
+              "picked": "ef14 + d16",
+              "concept": {
+                "kind": "huffman",
+                "title": "哈夫曼编码",
+                "heap": [
+                  "bc25",
+                  "efd30",
+                  "a45"
+                ],
+                "picked": [
+                  "ef14",
+                  "d16"
+                ],
+                "phase": "低频组合逐渐被挂到更深的位置"
+              }
+            }
+          },
+          {
+            "step": 4,
+            "line": 4,
+            "type": "exec",
+            "vars": {
+              "stage": "合并 bc25 和 efd30",
+              "heap": "a45 bc-efd55",
+              "picked": "bc25 + efd30",
+              "concept": {
+                "kind": "huffman",
+                "title": "哈夫曼编码",
+                "heap": [
+                  "a45",
+                  "bc-efd55"
+                ],
+                "picked": [
+                  "bc25",
+                  "efd30"
+                ],
+                "phase": "两棵小树继续合并"
+              }
+            }
+          },
+          {
+            "step": 5,
+            "line": 8,
+            "type": "exec",
+            "vars": {
+              "stage": "最终根节点 100",
+              "heap": "root100",
+              "picked": "a45 + bc-efd55",
+              "concept": {
+                "kind": "huffman",
+                "title": "哈夫曼编码",
+                "heap": [
+                  "root100"
+                ],
+                "picked": [
+                  "a45",
+                  "bc-efd55"
+                ],
+                "phase": "根节点代表所有频率之和, 编码树完成"
+              }
+            }
+          }
+        ]
+      },
+      "trace": {
+        "title": "哈夫曼编码",
+        "source": [
+          "#include <stdio.h>",
+          "#include <stdlib.h>",
+          "#define MAX_TREE_HT 256",
+          "/* 哈夫曼树节点 */",
+          "typedef struct MinHeapNode {",
+          "    char data;          /* 存字符（如果是内部节点，我们用 '$' 占位） */",
+          "    int freq;           /* 存频率 */",
+          "    struct MinHeapNode *left, *right;",
+          "} MinHeapNode;",
+          "/* 最小堆（用来每次快速找到频率最小的两个节点） */",
+          "typedef struct {",
+          "    int size;",
+          "    int capacity;",
+          "    MinHeapNode **array;",
+          "} MinHeap;",
+          "/* 创建新节点 */",
+          "MinHeapNode *new_node(char data, int freq) {",
+          "    MinHeapNode *node = (MinHeapNode *)malloc(sizeof(MinHeapNode));",
+          "    if (!node) return NULL;",
+          "    node->data = data;",
+          "    node->freq = freq;",
+          "    node->left = node->right = NULL;",
+          "    return node;",
+          "}",
+          "/* 创建最小堆 */",
+          "MinHeap *create_min_heap(int capacity) {",
+          "    MinHeap *heap = (MinHeap *)malloc(sizeof(MinHeap));",
+          "    if (!heap) return NULL;",
+          "    heap->size = 0;",
+          "    heap->capacity = capacity;",
+          "    heap->array = (MinHeapNode **)malloc(capacity * sizeof(MinHeapNode *));",
+          "    if (!heap->array) {",
+          "        free(heap);",
+          "        return NULL;",
+          "    }",
+          "    return heap;",
+          "}",
+          "void free_huffman_tree(MinHeapNode *root) {",
+          "    if (!root) return;",
+          "    free_huffman_tree(root->left);",
+          "    free_huffman_tree(root->right);",
+          "    free(root);",
+          "}",
+          "void free_min_heap(MinHeap *heap) {",
+          "    if (!heap) return;",
+          "    free(heap->array);",
+          "    free(heap);",
+          "}",
+          "/* 交换两个节点 */",
+          "void swap_nodes(MinHeapNode **a, MinHeapNode **b) {",
+          "    MinHeapNode *t = *a;",
+          "    *a = *b;",
+          "    *b = t;",
+          "}",
+          "/* 最小堆化 */",
+          "void min_heapify(MinHeap *heap, int idx) {",
+          "    int smallest = idx;",
+          "    int left = 2 * idx + 1;",
+          "    int right = 2 * idx + 2;",
+          "    if (left < heap->size &&",
+          "        heap->array[left]->freq < heap->array[smallest]->freq)",
+          "        smallest = left;",
+          "    if (right < heap->size &&",
+          "        heap->array[right]->freq < heap->array[smallest]->freq)",
+          "        smallest = right;",
+          "    if (smallest != idx) {",
+          "        swap_nodes(&heap->array[smallest], &heap->array[idx]);",
+          "        min_heapify(heap, smallest);",
+          "    }",
+          "}",
+          "/* 插入节点 */",
+          "int insert_min_heap(MinHeap *heap, MinHeapNode *node) {",
+          "    if (!heap || !node || heap->size >= heap->capacity) return 0;",
+          "    int i = heap->size++;",
+          "    heap->array[i] = node;",
+          "    /* 上浮 */",
+          "    while (i && node->freq < heap->array[(i - 1) / 2]->freq) {",
+          "        heap->array[i] = heap->array[(i - 1) / 2];",
+          "        i = (i - 1) / 2;",
+          "    }",
+          "    heap->array[i] = node;",
+          "    return 1;",
+          "}",
+          "/* 提取最小节点 */",
+          "MinHeapNode *extract_min(MinHeap *heap) {",
+          "    if (!heap || heap->size <= 0) return NULL;",
+          "    MinHeapNode *temp = heap->array[0];",
+          "    heap->array[0] = heap->array[--heap->size];",
+          "    if (heap->size > 0) min_heapify(heap, 0);",
+          "    return temp;",
+          "}",
+          "/* 构建哈夫曼树 */",
+          "MinHeapNode *build_huffman_tree(char data[], int freq[], int size) {",
+          "    MinHeap *heap = create_min_heap(size);",
+          "    if (!heap) return NULL;",
+          "    for (int i = 0; i < size; i++) {",
+          "        MinHeapNode *node = new_node(data[i], freq[i]);",
+          "        if (!insert_min_heap(heap, node)) {",
+          "            free_huffman_tree(node);",
+          "            for (int j = 0; j < heap->size; j++) free_huffman_tree(heap->array[j]);",
+          "            free_min_heap(heap);",
+          "            return NULL;",
+          "        }",
+          "    }",
+          "    /* 每次合并两个最小的 */",
+          "    while (heap->size > 1) {",
+          "        MinHeapNode *left = extract_min(heap);",
+          "        MinHeapNode *right = extract_min(heap);",
+          "        /* '$' 表示内部节点，不是叶子 */",
+          "        MinHeapNode *top = new_node('$', left->freq + right->freq);",
+          "        if (!top) {",
+          "            free_huffman_tree(left);",
+          "            free_huffman_tree(right);",
+          "            for (int j = 0; j < heap->size; j++) free_huffman_tree(heap->array[j]);",
+          "            free_min_heap(heap);",
+          "            return NULL;",
+          "        }",
+          "        top->left = left;",
+          "        top->right = right;",
+          "        if (!insert_min_heap(heap, top)) {",
+          "            free_huffman_tree(top);",
+          "            for (int j = 0; j < heap->size; j++) free_huffman_tree(heap->array[j]);",
+          "            free_min_heap(heap);",
+          "            return NULL;",
+          "        }",
+          "    }",
+          "    MinHeapNode *root = extract_min(heap);",
+          "    free_min_heap(heap);",
+          "    return root;",
+          "}",
+          "/* 打印编码（递归遍历） */",
+          "void print_codes(MinHeapNode *root, int arr[], int top) {",
+          "    if (!root) return;",
+          "    if (root->left) {",
+          "        arr[top] = 0;",
+          "        print_codes(root->left, arr, top + 1);",
+          "    }",
+          "    if (root->right) {",
+          "        arr[top] = 1;",
+          "        print_codes(root->right, arr, top + 1);",
+          "    }",
+          "    /* 叶子节点 */",
+          "    if (!root->left && !root->right) {",
+          "        printf(\"  %c: \", root->data);",
+          "        for (int i = 0; i < top; i++)",
+          "            printf(\"%d\", arr[i]);",
+          "        printf(\"\\n\");",
+          "    }",
+          "}",
+          "int main(void) {",
+          "    char data[] = {'a', 'b', 'c', 'd', 'e', 'f'};",
+          "    int freq[] = {45, 13, 12, 16, 9, 5};",
+          "    int size = sizeof(data) / sizeof(data[0]);",
+          "    MinHeapNode *root = build_huffman_tree(data, freq, size);",
+          "    if (!root) {",
+          "        printf(\"构建哈夫曼树失败：内存不足。\\n\");",
+          "        return 1;",
+          "    }",
+          "    int arr[MAX_TREE_HT + 1], top = 0;",
+          "    printf(\"哈夫曼编码：\\n\");",
+          "    print_codes(root, arr, top);",
+          "    free_huffman_tree(root);",
+          "    return 0;",
+          "}"
+        ],
+        "important_vars": {
+          "left": "索引",
+          "right": "索引",
+          "i": "索引",
+          "j": "索引",
+          "size": "参数",
+          "freq": "数据",
+          "arr": "数据"
+        },
+        "track_vars": {
+          "primary": [
+            "arr",
+            "i",
+            "idx"
+          ],
+          "secondary": [
+            "_return",
+            "smallest",
+            "top"
+          ]
+        },
+        "var_classes": {
+          "_return": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "arr": {
+            "category": "primary",
+            "type": "array"
+          },
+          "i": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "idx": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "smallest": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "top": {
+            "category": "secondary",
+            "type": "scalar"
+          }
+        },
+        "initial_data": {
+          "freq": [
+            45,
+            13,
+            12,
+            16,
+            9,
+            5
+          ],
+          "arr": [
+            0,
+            1
+          ]
+        },
+        "program_output": [
+          {
+            "after_step": 95,
+            "text": "哈夫曼编码："
+          },
+          {
+            "after_step": 102,
+            "text": "a: 0"
+          },
+          {
+            "after_step": 116,
+            "text": "c: 1 0 0"
+          },
+          {
+            "after_step": 124,
+            "text": "b: 1 0 1"
+          },
+          {
+            "after_step": 140,
+            "text": "f: 1 1 0 0"
+          },
+          {
+            "after_step": 149,
+            "text": "e: 1 1 0 1"
+          },
+          {
+            "after_step": 158,
+            "text": "d: 1 1 1"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 150,
+            "type": "enter",
+            "func": "main",
+            "vars": {}
+          },
+          {
+            "step": 1,
+            "line": 73,
+            "type": "cond",
+            "result": false,
+            "vars": {}
+          },
+          {
+            "step": 2,
+            "line": 82,
+            "type": "exec",
+            "vars": {
+              "_return": 1
+            }
+          },
+          {
+            "step": 3,
+            "line": 82,
+            "type": "exit",
+            "func": "insert_min_heap",
+            "vars": {}
+          },
+          {
+            "step": 4,
+            "line": 73,
+            "type": "cond",
+            "result": false,
+            "vars": {}
+          },
+          {
+            "step": 5,
+            "line": 77,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 1
+            }
+          },
+          {
+            "step": 6,
+            "line": 79,
+            "type": "exec",
+            "vars": {
+              "i": 0
+            }
+          },
+          {
+            "step": 7,
+            "line": 82,
+            "type": "exec",
+            "vars": {
+              "_return": 1
+            }
+          },
+          {
+            "step": 8,
+            "line": 82,
+            "type": "exit",
+            "func": "insert_min_heap",
+            "vars": {}
+          },
+          {
+            "step": 9,
+            "line": 73,
+            "type": "cond",
+            "result": false,
+            "vars": {}
+          },
+          {
+            "step": 10,
+            "line": 77,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 2
+            }
+          },
+          {
+            "step": 11,
+            "line": 79,
+            "type": "exec",
+            "vars": {
+              "i": 0
+            }
+          },
+          {
+            "step": 12,
+            "line": 82,
+            "type": "exec",
+            "vars": {
+              "_return": 1
+            }
+          },
+          {
+            "step": 13,
+            "line": 82,
+            "type": "exit",
+            "func": "insert_min_heap",
+            "vars": {}
+          },
+          {
+            "step": 14,
+            "line": 73,
+            "type": "cond",
+            "result": false,
+            "vars": {}
+          },
+          {
+            "step": 15,
+            "line": 77,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 3
+            }
+          },
+          {
+            "step": 16,
+            "line": 79,
+            "type": "exec",
+            "vars": {
+              "i": 1
+            }
+          },
+          {
+            "step": 17,
+            "line": 82,
+            "type": "exec",
+            "vars": {
+              "_return": 1
+            }
+          },
+          {
+            "step": 18,
+            "line": 82,
+            "type": "exit",
+            "func": "insert_min_heap",
+            "vars": {}
+          },
+          {
+            "step": 19,
+            "line": 73,
+            "type": "cond",
+            "result": false,
+            "vars": {}
+          },
+          {
+            "step": 20,
+            "line": 77,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 4
+            }
+          },
+          {
+            "step": 21,
+            "line": 79,
+            "type": "exec",
+            "vars": {
+              "i": 1
+            }
+          },
+          {
+            "step": 22,
+            "line": 77,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 1
+            }
+          },
+          {
+            "step": 23,
+            "line": 79,
+            "type": "exec",
+            "vars": {
+              "i": 0
+            }
+          },
+          {
+            "step": 24,
+            "line": 82,
+            "type": "exec",
+            "vars": {
+              "_return": 1
+            }
+          },
+          {
+            "step": 25,
+            "line": 82,
+            "type": "exit",
+            "func": "insert_min_heap",
+            "vars": {}
+          },
+          {
+            "step": 26,
+            "line": 73,
+            "type": "cond",
+            "result": false,
+            "vars": {}
+          },
+          {
+            "step": 27,
+            "line": 77,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 5
+            }
+          },
+          {
+            "step": 28,
+            "line": 79,
+            "type": "exec",
+            "vars": {
+              "i": 2
+            }
+          },
+          {
+            "step": 29,
+            "line": 77,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 2
+            }
+          },
+          {
+            "step": 30,
+            "line": 79,
+            "type": "exec",
+            "vars": {
+              "i": 0
+            }
+          },
+          {
+            "step": 31,
+            "line": 82,
+            "type": "exec",
+            "vars": {
+              "_return": 1
+            }
+          },
+          {
+            "step": 32,
+            "line": 82,
+            "type": "exit",
+            "func": "insert_min_heap",
+            "vars": {}
+          },
+          {
+            "step": 33,
+            "line": 62,
+            "type": "exec",
+            "vars": {
+              "smallest": 1
+            }
+          },
+          {
+            "step": 34,
+            "line": 65,
+            "type": "exec",
+            "vars": {
+              "smallest": 2
+            }
+          },
+          {
+            "step": 35,
+            "line": 66,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "idx": 0,
+              "smallest": 2
+            }
+          },
+          {
+            "step": 36,
+            "line": 68,
+            "type": "enter",
+            "func": "min_heapify",
+            "vars": {
+              "idx": 2
+            }
+          },
+          {
+            "step": 37,
+            "line": 62,
+            "type": "exec",
+            "vars": {
+              "smallest": 2
+            }
+          },
+          {
+            "step": 38,
+            "line": 65,
+            "type": "exec",
+            "vars": {
+              "smallest": 2
+            }
+          },
+          {
+            "step": 39,
+            "line": 62,
+            "type": "exec",
+            "vars": {
+              "smallest": 1
+            }
+          },
+          {
+            "step": 40,
+            "line": 65,
+            "type": "exec",
+            "vars": {
+              "smallest": 1
+            }
+          },
+          {
+            "step": 41,
+            "line": 66,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "idx": 0,
+              "smallest": 1
+            }
+          },
+          {
+            "step": 42,
+            "line": 68,
+            "type": "enter",
+            "func": "min_heapify",
+            "vars": {
+              "idx": 1
+            }
+          },
+          {
+            "step": 43,
+            "line": 62,
+            "type": "exec",
+            "vars": {
+              "smallest": 1
+            }
+          },
+          {
+            "step": 44,
+            "line": 65,
+            "type": "exec",
+            "vars": {
+              "smallest": 1
+            }
+          },
+          {
+            "step": 45,
+            "line": 73,
+            "type": "cond",
+            "result": false,
+            "vars": {}
+          },
+          {
+            "step": 46,
+            "line": 77,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 4
+            }
+          },
+          {
+            "step": 47,
+            "line": 79,
+            "type": "exec",
+            "vars": {
+              "i": 1
+            }
+          },
+          {
+            "step": 48,
+            "line": 82,
+            "type": "exec",
+            "vars": {
+              "_return": 1
+            }
+          },
+          {
+            "step": 49,
+            "line": 82,
+            "type": "exit",
+            "func": "insert_min_heap",
+            "vars": {}
+          },
+          {
+            "step": 50,
+            "line": 62,
+            "type": "exec",
+            "vars": {
+              "smallest": 1
+            }
+          },
+          {
+            "step": 51,
+            "line": 65,
+            "type": "exec",
+            "vars": {
+              "smallest": 2
+            }
+          },
+          {
+            "step": 52,
+            "line": 66,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "idx": 0,
+              "smallest": 2
+            }
+          },
+          {
+            "step": 53,
+            "line": 68,
+            "type": "enter",
+            "func": "min_heapify",
+            "vars": {
+              "idx": 2
+            }
+          },
+          {
+            "step": 54,
+            "line": 62,
+            "type": "exec",
+            "vars": {
+              "smallest": 2
+            }
+          },
+          {
+            "step": 55,
+            "line": 65,
+            "type": "exec",
+            "vars": {
+              "smallest": 2
+            }
+          },
+          {
+            "step": 56,
+            "line": 62,
+            "type": "exec",
+            "vars": {
+              "smallest": 1
+            }
+          },
+          {
+            "step": 57,
+            "line": 65,
+            "type": "exec",
+            "vars": {
+              "smallest": 1
+            }
+          },
+          {
+            "step": 58,
+            "line": 66,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "idx": 0,
+              "smallest": 1
+            }
+          },
+          {
+            "step": 59,
+            "line": 68,
+            "type": "enter",
+            "func": "min_heapify",
+            "vars": {
+              "idx": 1
+            }
+          },
+          {
+            "step": 60,
+            "line": 62,
+            "type": "exec",
+            "vars": {
+              "smallest": 1
+            }
+          },
+          {
+            "step": 61,
+            "line": 65,
+            "type": "exec",
+            "vars": {
+              "smallest": 1
+            }
+          },
+          {
+            "step": 62,
+            "line": 73,
+            "type": "cond",
+            "result": false,
+            "vars": {}
+          },
+          {
+            "step": 63,
+            "line": 77,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 3
+            }
+          },
+          {
+            "step": 64,
+            "line": 79,
+            "type": "exec",
+            "vars": {
+              "i": 1
+            }
+          },
+          {
+            "step": 65,
+            "line": 82,
+            "type": "exec",
+            "vars": {
+              "_return": 1
+            }
+          },
+          {
+            "step": 66,
+            "line": 82,
+            "type": "exit",
+            "func": "insert_min_heap",
+            "vars": {}
+          },
+          {
+            "step": 67,
+            "line": 62,
+            "type": "exec",
+            "vars": {
+              "smallest": 1
+            }
+          },
+          {
+            "step": 68,
+            "line": 65,
+            "type": "exec",
+            "vars": {
+              "smallest": 2
+            }
+          },
+          {
+            "step": 69,
+            "line": 66,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "idx": 0,
+              "smallest": 2
+            }
+          },
+          {
+            "step": 70,
+            "line": 68,
+            "type": "enter",
+            "func": "min_heapify",
+            "vars": {
+              "idx": 2
+            }
+          },
+          {
+            "step": 71,
+            "line": 62,
+            "type": "exec",
+            "vars": {
+              "smallest": 2
+            }
+          },
+          {
+            "step": 72,
+            "line": 65,
+            "type": "exec",
+            "vars": {
+              "smallest": 2
+            }
+          },
+          {
+            "step": 73,
+            "line": 62,
+            "type": "exec",
+            "vars": {
+              "smallest": 1
+            }
+          },
+          {
+            "step": 74,
+            "line": 65,
+            "type": "exec",
+            "vars": {
+              "smallest": 1
+            }
+          },
+          {
+            "step": 75,
+            "line": 66,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "idx": 0,
+              "smallest": 1
+            }
+          },
+          {
+            "step": 76,
+            "line": 68,
+            "type": "enter",
+            "func": "min_heapify",
+            "vars": {
+              "idx": 1
+            }
+          },
+          {
+            "step": 77,
+            "line": 62,
+            "type": "exec",
+            "vars": {
+              "smallest": 1
+            }
+          },
+          {
+            "step": 78,
+            "line": 65,
+            "type": "exec",
+            "vars": {
+              "smallest": 1
+            }
+          },
+          {
+            "step": 79,
+            "line": 73,
+            "type": "cond",
+            "result": false,
+            "vars": {}
+          },
+          {
+            "step": 80,
+            "line": 82,
+            "type": "exec",
+            "vars": {
+              "_return": 1
+            }
+          },
+          {
+            "step": 81,
+            "line": 82,
+            "type": "exit",
+            "func": "insert_min_heap",
+            "vars": {}
+          },
+          {
+            "step": 82,
+            "line": 62,
+            "type": "exec",
+            "vars": {
+              "smallest": 0
+            }
+          },
+          {
+            "step": 83,
+            "line": 65,
+            "type": "exec",
+            "vars": {
+              "smallest": 0
+            }
+          },
+          {
+            "step": 84,
+            "line": 62,
+            "type": "exec",
+            "vars": {
+              "smallest": 0
+            }
+          },
+          {
+            "step": 85,
+            "line": 65,
+            "type": "exec",
+            "vars": {
+              "smallest": 0
+            }
+          },
+          {
+            "step": 86,
+            "line": 73,
+            "type": "cond",
+            "result": false,
+            "vars": {}
+          },
+          {
+            "step": 87,
+            "line": 82,
+            "type": "exec",
+            "vars": {
+              "_return": 1
+            }
+          },
+          {
+            "step": 88,
+            "line": 82,
+            "type": "exit",
+            "func": "insert_min_heap",
+            "vars": {}
+          },
+          {
+            "step": 89,
+            "line": 62,
+            "type": "exec",
+            "vars": {
+              "smallest": 0
+            }
+          },
+          {
+            "step": 90,
+            "line": 65,
+            "type": "exec",
+            "vars": {
+              "smallest": 0
+            }
+          },
+          {
+            "step": 91,
+            "line": 73,
+            "type": "cond",
+            "result": false,
+            "vars": {}
+          },
+          {
+            "step": 92,
+            "line": 82,
+            "type": "exec",
+            "vars": {
+              "_return": 1
+            }
+          },
+          {
+            "step": 93,
+            "line": 82,
+            "type": "exit",
+            "func": "insert_min_heap",
+            "vars": {}
+          },
+          {
+            "step": 94,
+            "line": 45,
+            "type": "cond",
+            "result": false,
+            "vars": {}
+          },
+          {
+            "step": 95,
+            "line": 161,
+            "type": "enter",
+            "func": "print_codes",
+            "vars": {
+              "top": 0
+            }
+          },
+          {
+            "step": 96,
+            "line": 133,
+            "type": "cond",
+            "result": false,
+            "vars": {}
+          },
+          {
+            "step": 97,
+            "line": 134,
+            "type": "cond",
+            "result": true,
+            "vars": {}
+          },
+          {
+            "step": 98,
+            "line": 135,
+            "type": "exec",
+            "vars": {
+              "arr": [
+                0,
+                1
+              ]
+            }
+          },
+          {
+            "step": 99,
+            "line": 136,
+            "type": "enter",
+            "func": "print_codes",
+            "vars": {
+              "top": 1
+            }
+          },
+          {
+            "step": 100,
+            "line": 133,
+            "type": "cond",
+            "result": false,
+            "vars": {}
+          },
+          {
+            "step": 101,
+            "line": 143,
+            "type": "cond",
+            "result": true,
+            "vars": {}
+          },
+          {
+            "step": 102,
+            "line": 145,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 0,
+              "top": 1
+            }
+          },
+          {
+            "step": 103,
+            "line": 138,
+            "type": "cond",
+            "result": true,
+            "vars": {}
+          },
+          {
+            "step": 104,
+            "line": 139,
+            "type": "exec",
+            "vars": {
+              "arr": [
+                1,
+                1
+              ]
+            }
+          },
+          {
+            "step": 105,
+            "line": 140,
+            "type": "enter",
+            "func": "print_codes",
+            "vars": {
+              "top": 1
+            }
+          },
+          {
+            "step": 106,
+            "line": 133,
+            "type": "cond",
+            "result": false,
+            "vars": {}
+          },
+          {
+            "step": 107,
+            "line": 134,
+            "type": "cond",
+            "result": true,
+            "vars": {}
+          },
+          {
+            "step": 108,
+            "line": 135,
+            "type": "exec",
+            "vars": {
+              "arr": [
+                1,
+                0
+              ]
+            }
+          },
+          {
+            "step": 109,
+            "line": 136,
+            "type": "enter",
+            "func": "print_codes",
+            "vars": {
+              "top": 2
+            }
+          },
+          {
+            "step": 110,
+            "line": 133,
+            "type": "cond",
+            "result": false,
+            "vars": {}
+          },
+          {
+            "step": 111,
+            "line": 134,
+            "type": "cond",
+            "result": true,
+            "vars": {}
+          },
+          {
+            "step": 112,
+            "line": 135,
+            "type": "exec",
+            "vars": {
+              "arr": [
+                1,
+                0
+              ]
+            }
+          },
+          {
+            "step": 113,
+            "line": 136,
+            "type": "enter",
+            "func": "print_codes",
+            "vars": {
+              "top": 3
+            }
+          },
+          {
+            "step": 114,
+            "line": 133,
+            "type": "cond",
+            "result": false,
+            "vars": {}
+          },
+          {
+            "step": 115,
+            "line": 143,
+            "type": "cond",
+            "result": true,
+            "vars": {}
+          },
+          {
+            "step": 116,
+            "line": 145,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 0,
+              "top": 3
+            }
+          },
+          {
+            "step": 117,
+            "line": 145,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 1,
+              "top": 3
+            }
+          },
+          {
+            "step": 118,
+            "line": 145,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 2,
+              "top": 3
+            }
+          },
+          {
+            "step": 119,
+            "line": 138,
+            "type": "cond",
+            "result": true,
+            "vars": {}
+          },
+          {
+            "step": 120,
+            "line": 139,
+            "type": "exec",
+            "vars": {
+              "arr": [
+                1,
+                0
+              ]
+            }
+          },
+          {
+            "step": 121,
+            "line": 140,
+            "type": "enter",
+            "func": "print_codes",
+            "vars": {
+              "top": 3
+            }
+          },
+          {
+            "step": 122,
+            "line": 133,
+            "type": "cond",
+            "result": false,
+            "vars": {}
+          },
+          {
+            "step": 123,
+            "line": 143,
+            "type": "cond",
+            "result": true,
+            "vars": {}
+          },
+          {
+            "step": 124,
+            "line": 145,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 0,
+              "top": 3
+            }
+          },
+          {
+            "step": 125,
+            "line": 145,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 1,
+              "top": 3
+            }
+          },
+          {
+            "step": 126,
+            "line": 145,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 2,
+              "top": 3
+            }
+          },
+          {
+            "step": 127,
+            "line": 138,
+            "type": "cond",
+            "result": true,
+            "vars": {}
+          },
+          {
+            "step": 128,
+            "line": 139,
+            "type": "exec",
+            "vars": {
+              "arr": [
+                1,
+                1
+              ]
+            }
+          },
+          {
+            "step": 129,
+            "line": 140,
+            "type": "enter",
+            "func": "print_codes",
+            "vars": {
+              "top": 2
+            }
+          },
+          {
+            "step": 130,
+            "line": 133,
+            "type": "cond",
+            "result": false,
+            "vars": {}
+          },
+          {
+            "step": 131,
+            "line": 134,
+            "type": "cond",
+            "result": true,
+            "vars": {}
+          },
+          {
+            "step": 132,
+            "line": 135,
+            "type": "exec",
+            "vars": {
+              "arr": [
+                1,
+                1
+              ]
+            }
+          },
+          {
+            "step": 133,
+            "line": 136,
+            "type": "enter",
+            "func": "print_codes",
+            "vars": {
+              "top": 3
+            }
+          },
+          {
+            "step": 134,
+            "line": 133,
+            "type": "cond",
+            "result": false,
+            "vars": {}
+          },
+          {
+            "step": 135,
+            "line": 134,
+            "type": "cond",
+            "result": true,
+            "vars": {}
+          },
+          {
+            "step": 136,
+            "line": 135,
+            "type": "exec",
+            "vars": {
+              "arr": [
+                1,
+                1
+              ]
+            }
+          },
+          {
+            "step": 137,
+            "line": 136,
+            "type": "enter",
+            "func": "print_codes",
+            "vars": {
+              "top": 4
+            }
+          },
+          {
+            "step": 138,
+            "line": 133,
+            "type": "cond",
+            "result": false,
+            "vars": {}
+          },
+          {
+            "step": 139,
+            "line": 143,
+            "type": "cond",
+            "result": true,
+            "vars": {}
+          },
+          {
+            "step": 140,
+            "line": 145,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 0,
+              "top": 4
+            }
+          },
+          {
+            "step": 141,
+            "line": 145,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 1,
+              "top": 4
+            }
+          },
+          {
+            "step": 142,
+            "line": 145,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 2,
+              "top": 4
+            }
+          },
+          {
+            "step": 143,
+            "line": 145,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 3,
+              "top": 4
+            }
+          },
+          {
+            "step": 144,
+            "line": 138,
+            "type": "cond",
+            "result": true,
+            "vars": {}
+          },
+          {
+            "step": 145,
+            "line": 139,
+            "type": "exec",
+            "vars": {
+              "arr": [
+                1,
+                1
+              ]
+            }
+          },
+          {
+            "step": 146,
+            "line": 140,
+            "type": "enter",
+            "func": "print_codes",
+            "vars": {
+              "top": 4
+            }
+          },
+          {
+            "step": 147,
+            "line": 133,
+            "type": "cond",
+            "result": false,
+            "vars": {}
+          },
+          {
+            "step": 148,
+            "line": 143,
+            "type": "cond",
+            "result": true,
+            "vars": {}
+          },
+          {
+            "step": 149,
+            "line": 145,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 0,
+              "top": 4
+            }
+          },
+          {
+            "step": 150,
+            "line": 145,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 1,
+              "top": 4
+            }
+          },
+          {
+            "step": 151,
+            "line": 145,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 2,
+              "top": 4
+            }
+          },
+          {
+            "step": 152,
+            "line": 145,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 3,
+              "top": 4
+            }
+          },
+          {
+            "step": 153,
+            "line": 138,
+            "type": "cond",
+            "result": true,
+            "vars": {}
+          },
+          {
+            "step": 154,
+            "line": 139,
+            "type": "exec",
+            "vars": {
+              "arr": [
+                1,
+                1
+              ]
+            }
+          },
+          {
+            "step": 155,
+            "line": 140,
+            "type": "enter",
+            "func": "print_codes",
+            "vars": {
+              "top": 3
+            }
+          },
+          {
+            "step": 156,
+            "line": 133,
+            "type": "cond",
+            "result": false,
+            "vars": {}
+          },
+          {
+            "step": 157,
+            "line": 143,
+            "type": "cond",
+            "result": true,
+            "vars": {}
+          },
+          {
+            "step": 158,
+            "line": 145,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 0,
+              "top": 3
+            }
+          },
+          {
+            "step": 159,
+            "line": 145,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 1,
+              "top": 3
+            }
+          },
+          {
+            "step": 160,
+            "line": 145,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 2,
+              "top": 3
+            }
+          },
+          {
+            "step": 161,
+            "line": 39,
+            "type": "cond",
+            "result": false,
+            "vars": {}
+          },
+          {
+            "step": 162,
+            "line": 39,
+            "type": "cond",
+            "result": false,
+            "vars": {}
+          },
+          {
+            "step": 163,
+            "line": 39,
+            "type": "cond",
+            "result": false,
+            "vars": {}
+          },
+          {
+            "step": 164,
+            "line": 39,
+            "type": "cond",
+            "result": false,
+            "vars": {}
+          },
+          {
+            "step": 165,
+            "line": 39,
+            "type": "cond",
+            "result": false,
+            "vars": {}
+          },
+          {
+            "step": 166,
+            "line": 39,
+            "type": "cond",
+            "result": false,
+            "vars": {}
+          },
+          {
+            "step": 167,
+            "line": 39,
+            "type": "cond",
+            "result": false,
+            "vars": {}
+          },
+          {
+            "step": 168,
+            "line": 39,
+            "type": "cond",
+            "result": false,
+            "vars": {}
+          },
+          {
+            "step": 169,
+            "line": 39,
+            "type": "cond",
+            "result": false,
+            "vars": {}
+          },
+          {
+            "step": 170,
+            "line": 39,
+            "type": "cond",
+            "result": false,
+            "vars": {}
+          },
+          {
+            "step": 171,
+            "line": 39,
+            "type": "cond",
+            "result": false,
+            "vars": {}
+          },
+          {
+            "step": 172,
+            "line": 163,
+            "type": "exec",
+            "vars": {
+              "_return": 0
+            }
+          },
+          {
+            "step": 173,
+            "line": 163,
+            "type": "exit",
+            "func": "main",
+            "vars": {}
+          }
+        ]
+      }
+    }
+  },
+  "03_Kruskal最小生成树": {
+    "title": "Kruskal最小生成树",
+    "defaultMode": "concept",
+    "modeLabels": {
+      "concept": "理解动画",
+      "trace": "代码执行"
+    },
+    "modes": {
+      "concept": {
+        "title": "Kruskal最小生成树",
+        "source": [
+          "算法: Kruskal 最小生成树",
+          "输入: 带权无向图",
+          "把所有边按权重升序排序",
+          "从最便宜的边开始扫描",
+          "如果加入这条边不会成环, 就选择",
+          "如果会成环, 就跳过",
+          "选到 V-1 条边时结束"
+        ],
+        "important_vars": {
+          "stage": "状态",
+          "total": "状态",
+          "chosen": "状态"
+        },
+        "track_vars": {
+          "primary": [
+            "stage",
+            "total",
+            "chosen"
+          ],
+          "secondary": []
+        },
+        "var_classes": {
+          "stage": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "total": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "chosen": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "concept": {
+            "category": "secondary",
+            "type": "concept"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 5,
+            "text": "概念动画：Kruskal 总是先看最便宜的边, 但用并查集防止成环。"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 3,
+            "type": "exec",
+            "vars": {
+              "stage": "边按造价从小到大排序",
+              "total": 0,
+              "chosen": 0,
+              "concept": {
+                "kind": "kruskal",
+                "title": "Kruskal 最小生成树",
+                "nodes": [
+                  "0",
+                  "1",
+                  "2",
+                  "3"
+                ],
+                "edges": [
+                  [
+                    "0",
+                    "1",
+                    1
+                  ],
+                  [
+                    "2",
+                    "3",
+                    2
+                  ],
+                  [
+                    "1",
+                    "2",
+                    3
+                  ],
+                  [
+                    "0",
+                    "2",
+                    4
+                  ],
+                  [
+                    "1",
+                    "3",
+                    5
+                  ],
+                  [
+                    "0",
+                    "3",
+                    6
+                  ]
+                ],
+                "current": null,
+                "chosen": [],
+                "rejected": [],
+                "total": 0,
+                "phase": "先看最便宜的路"
+              }
+            }
+          },
+          {
+            "step": 1,
+            "line": 5,
+            "type": "exec",
+            "vars": {
+              "stage": "选择 0-1",
+              "total": 1,
+              "chosen": 1,
+              "concept": {
+                "kind": "kruskal",
+                "title": "Kruskal 最小生成树",
+                "nodes": [
+                  "0",
+                  "1",
+                  "2",
+                  "3"
+                ],
+                "edges": [
+                  [
+                    "0",
+                    "1",
+                    1
+                  ],
+                  [
+                    "2",
+                    "3",
+                    2
+                  ],
+                  [
+                    "1",
+                    "2",
+                    3
+                  ],
+                  [
+                    "0",
+                    "2",
+                    4
+                  ],
+                  [
+                    "1",
+                    "3",
+                    5
+                  ],
+                  [
+                    "0",
+                    "3",
+                    6
+                  ]
+                ],
+                "current": [
+                  "0",
+                  "1"
+                ],
+                "chosen": [
+                  [
+                    "0",
+                    "1"
+                  ]
+                ],
+                "rejected": [],
+                "total": 1,
+                "phase": "0 和 1 尚未连通, 加入"
+              }
+            }
+          },
+          {
+            "step": 2,
+            "line": 5,
+            "type": "exec",
+            "vars": {
+              "stage": "选择 2-3",
+              "total": 3,
+              "chosen": 2,
+              "concept": {
+                "kind": "kruskal",
+                "title": "Kruskal 最小生成树",
+                "nodes": [
+                  "0",
+                  "1",
+                  "2",
+                  "3"
+                ],
+                "edges": [
+                  [
+                    "0",
+                    "1",
+                    1
+                  ],
+                  [
+                    "2",
+                    "3",
+                    2
+                  ],
+                  [
+                    "1",
+                    "2",
+                    3
+                  ],
+                  [
+                    "0",
+                    "2",
+                    4
+                  ],
+                  [
+                    "1",
+                    "3",
+                    5
+                  ],
+                  [
+                    "0",
+                    "3",
+                    6
+                  ]
+                ],
+                "current": [
+                  "2",
+                  "3"
+                ],
+                "chosen": [
+                  [
+                    "0",
+                    "1"
+                  ],
+                  [
+                    "2",
+                    "3"
+                  ]
+                ],
+                "rejected": [],
+                "total": 3,
+                "phase": "2 和 3 尚未连通, 加入"
+              }
+            }
+          },
+          {
+            "step": 3,
+            "line": 5,
+            "type": "exec",
+            "vars": {
+              "stage": "选择 1-2",
+              "total": 6,
+              "chosen": 3,
+              "concept": {
+                "kind": "kruskal",
+                "title": "Kruskal 最小生成树",
+                "nodes": [
+                  "0",
+                  "1",
+                  "2",
+                  "3"
+                ],
+                "edges": [
+                  [
+                    "0",
+                    "1",
+                    1
+                  ],
+                  [
+                    "2",
+                    "3",
+                    2
+                  ],
+                  [
+                    "1",
+                    "2",
+                    3
+                  ],
+                  [
+                    "0",
+                    "2",
+                    4
+                  ],
+                  [
+                    "1",
+                    "3",
+                    5
+                  ],
+                  [
+                    "0",
+                    "3",
+                    6
+                  ]
+                ],
+                "current": [
+                  "1",
+                  "2"
+                ],
+                "chosen": [
+                  [
+                    "0",
+                    "1"
+                  ],
+                  [
+                    "2",
+                    "3"
+                  ],
+                  [
+                    "1",
+                    "2"
+                  ]
+                ],
+                "rejected": [],
+                "total": 6,
+                "phase": "1-2 把两个连通块接起来, MST 完成"
+              }
+            }
+          },
+          {
+            "step": 4,
+            "line": 6,
+            "type": "exec",
+            "vars": {
+              "stage": "更贵的边都不需要",
+              "total": 6,
+              "chosen": 3,
+              "concept": {
+                "kind": "kruskal",
+                "title": "Kruskal 最小生成树",
+                "nodes": [
+                  "0",
+                  "1",
+                  "2",
+                  "3"
+                ],
+                "edges": [
+                  [
+                    "0",
+                    "1",
+                    1
+                  ],
+                  [
+                    "2",
+                    "3",
+                    2
+                  ],
+                  [
+                    "1",
+                    "2",
+                    3
+                  ],
+                  [
+                    "0",
+                    "2",
+                    4
+                  ],
+                  [
+                    "1",
+                    "3",
+                    5
+                  ],
+                  [
+                    "0",
+                    "3",
+                    6
+                  ]
+                ],
+                "current": [
+                  "0",
+                  "2"
+                ],
+                "chosen": [
+                  [
+                    "0",
+                    "1"
+                  ],
+                  [
+                    "2",
+                    "3"
+                  ],
+                  [
+                    "1",
+                    "2"
+                  ]
+                ],
+                "rejected": [
+                  [
+                    "0",
+                    "2"
+                  ],
+                  [
+                    "1",
+                    "3"
+                  ],
+                  [
+                    "0",
+                    "3"
+                  ]
+                ],
+                "total": 6,
+                "phase": "再加入会成环或更贵, 跳过"
+              }
+            }
+          }
+        ]
+      },
+      "trace": {
+        "title": "Kruskal最小生成树",
+        "source": [
+          "#include <stdio.h>",
+          "#include <stdlib.h>",
+          "/* 边结构体 */",
+          "typedef struct {",
+          "    int src, dest, weight;",
+          "} Edge;",
+          "/* 并查集 */",
+          "typedef struct {",
+          "    int *parent, *rank;",
+          "    int n;",
+          "} UnionFind;",
+          "/* 创建并查集 */",
+          "UnionFind *create_uf(int n) {",
+          "    UnionFind *uf = (UnionFind *)malloc(sizeof(UnionFind));",
+          "    if (!uf) return NULL;",
+          "    uf->n = n;",
+          "    uf->parent = (int *)malloc(n * sizeof(int));",
+          "    uf->rank = (int *)malloc(n * sizeof(int));",
+          "    if (!uf->parent || !uf->rank) {",
+          "        free(uf->parent);",
+          "        free(uf->rank);",
+          "        free(uf);",
+          "        return NULL;",
+          "    }",
+          "    for (int i = 0; i < n; i++) {",
+          "        uf->parent[i] = i;",
+          "        uf->rank[i] = 0;",
+          "    }",
+          "    return uf;",
+          "}",
+          "void free_uf(UnionFind *uf) {",
+          "    if (!uf) return;",
+          "    free(uf->parent);",
+          "    free(uf->rank);",
+          "    free(uf);",
+          "}",
+          "/* 查找（带路径压缩） */",
+          "int find(UnionFind *uf, int x) {",
+          "    if (uf->parent[x] != x)",
+          "        uf->parent[x] = find(uf, uf->parent[x]);",
+          "    return uf->parent[x];",
+          "}",
+          "/* 合并（按秩合并）：",
+          "   与上方 find 中的路径压缩配套使用，",
+          "   使并查集操作的均摊复杂度非常接近常数级。 */",
+          "void union_sets(UnionFind *uf, int x, int y) {",
+          "    int rx = find(uf, x);",
+          "    int ry = find(uf, y);",
+          "    if (rx == ry) return;",
+          "    if (uf->rank[rx] < uf->rank[ry])",
+          "        uf->parent[rx] = ry;",
+          "    else if (uf->rank[rx] > uf->rank[ry])",
+          "        uf->parent[ry] = rx;",
+          "    else {",
+          "        uf->parent[ry] = rx;",
+          "        uf->rank[rx]++;",
+          "    }",
+          "}",
+          "/* 边比较函数 */",
+          "int compare_edge(const void *a, const void *b) {",
+          "    const Edge *x = (const Edge *)a;",
+          "    const Edge *y = (const Edge *)b;",
+          "    return (x->weight > y->weight) - (x->weight < y->weight);",
+          "}",
+          "/* Kruskal 算法 */",
+          "int kruskal(Edge edges[], int V, int E) {",
+          "    qsort(edges, E, sizeof(Edge), compare_edge);",
+          "    UnionFind *uf = create_uf(V);",
+          "    if (!uf) return 0;",
+          "    int edgeCount = 0;",
+          "    int totalWeight = 0;",
+          "    printf(\"最小生成树的边：\\n\");",
+          "    for (int i = 0; i < E && edgeCount < V - 1; i++) {",
+          "        int u = edges[i].src;",
+          "        int v = edges[i].dest;",
+          "        /* 不在同一连通分量，可以加入 */",
+          "        if (find(uf, u) != find(uf, v)) {",
+          "            printf(\"  村庄 %d - 村庄 %d，造价：%d\\n\", u, v, edges[i].weight);",
+          "            totalWeight += edges[i].weight;",
+          "            union_sets(uf, u, v);",
+          "            edgeCount++;",
+          "        }",
+          "    }",
+          "    printf(\"总造价：%d\\n\", totalWeight);",
+          "    free_uf(uf);",
+          "    return edgeCount == V - 1;",
+          "}",
+          "int main(void) {",
+          "    Edge edges[] = {",
+          "        {0, 1, 1}, {2, 3, 2}, {1, 2, 3},",
+          "        {0, 2, 4}, {1, 3, 5}, {0, 3, 6}",
+          "    };",
+          "    int V = 4;  /* 4 个村庄 */",
+          "    int E = sizeof(edges) / sizeof(edges[0]);",
+          "    if (!kruskal(edges, V, E)) {",
+          "        printf(\"图不连通，或内存不足，无法形成生成树\\n\");",
+          "        return 1;",
+          "    }",
+          "    return 0;",
+          "}"
+        ],
+        "important_vars": {
+          "i": "索引",
+          "u": "指针",
+          "v": "指针"
+        },
+        "track_vars": {
+          "primary": [
+            "i"
+          ],
+          "secondary": [
+            "E",
+            "V",
+            "_return",
+            "edgeCount",
+            "edges",
+            "rx",
+            "ry",
+            "totalWeight",
+            "u",
+            "v",
+            "x",
+            "y"
+          ]
+        },
+        "var_classes": {
+          "E": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "V": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "_return": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "edgeCount": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "edges": {
+            "category": "secondary",
+            "type": "graph"
+          },
+          "i": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "rx": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "ry": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "totalWeight": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "u": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "v": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "x": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "y": {
+            "category": "secondary",
+            "type": "scalar"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 13,
+            "text": "最小生成树的边："
+          },
+          {
+            "after_step": 24,
+            "text": "村庄 0 - 村庄 1，造价：1"
+          },
+          {
+            "after_step": 45,
+            "text": "村庄 2 - 村庄 3，造价：2"
+          },
+          {
+            "after_step": 74,
+            "text": "村庄 1 - 村庄 2，造价：3"
+          },
+          {
+            "after_step": 88,
+            "text": "总造价：6"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 88,
+            "type": "enter",
+            "func": "main",
+            "vars": {}
+          },
+          {
+            "step": 1,
+            "line": 95,
+            "type": "enter",
+            "func": "kruskal",
+            "vars": {
+              "edges": {
+                "nodes": 4,
+                "edges": [
+                  [
+                    0,
+                    1,
+                    1
+                  ],
+                  [
+                    2,
+                    3,
+                    2
+                  ],
+                  [
+                    1,
+                    2,
+                    3
+                  ],
+                  [
+                    0,
+                    2,
+                    4
+                  ],
+                  [
+                    1,
+                    3,
+                    5
+                  ],
+                  [
+                    0,
+                    3,
+                    6
+                  ]
+                ]
+              },
+              "V": 4,
+              "E": 6
+            }
+          },
+          {
+            "step": 2,
+            "line": 63,
+            "type": "exec",
+            "vars": {
+              "_return": -1
+            }
+          },
+          {
+            "step": 3,
+            "line": 63,
+            "type": "exit",
+            "func": "compare_edge",
+            "vars": {}
+          },
+          {
+            "step": 4,
+            "line": 63,
+            "type": "exec",
+            "vars": {
+              "_return": -1
+            }
+          },
+          {
+            "step": 5,
+            "line": 63,
+            "type": "exit",
+            "func": "compare_edge",
+            "vars": {}
+          },
+          {
+            "step": 6,
+            "line": 63,
+            "type": "exec",
+            "vars": {
+              "_return": -1
+            }
+          },
+          {
+            "step": 7,
+            "line": 63,
+            "type": "exit",
+            "func": "compare_edge",
+            "vars": {}
+          },
+          {
+            "step": 8,
+            "line": 63,
+            "type": "exec",
+            "vars": {
+              "_return": -1
+            }
+          },
+          {
+            "step": 9,
+            "line": 63,
+            "type": "exit",
+            "func": "compare_edge",
+            "vars": {}
+          },
+          {
+            "step": 10,
+            "line": 63,
+            "type": "exec",
+            "vars": {
+              "_return": -1
+            }
+          },
+          {
+            "step": 11,
+            "line": 63,
+            "type": "exit",
+            "func": "compare_edge",
+            "vars": {}
+          },
+          {
+            "step": 12,
+            "line": 69,
+            "type": "cond",
+            "result": false,
+            "vars": {}
+          },
+          {
+            "step": 13,
+            "line": 73,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "E": 6,
+              "V": 4,
+              "edgeCount": 0,
+              "i": 0
+            }
+          },
+          {
+            "step": 14,
+            "line": 77,
+            "type": "enter",
+            "func": "find",
+            "vars": {
+              "x": 0
+            }
+          },
+          {
+            "step": 15,
+            "line": 41,
+            "type": "exec",
+            "vars": {
+              "_return": 0
+            }
+          },
+          {
+            "step": 16,
+            "line": 41,
+            "type": "exit",
+            "func": "find",
+            "vars": {}
+          },
+          {
+            "step": 17,
+            "line": 41,
+            "type": "exec",
+            "vars": {
+              "_return": 1
+            }
+          },
+          {
+            "step": 18,
+            "line": 41,
+            "type": "exit",
+            "func": "find",
+            "vars": {}
+          },
+          {
+            "step": 19,
+            "line": 41,
+            "type": "exec",
+            "vars": {
+              "_return": 0
+            }
+          },
+          {
+            "step": 20,
+            "line": 41,
+            "type": "exit",
+            "func": "find",
+            "vars": {}
+          },
+          {
+            "step": 21,
+            "line": 41,
+            "type": "exec",
+            "vars": {
+              "_return": 1
+            }
+          },
+          {
+            "step": 22,
+            "line": 41,
+            "type": "exit",
+            "func": "find",
+            "vars": {}
+          },
+          {
+            "step": 23,
+            "line": 77,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "u": 0,
+              "v": 1
+            }
+          },
+          {
+            "step": 24,
+            "line": 79,
+            "type": "exec",
+            "vars": {
+              "totalWeight": 1
+            }
+          },
+          {
+            "step": 25,
+            "line": 80,
+            "type": "enter",
+            "func": "union_sets",
+            "vars": {
+              "x": 0,
+              "y": 1
+            }
+          },
+          {
+            "step": 26,
+            "line": 47,
+            "type": "enter",
+            "func": "find",
+            "vars": {
+              "x": 0
+            }
+          },
+          {
+            "step": 27,
+            "line": 41,
+            "type": "exec",
+            "vars": {
+              "_return": 0
+            }
+          },
+          {
+            "step": 28,
+            "line": 41,
+            "type": "exit",
+            "func": "find",
+            "vars": {}
+          },
+          {
+            "step": 29,
+            "line": 48,
+            "type": "enter",
+            "func": "find",
+            "vars": {
+              "x": 1
+            }
+          },
+          {
+            "step": 30,
+            "line": 41,
+            "type": "exec",
+            "vars": {
+              "_return": 1
+            }
+          },
+          {
+            "step": 31,
+            "line": 41,
+            "type": "exit",
+            "func": "find",
+            "vars": {}
+          },
+          {
+            "step": 32,
+            "line": 49,
+            "type": "cond",
+            "result": false,
+            "vars": {
+              "rx": 0,
+              "ry": 1
+            }
+          },
+          {
+            "step": 33,
+            "line": 81,
+            "type": "exec",
+            "vars": {
+              "edgeCount": 1
+            }
+          },
+          {
+            "step": 34,
+            "line": 73,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "E": 6,
+              "V": 4,
+              "edgeCount": 1,
+              "i": 1
+            }
+          },
+          {
+            "step": 35,
+            "line": 77,
+            "type": "enter",
+            "func": "find",
+            "vars": {
+              "x": 2
+            }
+          },
+          {
+            "step": 36,
+            "line": 41,
+            "type": "exec",
+            "vars": {
+              "_return": 2
+            }
+          },
+          {
+            "step": 37,
+            "line": 41,
+            "type": "exit",
+            "func": "find",
+            "vars": {}
+          },
+          {
+            "step": 38,
+            "line": 41,
+            "type": "exec",
+            "vars": {
+              "_return": 3
+            }
+          },
+          {
+            "step": 39,
+            "line": 41,
+            "type": "exit",
+            "func": "find",
+            "vars": {}
+          },
+          {
+            "step": 40,
+            "line": 41,
+            "type": "exec",
+            "vars": {
+              "_return": 2
+            }
+          },
+          {
+            "step": 41,
+            "line": 41,
+            "type": "exit",
+            "func": "find",
+            "vars": {}
+          },
+          {
+            "step": 42,
+            "line": 41,
+            "type": "exec",
+            "vars": {
+              "_return": 3
+            }
+          },
+          {
+            "step": 43,
+            "line": 41,
+            "type": "exit",
+            "func": "find",
+            "vars": {}
+          },
+          {
+            "step": 44,
+            "line": 77,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "u": 2,
+              "v": 3
+            }
+          },
+          {
+            "step": 45,
+            "line": 79,
+            "type": "exec",
+            "vars": {
+              "totalWeight": 3
+            }
+          },
+          {
+            "step": 46,
+            "line": 80,
+            "type": "enter",
+            "func": "union_sets",
+            "vars": {
+              "x": 2,
+              "y": 3
+            }
+          },
+          {
+            "step": 47,
+            "line": 47,
+            "type": "enter",
+            "func": "find",
+            "vars": {
+              "x": 2
+            }
+          },
+          {
+            "step": 48,
+            "line": 41,
+            "type": "exec",
+            "vars": {
+              "_return": 2
+            }
+          },
+          {
+            "step": 49,
+            "line": 41,
+            "type": "exit",
+            "func": "find",
+            "vars": {}
+          },
+          {
+            "step": 50,
+            "line": 48,
+            "type": "enter",
+            "func": "find",
+            "vars": {
+              "x": 3
+            }
+          },
+          {
+            "step": 51,
+            "line": 41,
+            "type": "exec",
+            "vars": {
+              "_return": 3
+            }
+          },
+          {
+            "step": 52,
+            "line": 41,
+            "type": "exit",
+            "func": "find",
+            "vars": {}
+          },
+          {
+            "step": 53,
+            "line": 49,
+            "type": "cond",
+            "result": false,
+            "vars": {
+              "rx": 2,
+              "ry": 3
+            }
+          },
+          {
+            "step": 54,
+            "line": 81,
+            "type": "exec",
+            "vars": {
+              "edgeCount": 2
+            }
+          },
+          {
+            "step": 55,
+            "line": 73,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "E": 6,
+              "V": 4,
+              "edgeCount": 2,
+              "i": 2
+            }
+          },
+          {
+            "step": 56,
+            "line": 77,
+            "type": "enter",
+            "func": "find",
+            "vars": {
+              "x": 1
+            }
+          },
+          {
+            "step": 57,
+            "line": 40,
+            "type": "enter",
+            "func": "find",
+            "vars": {
+              "x": 0
+            }
+          },
+          {
+            "step": 58,
+            "line": 41,
+            "type": "exec",
+            "vars": {
+              "_return": 0
+            }
+          },
+          {
+            "step": 59,
+            "line": 41,
+            "type": "exit",
+            "func": "find",
+            "vars": {}
+          },
+          {
+            "step": 60,
+            "line": 39,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "x": 1
+            }
+          },
+          {
+            "step": 61,
+            "line": 41,
+            "type": "exec",
+            "vars": {
+              "_return": 0
+            }
+          },
+          {
+            "step": 62,
+            "line": 41,
+            "type": "exit",
+            "func": "find",
+            "vars": {}
+          },
+          {
+            "step": 63,
+            "line": 41,
+            "type": "exec",
+            "vars": {
+              "_return": 2
+            }
+          },
+          {
+            "step": 64,
+            "line": 41,
+            "type": "exit",
+            "func": "find",
+            "vars": {}
+          },
+          {
+            "step": 65,
+            "line": 40,
+            "type": "enter",
+            "func": "find",
+            "vars": {
+              "x": 0
+            }
+          },
+          {
+            "step": 66,
+            "line": 41,
+            "type": "exec",
+            "vars": {
+              "_return": 0
+            }
+          },
+          {
+            "step": 67,
+            "line": 41,
+            "type": "exit",
+            "func": "find",
+            "vars": {}
+          },
+          {
+            "step": 68,
+            "line": 39,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "x": 1
+            }
+          },
+          {
+            "step": 69,
+            "line": 41,
+            "type": "exec",
+            "vars": {
+              "_return": 0
+            }
+          },
+          {
+            "step": 70,
+            "line": 41,
+            "type": "exit",
+            "func": "find",
+            "vars": {}
+          },
+          {
+            "step": 71,
+            "line": 41,
+            "type": "exec",
+            "vars": {
+              "_return": 2
+            }
+          },
+          {
+            "step": 72,
+            "line": 41,
+            "type": "exit",
+            "func": "find",
+            "vars": {}
+          },
+          {
+            "step": 73,
+            "line": 77,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "u": 1,
+              "v": 2
+            }
+          },
+          {
+            "step": 74,
+            "line": 79,
+            "type": "exec",
+            "vars": {
+              "totalWeight": 6
+            }
+          },
+          {
+            "step": 75,
+            "line": 80,
+            "type": "enter",
+            "func": "union_sets",
+            "vars": {
+              "x": 1,
+              "y": 2
+            }
+          },
+          {
+            "step": 76,
+            "line": 47,
+            "type": "enter",
+            "func": "find",
+            "vars": {
+              "x": 1
+            }
+          },
+          {
+            "step": 77,
+            "line": 40,
+            "type": "enter",
+            "func": "find",
+            "vars": {
+              "x": 0
+            }
+          },
+          {
+            "step": 78,
+            "line": 41,
+            "type": "exec",
+            "vars": {
+              "_return": 0
+            }
+          },
+          {
+            "step": 79,
+            "line": 41,
+            "type": "exit",
+            "func": "find",
+            "vars": {}
+          },
+          {
+            "step": 80,
+            "line": 39,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "x": 1
+            }
+          },
+          {
+            "step": 81,
+            "line": 41,
+            "type": "exec",
+            "vars": {
+              "_return": 0
+            }
+          },
+          {
+            "step": 82,
+            "line": 41,
+            "type": "exit",
+            "func": "find",
+            "vars": {}
+          },
+          {
+            "step": 83,
+            "line": 48,
+            "type": "enter",
+            "func": "find",
+            "vars": {
+              "x": 2
+            }
+          },
+          {
+            "step": 84,
+            "line": 41,
+            "type": "exec",
+            "vars": {
+              "_return": 2
+            }
+          },
+          {
+            "step": 85,
+            "line": 41,
+            "type": "exit",
+            "func": "find",
+            "vars": {}
+          },
+          {
+            "step": 86,
+            "line": 49,
+            "type": "cond",
+            "result": false,
+            "vars": {
+              "rx": 0,
+              "ry": 2
+            }
+          },
+          {
+            "step": 87,
+            "line": 81,
+            "type": "exec",
+            "vars": {
+              "edgeCount": 3
+            }
+          },
+          {
+            "step": 88,
+            "line": 32,
+            "type": "cond",
+            "result": false,
+            "vars": {}
+          },
+          {
+            "step": 89,
+            "line": 86,
+            "type": "exec",
+            "vars": {
+              "_return": 1
+            }
+          },
+          {
+            "step": 90,
+            "line": 86,
+            "type": "exit",
+            "func": "kruskal",
+            "vars": {}
+          },
+          {
+            "step": 91,
+            "line": 99,
+            "type": "exec",
+            "vars": {
+              "_return": 0
+            }
+          },
+          {
+            "step": 92,
+            "line": 99,
+            "type": "exit",
+            "func": "main",
+            "vars": {}
+          }
+        ]
+      }
+    }
+  }
+};
+const firstKey = Object.keys(ALGOS)[0];
+const requestedKey = new URLSearchParams(location.search).get('algo');
+const savedAtOpen = DHLearning.load();
+let currentKey = ALGOS[requestedKey]
+  ? requestedKey
+  : (savedAtOpen.last && savedAtOpen.last.chapter === CHAPTER_NUM && ALGOS[savedAtOpen.last.algorithm]
+      ? savedAtOpen.last.algorithm
+      : firstKey);
+let currentMode = null;
+const engine = new TraceEngine('viz-canvas', 'code-body', 'var-grid', 'callstack');
+const tabsEl = document.getElementById('algo-tabs');
+const modeTabsEl = document.getElementById('mode-tabs');
+
+function has_modes(algo) {
+  return algo && algo.modes && typeof algo.modes === 'object';
+}
+
+function mode_label(rawAlgo, mode) {
+  const labels = rawAlgo.modeLabels || {};
+  if (labels[mode]) return labels[mode];
+  if (mode === 'concept') return '理解动画';
+  if (mode === 'trace') return '代码执行';
+  return mode;
+}
+
+function resolve_algo(rawAlgo) {
+  if (!has_modes(rawAlgo)) return rawAlgo;
+  const mode = currentMode || rawAlgo.defaultMode || Object.keys(rawAlgo.modes)[0];
+  return rawAlgo.modes[mode] || rawAlgo.modes[rawAlgo.defaultMode] || Object.values(rawAlgo.modes)[0];
+}
+
+function is_concept_algo(algo) {
+  if (!algo) return false;
+  const classes = algo.var_classes || {};
+  if (Object.values(classes).some(info => info && info.type === 'concept')) return true;
+  return (algo.steps || []).some(step => step.vars && step.vars.concept);
+}
+
+function update_tab_states() {
+  const completed = new Set(DHLearning.load().completedDemos);
+  tabsEl.querySelectorAll('.algo-tab').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.key === currentKey);
+    btn.classList.toggle('completed', completed.has(DHLearning.demoId(CHAPTER_NUM, btn.dataset.key)));
+    btn.setAttribute('aria-selected', String(btn.dataset.key === currentKey));
+  });
+}
+
+function update_chapter_progress() {
+  const state = DHLearning.load();
+  const completed = new Set(state.completedDemos);
+  const keys = Object.keys(ALGOS);
+  const done = keys.filter(key => completed.has(DHLearning.demoId(CHAPTER_NUM, key))).length;
+  document.getElementById('chapter-progress-text').textContent = `${done} / ${keys.length} 个演示完成`;
+  document.getElementById('chapter-progress-fill').style.width = `${keys.length ? done / keys.length * 100 : 0}%`;
+  update_tab_states();
+}
+
+function render_mode_tabs(rawAlgo) {
+  modeTabsEl.innerHTML = '';
+  if (!has_modes(rawAlgo)) {
+    modeTabsEl.classList.remove('visible');
+    currentMode = null;
+    return;
+  }
+  modeTabsEl.classList.add('visible');
+  const label = document.createElement('span');
+  label.className = 'mode-label';
+  label.textContent = '学习方式';
+  modeTabsEl.appendChild(label);
+  const activeMode = currentMode || rawAlgo.defaultMode || Object.keys(rawAlgo.modes)[0];
+  Object.keys(rawAlgo.modes).forEach(mode => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'mode-tab' + (mode === activeMode ? ' active' : '');
+    btn.textContent = mode_label(rawAlgo, mode);
+    btn.setAttribute('role', 'tab');
+    btn.setAttribute('aria-selected', String(mode === activeMode));
+    btn.addEventListener('click', () => {
+      if (currentMode === mode) return;
+      currentMode = mode;
+      load_current_algo(false);
+      if (matchMedia('(max-width: 900px)').matches) {
+        set_mobile_view(mode === 'trace' ? 'code' : 'animation');
+      }
+    });
+    modeTabsEl.appendChild(btn);
+  });
+}
+
+function load_current_algo(allowRestore = true) {
+  const rawAlgo = ALGOS[currentKey];
+  const beforeLoad = DHLearning.load().last;
+  if (has_modes(rawAlgo)) {
+    const savedMode = beforeLoad && beforeLoad.chapter === CHAPTER_NUM && beforeLoad.algorithm === currentKey
+      ? beforeLoad.mode
+      : null;
+    if (!currentMode) currentMode = savedMode && rawAlgo.modes[savedMode]
+      ? savedMode
+      : (rawAlgo.defaultMode || Object.keys(rawAlgo.modes)[0]);
+  } else {
+    currentMode = null;
+  }
+  render_mode_tabs(rawAlgo);
+  const activeAlgo = resolve_algo(rawAlgo);
+  document.body.classList.toggle('concept-mode', currentMode === 'concept' || is_concept_algo(activeAlgo));
+  engine.stop_play();
+  engine.load(activeAlgo);
+  try {
+    const currentUrl = new URL(location.href);
+    currentUrl.searchParams.set('algo', currentKey);
+    history.replaceState(null, '', currentUrl.href);
+  } catch (_) {
+    // file:// 预览环境可能限制 history API，不影响演示本身。
+  }
+  update_tab_states();
+
+  if (
+    allowRestore
+    && beforeLoad
+    && beforeLoad.chapter === CHAPTER_NUM
+    && beforeLoad.algorithm === currentKey
+    && beforeLoad.mode === currentMode
+    && beforeLoad.step > 0
+    && activeAlgo.steps.length
+  ) {
+    const restoreStep = Math.min(beforeLoad.step, activeAlgo.steps.length - 1);
+    requestAnimationFrame(() => engine.go_to_step(restoreStep));
+  }
+}
+
+Object.entries(ALGOS).forEach(([key, algo]) => {
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'algo-tab';
+  btn.dataset.key = key;
+  btn.textContent = algo.title;
+  btn.setAttribute('role', 'tab');
+  btn.setAttribute('aria-selected', String(key === currentKey));
+  btn.addEventListener('click', () => {
+    if (currentKey === key) return;
+    currentKey = key;
+    currentMode = has_modes(algo) ? (algo.defaultMode || Object.keys(algo.modes)[0]) : null;
+    load_current_algo(true);
+  });
+  tabsEl.appendChild(btn);
+});
+
+document.addEventListener('dh:stepchange', event => {
+  const detail = event.detail || {};
+  DHLearning.updateLast(CHAPTER_NUM, currentKey, currentMode, detail.currentStep);
+  if (detail.atEnd) DHLearning.markDemoComplete(CHAPTER_NUM, currentKey);
+  update_chapter_progress();
+});
+
+document.getElementById('btn-play').addEventListener('click', () => engine.playing ? engine.stop_play() : engine.start_play());
+document.getElementById('btn-step').addEventListener('click', () => { engine.stop_play(); engine.step_forward(); });
+document.getElementById('btn-reset').addEventListener('click', () => engine.reset());
+document.getElementById('btn-back').addEventListener('click', () => { engine.stop_play(); engine.step_backward(); });
+document.getElementById('btn-to-bp').addEventListener('click', () => { engine.stop_play(); engine.play_to_bp(); });
+
+const speedSlider = document.getElementById('speed-slider');
+const savedSpeed = localStorage.getItem('dh_speed');
+if (savedSpeed !== null) speedSlider.value = savedSpeed;
+speedSlider.setAttribute('aria-valuetext', `速度 ${speedSlider.value}`);
+speedSlider.addEventListener('input', () => {
+  localStorage.setItem('dh_speed', speedSlider.value);
+  speedSlider.setAttribute('aria-valuetext', `速度 ${speedSlider.value}`);
+  if (engine.playing) { clearTimeout(engine.playTimer); engine._play_loop(); }
+});
+speedSlider.addEventListener('keydown', event => {
+  if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+  event.preventDefault();
+  event.stopPropagation();
+  const direction = event.key === 'ArrowRight' ? 1 : -1;
+  speedSlider.value = String(Math.max(Number(speedSlider.min), Math.min(Number(speedSlider.max), Number(speedSlider.value) + direction)));
+  speedSlider.dispatchEvent(new Event('input', { bubbles: true }));
+});
+document.getElementById('font-dec').addEventListener('click', () => engine.font_dec());
+document.getElementById('font-inc').addEventListener('click', () => engine.font_inc());
+
+document.addEventListener('keydown', event => {
+  const target = event.target;
+  if (target && target.closest && target.closest('button,input,select,textarea,a,summary,[contenteditable="true"]')) return;
+  if (event.key === ' ') {
+    event.preventDefault();
+    engine.playing ? engine.stop_play() : engine.start_play();
+  } else if (event.key === 'ArrowRight') {
+    event.preventDefault();
+    engine.stop_play();
+    engine.step_forward();
+  } else if (event.key === 'ArrowLeft') {
+    event.preventDefault();
+    engine.stop_play();
+    engine.step_backward();
+  } else if (event.key.toLowerCase() === 'r' && !event.metaKey && !event.ctrlKey && !event.altKey) {
+    engine.reset();
+  }
+});
+
+function set_mobile_view(view) {
+  document.body.dataset.mobileView = view;
+  document.querySelectorAll('.mobile-view-switcher button').forEach(btn => {
+    const active = btn.dataset.mobileView === view;
+    btn.classList.toggle('active', active);
+    btn.setAttribute('aria-selected', String(active));
+  });
+  if (view === 'animation' && engine.currentStep >= 0) {
+    requestAnimationFrame(() => engine.go_to_step(engine.currentStep));
+  }
+}
+
+document.querySelectorAll('.mobile-view-switcher button').forEach(btn => {
+  btn.addEventListener('click', () => set_mobile_view(btn.dataset.mobileView));
+});
+
+DHLearning.visitChapter(CHAPTER_NUM);
+update_chapter_progress();
+load_current_algo(true);
+</script>
+</body>
+</html>

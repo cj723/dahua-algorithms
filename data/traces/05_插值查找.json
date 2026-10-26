@@ -1,0 +1,372 @@
+{
+  "meta": {
+    "algo": "05_插值查找",
+    "source_lines": [
+      "#include <stdio.h>",
+      "int interpolation_search(int arr[], int n, int target) {",
+      "    int left = 0, right = n - 1;",
+      "    while (left <= right && target >= arr[left] && target <= arr[right]) {",
+      "        /* 防止除零（如果 arr[left] == arr[right]，说明这一段全相等） */",
+      "        if (arr[left] == arr[right]) {",
+      "            if (arr[left] == target) return left;",
+      "            else return -1;",
+      "        }",
+      "        /* 插值公式估算位置 */",
+      "        int mid = left + (int)(",
+      "            ((long long)target - arr[left]) * (right - left)",
+      "            / ((long long)arr[right] - arr[left])",
+      "        );",
+      "        if (arr[mid] == target) {",
+      "            return mid;",
+      "        } else if (arr[mid] < target) {",
+      "            left = mid + 1;",
+      "        } else {",
+      "            right = mid - 1;",
+      "        }",
+      "    }",
+      "    return -1;",
+      "}",
+      "// 测试：插值查找（适用于均匀分布的有序数组）",
+      "int main(void) {",
+      "    int arr[] = {10, 20, 30, 40, 50, 60, 70, 80, 90, 100};",
+      "    int n = sizeof(arr) / sizeof(arr[0]);",
+      "    printf(\"数组：\");",
+      "    for (int i = 0; i < n; i++) printf(\"%d \", arr[i]);",
+      "    printf(\"\\n\\n\");",
+      "    // 均匀分布，插值查找很高效",
+      "    printf(\"interpolation_search(30) → 位置 %d（期望 2）\\n\", interpolation_search(arr, n, 30));",
+      "    printf(\"interpolation_search(80) → 位置 %d（期望 7）\\n\", interpolation_search(arr, n, 80));",
+      "    printf(\"interpolation_search(10) → 位置 %d（期望 0）\\n\", interpolation_search(arr, n, 10));",
+      "    printf(\"interpolation_search(55) → 位置 %d（未找到）\\n\", interpolation_search(arr, n, 55));",
+      "    return 0;",
+      "}"
+    ],
+    "track_vars": {
+      "primary": [
+        "arr",
+        "left",
+        "n",
+        "right",
+        "target"
+      ],
+      "secondary": [
+        "_return"
+      ]
+    },
+    "var_classes": {
+      "_return": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "arr": {
+        "category": "primary",
+        "type": "array"
+      },
+      "left": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "n": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "right": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "target": {
+        "category": "primary",
+        "type": "scalar"
+      }
+    },
+    "viz_type": "array",
+    "initial_data": {
+      "arr": [
+        10,
+        20,
+        30,
+        40,
+        50,
+        60,
+        70,
+        80,
+        90,
+        100
+      ]
+    },
+    "program_output": [
+      {
+        "after_step": 1,
+        "text": "数组：10 20 30 40 50 60 70 80 90 100"
+      },
+      {
+        "after_step": 6,
+        "text": "interpolation_search(30) → 位置 2（期望 2）"
+      },
+      {
+        "after_step": 11,
+        "text": "interpolation_search(80) → 位置 7（期望 7）"
+      },
+      {
+        "after_step": 16,
+        "text": "interpolation_search(10) → 位置 0（期望 0）"
+      },
+      {
+        "after_step": 21,
+        "text": "interpolation_search(55) → 位置 -1（未找到）"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step": 0,
+      "line": 26,
+      "type": "enter",
+      "func": "main",
+      "vars": {}
+    },
+    {
+      "step": 1,
+      "line": 33,
+      "type": "enter",
+      "func": "interpolation_search",
+      "vars": {
+        "arr": [
+          10,
+          20,
+          30,
+          40,
+          50,
+          60,
+          70,
+          80,
+          90,
+          100
+        ],
+        "n": 10,
+        "target": 30
+      }
+    },
+    {
+      "step": 2,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 0,
+        "right": 9,
+        "target": 30
+      }
+    },
+    {
+      "step": 3,
+      "line": 15,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "target": 30
+      }
+    },
+    {
+      "step": 4,
+      "line": 16,
+      "type": "exec",
+      "vars": {
+        "_return": 2
+      }
+    },
+    {
+      "step": 5,
+      "line": 16,
+      "type": "exit",
+      "func": "interpolation_search",
+      "vars": {}
+    },
+    {
+      "step": 6,
+      "line": 34,
+      "type": "enter",
+      "func": "interpolation_search",
+      "vars": {
+        "arr": [
+          10,
+          20,
+          30,
+          40,
+          50,
+          60,
+          70,
+          80,
+          90,
+          100
+        ],
+        "n": 10,
+        "target": 80
+      }
+    },
+    {
+      "step": 7,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 0,
+        "right": 9,
+        "target": 80
+      }
+    },
+    {
+      "step": 8,
+      "line": 15,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "target": 80
+      }
+    },
+    {
+      "step": 9,
+      "line": 16,
+      "type": "exec",
+      "vars": {
+        "_return": 7
+      }
+    },
+    {
+      "step": 10,
+      "line": 16,
+      "type": "exit",
+      "func": "interpolation_search",
+      "vars": {}
+    },
+    {
+      "step": 11,
+      "line": 35,
+      "type": "enter",
+      "func": "interpolation_search",
+      "vars": {
+        "arr": [
+          10,
+          20,
+          30,
+          40,
+          50,
+          60,
+          70,
+          80,
+          90,
+          100
+        ],
+        "n": 10,
+        "target": 10
+      }
+    },
+    {
+      "step": 12,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 0,
+        "right": 9,
+        "target": 10
+      }
+    },
+    {
+      "step": 13,
+      "line": 15,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "target": 10
+      }
+    },
+    {
+      "step": 14,
+      "line": 16,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 15,
+      "line": 16,
+      "type": "exit",
+      "func": "interpolation_search",
+      "vars": {}
+    },
+    {
+      "step": 16,
+      "line": 36,
+      "type": "enter",
+      "func": "interpolation_search",
+      "vars": {
+        "arr": [
+          10,
+          20,
+          30,
+          40,
+          50,
+          60,
+          70,
+          80,
+          90,
+          100
+        ],
+        "n": 10,
+        "target": 55
+      }
+    },
+    {
+      "step": 17,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 0,
+        "right": 9,
+        "target": 55
+      }
+    },
+    {
+      "step": 18,
+      "line": 18,
+      "type": "exec",
+      "vars": {
+        "left": 5
+      }
+    },
+    {
+      "step": 19,
+      "line": 23,
+      "type": "exec",
+      "vars": {
+        "_return": -1
+      }
+    },
+    {
+      "step": 20,
+      "line": 23,
+      "type": "exit",
+      "func": "interpolation_search",
+      "vars": {}
+    },
+    {
+      "step": 21,
+      "line": 37,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 22,
+      "line": 37,
+      "type": "exit",
+      "func": "main",
+      "vars": {}
+    }
+  ],
+  "total_steps": 23
+}

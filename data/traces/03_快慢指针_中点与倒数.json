@@ -1,0 +1,164 @@
+{
+  "meta": {
+    "algo": "03_快慢指针_中点与倒数",
+    "source_lines": [
+      "#include <stdio.h>",
+      "#include <stdlib.h>",
+      "struct ListNode {",
+      "    int val;",
+      "    struct ListNode *next;",
+      "};",
+      "/* 快慢指针变体一：寻找链表的中点 */",
+      "struct ListNode *find_middle(struct ListNode *head) {",
+      "    struct ListNode *slow = head;",
+      "    struct ListNode *fast = head;",
+      "    while (fast != NULL && fast->next != NULL) {",
+      "        slow = slow->next;",
+      "        fast = fast->next->next;",
+      "    }",
+      "    return slow;  /* fast到末尾时，slow正好在中点 */",
+      "}",
+      "/* 快慢指针变体二：寻找倒数第k个节点 */",
+      "struct ListNode *find_kth_from_end(struct ListNode *head, int k) {",
+      "    struct ListNode *fast = head;",
+      "    struct ListNode *slow = head;",
+      "    /* fast先出发k步 */",
+      "    for (int i = 0; i < k; i++) {",
+      "        if (fast == NULL) return NULL;  /* k超过链表长度 */",
+      "        fast = fast->next;",
+      "    }",
+      "    /* 两人同速走到底 */",
+      "    while (fast != NULL) {",
+      "        slow = slow->next;",
+      "        fast = fast->next;",
+      "    }",
+      "    return slow;  /* fast到末尾时，slow在倒数第k个 */",
+      "}",
+      "/* 测试：快慢指针 */",
+      "int main() {",
+      "    /* 构建链表 1 → 2 → 3 → 4 → 5 → NULL */",
+      "    struct ListNode nodes[5];",
+      "    for (int i = 0; i < 5; i++) {",
+      "        nodes[i].val = i + 1;",
+      "        nodes[i].next = (i < 4) ? &nodes[i+1] : NULL;",
+      "    }",
+      "    struct ListNode *mid = find_middle(&nodes[0]);",
+      "    printf(\"链表中点：%d（期望 3）\\n\", mid->val);",
+      "    struct ListNode *kth = find_kth_from_end(&nodes[0], 2);",
+      "    printf(\"倒数第2个：%d（期望 4）\\n\", kth->val);",
+      "    kth = find_kth_from_end(&nodes[0], 1);",
+      "    printf(\"倒数第1个：%d（期望 5）\\n\", kth->val);",
+      "    return 0;",
+      "}"
+    ],
+    "track_vars": {
+      "primary": [
+        "i"
+      ],
+      "secondary": [
+        "_return",
+        "kth"
+      ]
+    },
+    "var_classes": {
+      "_return": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "i": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "kth": {
+        "category": "secondary",
+        "type": "scalar"
+      }
+    },
+    "viz_type": "array",
+    "initial_data": {},
+    "program_output": [
+      {
+        "after_step": 6,
+        "text": "链表中点：3（期望 3） 倒数第2个：4（期望 4） 倒数第1个：5（期望 5）"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step": 0,
+      "line": 34,
+      "type": "enter",
+      "func": "main",
+      "vars": {}
+    },
+    {
+      "step": 1,
+      "line": 37,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0
+      }
+    },
+    {
+      "step": 2,
+      "line": 37,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1
+      }
+    },
+    {
+      "step": 3,
+      "line": 37,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2
+      }
+    },
+    {
+      "step": 4,
+      "line": 37,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3
+      }
+    },
+    {
+      "step": 5,
+      "line": 37,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 4
+      }
+    },
+    {
+      "step": 6,
+      "line": 45,
+      "type": "exec",
+      "vars": {
+        "kth": 1860430472
+      }
+    },
+    {
+      "step": 7,
+      "line": 47,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 8,
+      "line": 47,
+      "type": "exit",
+      "func": "main",
+      "vars": {}
+    }
+  ],
+  "total_steps": 9
+}

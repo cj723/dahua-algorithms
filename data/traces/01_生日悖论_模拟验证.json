@@ -1,0 +1,1653 @@
+{
+  "meta": {
+    "algo": "01_生日悖论_模拟验证",
+    "source_lines": [
+      "/* 生日悖论蒙特卡洛验证 */",
+      "#include <stdio.h>",
+      "#include <stdlib.h>",
+      "#include <time.h>",
+      "int main() {",
+      "    int n = 50;          /* 屋子里的人数 */",
+      "    int trials = 100000; /* 重复实验次数 */",
+      "    int collisions = 0;  /* 出现重复生日的次数 */",
+      "    srand((unsigned int)time(NULL));",
+      "    for (int t = 0; t < trials; t++) {",
+      "        int days[365] = {0}; /* 一年365天 */",
+      "        int found = 0;",
+      "        for (int i = 0; i < n; i++) {",
+      "            int birthday = rand() % 365;",
+      "            if (days[birthday]) { found = 1; break; }",
+      "            days[birthday] = 1;",
+      "        }",
+      "        if (found) collisions++;",
+      "    }",
+      "    printf(\"%d人中出现重复生日的概率：%.1f%%\\n\",",
+      "           n, 100.0 * collisions / trials);",
+      "    /* 输出大约 97%! */",
+      "    return 0;",
+      "}"
+    ],
+    "track_vars": {
+      "primary": [
+        "found",
+        "i",
+        "n"
+      ],
+      "secondary": [
+        "birthday",
+        "days",
+        "t",
+        "trials"
+      ]
+    },
+    "var_classes": {
+      "birthday": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "days": {
+        "category": "secondary",
+        "type": "array"
+      },
+      "found": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "i": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "n": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "t": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "trials": {
+        "category": "secondary",
+        "type": "scalar"
+      }
+    },
+    "viz_type": "array",
+    "initial_data": {
+      "days": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        "...",
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "program_output": [
+      {
+        "after_step": 107,
+        "text": "50人中出现重复生日的概率：97.1%"
+      }
+    ],
+    "trace_note": "教学版轨迹：省略大量重复随机模拟循环，只保留开头关键步骤和末尾输出。"
+  },
+  "steps": [
+    {
+      "step": 0,
+      "line": 5,
+      "type": "enter",
+      "func": "main",
+      "vars": {}
+    },
+    {
+      "step": 1,
+      "line": 10,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "t": 0,
+        "trials": 100000
+      }
+    },
+    {
+      "step": 2,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0,
+        "n": 50
+      }
+    },
+    {
+      "step": 3,
+      "line": 15,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "birthday": 160
+      }
+    },
+    {
+      "step": 4,
+      "line": 16,
+      "type": "exec",
+      "vars": {
+        "days": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          "...",
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "step": 5,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "n": 50
+      }
+    },
+    {
+      "step": 6,
+      "line": 15,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "birthday": 268
+      }
+    },
+    {
+      "step": 7,
+      "line": 16,
+      "type": "exec",
+      "vars": {
+        "days": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          "...",
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "step": 8,
+      "type": "skip",
+      "skipped": 33,
+      "line": 0,
+      "vars": {}
+    },
+    {
+      "step": 9,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 13,
+        "n": 50
+      }
+    },
+    {
+      "step": 10,
+      "line": 15,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "birthday": 359
+      }
+    },
+    {
+      "step": 11,
+      "line": 16,
+      "type": "exec",
+      "vars": {
+        "days": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          "...",
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "step": 12,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 14,
+        "n": 50
+      }
+    },
+    {
+      "step": 13,
+      "line": 15,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "birthday": 292
+      }
+    },
+    {
+      "step": 14,
+      "line": 16,
+      "type": "exec",
+      "vars": {
+        "days": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          "...",
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "step": 15,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 15,
+        "n": 50
+      }
+    },
+    {
+      "step": 16,
+      "line": 18,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "found": 1
+      }
+    },
+    {
+      "step": 17,
+      "line": 10,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "t": 1,
+        "trials": 100000
+      }
+    },
+    {
+      "step": 18,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0,
+        "n": 50
+      }
+    },
+    {
+      "step": 19,
+      "line": 15,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "birthday": 272
+      }
+    },
+    {
+      "step": 20,
+      "line": 16,
+      "type": "exec",
+      "vars": {
+        "days": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          "...",
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "step": 21,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "n": 50
+      }
+    },
+    {
+      "step": 22,
+      "line": 15,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "birthday": 193
+      }
+    },
+    {
+      "step": 23,
+      "line": 16,
+      "type": "exec",
+      "vars": {
+        "days": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          "...",
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "step": 24,
+      "type": "skip",
+      "skipped": 18,
+      "line": 0,
+      "vars": {}
+    },
+    {
+      "step": 25,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 8,
+        "n": 50
+      }
+    },
+    {
+      "step": 26,
+      "line": 15,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "birthday": 128
+      }
+    },
+    {
+      "step": 27,
+      "line": 16,
+      "type": "exec",
+      "vars": {
+        "days": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          "...",
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "step": 28,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 9,
+        "n": 50
+      }
+    },
+    {
+      "step": 29,
+      "line": 15,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "birthday": 207
+      }
+    },
+    {
+      "step": 30,
+      "line": 16,
+      "type": "exec",
+      "vars": {
+        "days": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          "...",
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "step": 31,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 10,
+        "n": 50
+      }
+    },
+    {
+      "step": 32,
+      "line": 18,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "found": 1
+      }
+    },
+    {
+      "step": 33,
+      "line": 10,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "t": 2,
+        "trials": 100000
+      }
+    },
+    {
+      "step": 34,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0,
+        "n": 50
+      }
+    },
+    {
+      "step": 35,
+      "line": 15,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "birthday": 245
+      }
+    },
+    {
+      "step": 36,
+      "line": 16,
+      "type": "exec",
+      "vars": {
+        "days": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          "...",
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "step": 37,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "n": 50
+      }
+    },
+    {
+      "step": 38,
+      "line": 15,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "birthday": 237
+      }
+    },
+    {
+      "step": 39,
+      "line": 16,
+      "type": "exec",
+      "vars": {
+        "days": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          "...",
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "step": 40,
+      "type": "skip",
+      "skipped": 45,
+      "line": 0,
+      "vars": {}
+    },
+    {
+      "step": 41,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 17,
+        "n": 50
+      }
+    },
+    {
+      "step": 42,
+      "line": 15,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "birthday": 221
+      }
+    },
+    {
+      "step": 43,
+      "line": 16,
+      "type": "exec",
+      "vars": {
+        "days": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          "...",
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "step": 44,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 18,
+        "n": 50
+      }
+    },
+    {
+      "step": 45,
+      "line": 15,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "birthday": 172
+      }
+    },
+    {
+      "step": 46,
+      "line": 16,
+      "type": "exec",
+      "vars": {
+        "days": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          "...",
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "step": 47,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 19,
+        "n": 50
+      }
+    },
+    {
+      "step": 48,
+      "line": 18,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "found": 1
+      }
+    },
+    {
+      "step": 49,
+      "line": 10,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "t": 3,
+        "trials": 100000
+      }
+    },
+    {
+      "step": 50,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0,
+        "n": 50
+      }
+    },
+    {
+      "step": 51,
+      "line": 15,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "birthday": 186
+      }
+    },
+    {
+      "step": 52,
+      "line": 16,
+      "type": "exec",
+      "vars": {
+        "days": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          "...",
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "step": 53,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "n": 50
+      }
+    },
+    {
+      "step": 54,
+      "line": 15,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "birthday": 199
+      }
+    },
+    {
+      "step": 55,
+      "line": 16,
+      "type": "exec",
+      "vars": {
+        "days": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          "...",
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "step": 56,
+      "type": "skip",
+      "skipped": 9,
+      "line": 0,
+      "vars": {}
+    },
+    {
+      "step": 57,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 5,
+        "n": 50
+      }
+    },
+    {
+      "step": 58,
+      "line": 15,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "birthday": 201
+      }
+    },
+    {
+      "step": 59,
+      "line": 16,
+      "type": "exec",
+      "vars": {
+        "days": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          "...",
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "step": 60,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 6,
+        "n": 50
+      }
+    },
+    {
+      "step": 61,
+      "line": 15,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "birthday": 263
+      }
+    },
+    {
+      "step": 62,
+      "line": 16,
+      "type": "exec",
+      "vars": {
+        "days": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          "...",
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "step": 63,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 7,
+        "n": 50
+      }
+    },
+    {
+      "step": 64,
+      "line": 18,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "found": 1
+      }
+    },
+    {
+      "step": 65,
+      "line": 10,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "t": 4,
+        "trials": 100000
+      }
+    },
+    {
+      "step": 66,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0,
+        "n": 50
+      }
+    },
+    {
+      "step": 67,
+      "line": 15,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "birthday": 7
+      }
+    },
+    {
+      "step": 68,
+      "line": 16,
+      "type": "exec",
+      "vars": {
+        "days": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          "...",
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "step": 69,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "n": 50
+      }
+    },
+    {
+      "step": 70,
+      "line": 15,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "birthday": 232
+      }
+    },
+    {
+      "step": 71,
+      "line": 16,
+      "type": "exec",
+      "vars": {
+        "days": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          "...",
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "step": 72,
+      "type": "skip",
+      "skipped": 66,
+      "line": 0,
+      "vars": {}
+    },
+    {
+      "step": 73,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 24,
+        "n": 50
+      }
+    },
+    {
+      "step": 74,
+      "line": 15,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "birthday": 227
+      }
+    },
+    {
+      "step": 75,
+      "line": 16,
+      "type": "exec",
+      "vars": {
+        "days": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          "...",
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "step": 76,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 25,
+        "n": 50
+      }
+    },
+    {
+      "step": 77,
+      "line": 15,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "birthday": 281
+      }
+    },
+    {
+      "step": 78,
+      "line": 16,
+      "type": "exec",
+      "vars": {
+        "days": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          "...",
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "step": 79,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 26,
+        "n": 50
+      }
+    },
+    {
+      "step": 80,
+      "line": 18,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "found": 1
+      }
+    },
+    {
+      "step": 81,
+      "line": 10,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "t": 5,
+        "trials": 100000
+      }
+    },
+    {
+      "step": 82,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0,
+        "n": 50
+      }
+    },
+    {
+      "step": 83,
+      "line": 15,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "birthday": 177
+      }
+    },
+    {
+      "step": 84,
+      "line": 16,
+      "type": "exec",
+      "vars": {
+        "days": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          "...",
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "step": 85,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "n": 50
+      }
+    },
+    {
+      "step": 86,
+      "line": 15,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "birthday": 313
+      }
+    },
+    {
+      "step": 87,
+      "line": 16,
+      "type": "exec",
+      "vars": {
+        "days": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          "...",
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "step": 88,
+      "type": "skip",
+      "skipped": 102,
+      "line": 0,
+      "vars": {}
+    },
+    {
+      "step": 89,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 36,
+        "n": 50
+      }
+    },
+    {
+      "step": 90,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 25,
+        "n": 50
+      }
+    },
+    {
+      "step": 91,
+      "line": 18,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "found": 1
+      }
+    },
+    {
+      "step": 92,
+      "line": 10,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "t": 110,
+        "trials": 100000
+      }
+    },
+    {
+      "step": 93,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0,
+        "n": 50
+      }
+    },
+    {
+      "step": 94,
+      "line": 15,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "birthday": 165
+      }
+    },
+    {
+      "step": 95,
+      "line": 16,
+      "type": "exec",
+      "vars": {
+        "days": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          "...",
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "step": 96,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "n": 50
+      }
+    },
+    {
+      "step": 97,
+      "line": 15,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "birthday": 43
+      }
+    },
+    {
+      "step": 98,
+      "line": 16,
+      "type": "exec",
+      "vars": {
+        "days": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          "...",
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "step": 99,
+      "type": "skip",
+      "skipped": 24,
+      "line": 0,
+      "vars": {}
+    },
+    {
+      "step": 100,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 10,
+        "n": 50
+      }
+    },
+    {
+      "step": 101,
+      "line": 15,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "birthday": 316
+      }
+    },
+    {
+      "step": 102,
+      "line": 16,
+      "type": "exec",
+      "vars": {
+        "days": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          "...",
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "step": 103,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 11,
+        "n": 50
+      }
+    },
+    {
+      "step": 104,
+      "line": 15,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "birthday": 226
+      }
+    },
+    {
+      "step": 105,
+      "line": 16,
+      "type": "exec",
+      "vars": {
+        "days": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          "...",
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "step": 106,
+      "line": 13,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 12,
+        "n": 50
+      }
+    },
+    {
+      "step": 107,
+      "line": 15,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "birthday": 145
+      }
+    }
+  ],
+  "total_steps": 108
+}

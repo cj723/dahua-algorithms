@@ -1,0 +1,438 @@
+{
+  "meta": {
+    "algo": "03_原地反转_空间O1",
+    "source_lines": [
+      "#include <stdio.h>",
+      "/* 原地反转数组：空间复杂度 O(1) */",
+      "void reverse_array(int arr[], int n) {",
+      "    int left = 0, right = n - 1;",
+      "    while (left < right) {",
+      "        int temp = arr[left];",
+      "        arr[left] = arr[right];",
+      "        arr[right] = temp;",
+      "        left++;",
+      "        right--;",
+      "    }",
+      "}",
+      "/* ===== 自动生成的测试入口 ===== */",
+      "#define N 9",
+      "int main(void) {",
+      "    int d[N] = {50, 10, 90, 30, 70, 40, 80, 60, 20};",
+      "    int i;",
+      "    printf(\"=== reverse_array ===\\n\");",
+      "    {",
+      "        int arr[N];",
+      "        for (i = 0; i < N; i++) arr[i] = d[i];",
+      "        printf(\"反转前: \");",
+      "        for (i = 0; i < N; i++) printf(\"%d \", arr[i]);",
+      "        printf(\"\\n\");",
+      "        reverse_array(arr, N);",
+      "        printf(\"反转后: \");",
+      "        for (i = 0; i < N; i++) printf(\"%d \", arr[i]);",
+      "        printf(\"\\n\");",
+      "    }",
+      "    return 0;",
+      "}"
+    ],
+    "track_vars": {
+      "primary": [
+        "arr",
+        "i",
+        "left",
+        "n",
+        "right"
+      ],
+      "secondary": [
+        "_return"
+      ]
+    },
+    "var_classes": {
+      "_return": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "arr": {
+        "category": "primary",
+        "type": "array"
+      },
+      "i": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "left": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "n": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "right": {
+        "category": "primary",
+        "type": "scalar"
+      }
+    },
+    "viz_type": "array",
+    "initial_data": {
+      "arr": [
+        0,
+        0,
+        0,
+        0,
+        -122161296,
+        1,
+        1837034656,
+        1,
+        1
+      ]
+    },
+    "program_output": [
+      {
+        "after_step": 1,
+        "text": "=== reverse_array === 反转前: 50 10 90 30 70 40 80 60 20"
+      },
+      {
+        "after_step": 25,
+        "text": "反转后: 20 60 80 40 70 30 90 10 50"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step": 0,
+      "line": 15,
+      "type": "enter",
+      "func": "main",
+      "vars": {}
+    },
+    {
+      "step": 1,
+      "line": 20,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          0,
+          0,
+          0,
+          0,
+          -122161296,
+          1,
+          1837034656,
+          1,
+          1
+        ]
+      }
+    },
+    {
+      "step": 2,
+      "line": 21,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "i": 9
+      }
+    },
+    {
+      "step": 3,
+      "line": 23,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "i": 9
+      }
+    },
+    {
+      "step": 4,
+      "line": 25,
+      "type": "enter",
+      "func": "reverse_array",
+      "vars": {
+        "arr": [
+          50,
+          10,
+          90,
+          30,
+          70,
+          40,
+          80,
+          60,
+          20
+        ],
+        "n": 9
+      }
+    },
+    {
+      "step": 5,
+      "line": 5,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 0,
+        "right": 8
+      }
+    },
+    {
+      "step": 6,
+      "line": 7,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          20,
+          10,
+          90,
+          30,
+          70,
+          40,
+          80,
+          60,
+          20
+        ]
+      }
+    },
+    {
+      "step": 7,
+      "line": 8,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          20,
+          10,
+          90,
+          30,
+          70,
+          40,
+          80,
+          60,
+          50
+        ]
+      }
+    },
+    {
+      "step": 8,
+      "line": 9,
+      "type": "exec",
+      "vars": {
+        "left": 1
+      }
+    },
+    {
+      "step": 9,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "right": 7
+      }
+    },
+    {
+      "step": 10,
+      "line": 5,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 1,
+        "right": 7
+      }
+    },
+    {
+      "step": 11,
+      "line": 7,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          20,
+          60,
+          90,
+          30,
+          70,
+          40,
+          80,
+          60,
+          50
+        ]
+      }
+    },
+    {
+      "step": 12,
+      "line": 8,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          20,
+          60,
+          90,
+          30,
+          70,
+          40,
+          80,
+          10,
+          50
+        ]
+      }
+    },
+    {
+      "step": 13,
+      "line": 9,
+      "type": "exec",
+      "vars": {
+        "left": 2
+      }
+    },
+    {
+      "step": 14,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "right": 6
+      }
+    },
+    {
+      "step": 15,
+      "line": 5,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 2,
+        "right": 6
+      }
+    },
+    {
+      "step": 16,
+      "line": 7,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          20,
+          60,
+          80,
+          30,
+          70,
+          40,
+          80,
+          10,
+          50
+        ]
+      }
+    },
+    {
+      "step": 17,
+      "line": 8,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          20,
+          60,
+          80,
+          30,
+          70,
+          40,
+          90,
+          10,
+          50
+        ]
+      }
+    },
+    {
+      "step": 18,
+      "line": 9,
+      "type": "exec",
+      "vars": {
+        "left": 3
+      }
+    },
+    {
+      "step": 19,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "right": 5
+      }
+    },
+    {
+      "step": 20,
+      "line": 5,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 3,
+        "right": 5
+      }
+    },
+    {
+      "step": 21,
+      "line": 7,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          20,
+          60,
+          80,
+          40,
+          70,
+          40,
+          90,
+          10,
+          50
+        ]
+      }
+    },
+    {
+      "step": 22,
+      "line": 8,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          20,
+          60,
+          80,
+          40,
+          70,
+          30,
+          90,
+          10,
+          50
+        ]
+      }
+    },
+    {
+      "step": 23,
+      "line": 9,
+      "type": "exec",
+      "vars": {
+        "left": 4
+      }
+    },
+    {
+      "step": 24,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "right": 4
+      }
+    },
+    {
+      "step": 25,
+      "line": 27,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "i": 9
+      }
+    },
+    {
+      "step": 26,
+      "line": 30,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 27,
+      "line": 30,
+      "type": "exit",
+      "func": "main",
+      "vars": {}
+    }
+  ],
+  "total_steps": 28
+}

@@ -1,0 +1,447 @@
+{
+  "meta": {
+    "algo": "05_线段树_建树",
+    "source_lines": [
+      "#include <stdio.h>",
+      "#define MAXN 100010",
+      "int a[MAXN];       // 原数组",
+      "long long tree[4 * MAXN];  // 线段树",
+      "// 建树：当前节点编号p，管理区间[l, r]",
+      "void build(int p, int l, int r) {",
+      "    if (l == r) {",
+      "        tree[p] = a[l];  // 叶子节点，直接存值",
+      "        return;",
+      "    }",
+      "    int mid = l + (r - l) / 2;",
+      "    build(2 * p, l, mid);        // 建左子树",
+      "    build(2 * p + 1, mid + 1, r); // 建右子树",
+      "    tree[p] = tree[2 * p] + tree[2 * p + 1];  // 区间和 = 左+右",
+      "}",
+      "int main() {",
+      "    int n = 8;",
+      "    int d[] = {3, 1, 4, 1, 5, 9, 2, 6};",
+      "    for (int i = 1; i <= n; i++) {",
+      "        a[i] = d[i - 1];",
+      "    }",
+      "    printf(\"线段树建树演示：\\n\");",
+      "    printf(\"下标：1 2 3 4 5 6 7 8\\n\");",
+      "    printf(\"数值：3 1 4 1 5 9 2 6\\n\");",
+      "    build(1, 1, n);",
+      "    printf(\"根节点 tree[1] 保存整个区间[1,%d]的和：%lld\\n\", n, tree[1]);",
+      "    printf(\"左半区[1,4] tree[2] = %lld，右半区[5,8] tree[3] = %lld\\n\", tree[2], tree[3]);",
+      "    return 0;",
+      "}"
+    ],
+    "track_vars": {
+      "primary": [
+        "i",
+        "n"
+      ],
+      "secondary": [
+        "_return",
+        "l",
+        "p",
+        "r"
+      ]
+    },
+    "var_classes": {
+      "_return": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "i": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "l": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "n": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "p": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "r": {
+        "category": "secondary",
+        "type": "scalar"
+      }
+    },
+    "viz_type": "array",
+    "initial_data": {
+      "d": [
+        3,
+        1,
+        4,
+        1,
+        5,
+        9,
+        2,
+        6
+      ]
+    },
+    "program_output": [
+      {
+        "after_step": 9,
+        "text": "线段树建树演示： 下标：1 2 3 4 5 6 7 8 数值：3 1 4 1 5 9 2 6"
+      },
+      {
+        "after_step": 32,
+        "text": "根节点 tree[1] 保存整个区间[1,8]的和：31 左半区[1,4] tree[2] = 9，右半区[5,8] tree[3] = 22"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step": 0,
+      "line": 16,
+      "type": "enter",
+      "func": "main",
+      "vars": {}
+    },
+    {
+      "step": 1,
+      "line": 19,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "n": 8
+      }
+    },
+    {
+      "step": 2,
+      "line": 19,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "n": 8
+      }
+    },
+    {
+      "step": 3,
+      "line": 19,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3,
+        "n": 8
+      }
+    },
+    {
+      "step": 4,
+      "line": 19,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 4,
+        "n": 8
+      }
+    },
+    {
+      "step": 5,
+      "line": 19,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 5,
+        "n": 8
+      }
+    },
+    {
+      "step": 6,
+      "line": 19,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 6,
+        "n": 8
+      }
+    },
+    {
+      "step": 7,
+      "line": 19,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 7,
+        "n": 8
+      }
+    },
+    {
+      "step": 8,
+      "line": 19,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 8,
+        "n": 8
+      }
+    },
+    {
+      "step": 9,
+      "line": 25,
+      "type": "enter",
+      "func": "build",
+      "vars": {
+        "p": 1,
+        "l": 1,
+        "r": 8
+      }
+    },
+    {
+      "step": 10,
+      "line": 12,
+      "type": "enter",
+      "func": "build",
+      "vars": {
+        "p": 2,
+        "l": 1,
+        "r": 4
+      }
+    },
+    {
+      "step": 11,
+      "line": 12,
+      "type": "enter",
+      "func": "build",
+      "vars": {
+        "p": 4,
+        "l": 1,
+        "r": 2
+      }
+    },
+    {
+      "step": 12,
+      "line": 12,
+      "type": "enter",
+      "func": "build",
+      "vars": {
+        "p": 8,
+        "l": 1,
+        "r": 1
+      }
+    },
+    {
+      "step": 13,
+      "line": 7,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "l": 1,
+        "r": 1
+      }
+    },
+    {
+      "step": 14,
+      "line": 13,
+      "type": "enter",
+      "func": "build",
+      "vars": {
+        "p": 9,
+        "l": 2,
+        "r": 2
+      }
+    },
+    {
+      "step": 15,
+      "line": 7,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "l": 2,
+        "r": 2
+      }
+    },
+    {
+      "step": 16,
+      "line": 13,
+      "type": "enter",
+      "func": "build",
+      "vars": {
+        "p": 5,
+        "l": 3,
+        "r": 4
+      }
+    },
+    {
+      "step": 17,
+      "line": 12,
+      "type": "enter",
+      "func": "build",
+      "vars": {
+        "p": 10,
+        "l": 3,
+        "r": 3
+      }
+    },
+    {
+      "step": 18,
+      "line": 7,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "l": 3,
+        "r": 3
+      }
+    },
+    {
+      "step": 19,
+      "line": 13,
+      "type": "enter",
+      "func": "build",
+      "vars": {
+        "p": 11,
+        "l": 4,
+        "r": 4
+      }
+    },
+    {
+      "step": 20,
+      "line": 7,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "l": 4,
+        "r": 4
+      }
+    },
+    {
+      "step": 21,
+      "line": 13,
+      "type": "enter",
+      "func": "build",
+      "vars": {
+        "p": 3,
+        "l": 5,
+        "r": 8
+      }
+    },
+    {
+      "step": 22,
+      "line": 12,
+      "type": "enter",
+      "func": "build",
+      "vars": {
+        "p": 6,
+        "l": 5,
+        "r": 6
+      }
+    },
+    {
+      "step": 23,
+      "line": 12,
+      "type": "enter",
+      "func": "build",
+      "vars": {
+        "p": 12,
+        "l": 5,
+        "r": 5
+      }
+    },
+    {
+      "step": 24,
+      "line": 7,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "l": 5,
+        "r": 5
+      }
+    },
+    {
+      "step": 25,
+      "line": 13,
+      "type": "enter",
+      "func": "build",
+      "vars": {
+        "p": 13,
+        "l": 6,
+        "r": 6
+      }
+    },
+    {
+      "step": 26,
+      "line": 7,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "l": 6,
+        "r": 6
+      }
+    },
+    {
+      "step": 27,
+      "line": 13,
+      "type": "enter",
+      "func": "build",
+      "vars": {
+        "p": 7,
+        "l": 7,
+        "r": 8
+      }
+    },
+    {
+      "step": 28,
+      "line": 12,
+      "type": "enter",
+      "func": "build",
+      "vars": {
+        "p": 14,
+        "l": 7,
+        "r": 7
+      }
+    },
+    {
+      "step": 29,
+      "line": 7,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "l": 7,
+        "r": 7
+      }
+    },
+    {
+      "step": 30,
+      "line": 13,
+      "type": "enter",
+      "func": "build",
+      "vars": {
+        "p": 15,
+        "l": 8,
+        "r": 8
+      }
+    },
+    {
+      "step": 31,
+      "line": 7,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "l": 8,
+        "r": 8
+      }
+    },
+    {
+      "step": 32,
+      "line": 28,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 33,
+      "line": 28,
+      "type": "exit",
+      "func": "main",
+      "vars": {}
+    }
+  ],
+  "total_steps": 34
+}

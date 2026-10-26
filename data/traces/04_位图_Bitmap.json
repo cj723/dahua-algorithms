@@ -1,0 +1,420 @@
+{
+  "meta": {
+    "algo": "04_位图_Bitmap",
+    "source_lines": [
+      "/* 位图(Bitmap)实现 */",
+      "/* 类比：出勤点名册——每个学生一个格子，来了打勾 */",
+      "#include <stdio.h>",
+      "#include <stdlib.h>",
+      "#include <string.h>",
+      "#define MAX_NUM 1000000  /* 最大能存储的数 */",
+      "/* 位图结构 */",
+      "typedef struct {",
+      "    unsigned char *bits;  /* 位图数组，每个char有8个bit */",
+      "    int size;             /* 数组大小(字节数) */",
+      "    int max;              /* 允许存储的最大数值 */",
+      "} Bitmap;",
+      "/* 创建位图 */",
+      "/* 参数max:能存储的最大数值（允许下标为0..max，共 max+1 个bit） */",
+      "Bitmap* bitmap_create(int max) {",
+      "    if (max < 0) {",
+      "        return NULL;",
+      "    }",
+      "    Bitmap *bm = (Bitmap *)malloc(sizeof(Bitmap));  /* 分配结构体内存 */",
+      "    if (bm == NULL) {",
+      "        printf(\"位图结构体内存分配失败\\n\");",
+      "        return NULL;",
+      "    }",
+      "    /* 需要的字节数 = 能存 max+1 个bit，向上取整 = (max >> 3) + 1 */",
+      "    /* 例如：max=7 需要1字节(能存0-7共8个bit) */",
+      "    /*       max=8 需要2字节(能存0-15共16个bit，其中0-8是有效范围) */",
+      "    bm->size = (max >> 3) + 1;",
+      "    bm->max = max;",
+      "    /* 分配位图数组，calloc会自动初始化为0 */",
+      "    bm->bits = (unsigned char *)calloc(bm->size, sizeof(unsigned char));",
+      "    if (bm->bits == NULL) {",
+      "        printf(\"位图数组内存分配失败\\n\");",
+      "        free(bm);",
+      "        return NULL;",
+      "    }",
+      "    return bm;",
+      "}",
+      "/* 设置第n个bit为1(标记n存在) */",
+      "/* 参数bm:位图指针;参数n:要标记的数值 */",
+      "void bitmap_set(Bitmap *bm, int n) {",
+      "    if (bm == NULL || n < 0 || n > bm->max) return;",
+      "    int index = n >> 3;        /* n / 8，找到在第几个字节 */",
+      "    int offset = n & 7;        /* n % 8，找到在第几个bit位 */",
+      "    bm->bits[index] |= (1U << offset);  /* 把对应bit置为1 */",
+      "    /* 1U << offset:生成一个只有第offset位是1的无符号数 */",
+      "    /* |=:或操作，把目标bit设为1，不影响其他bit */",
+      "}",
+      "/* 检查第n个bit是否为1(检查n是否存在) */",
+      "int bitmap_get(Bitmap *bm, int n) {",
+      "    if (bm == NULL || n < 0 || n > bm->max) return 0;",
+      "    int index = n >> 3;        /* n / 8 */",
+      "    int offset = n & 7;        /* n % 8 */",
+      "    return (bm->bits[index] & (1U << offset)) != 0;",
+      "    /* & 操作：如果对应bit是1，结果非0;是0，结果为0 */",
+      "}",
+      "/* 清除第n个bit(标记n不存在) */",
+      "void bitmap_clear(Bitmap *bm, int n) {",
+      "    if (bm == NULL || n < 0 || n > bm->max) return;",
+      "    int index = n >> 3;        /* n / 8 */",
+      "    int offset = n & 7;        /* n % 8 */",
+      "    bm->bits[index] &= ~(1U << offset);  /* 把对应bit清零 */",
+      "    /* ~ (1U << offset):生成一个只有第offset位是0的无符号数 */",
+      "    /* &=:与操作，把目标bit清0，不影响其他bit */",
+      "}",
+      "/* 释放位图内存 */",
+      "void bitmap_destroy(Bitmap *bm) {",
+      "    if (bm == NULL) return;",
+      "    free(bm->bits);   /* 先释放bits数组 */",
+      "    free(bm);         /* 再释放结构体 */",
+      "}",
+      "/* 测试代码 */",
+      "int main() {",
+      "    Bitmap *bm = bitmap_create(MAX_NUM);  /* 创建一个能存100万个数的位图 */",
+      "    if (bm == NULL) {",
+      "        return 1;",
+      "    }",
+      "    /* 模拟出勤记录：学号1、5、100、999999来了 */",
+      "    bitmap_set(bm, 1);",
+      "    bitmap_set(bm, 5);",
+      "    bitmap_set(bm, 100);",
+      "    bitmap_set(bm, 999999);",
+      "    /* 检查出勤情况 */",
+      "    printf(\"学号1来了吗？%s\\n\", bitmap_get(bm, 1) ? \"来了\" : \"没来\");",
+      "    printf(\"学号2来了吗？%s\\n\", bitmap_get(bm, 2) ? \"来了\" : \"没来\");",
+      "    printf(\"学号5来了吗？%s\\n\", bitmap_get(bm, 5) ? \"来了\" : \"没来\");",
+      "    printf(\"学号999999来了吗？%s\\n\", bitmap_get(bm, 999999) ? \"来了\" : \"没来\");",
+      "    bitmap_destroy(bm);  /* 释放内存 */",
+      "    return 0;",
+      "}"
+    ],
+    "track_vars": {
+      "primary": [
+        "max",
+        "n"
+      ],
+      "secondary": [
+        "_return",
+        "bm"
+      ]
+    },
+    "var_classes": {
+      "_return": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "bm": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "max": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "n": {
+        "category": "primary",
+        "type": "scalar"
+      }
+    },
+    "viz_type": "array",
+    "initial_data": {},
+    "program_output": [
+      {
+        "after_step": 18,
+        "text": "学号1来了吗？来了"
+      },
+      {
+        "after_step": 22,
+        "text": "学号2来了吗？没来"
+      },
+      {
+        "after_step": 26,
+        "text": "学号5来了吗？来了"
+      },
+      {
+        "after_step": 30,
+        "text": "学号999999来了吗？来了"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step": 0,
+      "line": 72,
+      "type": "enter",
+      "func": "main",
+      "vars": {}
+    },
+    {
+      "step": 1,
+      "line": 73,
+      "type": "enter",
+      "func": "bitmap_create",
+      "vars": {
+        "max": 1000000
+      }
+    },
+    {
+      "step": 2,
+      "line": 27,
+      "type": "exec",
+      "vars": {
+        "bm": 88251328
+      }
+    },
+    {
+      "step": 3,
+      "line": 28,
+      "type": "exec",
+      "vars": {
+        "bm": 88251328
+      }
+    },
+    {
+      "step": 4,
+      "line": 30,
+      "type": "exec",
+      "vars": {
+        "bm": 88251328
+      }
+    },
+    {
+      "step": 5,
+      "line": 36,
+      "type": "exit",
+      "func": "bitmap_create",
+      "vars": {}
+    },
+    {
+      "step": 6,
+      "line": 78,
+      "type": "enter",
+      "func": "bitmap_set",
+      "vars": {
+        "n": 1
+      }
+    },
+    {
+      "step": 7,
+      "line": 41,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "n": 1
+      }
+    },
+    {
+      "step": 8,
+      "line": 79,
+      "type": "enter",
+      "func": "bitmap_set",
+      "vars": {
+        "n": 5
+      }
+    },
+    {
+      "step": 9,
+      "line": 41,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "n": 5
+      }
+    },
+    {
+      "step": 10,
+      "line": 80,
+      "type": "enter",
+      "func": "bitmap_set",
+      "vars": {
+        "n": 100
+      }
+    },
+    {
+      "step": 11,
+      "line": 41,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "n": 100
+      }
+    },
+    {
+      "step": 12,
+      "line": 81,
+      "type": "enter",
+      "func": "bitmap_set",
+      "vars": {
+        "n": 999999
+      }
+    },
+    {
+      "step": 13,
+      "line": 41,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "n": 999999
+      }
+    },
+    {
+      "step": 14,
+      "line": 83,
+      "type": "enter",
+      "func": "bitmap_get",
+      "vars": {
+        "n": 1
+      }
+    },
+    {
+      "step": 15,
+      "line": 50,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "n": 1
+      }
+    },
+    {
+      "step": 16,
+      "line": 53,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 17,
+      "line": 53,
+      "type": "exit",
+      "func": "bitmap_get",
+      "vars": {}
+    },
+    {
+      "step": 18,
+      "line": 84,
+      "type": "enter",
+      "func": "bitmap_get",
+      "vars": {
+        "n": 2
+      }
+    },
+    {
+      "step": 19,
+      "line": 50,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "n": 2
+      }
+    },
+    {
+      "step": 20,
+      "line": 53,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 21,
+      "line": 53,
+      "type": "exit",
+      "func": "bitmap_get",
+      "vars": {}
+    },
+    {
+      "step": 22,
+      "line": 85,
+      "type": "enter",
+      "func": "bitmap_get",
+      "vars": {
+        "n": 5
+      }
+    },
+    {
+      "step": 23,
+      "line": 50,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "n": 5
+      }
+    },
+    {
+      "step": 24,
+      "line": 53,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 25,
+      "line": 53,
+      "type": "exit",
+      "func": "bitmap_get",
+      "vars": {}
+    },
+    {
+      "step": 26,
+      "line": 86,
+      "type": "enter",
+      "func": "bitmap_get",
+      "vars": {
+        "n": 999999
+      }
+    },
+    {
+      "step": 27,
+      "line": 50,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "n": 999999
+      }
+    },
+    {
+      "step": 28,
+      "line": 53,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 29,
+      "line": 53,
+      "type": "exit",
+      "func": "bitmap_get",
+      "vars": {}
+    },
+    {
+      "step": 30,
+      "line": 67,
+      "type": "cond",
+      "result": false,
+      "vars": {}
+    },
+    {
+      "step": 31,
+      "line": 88,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 32,
+      "line": 88,
+      "type": "exit",
+      "func": "main",
+      "vars": {}
+    }
+  ],
+  "total_steps": 33
+}

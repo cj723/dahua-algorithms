@@ -1,0 +1,4714 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#171b28">
+<link rel="icon" href="../assets/mascots/student-dog.png">
+<title>第17章 概率算法 · 大话算法</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #1e2336;
+  --panel: #1a1f30;
+  --panel-deep: #151920;
+  --surface: #21283a;
+  --border: #30384c;
+  --text: #d7dae0;
+  --text-soft: #abb4c3;
+  --text-dim: #929caf;
+  --accent: #59a8ee;
+  --accent-soft: #243f5e;
+  --success: #98c379;
+  --control-height: 64px;
+}
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Noto Sans SC', 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text-soft);
+  overflow: hidden;
+}
+button, input, summary { font: inherit; }
+button:focus-visible, a:focus-visible, input:focus-visible, summary:focus-visible, [tabindex]:focus-visible {
+  outline: 3px solid rgba(89,168,238,.58);
+  outline-offset: 2px;
+}
+.header {
+  height: 65px;
+  background: rgba(23,28,43,.96);
+  padding: 0 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  position: relative;
+  z-index: 30;
+}
+.back-link {
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 13px;
+  white-space: nowrap;
+}
+.back-link:hover { text-decoration: underline; }
+.chapter-heading { min-width: 0; flex: 1; }
+.chapter-kicker { color: var(--text-dim); font-size: 12px; margin-bottom: 2px; }
+.chapter-heading h1 {
+  font-size: 19px;
+  line-height: 1.25;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.chapter-status {
+  min-width: 138px;
+  display: grid;
+  gap: 5px;
+}
+.chapter-status-text { color: var(--text-dim); font-size: 11px; text-align: right; }
+.chapter-status-track { height: 4px; background: #252c3e; border-radius: 99px; overflow: hidden; }
+.chapter-status-fill {
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, var(--accent), var(--success));
+  border-radius: inherit;
+  transition: width .3s ease;
+}
+.chapter-nav { display: flex; gap: 6px; }
+.chapter-nav a, .chapter-nav span {
+  min-width: 36px;
+  height: 36px;
+  padding: 0 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-soft);
+  text-decoration: none;
+  font-size: 12px;
+}
+.chapter-nav a:hover { border-color: var(--accent); color: var(--text); background: #202b40; }
+.chapter-nav .disabled { opacity: .35; cursor: default; }
+.mobile-view-switcher { display: none; }
+.main { display: flex; height: calc(100dvh - 65px); min-height: 0; }
+.code-panel {
+  width: 45%;
+  min-width: 360px;
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.code-header {
+  background: var(--panel);
+  padding: 9px 14px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.algo-tabs {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  flex: 1;
+  min-width: 0;
+}
+.algo-tab, .mode-tab {
+  border: 1px solid var(--border);
+  background: #22283a;
+  color: var(--text-dim);
+  border-radius: 7px;
+  cursor: pointer;
+  transition: background .18s ease, border-color .18s ease, color .18s ease;
+}
+.algo-tab { padding: 6px 11px; font-size: 12px; position: relative; }
+.algo-tab:hover, .mode-tab:hover { color: var(--text); border-color: #48536b; }
+.algo-tab.active, .mode-tab.active {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: #e8f3ff;
+}
+.algo-tab.completed::after {
+  content: '✓';
+  margin-left: 6px;
+  color: var(--success);
+  font-weight: 800;
+}
+.breakpoint-hint {
+  color: #737e92;
+  font-size: 11px;
+  line-height: 29px;
+  white-space: nowrap;
+}
+.mode-tabs {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: #171c2b;
+  border-bottom: 1px solid var(--border);
+}
+.mode-tabs.visible { display: flex; }
+.mode-label { font-size: 12px; color: var(--text-dim); margin-right: 2px; }
+.mode-tab { padding: 5px 12px; border-radius: 999px; font-size: 12px; }
+.code-body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  font-family: 'SFMono-Regular', 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+  font-size: var(--code-font-size, 15px);
+  line-height: 1.8;
+  scrollbar-color: #3b455c transparent;
+}
+.code-line { display: flex; min-width: max-content; padding: 0 16px 0 7px; position: relative; }
+.code-line:hover { background: #22283a; }
+.code-line.active {
+  background: rgba(73,164,238,.32);
+  border-left: 3px solid var(--accent);
+  box-shadow: inset 0 0 16px rgba(73,164,238,.18);
+}
+.code-line.executed { background: rgba(73,164,238,.035); }
+.code-line.setup { background: rgba(127,132,142,.045); color: #667084; }
+.line-num {
+  width: 42px;
+  border: 0;
+  background: transparent;
+  text-align: right;
+  color: #748096;
+  padding-right: 12px;
+  user-select: none;
+  flex-shrink: 0;
+  position: relative;
+  cursor: pointer;
+}
+.line-num:hover { color: var(--accent); }
+.line-num .breakpoint {
+  position: absolute;
+  left: 3px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #e05561;
+}
+.line-content { flex: 1; white-space: pre; }
+.kw, .num { color: #F3A862; }
+.fn { color: #59a8ee; }
+.var { color: #D980FA; }
+.str { color: #74C589; }
+.cmt { color: #71939a; font-style: italic; }
+.right-panel { flex: 1; display: flex; flex-direction: column; min-width: 0; min-height: 0; overflow: hidden; }
+.viz-panel {
+  flex: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 20px;
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
+}
+.viz-panel canvas { width: 100%; height: 100%; display: block; }
+body.concept-mode .viz-panel { flex: 1 1 auto; padding: 6px 20px; }
+body.concept-mode .vars-panel { flex: 0 1 168px; padding: 8px 18px; }
+body.concept-mode .output-panel { flex: 0 1 68px; padding: 6px 16px; }
+body.concept-mode .callstack { display: none; }
+.callstack {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  max-width: calc(100% - 24px);
+  background: rgba(33,38,54,.92);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 12px;
+  pointer-events: none;
+}
+.callstack-title, .vars-panel h3, .output-panel h3 { color: var(--text-dim); }
+.callstack-title { margin-bottom: 4px; }
+.callstack-item { color: var(--accent); padding: 2px 0; }
+.callstack-item::before { content: '▸ '; color: #68758a; }
+.vars-panel {
+  flex: 2;
+  background: var(--panel);
+  padding: 10px 18px;
+  border-top: 1px solid var(--border);
+  overflow-y: auto;
+  min-height: 0;
+}
+.output-panel {
+  flex: 1;
+  background: var(--panel-deep);
+  border-top: 1px solid var(--border);
+  padding: 8px 16px;
+  overflow-y: auto;
+  min-height: 0;
+  font-family: 'SFMono-Regular', 'JetBrains Mono', monospace;
+  font-size: var(--output-font-size, 13px);
+  color: var(--text-dim);
+}
+.output-panel h3 {
+  font-size: 12px;
+  margin-bottom: 4px;
+  position: sticky;
+  top: 0;
+  background: var(--panel-deep);
+  padding-bottom: 4px;
+  z-index: 1;
+}
+.output-line { padding: 1px 0; white-space: pre-wrap; word-break: break-word; }
+.vars-panel h3 { font-size: 13px; margin-bottom: 9px; }
+.var-grid { display: flex; flex-direction: column; gap: 6px; }
+.var-section-title { font-size: 11px; color: var(--text-dim); margin: 8px 0 4px; }
+.var-section:first-child .var-section-title { margin-top: 0; }
+.var-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.var-item {
+  background: #22283a;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 6px 13px;
+  font-family: monospace;
+  font-size: var(--var-font-size, 14px);
+}
+.var-name { color: var(--accent); }
+.var-val { color: var(--text); font-weight: 650; }
+.var-changed { animation: varPulse .5s ease; border-color: var(--accent); }
+.var-highlight { border-color: var(--accent); background: var(--accent-soft); }
+@keyframes varPulse { 0% { background: var(--accent-soft); } 100% { background: #22283a; } }
+.var-toggle { font-size: 12px; color: var(--text-dim); cursor: pointer; padding: 4px 0; user-select: none; }
+.control-bar {
+  min-height: var(--control-height);
+  flex-shrink: 0;
+  background: var(--panel);
+  border-top: 1px solid var(--border);
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+  z-index: 20;
+}
+.transport-controls { display: flex; align-items: center; gap: 7px; }
+.btn {
+  min-height: 38px;
+  background: #22283a;
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  white-space: nowrap;
+}
+.btn:hover:not(:disabled) { background: #2a3247; border-color: #4c5872; }
+.btn:disabled { opacity: .36; cursor: not-allowed; }
+.btn-primary { min-width: 82px; background: var(--accent-soft); border-color: var(--accent); }
+.btn-active { background: #285176; border-color: #77bfff; }
+.step-info {
+  margin-left: auto;
+  min-width: 68px;
+  font-size: 12px;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+.step-info strong { color: var(--text); }
+.settings-menu { position: relative; }
+.settings-menu summary {
+  list-style: none;
+  min-height: 38px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-soft);
+  cursor: pointer;
+  font-size: 12px;
+  user-select: none;
+}
+.settings-menu summary::-webkit-details-marker { display: none; }
+.settings-menu[open] summary { border-color: var(--accent); background: var(--accent-soft); color: var(--text); }
+.settings-popover {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 10px);
+  width: 250px;
+  padding: 14px;
+  display: grid;
+  gap: 12px;
+  background: rgba(23,28,43,.98);
+  border: 1px solid #3a465f;
+  border-radius: 12px;
+  box-shadow: 0 16px 42px rgba(0,0,0,.38);
+}
+.setting-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.setting-row label, .shortcut-help { font-size: 12px; color: var(--text-dim); }
+.speed-slider { width: 130px; accent-color: var(--accent); }
+.font-control { display: flex; align-items: center; gap: 6px; }
+.btn-sm { min-height: 32px; padding: 5px 10px; font-size: 12px; }
+.settings-divider { height: 1px; background: var(--border); }
+.shortcut-help { line-height: 1.65; }
+
+@media (max-width: 1050px) {
+  .code-panel { width: 42%; min-width: 320px; }
+  .chapter-status { display: none; }
+  .breakpoint-hint { display: none; }
+  .btn { padding-inline: 10px; }
+}
+
+@media (max-width: 900px) {
+  body { overflow: auto; padding-bottom: 72px; }
+  .header {
+    height: auto;
+    min-height: 60px;
+    padding: 8px 12px;
+    gap: 10px;
+    position: sticky;
+    top: 0;
+  }
+  .back-link { font-size: 0; width: 36px; height: 36px; display: grid; place-items: center; }
+  .back-link::before { content: '←'; font-size: 21px; }
+  .chapter-kicker { font-size: 10px; }
+  .chapter-heading h1 { font-size: 16px; }
+  .chapter-nav a, .chapter-nav span { width: 34px; min-width: 34px; padding: 0; font-size: 0; }
+  .chapter-nav a:first-child::before, .chapter-nav span:first-child::before { content: '‹'; font-size: 22px; }
+  .chapter-nav a:last-child::before, .chapter-nav span:last-child::before { content: '›'; font-size: 22px; }
+  .mobile-view-switcher {
+    position: sticky;
+    top: 60px;
+    z-index: 25;
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 4px;
+    padding: 7px 10px;
+    background: rgba(23,28,43,.97);
+    border-bottom: 1px solid var(--border);
+  }
+  .mobile-view-switcher button {
+    min-height: 38px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text-dim);
+  }
+  .mobile-view-switcher button.active {
+    color: #e8f3ff;
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+  .main { display: block; height: auto; min-height: calc(100dvh - 114px); }
+  .code-panel, .right-panel { width: 100%; min-width: 0; border: 0; }
+  .code-panel { height: calc(100dvh - 186px); }
+  .code-header { padding: 8px 10px; overflow: hidden; }
+  .algo-tabs { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 3px; scrollbar-width: thin; }
+  .algo-tab { flex: 0 0 auto; min-height: 38px; }
+  .mode-tabs { padding: 7px 10px; overflow-x: auto; }
+  .code-body { min-height: 0; font-size: max(13px,var(--code-font-size,15px)); }
+  .code-line { padding-right: 12px; }
+  .right-panel { min-height: calc(100dvh - 186px); overflow: visible; }
+  .viz-panel { height: calc(100dvh - 186px); min-height: 430px; flex: none !important; padding: 8px 10px !important; }
+  .vars-panel { min-height: 50dvh; padding: 14px; }
+  .output-panel { min-height: 28dvh; padding: 12px 14px; }
+  body[data-mobile-view="animation"] .code-panel,
+  body[data-mobile-view="animation"] .vars-panel,
+  body[data-mobile-view="animation"] .output-panel { display: none; }
+  body[data-mobile-view="code"] .right-panel > :not(.control-bar),
+  body[data-mobile-view="code"] .vars-panel,
+  body[data-mobile-view="code"] .output-panel { display: none; }
+  body[data-mobile-view="code"] .right-panel { min-height: 0; }
+  body[data-mobile-view="data"] .code-panel,
+  body[data-mobile-view="data"] .viz-panel { display: none; }
+  body[data-mobile-view="data"] .right-panel { min-height: calc(100dvh - 186px); }
+  .control-bar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    min-height: 72px;
+    padding: 9px max(10px,env(safe-area-inset-right)) calc(9px + env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left));
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 -10px 30px rgba(9,12,20,.36);
+  }
+  .transport-controls { gap: 7px; }
+  #btn-reset { display: none; }
+  .btn { min-width: 48px; min-height: 44px; padding: 8px 10px; font-size: 0; }
+  #btn-back::after { content: '◀'; font-size: 16px; }
+  #btn-play { min-width: 92px; font-size: 14px; }
+  #btn-step::after { content: '▶'; font-size: 16px; }
+  .step-info { margin-left: 0; min-width: 52px; text-align: center; font-size: 11px; }
+  .step-info .step-prefix { display: none; }
+  .settings-menu summary { width: 44px; min-height: 44px; padding: 0; justify-content: center; font-size: 0; }
+  .settings-menu summary::before { content: '⚙'; font-size: 17px; }
+  .settings-popover { right: -2px; width: min(280px,calc(100vw - 20px)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: .001ms !important;
+  }
+}
+</style>
+</head>
+<body data-mobile-view="animation">
+
+<header class="header">
+  <a class="back-link" href="../index.html" aria-label="返回学习地图">← 学习地图</a>
+  <div class="chapter-heading">
+    <div class="chapter-kicker">第17章</div>
+    <h1>概率算法</h1>
+  </div>
+  <div class="chapter-status" aria-label="本章学习进度">
+    <div class="chapter-status-text" id="chapter-progress-text">0 / 0 个演示完成</div>
+    <div class="chapter-status-track"><div class="chapter-status-fill" id="chapter-progress-fill"></div></div>
+  </div>
+  <nav class="chapter-nav" aria-label="章节导航">
+    <a href="ch16.html" aria-label="上一章：位运算魔法" title="上一章：位运算魔法">上一章</a>
+    <a href="ch18.html" aria-label="下一章：算法在现实世界" title="下一章：算法在现实世界">下一章</a>
+  </nav>
+</header>
+
+<div class="mobile-view-switcher" role="tablist" aria-label="学习视图">
+  <button type="button" class="active" data-mobile-view="animation" role="tab" aria-selected="true">动画</button>
+  <button type="button" data-mobile-view="code" role="tab" aria-selected="false">代码</button>
+  <button type="button" data-mobile-view="data" role="tab" aria-selected="false">变量</button>
+</div>
+
+<main class="main">
+  <section class="code-panel" aria-label="算法代码">
+    <div class="code-header">
+      <div class="algo-tabs" id="algo-tabs" role="tablist" aria-label="本章算法"></div>
+      <span class="breakpoint-hint">点击行号可设断点</span>
+    </div>
+    <div class="mode-tabs" id="mode-tabs" role="tablist" aria-label="演示模式"></div>
+    <div class="code-body" id="code-body" aria-label="代码执行过程"></div>
+  </section>
+
+  <section class="right-panel" aria-label="算法可视化与状态">
+    <div class="viz-panel">
+      <canvas id="viz-canvas" width="800" height="300" role="img" aria-label="算法执行动画"></canvas>
+      <div class="callstack" id="callstack"><div class="callstack-title">调用栈</div></div>
+    </div>
+    <div class="vars-panel">
+      <h3>变量状态</h3>
+      <div class="var-grid" id="var-grid"></div>
+    </div>
+    <div class="output-panel" id="output-panel">
+      <h3>程序输出</h3>
+      <div id="output-content" aria-live="polite"></div>
+    </div>
+
+    <div class="control-bar" aria-label="播放控制">
+      <div class="transport-controls">
+        <button class="btn" id="btn-reset" type="button" aria-label="重置当前演示" title="重置当前演示">⏮ 重置</button>
+        <button class="btn" id="btn-back" type="button" aria-label="上一步" title="上一步">◀ 后退</button>
+        <button class="btn btn-primary" id="btn-play" type="button" aria-label="播放或暂停">▶ 播放</button>
+        <button class="btn" id="btn-step" type="button" aria-label="下一步" title="下一步">⏭ 单步</button>
+      </div>
+      <div class="step-info" aria-live="polite">
+        <span class="step-prefix">步骤 </span><strong id="step-cur">0</strong> / <strong id="step-total">0</strong>
+      </div>
+      <details class="settings-menu">
+        <summary aria-label="播放设置">⚙ 设置</summary>
+        <div class="settings-popover">
+          <div class="setting-row">
+            <label for="speed-slider">播放速度</label>
+            <input type="range" class="speed-slider" id="speed-slider" min="1" max="10" value="5" aria-valuetext="速度 5">
+          </div>
+          <div class="setting-row">
+            <span class="mode-label">代码字体</span>
+            <div class="font-control">
+              <button class="btn btn-sm" type="button" id="font-dec" aria-label="减小代码字体">A−</button>
+              <button class="btn btn-sm" type="button" id="font-inc" aria-label="增大代码字体">A＋</button>
+            </div>
+          </div>
+          <button class="btn" id="btn-to-bp" type="button">运行到断点</button>
+          <div class="settings-divider"></div>
+          <div class="shortcut-help">页面空白处：空格播放/暂停，← → 单步，R 重置</div>
+        </div>
+      </details>
+    </div>
+  </section>
+</main>
+
+<script src="../js/learning-state.js?v=20260725"></script>
+<script src="../js/engine.js?v=20260725-ux2"></script>
+<script src="../js/viz-renderers.js?v=20260725-layout-audit"></script>
+<script>
+const CHAPTER_NUM = 17;
+const ALGOS = {
+  "01_生日悖论_模拟验证": {
+    "title": "生日悖论（模拟验证）",
+    "defaultMode": "concept",
+    "modeLabels": {
+      "concept": "理解动画",
+      "trace": "代码执行"
+    },
+    "modes": {
+      "concept": {
+        "title": "生日悖论（模拟验证）",
+        "source": [
+          "算法: 生日悖论模拟验证",
+          "输入: 人数 n, 模拟次数 trials",
+          "输出: 至少两人同生日的概率",
+          "",
+          "重复 trials 次:",
+          "    清空 365 天日历",
+          "    让 n 个人依次随机选择生日",
+          "    如果某一天已经有人, 发生碰撞",
+          "统计碰撞次数 / trials"
+        ],
+        "important_vars": {
+          "people": "人数",
+          "probability": "碰撞概率",
+          "phase": "阶段"
+        },
+        "track_vars": {
+          "primary": [
+            "people",
+            "probability",
+            "phase"
+          ],
+          "secondary": []
+        },
+        "var_classes": {
+          "people": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "probability": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "phase": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "concept": {
+            "category": "secondary",
+            "type": "concept"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 6,
+            "text": "概念动画：可能配对的人数增长很快, 所以 23 个人就有约 50% 概率同生日。"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 5,
+            "type": "exec",
+            "vars": {
+              "people": 0,
+              "probability": 0.0,
+              "phase": "一次模拟从空日历开始",
+              "concept": {
+                "kind": "birthday",
+                "people": 0,
+                "birthdays": [],
+                "duplicateDay": null,
+                "probability": 0.0,
+                "collision": false
+              }
+            }
+          },
+          {
+            "step": 1,
+            "line": 7,
+            "type": "exec",
+            "vars": {
+              "people": 6,
+              "probability": 4.0,
+              "phase": "人数变多, 已占用的日期越来越多",
+              "concept": {
+                "kind": "birthday",
+                "people": 6,
+                "birthdays": [
+                  32,
+                  211,
+                  87,
+                  310,
+                  144,
+                  18
+                ],
+                "duplicateDay": null,
+                "probability": 0.04,
+                "collision": false
+              }
+            }
+          },
+          {
+            "step": 2,
+            "line": 7,
+            "type": "exec",
+            "vars": {
+              "people": 10,
+              "probability": 12.0,
+              "phase": "不是要和某个固定人相同, 而是任意两人都可能撞上",
+              "concept": {
+                "kind": "birthday",
+                "people": 10,
+                "birthdays": [
+                  32,
+                  211,
+                  87,
+                  310,
+                  144,
+                  18,
+                  270,
+                  59,
+                  183,
+                  241
+                ],
+                "duplicateDay": null,
+                "probability": 0.12,
+                "collision": false
+              }
+            }
+          },
+          {
+            "step": 3,
+            "line": 8,
+            "type": "exec",
+            "vars": {
+              "people": 11,
+              "probability": 51.0,
+              "phase": "第 11 个人生日落在已有日期: 发生碰撞",
+              "concept": {
+                "kind": "birthday",
+                "people": 11,
+                "birthdays": [
+                  32,
+                  211,
+                  87,
+                  310,
+                  144,
+                  18,
+                  270,
+                  59,
+                  183,
+                  241,
+                  87
+                ],
+                "duplicateDay": 87,
+                "probability": 0.51,
+                "collision": true
+              }
+            }
+          },
+          {
+            "step": 4,
+            "line": 8,
+            "type": "exec",
+            "vars": {
+              "people": 23,
+              "probability": 50.7,
+              "phase": "23 个人时, 至少一对同生日的概率已经超过一半",
+              "concept": {
+                "kind": "birthday",
+                "people": 23,
+                "birthdays": [
+                  32,
+                  211,
+                  87,
+                  310,
+                  144,
+                  18,
+                  270,
+                  59,
+                  183,
+                  241,
+                  87,
+                  6,
+                  336,
+                  122,
+                  198,
+                  260,
+                  41,
+                  318,
+                  159,
+                  224,
+                  14,
+                  291,
+                  101
+                ],
+                "duplicateDay": 87,
+                "probability": 0.507,
+                "collision": true
+              }
+            }
+          },
+          {
+            "step": 5,
+            "line": 9,
+            "type": "exec",
+            "vars": {
+              "people": 50,
+              "probability": 97.0,
+              "phase": "50 个人时, 概率接近 97%",
+              "concept": {
+                "kind": "birthday",
+                "people": 50,
+                "birthdays": [
+                  32,
+                  211,
+                  87,
+                  310,
+                  144,
+                  18,
+                  270,
+                  59,
+                  183,
+                  241,
+                  87,
+                  6,
+                  336,
+                  122,
+                  198,
+                  260,
+                  41,
+                  318,
+                  159,
+                  224,
+                  14,
+                  291,
+                  101
+                ],
+                "duplicateDay": 87,
+                "probability": 0.97,
+                "collision": true
+              }
+            }
+          }
+        ]
+      },
+      "trace": {
+        "title": "生日悖论（模拟验证）",
+        "source": [
+          "/* 生日悖论蒙特卡洛验证 */",
+          "#include <stdio.h>",
+          "#include <stdlib.h>",
+          "#include <time.h>",
+          "",
+          "int main(void) {",
+          "    int n = 50;          /* 屋子里的人数 */",
+          "    int trials = 100000; /* 重复实验次数 */",
+          "    int collisions = 0;  /* 出现重复生日的次数 */",
+          "",
+          "    srand((unsigned int)time(NULL));",
+          "",
+          "    for (int t = 0; t < trials; t++) {",
+          "        int days[365] = {0}; /* 一年365天 */",
+          "        int found = 0;",
+          "        for (int i = 0; i < n; i++) {",
+          "            int birthday = rand() % 365;",
+          "            if (days[birthday]) { found = 1; break; }",
+          "            days[birthday] = 1;",
+          "        }",
+          "        if (found) collisions++;",
+          "    }",
+          "",
+          "    printf(\"%d 人中出现重复生日的概率：%.1f%%\\n\",",
+          "           n, 100.0 * collisions / trials);",
+          "    /* 输出大约 97%! */",
+          "    return 0;",
+          "}",
+          ""
+        ],
+        "important_vars": {
+          "n": "参数",
+          "t": "指针",
+          "i": "索引",
+          "days": "数据"
+        },
+        "track_vars": {
+          "primary": [
+            "found",
+            "i",
+            "n"
+          ],
+          "secondary": [
+            "birthday",
+            "days",
+            "t",
+            "trials"
+          ]
+        },
+        "var_classes": {
+          "birthday": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "days": {
+            "category": "secondary",
+            "type": "array"
+          },
+          "found": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "i": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "n": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "t": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "trials": {
+            "category": "secondary",
+            "type": "scalar"
+          }
+        },
+        "initial_data": {
+          "days": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            "...",
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "program_output": [
+          {
+            "after_step": 14,
+            "text": "50人中出现重复生日的概率：97.1%"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 5,
+            "type": "enter",
+            "func": "main",
+            "vars": {}
+          },
+          {
+            "step": 1,
+            "line": 10,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "t": 0,
+              "trials": 100000
+            }
+          },
+          {
+            "step": 2,
+            "line": 16,
+            "type": "exec",
+            "vars": {
+              "days": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                "...",
+                0,
+                0,
+                0,
+                0,
+                1,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            }
+          },
+          {
+            "step": 3,
+            "line": 16,
+            "type": "exec",
+            "vars": {
+              "days": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                "...",
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            }
+          },
+          {
+            "step": 4,
+            "line": 16,
+            "type": "exec",
+            "vars": {
+              "days": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                "...",
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            }
+          },
+          {
+            "step": 5,
+            "line": 16,
+            "type": "exec",
+            "vars": {
+              "days": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                "...",
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            }
+          },
+          {
+            "step": 6,
+            "line": 10,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "t": 3,
+              "trials": 100000
+            }
+          },
+          {
+            "step": 7,
+            "line": 15,
+            "type": "cond",
+            "result": false,
+            "vars": {
+              "birthday": 201
+            }
+          },
+          {
+            "step": 8,
+            "line": 16,
+            "type": "exec",
+            "vars": {
+              "days": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                1,
+                0,
+                0,
+                "...",
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            }
+          },
+          {
+            "step": 9,
+            "line": 15,
+            "type": "cond",
+            "result": false,
+            "vars": {
+              "birthday": 281
+            }
+          },
+          {
+            "step": 10,
+            "line": 16,
+            "type": "exec",
+            "vars": {
+              "days": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                "...",
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            }
+          },
+          {
+            "step": 11,
+            "line": 13,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 1,
+              "n": 50
+            }
+          },
+          {
+            "step": 12,
+            "line": 13,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 12,
+              "n": 50
+            }
+          },
+          {
+            "step": 13,
+            "line": 15,
+            "type": "cond",
+            "result": false,
+            "vars": {
+              "trials": "-",
+              "birthday": "-",
+              "i": "-",
+              "n": "-",
+              "t": "-",
+              "days": "-",
+              "phase": "程序执行完成，结果见下方输出"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "02_随机化快排": {
+    "title": "随机化快速排序",
+    "defaultMode": "concept",
+    "modeLabels": {
+      "concept": "理解动画",
+      "trace": "代码执行"
+    },
+    "modes": {
+      "concept": {
+        "title": "随机化快速排序",
+        "source": [
+          "算法: 随机化快速排序",
+          "输入: 一个无序数组 arr",
+          "输出: 排好序的数组",
+          "",
+          "函数 randomized_quick_sort(arr, left, right):",
+          "    随机选择一个 pivot",
+          "    把 pivot 换到区间末尾",
+          "    分区: 小的去左边, 大的留右边",
+          "    pivot 站到最终位置",
+          "    继续处理左右子数组",
+          "    随机性让坏输入不再固定触发最坏情况"
+        ],
+        "important_vars": {
+          "pivot": "随机基准",
+          "range": "当前区间",
+          "phase": "阶段"
+        },
+        "track_vars": {
+          "primary": [
+            "pivot",
+            "range",
+            "phase"
+          ],
+          "secondary": []
+        },
+        "var_classes": {
+          "pivot": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "range": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "phase": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "concept": {
+            "category": "secondary",
+            "type": "concept"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 6,
+            "text": "理解动画：随机快排不是换了排序结果, 而是换了 pivot 的选择方式, 让最坏情况不容易被固定输入卡住。"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 5,
+            "type": "exec",
+            "vars": {
+              "pivot": 5,
+              "range": "0..8",
+              "phase": "原数组顺序不重要, 这一轮先随机抽到 5",
+              "concept": {
+                "kind": "array_process",
+                "mode": "quick",
+                "title": "随机化快速排序",
+                "values": [
+                  5,
+                  3,
+                  8,
+                  1,
+                  9,
+                  2,
+                  7,
+                  4,
+                  6
+                ],
+                "pivotIdx": 0,
+                "compare": [
+                  0
+                ],
+                "leftZone": [],
+                "sorted": [],
+                "range": [
+                  0,
+                  8
+                ],
+                "phase": "原数组顺序不重要, 这一轮先随机抽到 5"
+              }
+            }
+          },
+          {
+            "step": 1,
+            "line": 6,
+            "type": "exec",
+            "vars": {
+              "pivot": 5,
+              "range": "0..8",
+              "phase": "把随机 pivot 换到末尾, 后面就能用普通分区",
+              "concept": {
+                "kind": "array_process",
+                "mode": "quick",
+                "title": "随机化快速排序",
+                "values": [
+                  6,
+                  3,
+                  8,
+                  1,
+                  9,
+                  2,
+                  7,
+                  4,
+                  5
+                ],
+                "pivotIdx": 8,
+                "compare": [
+                  0,
+                  8
+                ],
+                "leftZone": [],
+                "sorted": [],
+                "range": [
+                  0,
+                  8
+                ],
+                "phase": "把随机 pivot 换到末尾, 后面就能用普通分区"
+              }
+            }
+          },
+          {
+            "step": 2,
+            "line": 8,
+            "type": "exec",
+            "vars": {
+              "pivot": 5,
+              "range": "0..8",
+              "phase": "一轮分区后, 5 已经归位; 小的在左, 大的在右",
+              "concept": {
+                "kind": "array_process",
+                "mode": "quick",
+                "title": "随机化快速排序",
+                "values": [
+                  3,
+                  1,
+                  2,
+                  4,
+                  5,
+                  8,
+                  7,
+                  9,
+                  6
+                ],
+                "pivotIdx": 4,
+                "compare": [
+                  0,
+                  1,
+                  2,
+                  3,
+                  5,
+                  6,
+                  7,
+                  8
+                ],
+                "leftZone": [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                "sorted": [
+                  4
+                ],
+                "range": [
+                  0,
+                  8
+                ],
+                "phase": "一轮分区后, 5 已经归位; 小的在左, 大的在右"
+              }
+            }
+          },
+          {
+            "step": 3,
+            "line": 10,
+            "type": "exec",
+            "vars": {
+              "pivot": 3,
+              "range": "0..3",
+              "phase": "左半段继续随机选 pivot, 避免每次都碰到坏端点",
+              "concept": {
+                "kind": "array_process",
+                "mode": "quick",
+                "title": "随机化快速排序",
+                "values": [
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  8,
+                  7,
+                  9,
+                  6
+                ],
+                "pivotIdx": 2,
+                "compare": [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                "leftZone": [
+                  0,
+                  1
+                ],
+                "sorted": [
+                  2,
+                  4
+                ],
+                "range": [
+                  0,
+                  3
+                ],
+                "phase": "左半段继续随机选 pivot, 避免每次都碰到坏端点"
+              }
+            }
+          },
+          {
+            "step": 4,
+            "line": 10,
+            "type": "exec",
+            "vars": {
+              "pivot": 8,
+              "range": "5..8",
+              "phase": "右半段继续分区, pivot 陆续站到自己的最终位置",
+              "concept": {
+                "kind": "array_process",
+                "mode": "quick",
+                "title": "随机化快速排序",
+                "values": [
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6,
+                  7,
+                  8,
+                  9
+                ],
+                "pivotIdx": 7,
+                "compare": [
+                  5,
+                  6,
+                  7,
+                  8
+                ],
+                "leftZone": [
+                  5,
+                  6
+                ],
+                "sorted": [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  7
+                ],
+                "range": [
+                  5,
+                  8
+                ],
+                "phase": "右半段继续分区, pivot 陆续站到自己的最终位置"
+              }
+            }
+          },
+          {
+            "step": 5,
+            "line": 11,
+            "type": "exec",
+            "vars": {
+              "pivot": "-",
+              "range": "-",
+              "phase": "结果仍是确定正确的排序; 随机性主要改善期望运行时间",
+              "concept": {
+                "kind": "array_process",
+                "mode": "quick",
+                "title": "随机化快速排序",
+                "values": [
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6,
+                  7,
+                  8,
+                  9
+                ],
+                "pivotIdx": null,
+                "compare": [],
+                "leftZone": [],
+                "sorted": [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6,
+                  7,
+                  8
+                ],
+                "range": [],
+                "phase": "结果仍是确定正确的排序; 随机性主要改善期望运行时间"
+              }
+            }
+          }
+        ]
+      },
+      "trace": {
+        "title": "随机化快排",
+        "source": [
+          "/* 随机化快速排序 */",
+          "/* 类比：抽签——随机选一个基准值，避免极端情况 */",
+          "#include <stdio.h>",
+          "#include <stdlib.h>",
+          "#include <time.h>",
+          "",
+          "/* 交换两个整数 */",
+          "void swap(int *a, int *b) {",
+          "    int temp = *a;",
+          "    *a = *b;",
+          "    *b = temp;",
+          "}",
+          "",
+          "/* 随机化分区函数 */",
+          "/* 返回 pivot 最终的位置 */",
+          "int randomized_partition(int arr[], int low, int high) {",
+          "    /* 关键：随机选择一个 pivot，而不是固定选第一个或最后一个 */",
+          "    /* rand() % N 只适合教学演示，工程中要注意 RAND_MAX、取模偏差和随机数质量 */",
+          "    int random_index = low + rand() % (high - low + 1);",
+          "    /* 把随机选的元素换到最后，方便后面的分区操作 */",
+          "    swap(&arr[random_index], &arr[high]);",
+          "",
+          "    int pivot = arr[high];  /* 以最后一个元素为 pivot */",
+          "    int i = low - 1;        /* i 指向“小于 pivot 区域”的末尾 */",
+          "    /* 遍历数组，把小于 pivot 的元素都交换到左边 */",
+          "    for (int j = low; j < high; j++) {",
+          "        if (arr[j] < pivot) {   /* 当前元素小于 pivot */",
+          "            i++;                /* 扩大“小元素区域” */",
+          "            swap(&arr[i], &arr[j]);  /* 交换到左边 */",
+          "        }",
+          "    }",
+          "",
+          "    /* 把 pivot 放到正确的位置 */",
+          "    swap(&arr[i + 1], &arr[high]);",
+          "    return i + 1;  /* 返回 pivot 的位置 */",
+          "}",
+          "",
+          "/* 随机化快速排序 */",
+          "void randomized_quicksort(int arr[], int low, int high) {",
+          "    if (low < high) {  /* 递归终止条件：子数组长度为 1 */",
+          "        /* 分区：找到 pivot 的正确位置 */",
+          "        int pi = randomized_partition(arr, low, high);",
+          "        /* 递归排序左半部分 */",
+          "        randomized_quicksort(arr, low, pi - 1);",
+          "        /* 递归排序右半部分 */",
+          "        randomized_quicksort(arr, pi + 1, high);",
+          "    }",
+          "}",
+          "",
+          "/* 测试代码 */",
+          "int main(void) {",
+          "    int arr[] = {5, 3, 8, 1, 9, 2, 7, 4, 6};",
+          "    int n = 9;",
+          "",
+          "    /* 初始化随机数种子 */",
+          "    srand((unsigned int)time(NULL));",
+          "",
+          "    printf(\"排序前: \");",
+          "    for (int i = 0; i < n; i++) printf(\"%d \", arr[i]);",
+          "    printf(\"\\n\");",
+          "",
+          "    randomized_quicksort(arr, 0, n - 1);",
+          "",
+          "    printf(\"排序后: \");",
+          "    for (int i = 0; i < n; i++) printf(\"%d \", arr[i]);",
+          "    printf(\"\\n\");",
+          "",
+          "    return 0;",
+          "}",
+          ""
+        ],
+        "important_vars": {
+          "i": "索引",
+          "j": "索引",
+          "n": "参数",
+          "arr": "数据"
+        },
+        "track_vars": {
+          "primary": [
+            "arr",
+            "high",
+            "i",
+            "j",
+            "low",
+            "pivot"
+          ],
+          "secondary": [
+            "_return"
+          ]
+        },
+        "var_classes": {
+          "_return": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "arr": {
+            "category": "primary",
+            "type": "array"
+          },
+          "high": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "i": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "j": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "low": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "pivot": {
+            "category": "primary",
+            "type": "scalar"
+          }
+        },
+        "initial_data": {
+          "arr": [
+            5,
+            3,
+            8,
+            1,
+            9,
+            2,
+            7,
+            4,
+            6
+          ]
+        },
+        "program_output": [
+          {
+            "after_step": 14,
+            "text": "排序前: 5 3 8 1 9 2 7 4 6；排序后: 1 2 3 4 5 6 7 8 9"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 45,
+            "type": "enter",
+            "func": "main",
+            "vars": {}
+          },
+          {
+            "step": 1,
+            "line": 37,
+            "type": "enter",
+            "func": "randomized_partition",
+            "vars": {
+              "arr": [
+                5,
+                3,
+                8,
+                1,
+                9,
+                2,
+                7,
+                4,
+                6
+              ],
+              "low": 0,
+              "high": 8
+            }
+          },
+          {
+            "step": 2,
+            "line": 39,
+            "type": "enter",
+            "func": "randomized_quicksort",
+            "vars": {
+              "arr": [
+                5,
+                3,
+                1,
+                2,
+                6,
+                4,
+                7,
+                8,
+                9
+              ],
+              "low": 0,
+              "high": 5
+            }
+          },
+          {
+            "step": 3,
+            "line": 31,
+            "type": "exit",
+            "func": "randomized_partition",
+            "vars": {}
+          },
+          {
+            "step": 4,
+            "line": 41,
+            "type": "enter",
+            "func": "randomized_quicksort",
+            "vars": {
+              "arr": [
+                1,
+                3,
+                4,
+                2,
+                6,
+                5,
+                7,
+                8,
+                9
+              ],
+              "low": 1,
+              "high": 5
+            }
+          },
+          {
+            "step": 5,
+            "line": 31,
+            "type": "exit",
+            "func": "randomized_partition",
+            "vars": {}
+          },
+          {
+            "step": 6,
+            "line": 37,
+            "type": "enter",
+            "func": "randomized_partition",
+            "vars": {
+              "arr": [
+                1,
+                3,
+                4,
+                2,
+                5,
+                6,
+                7,
+                8,
+                9
+              ],
+              "low": 1,
+              "high": 4
+            }
+          },
+          {
+            "step": 7,
+            "line": 39,
+            "type": "enter",
+            "func": "randomized_quicksort",
+            "vars": {
+              "arr": [
+                1,
+                2,
+                3,
+                5,
+                4,
+                6,
+                7,
+                8,
+                9
+              ],
+              "low": 1,
+              "high": 1
+            }
+          },
+          {
+            "step": 8,
+            "line": 37,
+            "type": "enter",
+            "func": "randomized_partition",
+            "vars": {
+              "arr": [
+                1,
+                2,
+                3,
+                5,
+                4,
+                6,
+                7,
+                8,
+                9
+              ],
+              "low": 3,
+              "high": 4
+            }
+          },
+          {
+            "step": 9,
+            "line": 39,
+            "type": "enter",
+            "func": "randomized_quicksort",
+            "vars": {
+              "arr": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9
+              ],
+              "low": 3,
+              "high": 3
+            }
+          },
+          {
+            "step": 10,
+            "line": 41,
+            "type": "enter",
+            "func": "randomized_quicksort",
+            "vars": {
+              "arr": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9
+              ],
+              "low": 6,
+              "high": 5
+            }
+          },
+          {
+            "step": 11,
+            "line": 37,
+            "type": "enter",
+            "func": "randomized_partition",
+            "vars": {
+              "arr": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9
+              ],
+              "low": 7,
+              "high": 8
+            }
+          },
+          {
+            "step": 12,
+            "line": 39,
+            "type": "enter",
+            "func": "randomized_quicksort",
+            "vars": {
+              "arr": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9
+              ],
+              "low": 7,
+              "high": 6
+            }
+          },
+          {
+            "step": 13,
+            "line": 57,
+            "type": "exit",
+            "func": "main",
+            "vars": {
+              "arr": "-",
+              "low": "-",
+              "high": "-",
+              "phase": "程序执行完成，结果见下方输出"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "03_蓄水池抽样": {
+    "title": "蓄水池抽样",
+    "defaultMode": "concept",
+    "modeLabels": {
+      "concept": "理解动画",
+      "trace": "代码执行"
+    },
+    "modes": {
+      "concept": {
+        "title": "蓄水池抽样",
+        "source": [
+          "算法: 蓄水池抽样",
+          "输入: 不知道总长度的数据流 stream, 抽样容量 k",
+          "输出: 等概率保留 k 个元素",
+          "",
+          "先把前 k 个元素放入 reservoir",
+          "从第 k+1 个元素开始, 当前序号为 i",
+          "    以 k / i 的概率考虑它",
+          "    如果命中, 随机替换 reservoir 中的一个位置",
+          "数据流结束, reservoir 就是样本"
+        ],
+        "important_vars": {
+          "i": "已看数量",
+          "probability": "进入概率",
+          "reservoir": "水池",
+          "phase": "阶段"
+        },
+        "track_vars": {
+          "primary": [
+            "i",
+            "probability",
+            "reservoir",
+            "phase"
+          ],
+          "secondary": []
+        },
+        "var_classes": {
+          "i": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "probability": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "reservoir": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "phase": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "concept": {
+            "category": "secondary",
+            "type": "concept"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 7,
+            "text": "概念动画：蓄水池抽样让未知长度数据流里的每个元素最终被保留的概率相同。"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 5,
+            "type": "exec",
+            "vars": {
+              "i": 3,
+              "probability": "1",
+              "reservoir": "A,B,C",
+              "phase": "先把前 3 个元素直接放入水池",
+              "concept": {
+                "kind": "reservoir_sampling",
+                "stream": [
+                  "A",
+                  "B",
+                  "C",
+                  "D",
+                  "E",
+                  "F",
+                  "G",
+                  "H"
+                ],
+                "seen": 3,
+                "reservoir": [
+                  "A",
+                  "B",
+                  "C"
+                ],
+                "current": 2,
+                "replaced": [],
+                "probability": "1",
+                "k": 3,
+                "phase": "先把前 3 个元素直接放入水池"
+              }
+            }
+          },
+          {
+            "step": 1,
+            "line": 7,
+            "type": "exec",
+            "vars": {
+              "i": 4,
+              "probability": "3/4",
+              "reservoir": "A,B,C",
+              "phase": "看到 D: 以 3/4 的概率进入候选",
+              "concept": {
+                "kind": "reservoir_sampling",
+                "stream": [
+                  "A",
+                  "B",
+                  "C",
+                  "D",
+                  "E",
+                  "F",
+                  "G",
+                  "H"
+                ],
+                "seen": 4,
+                "reservoir": [
+                  "A",
+                  "B",
+                  "C"
+                ],
+                "current": 3,
+                "replaced": [],
+                "probability": "3/4",
+                "k": 3,
+                "phase": "看到 D: 以 3/4 的概率进入候选"
+              }
+            }
+          },
+          {
+            "step": 2,
+            "line": 8,
+            "type": "exec",
+            "vars": {
+              "i": 4,
+              "probability": "3/4",
+              "reservoir": "A,D,C",
+              "phase": "D 命中抽样, 随机替换水池中的 B",
+              "concept": {
+                "kind": "reservoir_sampling",
+                "stream": [
+                  "A",
+                  "B",
+                  "C",
+                  "D",
+                  "E",
+                  "F",
+                  "G",
+                  "H"
+                ],
+                "seen": 4,
+                "reservoir": [
+                  "A",
+                  "D",
+                  "C"
+                ],
+                "current": 3,
+                "replaced": [
+                  1
+                ],
+                "probability": "3/4",
+                "k": 3,
+                "phase": "D 命中抽样, 随机替换水池中的 B"
+              }
+            }
+          },
+          {
+            "step": 3,
+            "line": 7,
+            "type": "exec",
+            "vars": {
+              "i": 5,
+              "probability": "3/5",
+              "reservoir": "A,D,C",
+              "phase": "看到 E: 进入概率降为 3/5",
+              "concept": {
+                "kind": "reservoir_sampling",
+                "stream": [
+                  "A",
+                  "B",
+                  "C",
+                  "D",
+                  "E",
+                  "F",
+                  "G",
+                  "H"
+                ],
+                "seen": 5,
+                "reservoir": [
+                  "A",
+                  "D",
+                  "C"
+                ],
+                "current": 4,
+                "replaced": [],
+                "probability": "3/5",
+                "k": 3,
+                "phase": "看到 E: 进入概率降为 3/5"
+              }
+            }
+          },
+          {
+            "step": 4,
+            "line": 8,
+            "type": "exec",
+            "vars": {
+              "i": 5,
+              "probability": "3/5",
+              "reservoir": "A,D,C",
+              "phase": "E 这次没命中, 水池保持不变",
+              "concept": {
+                "kind": "reservoir_sampling",
+                "stream": [
+                  "A",
+                  "B",
+                  "C",
+                  "D",
+                  "E",
+                  "F",
+                  "G",
+                  "H"
+                ],
+                "seen": 5,
+                "reservoir": [
+                  "A",
+                  "D",
+                  "C"
+                ],
+                "current": 4,
+                "replaced": [],
+                "probability": "3/5",
+                "k": 3,
+                "phase": "E 这次没命中, 水池保持不变"
+              }
+            }
+          },
+          {
+            "step": 5,
+            "line": 8,
+            "type": "exec",
+            "vars": {
+              "i": 6,
+              "probability": "3/6",
+              "reservoir": "F,D,C",
+              "phase": "F 命中后替换 A, 旧元素也可能被公平淘汰",
+              "concept": {
+                "kind": "reservoir_sampling",
+                "stream": [
+                  "A",
+                  "B",
+                  "C",
+                  "D",
+                  "E",
+                  "F",
+                  "G",
+                  "H"
+                ],
+                "seen": 6,
+                "reservoir": [
+                  "F",
+                  "D",
+                  "C"
+                ],
+                "current": 5,
+                "replaced": [
+                  0
+                ],
+                "probability": "3/6",
+                "k": 3,
+                "phase": "F 命中后替换 A, 旧元素也可能被公平淘汰"
+              }
+            }
+          },
+          {
+            "step": 6,
+            "line": 9,
+            "type": "exec",
+            "vars": {
+              "i": 8,
+              "probability": "3/8",
+              "reservoir": "F,H,C",
+              "phase": "数据流继续变长, 每个元素最终留下的机会仍相同",
+              "concept": {
+                "kind": "reservoir_sampling",
+                "stream": [
+                  "A",
+                  "B",
+                  "C",
+                  "D",
+                  "E",
+                  "F",
+                  "G",
+                  "H"
+                ],
+                "seen": 8,
+                "reservoir": [
+                  "F",
+                  "H",
+                  "C"
+                ],
+                "current": 7,
+                "replaced": [
+                  1
+                ],
+                "probability": "3/8",
+                "k": 3,
+                "phase": "数据流继续变长, 每个元素最终留下的机会仍相同"
+              }
+            }
+          }
+        ]
+      },
+      "trace": {
+        "title": "蓄水池抽样",
+        "source": [
+          "/* 蓄水池抽样（Reservoir Sampling） */",
+          "/* 类比：不知道总共有多少人，但要公平抽样 */",
+          "/* 就像一边念名单一边抽奖，念完之前不知道有多少人 */",
+          "#include <stdio.h>",
+          "#include <stdlib.h>",
+          "#include <time.h>",
+          "",
+          "/* 蓄水池抽样：从数据流中等概率抽取 k 个样本，返回实际抽到的样本数 */",
+          "/* 注意：为了让演示更清晰，这里用数组模拟数据流。 */",
+          "/* 真正的流式场景中，数据是逐个到达的，n 事先未知。 */",
+          "/* 实际使用时，应将下面的逻辑嵌入到数据到达的回调中。 */",
+          "int reservoir_sampling(int stream[], int n, int k, int result[]) {",
+          "    if (stream == NULL || result == NULL || n <= 0 || k <= 0) {",
+          "        return 0;  /* 没有可抽样数据 */",
+          "    }",
+          "",
+          "    int sample_count = (k < n) ? k : n;",
+          "",
+          "    /* 第 1 步：先把前 sample_count 个数据放入“蓄水池” */",
+          "    for (int i = 0; i < sample_count; i++) {",
+          "        result[i] = stream[i];  /* 直接放入 */",
+          "    }",
+          "",
+          "    /* 第 2 步：对于第 k + 1 个及以后的数据，决定是否替换 */",
+          "    for (int i = k; i < n; i++) {",
+          "        /* 生成一个 [0, i] 之间的随机数 j */",
+          "        int j = rand() % (i + 1);",
+          "",
+          "        /* 如果 j < k，就用当前数据替换蓄水池中的第 j 个 */",
+          "        if (j < k) {",
+          "            result[j] = stream[i];",
+          "        }",
+          "        /* 如果 j >= k，跳过当前数据 */",
+          "    }",
+          "",
+          "    return sample_count;  /* 实际抽到的样本数，n < k 时会小于 k */",
+          "}",
+          "",
+          "/* 测试：模拟从 100 个数据中抽取 5 个样本 */",
+          "int main(void) {",
+          "    int stream[100];    /* 数据流 */",
+          "    int result[5];      /* 抽样结果（蓄水池） */",
+          "    int n = 100;        /* 数据总数 */",
+          "    int k = 5;          /* 抽样数量 */",
+          "",
+          "    srand((unsigned int)time(NULL));  /* 初始化随机种子 */",
+          "",
+          "    /* 生成数据流：1 到 100 */",
+          "    for (int i = 0; i < n; i++) {",
+          "        stream[i] = i + 1;",
+          "    }",
+          "",
+          "    /* 执行蓄水池抽样 */",
+          "    int sample_count = reservoir_sampling(stream, n, k, result);",
+          "",
+          "    /* 输出抽样结果 */",
+          "    printf(\"从 1 到 %d 中抽取 %d 个样本：\", n, sample_count);",
+          "    for (int i = 0; i < sample_count; i++) {",
+          "        printf(\"%d \", result[i]);",
+          "    }",
+          "    printf(\"\\n\");",
+          "",
+          "    return 0;",
+          "}",
+          ""
+        ],
+        "important_vars": {
+          "i": "索引",
+          "j": "索引",
+          "n": "参数",
+          "k": "索引",
+          "stream": "数据",
+          "result": "数据"
+        },
+        "track_vars": {
+          "primary": [
+            "i",
+            "j",
+            "k",
+            "n",
+            "result"
+          ],
+          "secondary": [
+            "_return",
+            "sample_count",
+            "stream"
+          ]
+        },
+        "var_classes": {
+          "_return": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "i": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "j": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "k": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "n": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "result": {
+            "category": "primary",
+            "type": "array"
+          },
+          "sample_count": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "stream": {
+            "category": "secondary",
+            "type": "array"
+          }
+        },
+        "initial_data": {
+          "result": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "stream": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            515,
+            0,
+            4608,
+            0,
+            1805380072,
+            1,
+            1805380048,
+            1,
+            -1619697592,
+            1,
+            73860832,
+            1,
+            10,
+            0,
+            868352,
+            0,
+            393216,
+            0,
+            0,
+            0,
+            199150048,
+            2,
+            0,
+            0,
+            0,
+            0,
+            1805380312,
+            1,
+            0,
+            0,
+            125280,
+            0,
+            2,
+            0,
+            196329504,
+            2,
+            196335408,
+            2,
+            1805380080,
+            1,
+            -1619479252,
+            1,
+            199135944,
+            2,
+            40,
+            0,
+            8,
+            0,
+            212183392,
+            2,
+            1107296256,
+            0,
+            -1619482288,
+            1,
+            222104256,
+            2,
+            1805380136,
+            1,
+            199135944,
+            2,
+            1,
+            0,
+            1805380256,
+            1,
+            -1619483236,
+            1,
+            1805380192,
+            1,
+            212183392,
+            2,
+            1073741824,
+            0,
+            -1619482668,
+            1,
+            222104224,
+            2,
+            196333057,
+            2,
+            0,
+            0,
+            0,
+            0,
+            199150064,
+            2,
+            1805380768,
+            1,
+            1,
+            0,
+            199150048,
+            2,
+            -16,
+            -1
+          ]
+        },
+        "program_output": [
+          {
+            "after_step": 14,
+            "text": "从1-100中抽取5个样本: 58 75 78 89 47"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 33,
+            "type": "enter",
+            "func": "main",
+            "vars": {}
+          },
+          {
+            "step": 1,
+            "line": 34,
+            "type": "exec",
+            "vars": {
+              "stream": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                1,
+                0,
+                515,
+                0,
+                4608,
+                0,
+                1805380072,
+                1,
+                1805380048,
+                1,
+                -1619697592,
+                1,
+                73860832,
+                1,
+                10,
+                0,
+                868352,
+                0,
+                393216,
+                0,
+                0,
+                0,
+                199150048,
+                2,
+                0,
+                0,
+                0,
+                0,
+                1805380312,
+                1,
+                0,
+                0,
+                125280,
+                0,
+                2,
+                0,
+                196329504,
+                2,
+                196335408,
+                2,
+                1805380080,
+                1,
+                -1619479252,
+                1,
+                199135944,
+                2,
+                40,
+                0,
+                8,
+                0,
+                212183392,
+                2,
+                1107296256,
+                0,
+                -1619482288,
+                1,
+                222104256,
+                2,
+                1805380136,
+                1,
+                199135944,
+                2,
+                1,
+                0,
+                1805380256,
+                1,
+                -1619483236,
+                1,
+                1805380192,
+                1,
+                212183392,
+                2,
+                1073741824,
+                0,
+                -1619482668,
+                1,
+                222104224,
+                2,
+                196333057,
+                2,
+                0,
+                0,
+                0,
+                0,
+                199150064,
+                2,
+                1805380768,
+                1,
+                1,
+                0,
+                199150048,
+                2,
+                -16,
+                -1
+              ]
+            }
+          },
+          {
+            "step": 2,
+            "line": 44,
+            "type": "enter",
+            "func": "reservoir_sampling",
+            "vars": {
+              "stream": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13,
+                14,
+                15,
+                16,
+                17,
+                18,
+                19,
+                20,
+                21,
+                22,
+                23,
+                24,
+                25,
+                26,
+                27,
+                28,
+                29,
+                30,
+                31,
+                32,
+                33,
+                34,
+                35,
+                36,
+                37,
+                38,
+                39,
+                40,
+                41,
+                42,
+                43,
+                44,
+                45,
+                46,
+                47,
+                48,
+                49,
+                50,
+                51,
+                52,
+                53,
+                54,
+                55,
+                56,
+                57,
+                58,
+                59,
+                60,
+                61,
+                62,
+                63,
+                64,
+                65,
+                66,
+                67,
+                68,
+                69,
+                70,
+                71,
+                72,
+                73,
+                74,
+                75,
+                76,
+                77,
+                78,
+                79,
+                80,
+                81,
+                82,
+                83,
+                84,
+                85,
+                86,
+                87,
+                88,
+                89,
+                90,
+                91,
+                92,
+                93,
+                94,
+                95,
+                96,
+                97,
+                98,
+                99,
+                100
+              ],
+              "n": 100,
+              "k": 5,
+              "result": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13,
+                14,
+                15,
+                16,
+                17,
+                18,
+                19,
+                20,
+                21,
+                22,
+                23,
+                24,
+                25,
+                26,
+                27,
+                28,
+                29,
+                30,
+                31,
+                32,
+                33,
+                34,
+                35,
+                36,
+                37,
+                38,
+                39,
+                40,
+                41,
+                42,
+                43,
+                44,
+                45,
+                46,
+                47,
+                48,
+                49,
+                50,
+                51,
+                52,
+                53,
+                54,
+                55,
+                56,
+                57,
+                58,
+                59,
+                60,
+                61,
+                62,
+                63,
+                64,
+                65,
+                66,
+                67,
+                68,
+                69,
+                70,
+                71,
+                72,
+                73,
+                74,
+                75,
+                76,
+                77,
+                78,
+                79,
+                80,
+                81,
+                82,
+                83,
+                84,
+                85,
+                86,
+                87,
+                88,
+                89,
+                90,
+                91,
+                92,
+                93,
+                94,
+                95
+              ]
+            }
+          },
+          {
+            "step": 3,
+            "line": 18,
+            "type": "exec",
+            "vars": {
+              "result": [
+                1,
+                0,
+                0,
+                0,
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13,
+                14,
+                15,
+                16,
+                17,
+                18,
+                19,
+                20,
+                21,
+                22,
+                23,
+                24,
+                25,
+                26,
+                27,
+                28,
+                29,
+                30,
+                31,
+                32,
+                33,
+                34,
+                35,
+                36,
+                37,
+                38,
+                39,
+                40,
+                41,
+                42,
+                43,
+                44,
+                45,
+                46,
+                47,
+                48,
+                49,
+                50,
+                51,
+                52,
+                53,
+                54,
+                55,
+                56,
+                57,
+                58,
+                59,
+                60,
+                61,
+                62,
+                63,
+                64,
+                65,
+                66,
+                67,
+                68,
+                69,
+                70,
+                71,
+                72,
+                73,
+                74,
+                75,
+                76,
+                77,
+                78,
+                79,
+                80,
+                81,
+                82,
+                83,
+                84,
+                85,
+                86,
+                87,
+                88,
+                89,
+                90,
+                91,
+                92,
+                93,
+                94,
+                95
+              ]
+            }
+          },
+          {
+            "step": 4,
+            "line": 26,
+            "type": "exec",
+            "vars": {
+              "result": [
+                1,
+                11,
+                6,
+                9,
+                5,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13,
+                14,
+                15,
+                16,
+                17,
+                18,
+                19,
+                20,
+                21,
+                22,
+                23,
+                24,
+                25,
+                26,
+                27,
+                28,
+                29,
+                30,
+                31,
+                32,
+                33,
+                34,
+                35,
+                36,
+                37,
+                38,
+                39,
+                40,
+                41,
+                42,
+                43,
+                44,
+                45,
+                46,
+                47,
+                48,
+                49,
+                50,
+                51,
+                52,
+                53,
+                54,
+                55,
+                56,
+                57,
+                58,
+                59,
+                60,
+                61,
+                62,
+                63,
+                64,
+                65,
+                66,
+                67,
+                68,
+                69,
+                70,
+                71,
+                72,
+                73,
+                74,
+                75,
+                76,
+                77,
+                78,
+                79,
+                80,
+                81,
+                82,
+                83,
+                84,
+                85,
+                86,
+                87,
+                88,
+                89,
+                90,
+                91,
+                92,
+                93,
+                94,
+                95
+              ]
+            }
+          },
+          {
+            "step": 5,
+            "line": 21,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 19,
+              "n": 100
+            }
+          },
+          {
+            "step": 6,
+            "line": 21,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 31,
+              "n": 100
+            }
+          },
+          {
+            "step": 7,
+            "line": 21,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 45,
+              "n": 100
+            }
+          },
+          {
+            "step": 8,
+            "line": 21,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 61,
+              "n": 100
+            }
+          },
+          {
+            "step": 9,
+            "line": 21,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 74,
+              "n": 100
+            }
+          },
+          {
+            "step": 10,
+            "line": 21,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 88,
+              "n": 100
+            }
+          },
+          {
+            "step": 11,
+            "line": 30,
+            "type": "exit",
+            "func": "reservoir_sampling",
+            "vars": {}
+          },
+          {
+            "step": 12,
+            "line": 51,
+            "type": "exec",
+            "vars": {
+              "_return": 0
+            }
+          },
+          {
+            "step": 13,
+            "line": 51,
+            "type": "exit",
+            "func": "main",
+            "vars": {
+              "k": "-",
+              "i": "-",
+              "n": "-",
+              "stream": "-",
+              "result": "-",
+              "phase": "程序执行完成，结果见下方输出"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "04_蒙特卡洛_求圆周率": {
+    "title": "蒙特卡洛（求圆周率）",
+    "defaultMode": "concept",
+    "modeLabels": {
+      "concept": "理解动画",
+      "trace": "代码执行"
+    },
+    "modes": {
+      "concept": {
+        "title": "蒙特卡洛（求圆周率）",
+        "source": [
+          "算法: 蒙特卡洛估算圆周率",
+          "输入: 随机点数量 samples",
+          "输出: pi 的近似值",
+          "",
+          "在正方形中随机撒点",
+          "统计落在四分之一圆内的点 inside",
+          "pi ≈ 4 * inside / samples",
+          "",
+          "点越多, 估计越稳定"
+        ],
+        "important_vars": {
+          "samples": "样本数",
+          "inside": "圆内点",
+          "pi": "估计值",
+          "phase": "阶段"
+        },
+        "track_vars": {
+          "primary": [
+            "samples",
+            "inside",
+            "pi",
+            "phase"
+          ],
+          "secondary": []
+        },
+        "var_classes": {
+          "samples": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "inside": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "pi": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "phase": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "concept": {
+            "category": "secondary",
+            "type": "concept"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 5,
+            "text": "概念动画：用随机点比例估计面积比例, 从而估算 π。"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 5,
+            "type": "exec",
+            "vars": {
+              "samples": 4,
+              "inside": 4,
+              "pi": 4.0,
+              "phase": "4/4 个点落在圆内, pi≈4.0",
+              "concept": {
+                "kind": "monte_carlo",
+                "points": [
+                  [
+                    0.12,
+                    0.18,
+                    true
+                  ],
+                  [
+                    0.82,
+                    0.18,
+                    true
+                  ],
+                  [
+                    0.36,
+                    0.27,
+                    true
+                  ],
+                  [
+                    0.67,
+                    0.31,
+                    true
+                  ]
+                ],
+                "inside": 4,
+                "samples": 4,
+                "pi": 4.0
+              }
+            }
+          },
+          {
+            "step": 1,
+            "line": 7,
+            "type": "exec",
+            "vars": {
+              "samples": 8,
+              "inside": 7,
+              "pi": 3.5,
+              "phase": "7/8 个点落在圆内, pi≈3.5",
+              "concept": {
+                "kind": "monte_carlo",
+                "points": [
+                  [
+                    0.12,
+                    0.18,
+                    true
+                  ],
+                  [
+                    0.82,
+                    0.18,
+                    true
+                  ],
+                  [
+                    0.36,
+                    0.27,
+                    true
+                  ],
+                  [
+                    0.67,
+                    0.31,
+                    true
+                  ],
+                  [
+                    0.22,
+                    0.76,
+                    true
+                  ],
+                  [
+                    0.58,
+                    0.64,
+                    true
+                  ],
+                  [
+                    0.91,
+                    0.44,
+                    false
+                  ],
+                  [
+                    0.44,
+                    0.88,
+                    true
+                  ]
+                ],
+                "inside": 7,
+                "samples": 8,
+                "pi": 3.5
+              }
+            }
+          },
+          {
+            "step": 2,
+            "line": 7,
+            "type": "exec",
+            "vars": {
+              "samples": 14,
+              "inside": 11,
+              "pi": 3.143,
+              "phase": "11/14 个点落在圆内, pi≈3.143",
+              "concept": {
+                "kind": "monte_carlo",
+                "points": [
+                  [
+                    0.12,
+                    0.18,
+                    true
+                  ],
+                  [
+                    0.82,
+                    0.18,
+                    true
+                  ],
+                  [
+                    0.36,
+                    0.27,
+                    true
+                  ],
+                  [
+                    0.67,
+                    0.31,
+                    true
+                  ],
+                  [
+                    0.22,
+                    0.76,
+                    true
+                  ],
+                  [
+                    0.58,
+                    0.64,
+                    true
+                  ],
+                  [
+                    0.91,
+                    0.44,
+                    false
+                  ],
+                  [
+                    0.44,
+                    0.88,
+                    true
+                  ],
+                  [
+                    0.73,
+                    0.72,
+                    false
+                  ],
+                  [
+                    0.16,
+                    0.52,
+                    true
+                  ],
+                  [
+                    0.31,
+                    0.42,
+                    true
+                  ],
+                  [
+                    0.49,
+                    0.2,
+                    true
+                  ],
+                  [
+                    0.87,
+                    0.81,
+                    false
+                  ],
+                  [
+                    0.62,
+                    0.12,
+                    true
+                  ]
+                ],
+                "inside": 11,
+                "samples": 14,
+                "pi": 3.143
+              }
+            }
+          },
+          {
+            "step": 3,
+            "line": 7,
+            "type": "exec",
+            "vars": {
+              "samples": 22,
+              "inside": 18,
+              "pi": 3.273,
+              "phase": "18/22 个点落在圆内, pi≈3.273",
+              "concept": {
+                "kind": "monte_carlo",
+                "points": [
+                  [
+                    0.12,
+                    0.18,
+                    true
+                  ],
+                  [
+                    0.82,
+                    0.18,
+                    true
+                  ],
+                  [
+                    0.36,
+                    0.27,
+                    true
+                  ],
+                  [
+                    0.67,
+                    0.31,
+                    true
+                  ],
+                  [
+                    0.22,
+                    0.76,
+                    true
+                  ],
+                  [
+                    0.58,
+                    0.64,
+                    true
+                  ],
+                  [
+                    0.91,
+                    0.44,
+                    false
+                  ],
+                  [
+                    0.44,
+                    0.88,
+                    true
+                  ],
+                  [
+                    0.73,
+                    0.72,
+                    false
+                  ],
+                  [
+                    0.16,
+                    0.52,
+                    true
+                  ],
+                  [
+                    0.31,
+                    0.42,
+                    true
+                  ],
+                  [
+                    0.49,
+                    0.2,
+                    true
+                  ],
+                  [
+                    0.87,
+                    0.81,
+                    false
+                  ],
+                  [
+                    0.62,
+                    0.12,
+                    true
+                  ],
+                  [
+                    0.28,
+                    0.93,
+                    true
+                  ],
+                  [
+                    0.53,
+                    0.48,
+                    true
+                  ],
+                  [
+                    0.77,
+                    0.54,
+                    true
+                  ],
+                  [
+                    0.08,
+                    0.67,
+                    true
+                  ],
+                  [
+                    0.39,
+                    0.69,
+                    true
+                  ],
+                  [
+                    0.69,
+                    0.89,
+                    false
+                  ],
+                  [
+                    0.93,
+                    0.23,
+                    true
+                  ],
+                  [
+                    0.19,
+                    0.33,
+                    true
+                  ]
+                ],
+                "inside": 18,
+                "samples": 22,
+                "pi": 3.273
+              }
+            }
+          },
+          {
+            "step": 4,
+            "line": 7,
+            "type": "exec",
+            "vars": {
+              "samples": 30,
+              "inside": 25,
+              "pi": 3.333,
+              "phase": "25/30 个点落在圆内, pi≈3.333",
+              "concept": {
+                "kind": "monte_carlo",
+                "points": [
+                  [
+                    0.12,
+                    0.18,
+                    true
+                  ],
+                  [
+                    0.82,
+                    0.18,
+                    true
+                  ],
+                  [
+                    0.36,
+                    0.27,
+                    true
+                  ],
+                  [
+                    0.67,
+                    0.31,
+                    true
+                  ],
+                  [
+                    0.22,
+                    0.76,
+                    true
+                  ],
+                  [
+                    0.58,
+                    0.64,
+                    true
+                  ],
+                  [
+                    0.91,
+                    0.44,
+                    false
+                  ],
+                  [
+                    0.44,
+                    0.88,
+                    true
+                  ],
+                  [
+                    0.73,
+                    0.72,
+                    false
+                  ],
+                  [
+                    0.16,
+                    0.52,
+                    true
+                  ],
+                  [
+                    0.31,
+                    0.42,
+                    true
+                  ],
+                  [
+                    0.49,
+                    0.2,
+                    true
+                  ],
+                  [
+                    0.87,
+                    0.81,
+                    false
+                  ],
+                  [
+                    0.62,
+                    0.12,
+                    true
+                  ],
+                  [
+                    0.28,
+                    0.93,
+                    true
+                  ],
+                  [
+                    0.53,
+                    0.48,
+                    true
+                  ],
+                  [
+                    0.77,
+                    0.54,
+                    true
+                  ],
+                  [
+                    0.08,
+                    0.67,
+                    true
+                  ],
+                  [
+                    0.39,
+                    0.69,
+                    true
+                  ],
+                  [
+                    0.69,
+                    0.89,
+                    false
+                  ],
+                  [
+                    0.93,
+                    0.23,
+                    true
+                  ],
+                  [
+                    0.19,
+                    0.33,
+                    true
+                  ],
+                  [
+                    0.57,
+                    0.79,
+                    true
+                  ],
+                  [
+                    0.34,
+                    0.58,
+                    true
+                  ],
+                  [
+                    0.71,
+                    0.16,
+                    true
+                  ],
+                  [
+                    0.11,
+                    0.91,
+                    true
+                  ],
+                  [
+                    0.84,
+                    0.62,
+                    false
+                  ],
+                  [
+                    0.47,
+                    0.37,
+                    true
+                  ],
+                  [
+                    0.26,
+                    0.14,
+                    true
+                  ],
+                  [
+                    0.64,
+                    0.45,
+                    true
+                  ]
+                ],
+                "inside": 25,
+                "samples": 30,
+                "pi": 3.333
+              }
+            }
+          }
+        ]
+      },
+      "trace": {
+        "title": "蒙特卡洛（求圆周率）",
+        "source": [
+          "/* 蒙特卡洛方法求圆周率 π */",
+          "/* 类比：往正方形里扔飞镖，统计落在圆内的比例 */",
+          "#include <stdio.h>",
+          "#include <stdlib.h>",
+          "#include <time.h>",
+          "",
+          "/* 蒙特卡洛求 π */",
+          "/* 参数 total_points：总共扔多少个飞镖 */",
+          "/* 返回值：估算的 π 值 */",
+          "double monte_carlo_pi(int total_points) {",
+          "    if (total_points <= 0) {",
+          "        return 0.0;  /* 参数不合法时返回 0，避免除以 0 */",
+          "    }",
+          "",
+          "    int inside_circle = 0;  /* 落在圆内的飞镖数 */",
+          "",
+          "    for (int i = 0; i < total_points; i++) {",
+          "        /* 生成 [-1, 1] 之间的随机坐标 */",
+          "        /* rand() / (double)RAND_MAX 生成 [0, 1] 之间的随机数 */",
+          "        /* 乘以 2 再减 1，映射到 [-1, 1] */",
+          "        double x = 2.0 * rand() / (double)RAND_MAX - 1.0;  /* 用 (double) 显式转换，避免误以为是整数除法 */",
+          "        double y = 2.0 * rand() / (double)RAND_MAX - 1.0;",
+          "",
+          "        /* 计算到圆心距离的平方 */",
+          "        double dist_sq = x * x + y * y;",
+          "",
+          "        /* 如果距离平方 <= 1，说明在圆内（半径为 1 的圆） */",
+          "        if (dist_sq <= 1.0) {",
+          "            inside_circle++;  /* 落在圆内，计数 + 1 */",
+          "        }",
+          "    }",
+          "",
+          "    /* π ≈ 4 × (圆内点数 / 总点数) */",
+          "    /* 蒙特卡洛误差大约按 O(1/sqrt(n)) 缩小，误差到 1e-3 往往要 1e6 量级采样 */",
+          "    return 4.0 * inside_circle / total_points;",
+          "}",
+          "",
+          "int main(void) {",
+          "    int trials[] = {100, 1000, 10000, 100000, 1000000};",
+          "    int num_trials = 5;",
+          "",
+          "    srand((unsigned int)time(NULL));  /* 初始化随机种子 */",
+          "",
+          "    printf(\"蒙特卡洛方法求 π：\\n\");",
+          "    printf(\"投掷次数\\t估算值\\t\\t误差\\n\");",
+          "    printf(\"─────────────────────────────────────\\n\");",
+          "",
+          "    for (int i = 0; i < num_trials; i++) {",
+          "        double pi_estimate = monte_carlo_pi(trials[i]);",
+          "        double error = pi_estimate - 3.14159265358979323846;",
+          "        if (error < 0) error = -error;  /* 取绝对值 */",
+          "        printf(\"%d\\t\\t%.6f\\t\\t%.6f\\n\", trials[i], pi_estimate, error);",
+          "    }",
+          "",
+          "    return 0;",
+          "}",
+          ""
+        ],
+        "important_vars": {
+          "i": "索引",
+          "x": "参数",
+          "trials": "数据"
+        },
+        "track_vars": {
+          "primary": [
+            "i"
+          ],
+          "secondary": [
+            "_return",
+            "dist_sq",
+            "error",
+            "inside_circle",
+            "num_trials",
+            "total_points"
+          ]
+        },
+        "var_classes": {
+          "_return": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "dist_sq": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "error": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "i": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "inside_circle": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "num_trials": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "total_points": {
+            "category": "secondary",
+            "type": "scalar"
+          }
+        },
+        "initial_data": {
+          "trials": [
+            100,
+            1000,
+            10000,
+            100000,
+            1000000
+          ]
+        },
+        "program_output": [
+          {
+            "after_step": 14,
+            "text": "蒙特卡洛方法求π： 投掷次数\t估算值\t\t误差 ─────────────────────────────────────；100\t\t3.120000\t\t0.021593；1000\t\t3.096000\t\t0.045593；10000\t\t3.134400\t\t0.007193 100000\t\t3.136760\t\t0.004833 1000000\t\t3.145564\t\t0.003971"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 31,
+            "type": "enter",
+            "func": "main",
+            "vars": {}
+          },
+          {
+            "step": 1,
+            "line": 38,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 0,
+              "num_trials": 5
+            }
+          },
+          {
+            "step": 2,
+            "line": 39,
+            "type": "enter",
+            "func": "monte_carlo_pi",
+            "vars": {
+              "total_points": 100
+            }
+          },
+          {
+            "step": 3,
+            "line": 23,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "dist_sq": 0.14498
+            }
+          },
+          {
+            "step": 4,
+            "line": 14,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 6,
+              "total_points": 100
+            }
+          },
+          {
+            "step": 5,
+            "line": 23,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "dist_sq": 0.332482
+            }
+          },
+          {
+            "step": 6,
+            "line": 23,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "dist_sq": 0.722385
+            }
+          },
+          {
+            "step": 7,
+            "line": 23,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "dist_sq": 0.695806
+            }
+          },
+          {
+            "step": 8,
+            "line": 24,
+            "type": "exec",
+            "vars": {
+              "inside_circle": 15
+            }
+          },
+          {
+            "step": 9,
+            "line": 14,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 28,
+              "total_points": 100
+            }
+          },
+          {
+            "step": 10,
+            "line": 23,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "dist_sq": 0.177584
+            }
+          },
+          {
+            "step": 11,
+            "line": 24,
+            "type": "exec",
+            "vars": {
+              "inside_circle": 26
+            }
+          },
+          {
+            "step": 12,
+            "line": 23,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "dist_sq": 0.321899
+            }
+          },
+          {
+            "step": 13,
+            "line": 24,
+            "type": "exec",
+            "vars": {
+              "dist_sq": "-",
+              "inside_circle": "-",
+              "total_points": "-",
+              "i": "-",
+              "num_trials": "-",
+              "phase": "程序执行完成，结果见下方输出"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "05_随机化选择_第k小": {
+    "title": "随机化选择第 k 小",
+    "defaultMode": "concept",
+    "modeLabels": {
+      "concept": "理解动画",
+      "trace": "代码执行"
+    },
+    "modes": {
+      "concept": {
+        "title": "随机化选择第 k 小",
+        "source": [
+          "算法: 随机化选择第 k 小",
+          "输入: 数组 arr, 目标排名 k",
+          "输出: 第 k 小的元素",
+          "",
+          "函数 randomized_select(arr, left, right, k):",
+          "    随机选择 pivot 并分区",
+          "    计算 pivot 在当前区间的排名 rank",
+          "    如果 rank == k, pivot 就是答案",
+          "    如果 rank > k, 只去左边找",
+          "    如果 rank < k, 只去右边找第 k-rank 小"
+        ],
+        "important_vars": {
+          "k": "目标排名",
+          "pivot": "随机基准",
+          "range": "当前区间",
+          "phase": "阶段"
+        },
+        "track_vars": {
+          "primary": [
+            "k",
+            "pivot",
+            "range",
+            "phase"
+          ],
+          "secondary": []
+        },
+        "var_classes": {
+          "k": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "pivot": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "range": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "phase": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "concept": {
+            "category": "secondary",
+            "type": "concept"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 5,
+            "text": "理解动画：随机化选择像快排分区, 但每轮只保留答案可能所在的一边。"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 5,
+            "type": "exec",
+            "vars": {
+              "k": 3,
+              "pivot": 10,
+              "range": "0..5",
+              "phase": "要找第 3 小, 第一轮随机抽到 pivot=10",
+              "concept": {
+                "kind": "array_process",
+                "mode": "quick",
+                "title": "随机化选择",
+                "values": [
+                  7,
+                  10,
+                  4,
+                  3,
+                  20,
+                  15
+                ],
+                "pivotIdx": 1,
+                "compare": [
+                  1
+                ],
+                "leftZone": [],
+                "sorted": [],
+                "range": [
+                  0,
+                  5
+                ],
+                "phase": "要找第 3 小, 第一轮随机抽到 pivot=10"
+              }
+            }
+          },
+          {
+            "step": 1,
+            "line": 7,
+            "type": "exec",
+            "vars": {
+              "k": 3,
+              "pivot": 10,
+              "range": "0..5",
+              "phase": "分区后 10 的排名是 4, 第 3 小一定在左边",
+              "concept": {
+                "kind": "array_process",
+                "mode": "quick",
+                "title": "随机化选择",
+                "values": [
+                  7,
+                  4,
+                  3,
+                  10,
+                  20,
+                  15
+                ],
+                "pivotIdx": 3,
+                "compare": [
+                  0,
+                  1,
+                  2,
+                  4,
+                  5
+                ],
+                "leftZone": [
+                  0,
+                  1,
+                  2
+                ],
+                "sorted": [
+                  3
+                ],
+                "range": [
+                  0,
+                  5
+                ],
+                "phase": "分区后 10 的排名是 4, 第 3 小一定在左边"
+              }
+            }
+          },
+          {
+            "step": 2,
+            "line": 9,
+            "type": "exec",
+            "vars": {
+              "k": 3,
+              "pivot": 7,
+              "range": "0..2",
+              "phase": "右边整段都可以丢掉, 只在左半段继续找",
+              "concept": {
+                "kind": "array_process",
+                "mode": "quick",
+                "title": "随机化选择",
+                "values": [
+                  7,
+                  4,
+                  3,
+                  10,
+                  20,
+                  15
+                ],
+                "pivotIdx": 0,
+                "compare": [
+                  0,
+                  1,
+                  2
+                ],
+                "leftZone": [],
+                "sorted": [
+                  3
+                ],
+                "range": [
+                  0,
+                  2
+                ],
+                "phase": "右边整段都可以丢掉, 只在左半段继续找"
+              }
+            }
+          },
+          {
+            "step": 3,
+            "line": 5,
+            "type": "exec",
+            "vars": {
+              "k": 3,
+              "pivot": 7,
+              "range": "0..2",
+              "phase": "这次随机 pivot=7, 它在左半段里的排名正好是 3",
+              "concept": {
+                "kind": "array_process",
+                "mode": "quick",
+                "title": "随机化选择",
+                "values": [
+                  3,
+                  4,
+                  7,
+                  10,
+                  20,
+                  15
+                ],
+                "pivotIdx": 2,
+                "compare": [
+                  0,
+                  1,
+                  2
+                ],
+                "leftZone": [
+                  0,
+                  1
+                ],
+                "sorted": [
+                  2,
+                  3
+                ],
+                "range": [
+                  0,
+                  2
+                ],
+                "phase": "这次随机 pivot=7, 它在左半段里的排名正好是 3"
+              }
+            }
+          },
+          {
+            "step": 4,
+            "line": 8,
+            "type": "exec",
+            "vars": {
+              "k": 3,
+              "pivot": "-",
+              "range": "-",
+              "phase": "找到答案 7; 随机性影响过程长短, 不影响答案正确性",
+              "concept": {
+                "kind": "array_process",
+                "mode": "quick",
+                "title": "随机化选择",
+                "values": [
+                  3,
+                  4,
+                  7,
+                  10,
+                  20,
+                  15
+                ],
+                "pivotIdx": null,
+                "compare": [],
+                "leftZone": [],
+                "sorted": [
+                  2
+                ],
+                "range": [],
+                "phase": "找到答案 7; 随机性影响过程长短, 不影响答案正确性"
+              }
+            }
+          }
+        ]
+      },
+      "trace": {
+        "title": "随机化选择（第 k 小）",
+        "source": [
+          "/* 拉斯维加斯算法：随机化选择第 k 小的元素 */",
+          "/* 一定会返回正确结果，但运行时间随机 */",
+          "#include <stdio.h>",
+          "#include <stdlib.h>",
+          "#include <time.h>",
+          "",
+          "/* 交换两个整数 */",
+          "void swap(int *a, int *b) {",
+          "    int temp = *a;",
+          "    *a = *b;",
+          "    *b = temp;",
+          "}",
+          "",
+          "/* 随机化分区（和快排的分区一样） */",
+          "int partition(int arr[], int low, int high) {",
+          "    /* 随机选 pivot——拉斯维加斯的关键 */",
+          "    /* rand() % N 只适合教学演示，工程中要注意 RAND_MAX、取模偏差和随机数质量 */",
+          "    int random_idx = low + rand() % (high - low + 1);",
+          "    swap(&arr[random_idx], &arr[high]);",
+          "",
+          "    int pivot = arr[high];",
+          "    int i = low - 1;",
+          "    for (int j = low; j < high; j++) {",
+          "        if (arr[j] < pivot) {",
+          "            i++;",
+          "            swap(&arr[i], &arr[j]);",
+          "        }",
+          "    }",
+          "    swap(&arr[i + 1], &arr[high]);",
+          "    return i + 1;",
+          "}",
+          "",
+          "/* 随机化选择：找第 k 小的元素（k 从 1 开始） */",
+          "/* 这是一个拉斯维加斯算法——结果一定正确，期望 O(n)，最坏仍可能 O(n^2) */",
+          "int randomized_select(int arr[], int low, int high, int k) {",
+          "    if (low == high) {  /* 只剩一个元素 */",
+          "        return arr[low];",
+          "    }",
+          "",
+          "    /* 随机分区 */",
+          "    int pi = partition(arr, low, high);",
+          "    /* pi - low + 1 是 pivot 在当前子数组中的排名 */",
+          "    int rank = pi - low + 1;",
+          "",
+          "    if (k == rank) {",
+          "        /* pivot 就是第 k 小的元素！找到了！ */",
+          "        return arr[pi];",
+          "    } else if (k < rank) {",
+          "        /* 第 k 小的元素在左边 */",
+          "        return randomized_select(arr, low, pi - 1, k);",
+          "    } else {",
+          "        /* 第 k 小的元素在右边，注意要调整 k 的值 */",
+          "        return randomized_select(arr, pi + 1, high, k - rank);",
+          "    }",
+          "}",
+          "",
+          "int main(void) {",
+          "    int arr[] = {7, 10, 4, 3, 20, 15};",
+          "    int n = 6;",
+          "    int k = 3;  /* 找第 3 小的元素 */",
+          "",
+          "    srand((unsigned int)time(NULL));",
+          "",
+          "    if (k < 1 || k > n) {",
+          "        printf(\"k 不合法\\n\");",
+          "        return 1;",
+          "    }",
+          "",
+          "    /* 找第 k 小的元素 */",
+          "    int result = randomized_select(arr, 0, n - 1, k);",
+          "    printf(\"第 %d 小的元素是：%d\\n\", k, result);",
+          "    /* 应该输出 7 */",
+          "",
+          "    return 0;",
+          "}",
+          ""
+        ],
+        "important_vars": {
+          "i": "索引",
+          "j": "索引",
+          "n": "参数",
+          "k": "索引",
+          "result": "变量",
+          "arr": "数据"
+        },
+        "track_vars": {
+          "primary": [
+            "arr",
+            "high",
+            "i",
+            "j",
+            "k",
+            "low",
+            "pivot"
+          ],
+          "secondary": [
+            "_return"
+          ]
+        },
+        "var_classes": {
+          "_return": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "arr": {
+            "category": "primary",
+            "type": "array"
+          },
+          "high": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "i": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "j": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "k": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "low": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "pivot": {
+            "category": "primary",
+            "type": "scalar"
+          }
+        },
+        "initial_data": {
+          "arr": [
+            7,
+            10,
+            4,
+            3,
+            20,
+            15
+          ]
+        },
+        "program_output": [
+          {
+            "after_step": 14,
+            "text": "第3小的元素是: 7"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 50,
+            "type": "enter",
+            "func": "main",
+            "vars": {}
+          },
+          {
+            "step": 1,
+            "line": 60,
+            "type": "enter",
+            "func": "randomized_select",
+            "vars": {
+              "arr": [
+                7,
+                10,
+                4,
+                3,
+                20,
+                15
+              ],
+              "low": 0,
+              "high": 5,
+              "k": 3
+            }
+          },
+          {
+            "step": 2,
+            "line": 36,
+            "type": "enter",
+            "func": "partition",
+            "vars": {
+              "arr": [
+                7,
+                10,
+                4,
+                3,
+                20,
+                15
+              ],
+              "low": 0,
+              "high": 5
+            }
+          },
+          {
+            "step": 3,
+            "line": 20,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "high": 5,
+              "j": 0
+            }
+          },
+          {
+            "step": 4,
+            "line": 27,
+            "type": "exit",
+            "func": "partition",
+            "vars": {}
+          },
+          {
+            "step": 5,
+            "line": 47,
+            "type": "enter",
+            "func": "randomized_select",
+            "vars": {
+              "arr": [
+                3,
+                4,
+                15,
+                7,
+                20,
+                10
+              ],
+              "low": 2,
+              "high": 5,
+              "k": 1
+            }
+          },
+          {
+            "step": 6,
+            "line": 36,
+            "type": "enter",
+            "func": "partition",
+            "vars": {
+              "arr": [
+                3,
+                4,
+                15,
+                7,
+                20,
+                10
+              ],
+              "low": 2,
+              "high": 5
+            }
+          },
+          {
+            "step": 7,
+            "line": 27,
+            "type": "exit",
+            "func": "partition",
+            "vars": {}
+          },
+          {
+            "step": 8,
+            "line": 44,
+            "type": "enter",
+            "func": "randomized_select",
+            "vars": {
+              "arr": [
+                3,
+                4,
+                7,
+                10,
+                20,
+                15
+              ],
+              "low": 2,
+              "high": 2,
+              "k": 1
+            }
+          },
+          {
+            "step": 9,
+            "line": 33,
+            "type": "exit",
+            "func": "randomized_select",
+            "vars": {}
+          },
+          {
+            "step": 10,
+            "line": 44,
+            "type": "exit",
+            "func": "randomized_select",
+            "vars": {}
+          },
+          {
+            "step": 11,
+            "line": 47,
+            "type": "exit",
+            "func": "randomized_select",
+            "vars": {}
+          },
+          {
+            "step": 12,
+            "line": 63,
+            "type": "exec",
+            "vars": {
+              "_return": 0
+            }
+          },
+          {
+            "step": 13,
+            "line": 63,
+            "type": "exit",
+            "func": "main",
+            "vars": {
+              "low": "-",
+              "k": "-",
+              "arr": "-",
+              "high": "-",
+              "j": "-",
+              "phase": "程序执行完成，结果见下方输出"
+            }
+          }
+        ]
+      }
+    }
+  }
+};
+const firstKey = Object.keys(ALGOS)[0];
+const requestedKey = new URLSearchParams(location.search).get('algo');
+const savedAtOpen = DHLearning.load();
+let currentKey = ALGOS[requestedKey]
+  ? requestedKey
+  : (savedAtOpen.last && savedAtOpen.last.chapter === CHAPTER_NUM && ALGOS[savedAtOpen.last.algorithm]
+      ? savedAtOpen.last.algorithm
+      : firstKey);
+let currentMode = null;
+const engine = new TraceEngine('viz-canvas', 'code-body', 'var-grid', 'callstack');
+const tabsEl = document.getElementById('algo-tabs');
+const modeTabsEl = document.getElementById('mode-tabs');
+
+function has_modes(algo) {
+  return algo && algo.modes && typeof algo.modes === 'object';
+}
+
+function mode_label(rawAlgo, mode) {
+  const labels = rawAlgo.modeLabels || {};
+  if (labels[mode]) return labels[mode];
+  if (mode === 'concept') return '理解动画';
+  if (mode === 'trace') return '代码执行';
+  return mode;
+}
+
+function resolve_algo(rawAlgo) {
+  if (!has_modes(rawAlgo)) return rawAlgo;
+  const mode = currentMode || rawAlgo.defaultMode || Object.keys(rawAlgo.modes)[0];
+  return rawAlgo.modes[mode] || rawAlgo.modes[rawAlgo.defaultMode] || Object.values(rawAlgo.modes)[0];
+}
+
+function is_concept_algo(algo) {
+  if (!algo) return false;
+  const classes = algo.var_classes || {};
+  if (Object.values(classes).some(info => info && info.type === 'concept')) return true;
+  return (algo.steps || []).some(step => step.vars && step.vars.concept);
+}
+
+function update_tab_states() {
+  const completed = new Set(DHLearning.load().completedDemos);
+  tabsEl.querySelectorAll('.algo-tab').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.key === currentKey);
+    btn.classList.toggle('completed', completed.has(DHLearning.demoId(CHAPTER_NUM, btn.dataset.key)));
+    btn.setAttribute('aria-selected', String(btn.dataset.key === currentKey));
+  });
+}
+
+function update_chapter_progress() {
+  const state = DHLearning.load();
+  const completed = new Set(state.completedDemos);
+  const keys = Object.keys(ALGOS);
+  const done = keys.filter(key => completed.has(DHLearning.demoId(CHAPTER_NUM, key))).length;
+  document.getElementById('chapter-progress-text').textContent = `${done} / ${keys.length} 个演示完成`;
+  document.getElementById('chapter-progress-fill').style.width = `${keys.length ? done / keys.length * 100 : 0}%`;
+  update_tab_states();
+}
+
+function render_mode_tabs(rawAlgo) {
+  modeTabsEl.innerHTML = '';
+  if (!has_modes(rawAlgo)) {
+    modeTabsEl.classList.remove('visible');
+    currentMode = null;
+    return;
+  }
+  modeTabsEl.classList.add('visible');
+  const label = document.createElement('span');
+  label.className = 'mode-label';
+  label.textContent = '学习方式';
+  modeTabsEl.appendChild(label);
+  const activeMode = currentMode || rawAlgo.defaultMode || Object.keys(rawAlgo.modes)[0];
+  Object.keys(rawAlgo.modes).forEach(mode => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'mode-tab' + (mode === activeMode ? ' active' : '');
+    btn.textContent = mode_label(rawAlgo, mode);
+    btn.setAttribute('role', 'tab');
+    btn.setAttribute('aria-selected', String(mode === activeMode));
+    btn.addEventListener('click', () => {
+      if (currentMode === mode) return;
+      currentMode = mode;
+      load_current_algo(false);
+      if (matchMedia('(max-width: 900px)').matches) {
+        set_mobile_view(mode === 'trace' ? 'code' : 'animation');
+      }
+    });
+    modeTabsEl.appendChild(btn);
+  });
+}
+
+function load_current_algo(allowRestore = true) {
+  const rawAlgo = ALGOS[currentKey];
+  const beforeLoad = DHLearning.load().last;
+  if (has_modes(rawAlgo)) {
+    const savedMode = beforeLoad && beforeLoad.chapter === CHAPTER_NUM && beforeLoad.algorithm === currentKey
+      ? beforeLoad.mode
+      : null;
+    if (!currentMode) currentMode = savedMode && rawAlgo.modes[savedMode]
+      ? savedMode
+      : (rawAlgo.defaultMode || Object.keys(rawAlgo.modes)[0]);
+  } else {
+    currentMode = null;
+  }
+  render_mode_tabs(rawAlgo);
+  const activeAlgo = resolve_algo(rawAlgo);
+  document.body.classList.toggle('concept-mode', currentMode === 'concept' || is_concept_algo(activeAlgo));
+  engine.stop_play();
+  engine.load(activeAlgo);
+  try {
+    const currentUrl = new URL(location.href);
+    currentUrl.searchParams.set('algo', currentKey);
+    history.replaceState(null, '', currentUrl.href);
+  } catch (_) {
+    // file:// 预览环境可能限制 history API，不影响演示本身。
+  }
+  update_tab_states();
+
+  if (
+    allowRestore
+    && beforeLoad
+    && beforeLoad.chapter === CHAPTER_NUM
+    && beforeLoad.algorithm === currentKey
+    && beforeLoad.mode === currentMode
+    && beforeLoad.step > 0
+    && activeAlgo.steps.length
+  ) {
+    const restoreStep = Math.min(beforeLoad.step, activeAlgo.steps.length - 1);
+    requestAnimationFrame(() => engine.go_to_step(restoreStep));
+  }
+}
+
+Object.entries(ALGOS).forEach(([key, algo]) => {
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'algo-tab';
+  btn.dataset.key = key;
+  btn.textContent = algo.title;
+  btn.setAttribute('role', 'tab');
+  btn.setAttribute('aria-selected', String(key === currentKey));
+  btn.addEventListener('click', () => {
+    if (currentKey === key) return;
+    currentKey = key;
+    currentMode = has_modes(algo) ? (algo.defaultMode || Object.keys(algo.modes)[0]) : null;
+    load_current_algo(true);
+  });
+  tabsEl.appendChild(btn);
+});
+
+document.addEventListener('dh:stepchange', event => {
+  const detail = event.detail || {};
+  DHLearning.updateLast(CHAPTER_NUM, currentKey, currentMode, detail.currentStep);
+  if (detail.atEnd) DHLearning.markDemoComplete(CHAPTER_NUM, currentKey);
+  update_chapter_progress();
+});
+
+document.getElementById('btn-play').addEventListener('click', () => engine.playing ? engine.stop_play() : engine.start_play());
+document.getElementById('btn-step').addEventListener('click', () => { engine.stop_play(); engine.step_forward(); });
+document.getElementById('btn-reset').addEventListener('click', () => engine.reset());
+document.getElementById('btn-back').addEventListener('click', () => { engine.stop_play(); engine.step_backward(); });
+document.getElementById('btn-to-bp').addEventListener('click', () => { engine.stop_play(); engine.play_to_bp(); });
+
+const speedSlider = document.getElementById('speed-slider');
+const savedSpeed = localStorage.getItem('dh_speed');
+if (savedSpeed !== null) speedSlider.value = savedSpeed;
+speedSlider.setAttribute('aria-valuetext', `速度 ${speedSlider.value}`);
+speedSlider.addEventListener('input', () => {
+  localStorage.setItem('dh_speed', speedSlider.value);
+  speedSlider.setAttribute('aria-valuetext', `速度 ${speedSlider.value}`);
+  if (engine.playing) { clearTimeout(engine.playTimer); engine._play_loop(); }
+});
+speedSlider.addEventListener('keydown', event => {
+  if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+  event.preventDefault();
+  event.stopPropagation();
+  const direction = event.key === 'ArrowRight' ? 1 : -1;
+  speedSlider.value = String(Math.max(Number(speedSlider.min), Math.min(Number(speedSlider.max), Number(speedSlider.value) + direction)));
+  speedSlider.dispatchEvent(new Event('input', { bubbles: true }));
+});
+document.getElementById('font-dec').addEventListener('click', () => engine.font_dec());
+document.getElementById('font-inc').addEventListener('click', () => engine.font_inc());
+
+document.addEventListener('keydown', event => {
+  const target = event.target;
+  if (target && target.closest && target.closest('button,input,select,textarea,a,summary,[contenteditable="true"]')) return;
+  if (event.key === ' ') {
+    event.preventDefault();
+    engine.playing ? engine.stop_play() : engine.start_play();
+  } else if (event.key === 'ArrowRight') {
+    event.preventDefault();
+    engine.stop_play();
+    engine.step_forward();
+  } else if (event.key === 'ArrowLeft') {
+    event.preventDefault();
+    engine.stop_play();
+    engine.step_backward();
+  } else if (event.key.toLowerCase() === 'r' && !event.metaKey && !event.ctrlKey && !event.altKey) {
+    engine.reset();
+  }
+});
+
+function set_mobile_view(view) {
+  document.body.dataset.mobileView = view;
+  document.querySelectorAll('.mobile-view-switcher button').forEach(btn => {
+    const active = btn.dataset.mobileView === view;
+    btn.classList.toggle('active', active);
+    btn.setAttribute('aria-selected', String(active));
+  });
+  if (view === 'animation' && engine.currentStep >= 0) {
+    requestAnimationFrame(() => engine.go_to_step(engine.currentStep));
+  }
+}
+
+document.querySelectorAll('.mobile-view-switcher button').forEach(btn => {
+  btn.addEventListener('click', () => set_mobile_view(btn.dataset.mobileView));
+});
+
+DHLearning.visitChapter(CHAPTER_NUM);
+update_chapter_progress();
+load_current_algo(true);
+</script>
+</body>
+</html>

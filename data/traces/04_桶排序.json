@@ -1,0 +1,1779 @@
+{
+  "meta": {
+    "algo": "04_桶排序",
+    "source_lines": [
+      "#include <stdio.h>",
+      "#include <stdlib.h>",
+      "/* 链表节点（每个桶用链表存储） */",
+      "typedef struct Node {",
+      "    double value;",
+      "    struct Node *next;",
+      "} Node;",
+      "/* 创建新节点 */",
+      "Node* create_node(double value) {",
+      "    Node *node = (Node *)malloc(sizeof(Node));",
+      "    if (!node) return NULL;",
+      "    node->value = value;",
+      "    node->next = NULL;",
+      "    return node;",
+      "}",
+      "/* 在有序链表中插入节点（插入排序的思想） */",
+      "int insert_sorted(Node **head, double value) {",
+      "    Node *new_node = create_node(value);",
+      "    if (!new_node) return 0;",
+      "    /* 空表或插入到表头 */",
+      "    if (*head == NULL || (*head)->value >= value) {",
+      "        new_node->next = *head;",
+      "        *head = new_node;",
+      "        return 1;",
+      "    }",
+      "    /* 找到插入位置 */",
+      "    Node *current = *head;",
+      "    while (current->next != NULL && current->next->value < value) {",
+      "        current = current->next;",
+      "    }",
+      "    new_node->next = current->next;",
+      "    current->next = new_node;",
+      "    return 1;",
+      "}",
+      "/*",
+      " * 桶排序",
+      " * arr：待排序数组（主要面向 [0, 1) 区间；下方对 bucketIndex 的越界回填即为对 1.0 的容错处理）",
+      " * n：数组长度",
+      " */",
+      "int bucket_sort(double arr[], int n) {",
+      "    /* 创建 n 个空桶（用链表实现） */",
+      "    Node **buckets = (Node **)calloc(n, sizeof(Node *));",
+      "    if (!buckets) return 0;",
+      "    /* 第一步：分桶 */",
+      "    /* 就像水果摊老板把水果分到不同筐里 */",
+      "    for (int i = 0; i < n; i++) {",
+      "        if (arr[i] < 0.0 || arr[i] > 1.0) {",
+      "            free(buckets);",
+      "            return 0;",
+      "        }",
+      "        int bucketIndex = (int)(n * arr[i]);",
+      "        /* 边界处理：如果 arr[i] 刚好等于 1.0，放到最后一个桶 */",
+      "        if (bucketIndex >= n) {",
+      "            bucketIndex = n - 1;",
+      "        }",
+      "        if (!insert_sorted(&buckets[bucketIndex], arr[i])) {",
+      "            for (int j = 0; j < n; j++) {",
+      "                Node *current = buckets[j];",
+      "                while (current != NULL) {",
+      "                    Node *temp = current;",
+      "                    current = current->next;",
+      "                    free(temp);",
+      "                }",
+      "            }",
+      "            free(buckets);",
+      "            return 0;",
+      "        }",
+      "    }",
+      "    /* 第二步：按桶的顺序合并 */",
+      "    int idx = 0;",
+      "    for (int i = 0; i < n; i++) {",
+      "        Node *current = buckets[i];",
+      "        while (current != NULL) {",
+      "            arr[idx++] = current->value;",
+      "            Node *temp = current;",
+      "            current = current->next;",
+      "            free(temp);",
+      "        }",
+      "    }",
+      "    free(buckets);",
+      "    return 1;",
+      "}",
+      "int main(void) {",
+      "    double arr[] = {0.42, 0.32, 0.23, 0.52, 0.25, 0.47, 0.51, 0.56, 0.08, 0.36};",
+      "    int n = sizeof(arr) / sizeof(arr[0]);",
+      "    printf(\"原始数组：\");",
+      "    for (int i = 0; i < n; i++) {",
+      "        printf(\"%.2f \", arr[i]);",
+      "    }",
+      "    printf(\"\\n\");",
+      "    if (!bucket_sort(arr, n)) {",
+      "        printf(\"排序失败：输入必须在 0 到 1 之间，或内存不足。\\n\");",
+      "        return 1;",
+      "    }",
+      "    printf(\"排序结果：\");",
+      "    for (int i = 0; i < n; i++) {",
+      "        printf(\"%.2f \", arr[i]);",
+      "    }",
+      "    printf(\"\\n\");",
+      "    return 0;",
+      "}"
+    ],
+    "track_vars": {
+      "primary": [
+        "arr",
+        "i",
+        "n"
+      ],
+      "secondary": [
+        "_return",
+        "value"
+      ]
+    },
+    "var_classes": {
+      "_return": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "arr": {
+        "category": "primary",
+        "type": "array"
+      },
+      "current": {
+        "category": "hidden",
+        "type": "scalar"
+      },
+      "i": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "n": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "new_node": {
+        "category": "hidden",
+        "type": "scalar"
+      },
+      "node": {
+        "category": "hidden",
+        "type": "scalar"
+      },
+      "value": {
+        "category": "secondary",
+        "type": "scalar"
+      }
+    },
+    "viz_type": "array",
+    "initial_data": {
+      "arr": [
+        0.42,
+        0.32,
+        0.23,
+        0.52,
+        0.25,
+        0.47,
+        0.51,
+        0.56,
+        0.08,
+        0.36
+      ]
+    },
+    "program_output": [
+      {
+        "after_step": 1,
+        "text": "原始数组： 0.42 0.32 0.23 0.52 0.25 0.47 0.51 0.56 0.08 0.36"
+      },
+      {
+        "after_step": 177,
+        "text": "排序结果： 0.08 0.23 0.25 0.32 0.36 0.42 0.47 0.51 0.52 0.56"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step": 0,
+      "line": 83,
+      "type": "enter",
+      "func": "main",
+      "vars": {}
+    },
+    {
+      "step": 1,
+      "line": 87,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0,
+        "n": 10
+      }
+    },
+    {
+      "step": 2,
+      "line": 87,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "n": 10
+      }
+    },
+    {
+      "step": 3,
+      "line": 87,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "n": 10
+      }
+    },
+    {
+      "step": 4,
+      "line": 87,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3,
+        "n": 10
+      }
+    },
+    {
+      "step": 5,
+      "line": 87,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 4,
+        "n": 10
+      }
+    },
+    {
+      "step": 6,
+      "line": 87,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 5,
+        "n": 10
+      }
+    },
+    {
+      "step": 7,
+      "line": 87,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 6,
+        "n": 10
+      }
+    },
+    {
+      "step": 8,
+      "line": 87,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 7,
+        "n": 10
+      }
+    },
+    {
+      "step": 9,
+      "line": 87,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 8,
+        "n": 10
+      }
+    },
+    {
+      "step": 10,
+      "line": 87,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 9,
+        "n": 10
+      }
+    },
+    {
+      "step": 11,
+      "line": 91,
+      "type": "enter",
+      "func": "bucket_sort",
+      "vars": {
+        "arr": [
+          0.42,
+          0.32,
+          0.23,
+          0.52,
+          0.25,
+          0.47,
+          0.51,
+          0.56,
+          0.08,
+          0.36
+        ],
+        "n": 10
+      }
+    },
+    {
+      "step": 12,
+      "line": 43,
+      "type": "cond",
+      "result": false,
+      "vars": {}
+    },
+    {
+      "step": 13,
+      "line": 46,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0,
+        "n": 10
+      }
+    },
+    {
+      "step": 14,
+      "line": 56,
+      "type": "enter",
+      "func": "insert_sorted",
+      "vars": {
+        "value": 0.42
+      }
+    },
+    {
+      "step": 15,
+      "line": 18,
+      "type": "enter",
+      "func": "create_node",
+      "vars": {
+        "value": 0.42
+      }
+    },
+    {
+      "step": 16,
+      "line": 11,
+      "type": "cond",
+      "result": false,
+      "vars": {}
+    },
+    {
+      "step": 17,
+      "line": 12,
+      "type": "exec",
+      "vars": {}
+    },
+    {
+      "step": 18,
+      "line": 13,
+      "type": "exec",
+      "vars": {}
+    },
+    {
+      "step": 19,
+      "line": 14,
+      "type": "exit",
+      "func": "create_node",
+      "vars": {}
+    },
+    {
+      "step": 20,
+      "line": 19,
+      "type": "cond",
+      "result": false,
+      "vars": {}
+    },
+    {
+      "step": 21,
+      "line": 21,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "value": 0.42
+      }
+    },
+    {
+      "step": 22,
+      "line": 22,
+      "type": "exec",
+      "vars": {}
+    },
+    {
+      "step": 23,
+      "line": 24,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 24,
+      "line": 24,
+      "type": "exit",
+      "func": "insert_sorted",
+      "vars": {}
+    },
+    {
+      "step": 25,
+      "line": 46,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "n": 10
+      }
+    },
+    {
+      "step": 26,
+      "line": 56,
+      "type": "enter",
+      "func": "insert_sorted",
+      "vars": {
+        "value": 0.32
+      }
+    },
+    {
+      "step": 27,
+      "line": 18,
+      "type": "enter",
+      "func": "create_node",
+      "vars": {
+        "value": 0.32
+      }
+    },
+    {
+      "step": 28,
+      "line": 11,
+      "type": "cond",
+      "result": false,
+      "vars": {}
+    },
+    {
+      "step": 29,
+      "line": 12,
+      "type": "exec",
+      "vars": {}
+    },
+    {
+      "step": 30,
+      "line": 13,
+      "type": "exec",
+      "vars": {}
+    },
+    {
+      "step": 31,
+      "line": 14,
+      "type": "exit",
+      "func": "create_node",
+      "vars": {}
+    },
+    {
+      "step": 32,
+      "line": 19,
+      "type": "cond",
+      "result": false,
+      "vars": {}
+    },
+    {
+      "step": 33,
+      "line": 21,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "value": 0.32
+      }
+    },
+    {
+      "step": 34,
+      "line": 22,
+      "type": "exec",
+      "vars": {}
+    },
+    {
+      "step": 35,
+      "line": 24,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 36,
+      "line": 24,
+      "type": "exit",
+      "func": "insert_sorted",
+      "vars": {}
+    },
+    {
+      "step": 37,
+      "line": 46,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "n": 10
+      }
+    },
+    {
+      "step": 38,
+      "line": 56,
+      "type": "enter",
+      "func": "insert_sorted",
+      "vars": {
+        "value": 0.23
+      }
+    },
+    {
+      "step": 39,
+      "line": 18,
+      "type": "enter",
+      "func": "create_node",
+      "vars": {
+        "value": 0.23
+      }
+    },
+    {
+      "step": 40,
+      "line": 11,
+      "type": "cond",
+      "result": false,
+      "vars": {}
+    },
+    {
+      "step": 41,
+      "line": 12,
+      "type": "exec",
+      "vars": {}
+    },
+    {
+      "step": 42,
+      "line": 13,
+      "type": "exec",
+      "vars": {}
+    },
+    {
+      "step": 43,
+      "line": 14,
+      "type": "exit",
+      "func": "create_node",
+      "vars": {}
+    },
+    {
+      "step": 44,
+      "line": 19,
+      "type": "cond",
+      "result": false,
+      "vars": {}
+    },
+    {
+      "step": 45,
+      "line": 21,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "value": 0.23
+      }
+    },
+    {
+      "step": 46,
+      "line": 22,
+      "type": "exec",
+      "vars": {}
+    },
+    {
+      "step": 47,
+      "line": 24,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 48,
+      "line": 24,
+      "type": "exit",
+      "func": "insert_sorted",
+      "vars": {}
+    },
+    {
+      "step": 49,
+      "line": 46,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3,
+        "n": 10
+      }
+    },
+    {
+      "step": 50,
+      "line": 56,
+      "type": "enter",
+      "func": "insert_sorted",
+      "vars": {
+        "value": 0.52
+      }
+    },
+    {
+      "step": 51,
+      "line": 18,
+      "type": "enter",
+      "func": "create_node",
+      "vars": {
+        "value": 0.52
+      }
+    },
+    {
+      "step": 52,
+      "line": 11,
+      "type": "cond",
+      "result": false,
+      "vars": {}
+    },
+    {
+      "step": 53,
+      "line": 12,
+      "type": "exec",
+      "vars": {}
+    },
+    {
+      "step": 54,
+      "line": 13,
+      "type": "exec",
+      "vars": {}
+    },
+    {
+      "step": 55,
+      "line": 14,
+      "type": "exit",
+      "func": "create_node",
+      "vars": {}
+    },
+    {
+      "step": 56,
+      "line": 19,
+      "type": "cond",
+      "result": false,
+      "vars": {}
+    },
+    {
+      "step": 57,
+      "line": 21,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "value": 0.52
+      }
+    },
+    {
+      "step": 58,
+      "line": 22,
+      "type": "exec",
+      "vars": {}
+    },
+    {
+      "step": 59,
+      "line": 24,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 60,
+      "line": 24,
+      "type": "exit",
+      "func": "insert_sorted",
+      "vars": {}
+    },
+    {
+      "step": 61,
+      "line": 46,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 4,
+        "n": 10
+      }
+    },
+    {
+      "step": 62,
+      "line": 56,
+      "type": "enter",
+      "func": "insert_sorted",
+      "vars": {
+        "value": 0.25
+      }
+    },
+    {
+      "step": 63,
+      "line": 18,
+      "type": "enter",
+      "func": "create_node",
+      "vars": {
+        "value": 0.25
+      }
+    },
+    {
+      "step": 64,
+      "line": 11,
+      "type": "cond",
+      "result": false,
+      "vars": {}
+    },
+    {
+      "step": 65,
+      "line": 12,
+      "type": "exec",
+      "vars": {}
+    },
+    {
+      "step": 66,
+      "line": 13,
+      "type": "exec",
+      "vars": {}
+    },
+    {
+      "step": 67,
+      "line": 14,
+      "type": "exit",
+      "func": "create_node",
+      "vars": {}
+    },
+    {
+      "step": 68,
+      "line": 19,
+      "type": "cond",
+      "result": false,
+      "vars": {}
+    },
+    {
+      "step": 69,
+      "line": 31,
+      "type": "exec",
+      "vars": {}
+    },
+    {
+      "step": 70,
+      "line": 32,
+      "type": "exec",
+      "vars": {}
+    },
+    {
+      "step": 71,
+      "line": 33,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 72,
+      "line": 33,
+      "type": "exit",
+      "func": "insert_sorted",
+      "vars": {}
+    },
+    {
+      "step": 73,
+      "line": 46,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 5,
+        "n": 10
+      }
+    },
+    {
+      "step": 74,
+      "line": 56,
+      "type": "enter",
+      "func": "insert_sorted",
+      "vars": {
+        "value": 0.47
+      }
+    },
+    {
+      "step": 75,
+      "line": 18,
+      "type": "enter",
+      "func": "create_node",
+      "vars": {
+        "value": 0.47
+      }
+    },
+    {
+      "step": 76,
+      "line": 11,
+      "type": "cond",
+      "result": false,
+      "vars": {}
+    },
+    {
+      "step": 77,
+      "line": 12,
+      "type": "exec",
+      "vars": {}
+    },
+    {
+      "step": 78,
+      "line": 13,
+      "type": "exec",
+      "vars": {}
+    },
+    {
+      "step": 79,
+      "line": 14,
+      "type": "exit",
+      "func": "create_node",
+      "vars": {}
+    },
+    {
+      "step": 80,
+      "line": 19,
+      "type": "cond",
+      "result": false,
+      "vars": {}
+    },
+    {
+      "step": 81,
+      "line": 31,
+      "type": "exec",
+      "vars": {}
+    },
+    {
+      "step": 82,
+      "line": 32,
+      "type": "exec",
+      "vars": {}
+    },
+    {
+      "step": 83,
+      "line": 33,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 84,
+      "line": 33,
+      "type": "exit",
+      "func": "insert_sorted",
+      "vars": {}
+    },
+    {
+      "step": 85,
+      "line": 46,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 6,
+        "n": 10
+      }
+    },
+    {
+      "step": 86,
+      "line": 56,
+      "type": "enter",
+      "func": "insert_sorted",
+      "vars": {
+        "value": 0.51
+      }
+    },
+    {
+      "step": 87,
+      "line": 18,
+      "type": "enter",
+      "func": "create_node",
+      "vars": {
+        "value": 0.51
+      }
+    },
+    {
+      "step": 88,
+      "line": 11,
+      "type": "cond",
+      "result": false,
+      "vars": {}
+    },
+    {
+      "step": 89,
+      "line": 12,
+      "type": "exec",
+      "vars": {}
+    },
+    {
+      "step": 90,
+      "line": 13,
+      "type": "exec",
+      "vars": {}
+    },
+    {
+      "step": 91,
+      "line": 14,
+      "type": "exit",
+      "func": "create_node",
+      "vars": {}
+    },
+    {
+      "step": 92,
+      "line": 19,
+      "type": "cond",
+      "result": false,
+      "vars": {}
+    },
+    {
+      "step": 93,
+      "line": 21,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "value": 0.51
+      }
+    },
+    {
+      "step": 94,
+      "line": 22,
+      "type": "exec",
+      "vars": {}
+    },
+    {
+      "step": 95,
+      "line": 24,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 96,
+      "line": 24,
+      "type": "exit",
+      "func": "insert_sorted",
+      "vars": {}
+    },
+    {
+      "step": 97,
+      "line": 46,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 7,
+        "n": 10
+      }
+    },
+    {
+      "step": 98,
+      "line": 56,
+      "type": "enter",
+      "func": "insert_sorted",
+      "vars": {
+        "value": 0.56
+      }
+    },
+    {
+      "step": 99,
+      "line": 18,
+      "type": "enter",
+      "func": "create_node",
+      "vars": {
+        "value": 0.56
+      }
+    },
+    {
+      "step": 100,
+      "line": 11,
+      "type": "cond",
+      "result": false,
+      "vars": {}
+    },
+    {
+      "step": 101,
+      "line": 12,
+      "type": "exec",
+      "vars": {}
+    },
+    {
+      "step": 102,
+      "line": 13,
+      "type": "exec",
+      "vars": {}
+    },
+    {
+      "step": 103,
+      "line": 14,
+      "type": "exit",
+      "func": "create_node",
+      "vars": {}
+    },
+    {
+      "step": 104,
+      "line": 19,
+      "type": "cond",
+      "result": false,
+      "vars": {}
+    },
+    {
+      "step": 105,
+      "line": 28,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "value": 0.56
+      }
+    },
+    {
+      "step": 106,
+      "line": 29,
+      "type": "exec",
+      "vars": {}
+    },
+    {
+      "step": 107,
+      "line": 31,
+      "type": "exec",
+      "vars": {}
+    },
+    {
+      "step": 108,
+      "line": 32,
+      "type": "exec",
+      "vars": {}
+    },
+    {
+      "step": 109,
+      "line": 33,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 110,
+      "line": 33,
+      "type": "exit",
+      "func": "insert_sorted",
+      "vars": {}
+    },
+    {
+      "step": 111,
+      "line": 46,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 8,
+        "n": 10
+      }
+    },
+    {
+      "step": 112,
+      "line": 56,
+      "type": "enter",
+      "func": "insert_sorted",
+      "vars": {
+        "value": 0.08
+      }
+    },
+    {
+      "step": 113,
+      "line": 18,
+      "type": "enter",
+      "func": "create_node",
+      "vars": {
+        "value": 0.08
+      }
+    },
+    {
+      "step": 114,
+      "line": 11,
+      "type": "cond",
+      "result": false,
+      "vars": {}
+    },
+    {
+      "step": 115,
+      "line": 12,
+      "type": "exec",
+      "vars": {}
+    },
+    {
+      "step": 116,
+      "line": 13,
+      "type": "exec",
+      "vars": {}
+    },
+    {
+      "step": 117,
+      "line": 14,
+      "type": "exit",
+      "func": "create_node",
+      "vars": {}
+    },
+    {
+      "step": 118,
+      "line": 19,
+      "type": "cond",
+      "result": false,
+      "vars": {}
+    },
+    {
+      "step": 119,
+      "line": 21,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "value": 0.08
+      }
+    },
+    {
+      "step": 120,
+      "line": 22,
+      "type": "exec",
+      "vars": {}
+    },
+    {
+      "step": 121,
+      "line": 24,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 122,
+      "line": 24,
+      "type": "exit",
+      "func": "insert_sorted",
+      "vars": {}
+    },
+    {
+      "step": 123,
+      "line": 46,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 9,
+        "n": 10
+      }
+    },
+    {
+      "step": 124,
+      "line": 56,
+      "type": "enter",
+      "func": "insert_sorted",
+      "vars": {
+        "value": 0.36
+      }
+    },
+    {
+      "step": 125,
+      "line": 18,
+      "type": "enter",
+      "func": "create_node",
+      "vars": {
+        "value": 0.36
+      }
+    },
+    {
+      "step": 126,
+      "line": 11,
+      "type": "cond",
+      "result": false,
+      "vars": {}
+    },
+    {
+      "step": 127,
+      "line": 12,
+      "type": "exec",
+      "vars": {}
+    },
+    {
+      "step": 128,
+      "line": 13,
+      "type": "exec",
+      "vars": {}
+    },
+    {
+      "step": 129,
+      "line": 14,
+      "type": "exit",
+      "func": "create_node",
+      "vars": {}
+    },
+    {
+      "step": 130,
+      "line": 19,
+      "type": "cond",
+      "result": false,
+      "vars": {}
+    },
+    {
+      "step": 131,
+      "line": 31,
+      "type": "exec",
+      "vars": {}
+    },
+    {
+      "step": 132,
+      "line": 32,
+      "type": "exec",
+      "vars": {}
+    },
+    {
+      "step": 133,
+      "line": 33,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 134,
+      "line": 33,
+      "type": "exit",
+      "func": "insert_sorted",
+      "vars": {}
+    },
+    {
+      "step": 135,
+      "line": 71,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0,
+        "n": 10
+      }
+    },
+    {
+      "step": 136,
+      "line": 73,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 137,
+      "line": 74,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          0.08,
+          0.32,
+          0.23,
+          0.52,
+          0.25,
+          0.47,
+          0.51,
+          0.56,
+          0.08,
+          0.36
+        ]
+      }
+    },
+    {
+      "step": 138,
+      "line": 76,
+      "type": "exec",
+      "vars": {}
+    },
+    {
+      "step": 139,
+      "line": 71,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "n": 10
+      }
+    },
+    {
+      "step": 140,
+      "line": 71,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "n": 10
+      }
+    },
+    {
+      "step": 141,
+      "line": 73,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 142,
+      "line": 74,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          0.08,
+          0.23,
+          0.23,
+          0.52,
+          0.25,
+          0.47,
+          0.51,
+          0.56,
+          0.08,
+          0.36
+        ]
+      }
+    },
+    {
+      "step": 143,
+      "line": 76,
+      "type": "exec",
+      "vars": {}
+    },
+    {
+      "step": 144,
+      "line": 73,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 145,
+      "line": 74,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          0.08,
+          0.23,
+          0.25,
+          0.52,
+          0.25,
+          0.47,
+          0.51,
+          0.56,
+          0.08,
+          0.36
+        ]
+      }
+    },
+    {
+      "step": 146,
+      "line": 76,
+      "type": "exec",
+      "vars": {}
+    },
+    {
+      "step": 147,
+      "line": 71,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3,
+        "n": 10
+      }
+    },
+    {
+      "step": 148,
+      "line": 73,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 149,
+      "line": 74,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          0.08,
+          0.23,
+          0.25,
+          0.32,
+          0.25,
+          0.47,
+          0.51,
+          0.56,
+          0.08,
+          0.36
+        ]
+      }
+    },
+    {
+      "step": 150,
+      "line": 76,
+      "type": "exec",
+      "vars": {}
+    },
+    {
+      "step": 151,
+      "line": 73,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 152,
+      "line": 74,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          0.08,
+          0.23,
+          0.25,
+          0.32,
+          0.36,
+          0.47,
+          0.51,
+          0.56,
+          0.08,
+          0.36
+        ]
+      }
+    },
+    {
+      "step": 153,
+      "line": 76,
+      "type": "exec",
+      "vars": {}
+    },
+    {
+      "step": 154,
+      "line": 71,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 4,
+        "n": 10
+      }
+    },
+    {
+      "step": 155,
+      "line": 73,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 156,
+      "line": 74,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          0.08,
+          0.23,
+          0.25,
+          0.32,
+          0.36,
+          0.42,
+          0.51,
+          0.56,
+          0.08,
+          0.36
+        ]
+      }
+    },
+    {
+      "step": 157,
+      "line": 76,
+      "type": "exec",
+      "vars": {}
+    },
+    {
+      "step": 158,
+      "line": 73,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 159,
+      "line": 74,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          0.08,
+          0.23,
+          0.25,
+          0.32,
+          0.36,
+          0.42,
+          0.47,
+          0.56,
+          0.08,
+          0.36
+        ]
+      }
+    },
+    {
+      "step": 160,
+      "line": 76,
+      "type": "exec",
+      "vars": {}
+    },
+    {
+      "step": 161,
+      "line": 71,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 5,
+        "n": 10
+      }
+    },
+    {
+      "step": 162,
+      "line": 73,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 163,
+      "line": 74,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          0.08,
+          0.23,
+          0.25,
+          0.32,
+          0.36,
+          0.42,
+          0.47,
+          0.51,
+          0.08,
+          0.36
+        ]
+      }
+    },
+    {
+      "step": 164,
+      "line": 76,
+      "type": "exec",
+      "vars": {}
+    },
+    {
+      "step": 165,
+      "line": 73,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 166,
+      "line": 74,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          0.08,
+          0.23,
+          0.25,
+          0.32,
+          0.36,
+          0.42,
+          0.47,
+          0.51,
+          0.52,
+          0.36
+        ]
+      }
+    },
+    {
+      "step": 167,
+      "line": 76,
+      "type": "exec",
+      "vars": {}
+    },
+    {
+      "step": 168,
+      "line": 73,
+      "type": "cond",
+      "result": true,
+      "vars": {}
+    },
+    {
+      "step": 169,
+      "line": 74,
+      "type": "exec",
+      "vars": {
+        "arr": [
+          0.08,
+          0.23,
+          0.25,
+          0.32,
+          0.36,
+          0.42,
+          0.47,
+          0.51,
+          0.52,
+          0.56
+        ]
+      }
+    },
+    {
+      "step": 170,
+      "line": 76,
+      "type": "exec",
+      "vars": {}
+    },
+    {
+      "step": 171,
+      "line": 71,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 6,
+        "n": 10
+      }
+    },
+    {
+      "step": 172,
+      "line": 71,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 7,
+        "n": 10
+      }
+    },
+    {
+      "step": 173,
+      "line": 71,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 8,
+        "n": 10
+      }
+    },
+    {
+      "step": 174,
+      "line": 71,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 9,
+        "n": 10
+      }
+    },
+    {
+      "step": 175,
+      "line": 81,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 176,
+      "line": 81,
+      "type": "exit",
+      "func": "bucket_sort",
+      "vars": {}
+    },
+    {
+      "step": 177,
+      "line": 96,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0,
+        "n": 10
+      }
+    },
+    {
+      "step": 178,
+      "line": 96,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "n": 10
+      }
+    },
+    {
+      "step": 179,
+      "line": 96,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "n": 10
+      }
+    },
+    {
+      "step": 180,
+      "line": 96,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3,
+        "n": 10
+      }
+    },
+    {
+      "step": 181,
+      "line": 96,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 4,
+        "n": 10
+      }
+    },
+    {
+      "step": 182,
+      "line": 96,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 5,
+        "n": 10
+      }
+    },
+    {
+      "step": 183,
+      "line": 96,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 6,
+        "n": 10
+      }
+    },
+    {
+      "step": 184,
+      "line": 96,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 7,
+        "n": 10
+      }
+    },
+    {
+      "step": 185,
+      "line": 96,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 8,
+        "n": 10
+      }
+    },
+    {
+      "step": 186,
+      "line": 96,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 9,
+        "n": 10
+      }
+    },
+    {
+      "step": 187,
+      "line": 100,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 188,
+      "line": 100,
+      "type": "exit",
+      "func": "main",
+      "vars": {}
+    }
+  ],
+  "total_steps": 189
+}

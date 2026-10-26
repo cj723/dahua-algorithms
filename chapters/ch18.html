@@ -1,0 +1,4684 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#171b28">
+<link rel="icon" href="../assets/mascots/student-dog.png">
+<title>第18章 算法在现实世界 · 大话算法</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #1e2336;
+  --panel: #1a1f30;
+  --panel-deep: #151920;
+  --surface: #21283a;
+  --border: #30384c;
+  --text: #d7dae0;
+  --text-soft: #abb4c3;
+  --text-dim: #929caf;
+  --accent: #59a8ee;
+  --accent-soft: #243f5e;
+  --success: #98c379;
+  --control-height: 64px;
+}
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Noto Sans SC', 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text-soft);
+  overflow: hidden;
+}
+button, input, summary { font: inherit; }
+button:focus-visible, a:focus-visible, input:focus-visible, summary:focus-visible, [tabindex]:focus-visible {
+  outline: 3px solid rgba(89,168,238,.58);
+  outline-offset: 2px;
+}
+.header {
+  height: 65px;
+  background: rgba(23,28,43,.96);
+  padding: 0 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  position: relative;
+  z-index: 30;
+}
+.back-link {
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 13px;
+  white-space: nowrap;
+}
+.back-link:hover { text-decoration: underline; }
+.chapter-heading { min-width: 0; flex: 1; }
+.chapter-kicker { color: var(--text-dim); font-size: 12px; margin-bottom: 2px; }
+.chapter-heading h1 {
+  font-size: 19px;
+  line-height: 1.25;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.chapter-status {
+  min-width: 138px;
+  display: grid;
+  gap: 5px;
+}
+.chapter-status-text { color: var(--text-dim); font-size: 11px; text-align: right; }
+.chapter-status-track { height: 4px; background: #252c3e; border-radius: 99px; overflow: hidden; }
+.chapter-status-fill {
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, var(--accent), var(--success));
+  border-radius: inherit;
+  transition: width .3s ease;
+}
+.chapter-nav { display: flex; gap: 6px; }
+.chapter-nav a, .chapter-nav span {
+  min-width: 36px;
+  height: 36px;
+  padding: 0 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-soft);
+  text-decoration: none;
+  font-size: 12px;
+}
+.chapter-nav a:hover { border-color: var(--accent); color: var(--text); background: #202b40; }
+.chapter-nav .disabled { opacity: .35; cursor: default; }
+.mobile-view-switcher { display: none; }
+.main { display: flex; height: calc(100dvh - 65px); min-height: 0; }
+.code-panel {
+  width: 45%;
+  min-width: 360px;
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.code-header {
+  background: var(--panel);
+  padding: 9px 14px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.algo-tabs {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  flex: 1;
+  min-width: 0;
+}
+.algo-tab, .mode-tab {
+  border: 1px solid var(--border);
+  background: #22283a;
+  color: var(--text-dim);
+  border-radius: 7px;
+  cursor: pointer;
+  transition: background .18s ease, border-color .18s ease, color .18s ease;
+}
+.algo-tab { padding: 6px 11px; font-size: 12px; position: relative; }
+.algo-tab:hover, .mode-tab:hover { color: var(--text); border-color: #48536b; }
+.algo-tab.active, .mode-tab.active {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: #e8f3ff;
+}
+.algo-tab.completed::after {
+  content: '✓';
+  margin-left: 6px;
+  color: var(--success);
+  font-weight: 800;
+}
+.breakpoint-hint {
+  color: #737e92;
+  font-size: 11px;
+  line-height: 29px;
+  white-space: nowrap;
+}
+.mode-tabs {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: #171c2b;
+  border-bottom: 1px solid var(--border);
+}
+.mode-tabs.visible { display: flex; }
+.mode-label { font-size: 12px; color: var(--text-dim); margin-right: 2px; }
+.mode-tab { padding: 5px 12px; border-radius: 999px; font-size: 12px; }
+.code-body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  font-family: 'SFMono-Regular', 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+  font-size: var(--code-font-size, 15px);
+  line-height: 1.8;
+  scrollbar-color: #3b455c transparent;
+}
+.code-line { display: flex; min-width: max-content; padding: 0 16px 0 7px; position: relative; }
+.code-line:hover { background: #22283a; }
+.code-line.active {
+  background: rgba(73,164,238,.32);
+  border-left: 3px solid var(--accent);
+  box-shadow: inset 0 0 16px rgba(73,164,238,.18);
+}
+.code-line.executed { background: rgba(73,164,238,.035); }
+.code-line.setup { background: rgba(127,132,142,.045); color: #667084; }
+.line-num {
+  width: 42px;
+  border: 0;
+  background: transparent;
+  text-align: right;
+  color: #748096;
+  padding-right: 12px;
+  user-select: none;
+  flex-shrink: 0;
+  position: relative;
+  cursor: pointer;
+}
+.line-num:hover { color: var(--accent); }
+.line-num .breakpoint {
+  position: absolute;
+  left: 3px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #e05561;
+}
+.line-content { flex: 1; white-space: pre; }
+.kw, .num { color: #F3A862; }
+.fn { color: #59a8ee; }
+.var { color: #D980FA; }
+.str { color: #74C589; }
+.cmt { color: #71939a; font-style: italic; }
+.right-panel { flex: 1; display: flex; flex-direction: column; min-width: 0; min-height: 0; overflow: hidden; }
+.viz-panel {
+  flex: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 20px;
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
+}
+.viz-panel canvas { width: 100%; height: 100%; display: block; }
+body.concept-mode .viz-panel { flex: 1 1 auto; padding: 6px 20px; }
+body.concept-mode .vars-panel { flex: 0 1 168px; padding: 8px 18px; }
+body.concept-mode .output-panel { flex: 0 1 68px; padding: 6px 16px; }
+body.concept-mode .callstack { display: none; }
+.callstack {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  max-width: calc(100% - 24px);
+  background: rgba(33,38,54,.92);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 12px;
+  pointer-events: none;
+}
+.callstack-title, .vars-panel h3, .output-panel h3 { color: var(--text-dim); }
+.callstack-title { margin-bottom: 4px; }
+.callstack-item { color: var(--accent); padding: 2px 0; }
+.callstack-item::before { content: '▸ '; color: #68758a; }
+.vars-panel {
+  flex: 2;
+  background: var(--panel);
+  padding: 10px 18px;
+  border-top: 1px solid var(--border);
+  overflow-y: auto;
+  min-height: 0;
+}
+.output-panel {
+  flex: 1;
+  background: var(--panel-deep);
+  border-top: 1px solid var(--border);
+  padding: 8px 16px;
+  overflow-y: auto;
+  min-height: 0;
+  font-family: 'SFMono-Regular', 'JetBrains Mono', monospace;
+  font-size: var(--output-font-size, 13px);
+  color: var(--text-dim);
+}
+.output-panel h3 {
+  font-size: 12px;
+  margin-bottom: 4px;
+  position: sticky;
+  top: 0;
+  background: var(--panel-deep);
+  padding-bottom: 4px;
+  z-index: 1;
+}
+.output-line { padding: 1px 0; white-space: pre-wrap; word-break: break-word; }
+.vars-panel h3 { font-size: 13px; margin-bottom: 9px; }
+.var-grid { display: flex; flex-direction: column; gap: 6px; }
+.var-section-title { font-size: 11px; color: var(--text-dim); margin: 8px 0 4px; }
+.var-section:first-child .var-section-title { margin-top: 0; }
+.var-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.var-item {
+  background: #22283a;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 6px 13px;
+  font-family: monospace;
+  font-size: var(--var-font-size, 14px);
+}
+.var-name { color: var(--accent); }
+.var-val { color: var(--text); font-weight: 650; }
+.var-changed { animation: varPulse .5s ease; border-color: var(--accent); }
+.var-highlight { border-color: var(--accent); background: var(--accent-soft); }
+@keyframes varPulse { 0% { background: var(--accent-soft); } 100% { background: #22283a; } }
+.var-toggle { font-size: 12px; color: var(--text-dim); cursor: pointer; padding: 4px 0; user-select: none; }
+.control-bar {
+  min-height: var(--control-height);
+  flex-shrink: 0;
+  background: var(--panel);
+  border-top: 1px solid var(--border);
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+  z-index: 20;
+}
+.transport-controls { display: flex; align-items: center; gap: 7px; }
+.btn {
+  min-height: 38px;
+  background: #22283a;
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  white-space: nowrap;
+}
+.btn:hover:not(:disabled) { background: #2a3247; border-color: #4c5872; }
+.btn:disabled { opacity: .36; cursor: not-allowed; }
+.btn-primary { min-width: 82px; background: var(--accent-soft); border-color: var(--accent); }
+.btn-active { background: #285176; border-color: #77bfff; }
+.step-info {
+  margin-left: auto;
+  min-width: 68px;
+  font-size: 12px;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+.step-info strong { color: var(--text); }
+.settings-menu { position: relative; }
+.settings-menu summary {
+  list-style: none;
+  min-height: 38px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-soft);
+  cursor: pointer;
+  font-size: 12px;
+  user-select: none;
+}
+.settings-menu summary::-webkit-details-marker { display: none; }
+.settings-menu[open] summary { border-color: var(--accent); background: var(--accent-soft); color: var(--text); }
+.settings-popover {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 10px);
+  width: 250px;
+  padding: 14px;
+  display: grid;
+  gap: 12px;
+  background: rgba(23,28,43,.98);
+  border: 1px solid #3a465f;
+  border-radius: 12px;
+  box-shadow: 0 16px 42px rgba(0,0,0,.38);
+}
+.setting-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.setting-row label, .shortcut-help { font-size: 12px; color: var(--text-dim); }
+.speed-slider { width: 130px; accent-color: var(--accent); }
+.font-control { display: flex; align-items: center; gap: 6px; }
+.btn-sm { min-height: 32px; padding: 5px 10px; font-size: 12px; }
+.settings-divider { height: 1px; background: var(--border); }
+.shortcut-help { line-height: 1.65; }
+
+@media (max-width: 1050px) {
+  .code-panel { width: 42%; min-width: 320px; }
+  .chapter-status { display: none; }
+  .breakpoint-hint { display: none; }
+  .btn { padding-inline: 10px; }
+}
+
+@media (max-width: 900px) {
+  body { overflow: auto; padding-bottom: 72px; }
+  .header {
+    height: auto;
+    min-height: 60px;
+    padding: 8px 12px;
+    gap: 10px;
+    position: sticky;
+    top: 0;
+  }
+  .back-link { font-size: 0; width: 36px; height: 36px; display: grid; place-items: center; }
+  .back-link::before { content: '←'; font-size: 21px; }
+  .chapter-kicker { font-size: 10px; }
+  .chapter-heading h1 { font-size: 16px; }
+  .chapter-nav a, .chapter-nav span { width: 34px; min-width: 34px; padding: 0; font-size: 0; }
+  .chapter-nav a:first-child::before, .chapter-nav span:first-child::before { content: '‹'; font-size: 22px; }
+  .chapter-nav a:last-child::before, .chapter-nav span:last-child::before { content: '›'; font-size: 22px; }
+  .mobile-view-switcher {
+    position: sticky;
+    top: 60px;
+    z-index: 25;
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 4px;
+    padding: 7px 10px;
+    background: rgba(23,28,43,.97);
+    border-bottom: 1px solid var(--border);
+  }
+  .mobile-view-switcher button {
+    min-height: 38px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text-dim);
+  }
+  .mobile-view-switcher button.active {
+    color: #e8f3ff;
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+  .main { display: block; height: auto; min-height: calc(100dvh - 114px); }
+  .code-panel, .right-panel { width: 100%; min-width: 0; border: 0; }
+  .code-panel { height: calc(100dvh - 186px); }
+  .code-header { padding: 8px 10px; overflow: hidden; }
+  .algo-tabs { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 3px; scrollbar-width: thin; }
+  .algo-tab { flex: 0 0 auto; min-height: 38px; }
+  .mode-tabs { padding: 7px 10px; overflow-x: auto; }
+  .code-body { min-height: 0; font-size: max(13px,var(--code-font-size,15px)); }
+  .code-line { padding-right: 12px; }
+  .right-panel { min-height: calc(100dvh - 186px); overflow: visible; }
+  .viz-panel { height: calc(100dvh - 186px); min-height: 430px; flex: none !important; padding: 8px 10px !important; }
+  .vars-panel { min-height: 50dvh; padding: 14px; }
+  .output-panel { min-height: 28dvh; padding: 12px 14px; }
+  body[data-mobile-view="animation"] .code-panel,
+  body[data-mobile-view="animation"] .vars-panel,
+  body[data-mobile-view="animation"] .output-panel { display: none; }
+  body[data-mobile-view="code"] .right-panel > :not(.control-bar),
+  body[data-mobile-view="code"] .vars-panel,
+  body[data-mobile-view="code"] .output-panel { display: none; }
+  body[data-mobile-view="code"] .right-panel { min-height: 0; }
+  body[data-mobile-view="data"] .code-panel,
+  body[data-mobile-view="data"] .viz-panel { display: none; }
+  body[data-mobile-view="data"] .right-panel { min-height: calc(100dvh - 186px); }
+  .control-bar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    min-height: 72px;
+    padding: 9px max(10px,env(safe-area-inset-right)) calc(9px + env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left));
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 -10px 30px rgba(9,12,20,.36);
+  }
+  .transport-controls { gap: 7px; }
+  #btn-reset { display: none; }
+  .btn { min-width: 48px; min-height: 44px; padding: 8px 10px; font-size: 0; }
+  #btn-back::after { content: '◀'; font-size: 16px; }
+  #btn-play { min-width: 92px; font-size: 14px; }
+  #btn-step::after { content: '▶'; font-size: 16px; }
+  .step-info { margin-left: 0; min-width: 52px; text-align: center; font-size: 11px; }
+  .step-info .step-prefix { display: none; }
+  .settings-menu summary { width: 44px; min-height: 44px; padding: 0; justify-content: center; font-size: 0; }
+  .settings-menu summary::before { content: '⚙'; font-size: 17px; }
+  .settings-popover { right: -2px; width: min(280px,calc(100vw - 20px)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: .001ms !important;
+  }
+}
+</style>
+</head>
+<body data-mobile-view="animation">
+
+<header class="header">
+  <a class="back-link" href="../index.html" aria-label="返回学习地图">← 学习地图</a>
+  <div class="chapter-heading">
+    <div class="chapter-kicker">第18章</div>
+    <h1>算法在现实世界</h1>
+  </div>
+  <div class="chapter-status" aria-label="本章学习进度">
+    <div class="chapter-status-text" id="chapter-progress-text">0 / 0 个演示完成</div>
+    <div class="chapter-status-track"><div class="chapter-status-fill" id="chapter-progress-fill"></div></div>
+  </div>
+  <nav class="chapter-nav" aria-label="章节导航">
+    <a href="ch17.html" aria-label="上一章：概率算法" title="上一章：概率算法">上一章</a>
+    <a href="ch19.html" aria-label="下一章：链表与树的指尖舞蹈" title="下一章：链表与树的指尖舞蹈">下一章</a>
+  </nav>
+</header>
+
+<div class="mobile-view-switcher" role="tablist" aria-label="学习视图">
+  <button type="button" class="active" data-mobile-view="animation" role="tab" aria-selected="true">动画</button>
+  <button type="button" data-mobile-view="code" role="tab" aria-selected="false">代码</button>
+  <button type="button" data-mobile-view="data" role="tab" aria-selected="false">变量</button>
+</div>
+
+<main class="main">
+  <section class="code-panel" aria-label="算法代码">
+    <div class="code-header">
+      <div class="algo-tabs" id="algo-tabs" role="tablist" aria-label="本章算法"></div>
+      <span class="breakpoint-hint">点击行号可设断点</span>
+    </div>
+    <div class="mode-tabs" id="mode-tabs" role="tablist" aria-label="演示模式"></div>
+    <div class="code-body" id="code-body" aria-label="代码执行过程"></div>
+  </section>
+
+  <section class="right-panel" aria-label="算法可视化与状态">
+    <div class="viz-panel">
+      <canvas id="viz-canvas" width="800" height="300" role="img" aria-label="算法执行动画"></canvas>
+      <div class="callstack" id="callstack"><div class="callstack-title">调用栈</div></div>
+    </div>
+    <div class="vars-panel">
+      <h3>变量状态</h3>
+      <div class="var-grid" id="var-grid"></div>
+    </div>
+    <div class="output-panel" id="output-panel">
+      <h3>程序输出</h3>
+      <div id="output-content" aria-live="polite"></div>
+    </div>
+
+    <div class="control-bar" aria-label="播放控制">
+      <div class="transport-controls">
+        <button class="btn" id="btn-reset" type="button" aria-label="重置当前演示" title="重置当前演示">⏮ 重置</button>
+        <button class="btn" id="btn-back" type="button" aria-label="上一步" title="上一步">◀ 后退</button>
+        <button class="btn btn-primary" id="btn-play" type="button" aria-label="播放或暂停">▶ 播放</button>
+        <button class="btn" id="btn-step" type="button" aria-label="下一步" title="下一步">⏭ 单步</button>
+      </div>
+      <div class="step-info" aria-live="polite">
+        <span class="step-prefix">步骤 </span><strong id="step-cur">0</strong> / <strong id="step-total">0</strong>
+      </div>
+      <details class="settings-menu">
+        <summary aria-label="播放设置">⚙ 设置</summary>
+        <div class="settings-popover">
+          <div class="setting-row">
+            <label for="speed-slider">播放速度</label>
+            <input type="range" class="speed-slider" id="speed-slider" min="1" max="10" value="5" aria-valuetext="速度 5">
+          </div>
+          <div class="setting-row">
+            <span class="mode-label">代码字体</span>
+            <div class="font-control">
+              <button class="btn btn-sm" type="button" id="font-dec" aria-label="减小代码字体">A−</button>
+              <button class="btn btn-sm" type="button" id="font-inc" aria-label="增大代码字体">A＋</button>
+            </div>
+          </div>
+          <button class="btn" id="btn-to-bp" type="button">运行到断点</button>
+          <div class="settings-divider"></div>
+          <div class="shortcut-help">页面空白处：空格播放/暂停，← → 单步，R 重置</div>
+        </div>
+      </details>
+    </div>
+  </section>
+</main>
+
+<script src="../js/learning-state.js?v=20260725"></script>
+<script src="../js/engine.js?v=20260725-ux2"></script>
+<script src="../js/viz-renderers.js?v=20260725-layout-audit"></script>
+<script>
+const CHAPTER_NUM = 18;
+const ALGOS = {
+  "01_皮尔逊相似度": {
+    "title": "皮尔逊相似度",
+    "defaultMode": "concept",
+    "modeLabels": {
+      "concept": "理解动画",
+      "trace": "代码执行"
+    },
+    "modes": {
+      "concept": {
+        "title": "皮尔逊相似度",
+        "source": [
+          "算法: 用户相似度",
+          "输入: 你、小明、小红对商品的评分",
+          "输出: 谁和你更像",
+          "",
+          "把每个人的评分看成一行数字",
+          "先看评分变化趋势是否一致",
+          "趋势越像, 相似度越高",
+          "优先参考最相似用户的喜好"
+        ],
+        "important_vars": {
+          "simAB": "状态",
+          "simAC": "状态",
+          "phase": "状态"
+        },
+        "track_vars": {
+          "primary": [
+            "simAB",
+            "simAC",
+            "phase"
+          ],
+          "secondary": []
+        },
+        "var_classes": {
+          "simAB": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "simAC": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "phase": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "concept": {
+            "category": "secondary",
+            "type": "concept"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 4,
+            "text": "理解动画：协同过滤先找和你口味更像的人, 再参考他的偏好做推荐。"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 4,
+            "type": "exec",
+            "vars": {
+              "simAB": "-",
+              "simAC": "-",
+              "phase": "每个人的打分就是一条品味曲线",
+              "concept": {
+                "kind": "dp_table",
+                "title": "协同过滤: 谁和你品味更像",
+                "subtitle": "把评分排成表, 比较变化趋势",
+                "grid": [
+                  [
+                    5,
+                    3,
+                    4,
+                    1
+                  ],
+                  [
+                    4,
+                    4,
+                    5,
+                    2
+                  ],
+                  [
+                    1,
+                    5,
+                    2,
+                    5
+                  ]
+                ],
+                "rowLabels": [
+                  "你",
+                  "小明",
+                  "小红"
+                ],
+                "colLabels": [
+                  "苹果",
+                  "香蕉",
+                  "橘子",
+                  "西瓜"
+                ],
+                "active": [
+                  0,
+                  0
+                ],
+                "refs": [],
+                "badges": [
+                  "商品: 苹果/香蕉/橘子/西瓜"
+                ]
+              }
+            }
+          },
+          {
+            "step": 1,
+            "line": 6,
+            "type": "exec",
+            "vars": {
+              "simAB": "0.63",
+              "simAC": "-",
+              "phase": "你和小明的评分整体同涨同落, 口味更接近",
+              "concept": {
+                "kind": "dp_table",
+                "title": "协同过滤: 谁和你品味更像",
+                "subtitle": "把评分排成表, 比较变化趋势",
+                "grid": [
+                  [
+                    5,
+                    3,
+                    4,
+                    1
+                  ],
+                  [
+                    4,
+                    4,
+                    5,
+                    2
+                  ],
+                  [
+                    1,
+                    5,
+                    2,
+                    5
+                  ]
+                ],
+                "rowLabels": [
+                  "你",
+                  "小明",
+                  "小红"
+                ],
+                "colLabels": [
+                  "苹果",
+                  "香蕉",
+                  "橘子",
+                  "西瓜"
+                ],
+                "active": [
+                  1,
+                  2
+                ],
+                "refs": [
+                  [
+                    0,
+                    0
+                  ],
+                  [
+                    1,
+                    0
+                  ],
+                  [
+                    0,
+                    2
+                  ],
+                  [
+                    1,
+                    2
+                  ]
+                ],
+                "badges": [
+                  "你-小明",
+                  "相似度 0.63"
+                ]
+              }
+            }
+          },
+          {
+            "step": 2,
+            "line": 6,
+            "type": "exec",
+            "vars": {
+              "simAB": "0.63",
+              "simAC": "-0.94",
+              "phase": "小红喜欢的方向和你差别很大, 甚至接近反着来",
+              "concept": {
+                "kind": "dp_table",
+                "title": "协同过滤: 谁和你品味更像",
+                "subtitle": "把评分排成表, 比较变化趋势",
+                "grid": [
+                  [
+                    5,
+                    3,
+                    4,
+                    1
+                  ],
+                  [
+                    4,
+                    4,
+                    5,
+                    2
+                  ],
+                  [
+                    1,
+                    5,
+                    2,
+                    5
+                  ]
+                ],
+                "rowLabels": [
+                  "你",
+                  "小明",
+                  "小红"
+                ],
+                "colLabels": [
+                  "苹果",
+                  "香蕉",
+                  "橘子",
+                  "西瓜"
+                ],
+                "active": [
+                  2,
+                  3
+                ],
+                "refs": [
+                  [
+                    0,
+                    0
+                  ],
+                  [
+                    2,
+                    0
+                  ],
+                  [
+                    0,
+                    3
+                  ],
+                  [
+                    2,
+                    3
+                  ]
+                ],
+                "badges": [
+                  "你-小红",
+                  "相似度 -0.94"
+                ]
+              }
+            }
+          },
+          {
+            "step": 3,
+            "line": 8,
+            "type": "exec",
+            "vars": {
+              "simAB": "0.63",
+              "simAC": "-0.94",
+              "phase": "所以推荐系统会优先参考小明喜欢的商品",
+              "concept": {
+                "kind": "dp_table",
+                "title": "协同过滤: 谁和你品味更像",
+                "subtitle": "把评分排成表, 比较变化趋势",
+                "grid": [
+                  [
+                    5,
+                    3,
+                    4,
+                    1
+                  ],
+                  [
+                    4,
+                    4,
+                    5,
+                    2
+                  ],
+                  [
+                    1,
+                    5,
+                    2,
+                    5
+                  ]
+                ],
+                "rowLabels": [
+                  "你",
+                  "小明",
+                  "小红"
+                ],
+                "colLabels": [
+                  "苹果",
+                  "香蕉",
+                  "橘子",
+                  "西瓜"
+                ],
+                "active": [
+                  1,
+                  0
+                ],
+                "refs": [
+                  [
+                    1,
+                    0
+                  ],
+                  [
+                    1,
+                    1
+                  ],
+                  [
+                    1,
+                    2
+                  ],
+                  [
+                    1,
+                    3
+                  ]
+                ],
+                "badges": [
+                  "推荐参考",
+                  "小明"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "trace": {
+        "title": "皮尔逊相似度",
+        "source": [
+          "#include <stdio.h>",
+          "#include <math.h>",
+          "",
+          "/*",
+          " * 计算两个用户的相似度（皮尔逊相关系数简化版）",
+          " * 就像比较两个人的“品味向量”",
+          " *",
+          " * 类比：你和小明各有一张打分卡",
+          " * 你：  苹果 5  香蕉 3  橘子 4  西瓜 1",
+          " * 小明：苹果 4  香蕉 4  橘子 5  西瓜 2",
+          " * 越接近，说明口味越像",
+          " */",
+          "",
+          "#define NUM_ITEMS 4  /* 商品数量 */",
+          "",
+          "/* 计算两个用户的相似度（皮尔逊相关系数简化版） */",
+          "double similarity(int userA[], int userB[], int n) {",
+          "    double sumA = 0, sumB = 0;",
+          "    double sumAB = 0, sumA2 = 0, sumB2 = 0;",
+          "",
+          "    for (int i = 0; i < n; i++) {",
+          "        sumA  += userA[i];",
+          "        sumB  += userB[i];",
+          "        sumAB += userA[i] * userB[i];",
+          "        sumA2 += userA[i] * userA[i];",
+          "        sumB2 += userB[i] * userB[i];",
+          "    }",
+          "",
+          "    /* 皮尔逊相关系数公式（\"计算器公式\"，适合小数据量教学演示） */",
+          "    double numerator = n * sumAB - sumA * sumB;",
+          "    double var_product = (n * sumA2 - sumA * sumA) * (n * sumB2 - sumB * sumB);",
+          "    if (var_product <= 0) return 0;  /* 防止浮点误差导致对负数开根号 */",
+          "    double denominator = sqrt(var_product);",
+          "",
+          "    if (denominator == 0) return 0;",
+          "    return numerator / denominator;",
+          "}",
+          "",
+          "int main(void) {",
+          "    /*           苹果  香蕉  橘子  西瓜 */",
+          "    int userA[] = {5,    3,    4,    1};  /* 你 */",
+          "    int userB[] = {4,    4,    5,    2};  /* 小明 */",
+          "    int userC[] = {1,    5,    2,    5};  /* 小红 */",
+          "",
+          "    double simAB = similarity(userA, userB, NUM_ITEMS);",
+          "    double simAC = similarity(userA, userC, NUM_ITEMS);",
+          "",
+          "    printf(\"你和小明的相似度：%.2f\\n\", simAB);",
+          "    printf(\"你和小红的相似度：%.2f\\n\", simAC);",
+          "",
+          "    if (simAB > simAC) {",
+          "        printf(\"推荐：去看看小明喜欢什么！\\n\");",
+          "    } else {",
+          "        printf(\"推荐：去看看小红喜欢什么！\\n\");",
+          "    }",
+          "",
+          "    return 0;",
+          "}",
+          ""
+        ],
+        "important_vars": {
+          "i": "索引",
+          "userA": "数据",
+          "userB": "数据",
+          "userC": "数据"
+        },
+        "track_vars": {
+          "primary": [
+            "i",
+            "n"
+          ],
+          "secondary": [
+            "_return",
+            "denominator",
+            "simAB",
+            "simAC",
+            "sumA",
+            "sumA2",
+            "sumAB",
+            "sumB",
+            "sumB2",
+            "userA",
+            "userB",
+            "var_product"
+          ]
+        },
+        "var_classes": {
+          "_return": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "denominator": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "i": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "n": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "simAB": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "simAC": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "sumA": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "sumA2": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "sumAB": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "sumB": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "sumB2": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "userA": {
+            "category": "secondary",
+            "type": "array"
+          },
+          "userB": {
+            "category": "secondary",
+            "type": "array"
+          },
+          "var_product": {
+            "category": "secondary",
+            "type": "scalar"
+          }
+        },
+        "initial_data": {
+          "userA": [
+            5,
+            3,
+            4,
+            1
+          ],
+          "userB": [
+            4,
+            4,
+            5,
+            2
+          ],
+          "userC": [
+            1,
+            5,
+            2,
+            5
+          ]
+        },
+        "program_output": [
+          {
+            "after_step": 14,
+            "text": "你和小明的相似度： 0.81 你和小红的相似度： -0.88 推荐：去看看小明喜欢什么！"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 32,
+            "type": "enter",
+            "func": "main",
+            "vars": {}
+          },
+          {
+            "step": 1,
+            "line": 37,
+            "type": "enter",
+            "func": "similarity",
+            "vars": {
+              "userA": [
+                5,
+                3,
+                4,
+                1
+              ],
+              "userB": [
+                4,
+                4,
+                5,
+                2
+              ],
+              "n": 4
+            }
+          },
+          {
+            "step": 2,
+            "line": 17,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 0,
+              "n": 4
+            }
+          },
+          {
+            "step": 3,
+            "line": 19,
+            "type": "exec",
+            "vars": {
+              "sumB": 0
+            }
+          },
+          {
+            "step": 4,
+            "line": 21,
+            "type": "exec",
+            "vars": {
+              "sumA2": 0
+            }
+          },
+          {
+            "step": 5,
+            "line": 27,
+            "type": "cond",
+            "result": false,
+            "vars": {
+              "var_product": 665
+            }
+          },
+          {
+            "step": 6,
+            "line": 30,
+            "type": "exit",
+            "func": "similarity",
+            "vars": {}
+          },
+          {
+            "step": 7,
+            "line": 38,
+            "type": "enter",
+            "func": "similarity",
+            "vars": {
+              "userA": [
+                5,
+                3,
+                4,
+                1
+              ],
+              "userB": [
+                1,
+                5,
+                2,
+                5
+              ],
+              "n": 4
+            }
+          },
+          {
+            "step": 8,
+            "line": 21,
+            "type": "exec",
+            "vars": {
+              "sumA2": 0
+            }
+          },
+          {
+            "step": 9,
+            "line": 17,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 2,
+              "n": 4
+            }
+          },
+          {
+            "step": 10,
+            "line": 19,
+            "type": "exec",
+            "vars": {
+              "sumB": 0
+            }
+          },
+          {
+            "step": 11,
+            "line": 30,
+            "type": "exit",
+            "func": "similarity",
+            "vars": {}
+          },
+          {
+            "step": 12,
+            "line": 46,
+            "type": "exec",
+            "vars": {
+              "_return": 0
+            }
+          },
+          {
+            "step": 13,
+            "line": 46,
+            "type": "exit",
+            "func": "main",
+            "vars": {
+              "sumB": "-",
+              "i": "-",
+              "n": "-",
+              "userB": "-",
+              "var_product": "-",
+              "sumA2": "-",
+              "userA": "-",
+              "phase": "程序执行完成，结果见下方输出"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "02_PageRank_简化版": {
+    "title": "PageRank（简化版）",
+    "defaultMode": "concept",
+    "modeLabels": {
+      "concept": "理解动画",
+      "trace": "代码执行"
+    },
+    "modes": {
+      "concept": {
+        "title": "PageRank（简化版）",
+        "source": [
+          "算法: PageRank 简化版",
+          "输入: 网页链接关系 links",
+          "输出: 每个网页的重要度 rank",
+          "",
+          "所有网页初始分数相同",
+          "重复迭代:",
+          "    每个网页把分数平均分给它指向的网页",
+          "    加入阻尼系数和随机跳转",
+          "分数稳定后, rank 越高网页越重要"
+        ],
+        "important_vars": {
+          "iteration": "轮次",
+          "top": "最高排名",
+          "phase": "阶段"
+        },
+        "track_vars": {
+          "primary": [
+            "iteration",
+            "top",
+            "phase"
+          ],
+          "secondary": []
+        },
+        "var_classes": {
+          "iteration": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "top": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "phase": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "concept": {
+            "category": "secondary",
+            "type": "concept"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 5,
+            "text": "概念动画：网页把重要度沿链接传递, 被重要网页指向的页面排名会升高。"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 5,
+            "type": "exec",
+            "vars": {
+              "iteration": 0,
+              "top": "A",
+              "phase": "四个网页初始分数一样",
+              "concept": {
+                "kind": "pagerank",
+                "labels": [
+                  "A",
+                  "B",
+                  "C",
+                  "D"
+                ],
+                "edges": [
+                  [
+                    "A",
+                    "B"
+                  ],
+                  [
+                    "A",
+                    "C"
+                  ],
+                  [
+                    "B",
+                    "C"
+                  ],
+                  [
+                    "C",
+                    "A"
+                  ],
+                  [
+                    "D",
+                    "C"
+                  ]
+                ],
+                "ranks": [
+                  0.25,
+                  0.25,
+                  0.25,
+                  0.25
+                ],
+                "activeEdges": [],
+                "iteration": 0
+              }
+            }
+          },
+          {
+            "step": 1,
+            "line": 7,
+            "type": "exec",
+            "vars": {
+              "iteration": 1,
+              "top": "A",
+              "phase": "A 把分数分给 B 和 C",
+              "concept": {
+                "kind": "pagerank",
+                "labels": [
+                  "A",
+                  "B",
+                  "C",
+                  "D"
+                ],
+                "edges": [
+                  [
+                    "A",
+                    "B"
+                  ],
+                  [
+                    "A",
+                    "C"
+                  ],
+                  [
+                    "B",
+                    "C"
+                  ],
+                  [
+                    "C",
+                    "A"
+                  ],
+                  [
+                    "D",
+                    "C"
+                  ]
+                ],
+                "ranks": [
+                  0.25,
+                  0.25,
+                  0.25,
+                  0.25
+                ],
+                "activeEdges": [
+                  [
+                    "A",
+                    "B"
+                  ],
+                  [
+                    "A",
+                    "C"
+                  ]
+                ],
+                "iteration": 1
+              }
+            }
+          },
+          {
+            "step": 2,
+            "line": 7,
+            "type": "exec",
+            "vars": {
+              "iteration": 2,
+              "top": "C",
+              "phase": "C 指向 A, 所以 A 会得到重要页面的回流",
+              "concept": {
+                "kind": "pagerank",
+                "labels": [
+                  "A",
+                  "B",
+                  "C",
+                  "D"
+                ],
+                "edges": [
+                  [
+                    "A",
+                    "B"
+                  ],
+                  [
+                    "A",
+                    "C"
+                  ],
+                  [
+                    "B",
+                    "C"
+                  ],
+                  [
+                    "C",
+                    "A"
+                  ],
+                  [
+                    "D",
+                    "C"
+                  ]
+                ],
+                "ranks": [
+                  0.25,
+                  0.144,
+                  0.569,
+                  0.038
+                ],
+                "activeEdges": [
+                  [
+                    "C",
+                    "A"
+                  ]
+                ],
+                "iteration": 2
+              }
+            }
+          },
+          {
+            "step": 3,
+            "line": 8,
+            "type": "exec",
+            "vars": {
+              "iteration": 3,
+              "top": "A",
+              "phase": "多轮迭代后, 分数开始稳定",
+              "concept": {
+                "kind": "pagerank",
+                "labels": [
+                  "A",
+                  "B",
+                  "C",
+                  "D"
+                ],
+                "edges": [
+                  [
+                    "A",
+                    "B"
+                  ],
+                  [
+                    "A",
+                    "C"
+                  ],
+                  [
+                    "B",
+                    "C"
+                  ],
+                  [
+                    "C",
+                    "A"
+                  ],
+                  [
+                    "D",
+                    "C"
+                  ]
+                ],
+                "ranks": [
+                  0.404,
+                  0.209,
+                  0.349,
+                  0.038
+                ],
+                "activeEdges": [
+                  [
+                    "A",
+                    "C"
+                  ],
+                  [
+                    "B",
+                    "C"
+                  ],
+                  [
+                    "D",
+                    "C"
+                  ]
+                ],
+                "iteration": 3
+              }
+            }
+          },
+          {
+            "step": 4,
+            "line": 9,
+            "type": "exec",
+            "vars": {
+              "iteration": 4,
+              "top": "C",
+              "phase": "最终 A 和 C 更重要, D 只剩随机跳转分",
+              "concept": {
+                "kind": "pagerank",
+                "labels": [
+                  "A",
+                  "B",
+                  "C",
+                  "D"
+                ],
+                "edges": [
+                  [
+                    "A",
+                    "B"
+                  ],
+                  [
+                    "A",
+                    "C"
+                  ],
+                  [
+                    "B",
+                    "C"
+                  ],
+                  [
+                    "C",
+                    "A"
+                  ],
+                  [
+                    "D",
+                    "C"
+                  ]
+                ],
+                "ranks": [
+                  0.373,
+                  0.196,
+                  0.394,
+                  0.038
+                ],
+                "activeEdges": [],
+                "iteration": 4
+              }
+            }
+          }
+        ]
+      },
+      "trace": {
+        "title": "PageRank（简化版）",
+        "source": [
+          "#include <stdio.h>",
+          "",
+          "#define N 4           /* 网页数量 */",
+          "#define DAMPING 0.85  /* 阻尼系数：模拟用户有 85% 的概率点链接，15% 随机跳转 */",
+          "#define ITERATIONS 20 /* 迭代次数 */",
+          "",
+          "/*",
+          " * PageRank 简化版",
+          " *",
+          " * 类比：每个网页是一个人，链接就是“投票”",
+          " * 你链接到我，等于你投我一票",
+          " * 但你的投票权 = 你的分数 / 你投出的票数",
+          " */",
+          "",
+          "int main(void) {",
+          "    /* 邻接矩阵：link[i][j] = 1 表示网页 i 链接到网页 j */",
+          "    int link[N][N] = {",
+          "        /*  A  B  C  D */",
+          "        { 0, 1, 1, 0 },  /* A → B, C */",
+          "        { 0, 0, 1, 0 },  /* B → C */",
+          "        { 1, 0, 0, 0 },  /* C → A */",
+          "        { 0, 0, 1, 0 }   /* D → C */",
+          "    };",
+          "",
+          "    double rank[N];      /* 当前分数 */",
+          "    double newRank[N];   /* 新一轮的分数 */",
+          "    int iter;",
+          "",
+          "    /* 初始化：每个网页都是1/N = 0.25 */",
+          "    for (int i = 0; i < N; i++) {",
+          "        rank[i] = 1.0 / N;",
+          "    }",
+          "",
+          "    /* 计算每个网页的出链数 */",
+          "    int outDegree[N] = {0};",
+          "    for (int i = 0; i < N; i++) {",
+          "        for (int j = 0; j < N; j++) {",
+          "            if (link[i][j]) outDegree[i]++;",
+          "        }",
+          "    }",
+          "",
+          "    /* 迭代计算 */",
+          "    for (iter = 0; iter < ITERATIONS; iter++) {",
+          "        for (int j = 0; j < N; j++) {",
+          "            /* 网页 j 的新分数 = 阻尼 × 所有链向 j 的网页的贡献之和 + (1 - 阻尼) / N */",
+          "            newRank[j] = (1.0 - DAMPING) / N;",
+          "            for (int i = 0; i < N; i++) {",
+          "                if (link[i][j]) {",
+          "                    /* 网页 i 把自己的分数平均分给它链接的所有网页 */",
+          "                    newRank[j] += DAMPING * rank[i] / outDegree[i];",
+          "                }",
+          "            }",
+          "        }",
+          "        /* 更新 */",
+          "        for (int i = 0; i < N; i++) {",
+          "            rank[i] = newRank[i];",
+          "        }",
+          "    }",
+          "",
+          "    printf(\"=== PageRank 结果 ===\\n\");",
+          "    for (int i = 0; i < N; i++) {",
+          "        printf(\"网页 %c: %.4f\\n\", 'A' + i, rank[i]);",
+          "    }",
+          "",
+          "    return 0;",
+          "}",
+          ""
+        ],
+        "important_vars": {
+          "i": "索引",
+          "j": "索引",
+          "link": "数据",
+          "rank": "数据",
+          "newRank": "数据",
+          "outDegree": "数据"
+        },
+        "track_vars": {
+          "primary": [
+            "i",
+            "j"
+          ],
+          "secondary": [
+            "_return",
+            "iter",
+            "newRank",
+            "rank"
+          ]
+        },
+        "var_classes": {
+          "_return": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "i": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "iter": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "j": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "newRank": {
+            "category": "secondary",
+            "type": "array"
+          },
+          "rank": {
+            "category": "secondary",
+            "type": "array"
+          }
+        },
+        "initial_data": {
+          "rank": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "newRank": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "program_output": [
+          {
+            "after_step": 14,
+            "text": "=== PageRank 结果 === 网页 A: 0.3725 网页 B: 0.1958 网页 C: 0.3942 网页 D: 0.0375"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 12,
+            "type": "enter",
+            "func": "main",
+            "vars": {}
+          },
+          {
+            "step": 1,
+            "line": 21,
+            "type": "exec",
+            "vars": {
+              "rank": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ]
+            }
+          },
+          {
+            "step": 2,
+            "line": 26,
+            "type": "exec",
+            "vars": {
+              "rank": [
+                0.25,
+                0.25,
+                0.25,
+                0.25
+              ]
+            }
+          },
+          {
+            "step": 3,
+            "line": 32,
+            "type": "cond",
+            "result": false,
+            "vars": {
+              "i": 0,
+              "j": 3
+            }
+          },
+          {
+            "step": 4,
+            "line": 31,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "j": 3
+            }
+          },
+          {
+            "step": 5,
+            "line": 31,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "j": 3
+            }
+          },
+          {
+            "step": 6,
+            "line": 31,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "j": 3
+            }
+          },
+          {
+            "step": 7,
+            "line": 40,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 3
+            }
+          },
+          {
+            "step": 8,
+            "line": 39,
+            "type": "exec",
+            "vars": {
+              "newRank": [
+                0.25,
+                0.14,
+                0.04,
+                0.0
+              ]
+            }
+          },
+          {
+            "step": 9,
+            "line": 39,
+            "type": "exec",
+            "vars": {
+              "newRank": [
+                0.37,
+                0.2,
+                0.04,
+                0.04
+              ]
+            }
+          },
+          {
+            "step": 10,
+            "line": 37,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "j": 3
+            }
+          },
+          {
+            "step": 11,
+            "line": 49,
+            "type": "exec",
+            "vars": {
+              "rank": [
+                0.37,
+                0.2,
+                0.39,
+                0.04
+              ]
+            }
+          },
+          {
+            "step": 12,
+            "line": 56,
+            "type": "exec",
+            "vars": {
+              "_return": 0
+            }
+          },
+          {
+            "step": 13,
+            "line": 56,
+            "type": "exit",
+            "func": "main",
+            "vars": {
+              "j": "-",
+              "newRank": "-",
+              "i": "-",
+              "rank": "-",
+              "phase": "程序执行完成，结果见下方输出"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "03_LZ77压缩": {
+    "title": "LZ77压缩",
+    "defaultMode": "concept",
+    "modeLabels": {
+      "concept": "理解动画",
+      "trace": "代码执行"
+    },
+    "modes": {
+      "concept": {
+        "title": "LZ77压缩",
+        "source": [
+          "算法: LZ77 压缩",
+          "输入: 一段文本 text",
+          "输出: 字面量和回溯引用组成的 token",
+          "",
+          "维护一个已经看过的滑动窗口",
+          "在窗口中寻找当前位置开始的最长重复片段",
+          "如果找不到足够长的重复: 输出字面量",
+          "如果找到重复: 输出 (offset, length)",
+          "向前移动, 继续处理后面的字符"
+        ],
+        "important_vars": {
+          "pos": "当前位置",
+          "match": "匹配长度",
+          "token": "输出 token",
+          "phase": "阶段"
+        },
+        "track_vars": {
+          "primary": [
+            "pos",
+            "match",
+            "token",
+            "phase"
+          ],
+          "secondary": []
+        },
+        "var_classes": {
+          "pos": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "match": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "token": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "phase": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "concept": {
+            "category": "secondary",
+            "type": "concept"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 6,
+            "text": "概念动画：LZ77 的核心是把后面重复出现的片段, 改写成“回头数几格、复制几个字符”。"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 5,
+            "type": "exec",
+            "vars": {
+              "pos": 0,
+              "match": "无",
+              "token": "A",
+              "phase": "窗口为空, 只能原样输出 A",
+              "concept": {
+                "kind": "lz77",
+                "text": [
+                  "A",
+                  "B",
+                  "A",
+                  "B",
+                  "A",
+                  "B",
+                  "C",
+                  "A",
+                  "A",
+                  "B",
+                  "A",
+                  "B"
+                ],
+                "pos": 0,
+                "matchStart": 0,
+                "matchLen": 0,
+                "offset": 0,
+                "tokens": [
+                  "A"
+                ],
+                "phase": "窗口为空, 只能原样输出 A"
+              }
+            }
+          },
+          {
+            "step": 1,
+            "line": 7,
+            "type": "exec",
+            "vars": {
+              "pos": 1,
+              "match": "无",
+              "token": "B",
+              "phase": "B 没有在窗口中重复, 继续输出字面量",
+              "concept": {
+                "kind": "lz77",
+                "text": [
+                  "A",
+                  "B",
+                  "A",
+                  "B",
+                  "A",
+                  "B",
+                  "C",
+                  "A",
+                  "A",
+                  "B",
+                  "A",
+                  "B"
+                ],
+                "pos": 1,
+                "matchStart": 0,
+                "matchLen": 0,
+                "offset": 0,
+                "tokens": [
+                  "A",
+                  "B"
+                ],
+                "phase": "B 没有在窗口中重复, 继续输出字面量"
+              }
+            }
+          },
+          {
+            "step": 2,
+            "line": 8,
+            "type": "exec",
+            "vars": {
+              "pos": 2,
+              "match": "4 个字符",
+              "token": "(2,4)",
+              "phase": "从当前位置看到 ABAB, 它和窗口里的 AB 重复延展",
+              "concept": {
+                "kind": "lz77",
+                "text": [
+                  "A",
+                  "B",
+                  "A",
+                  "B",
+                  "A",
+                  "B",
+                  "C",
+                  "A",
+                  "A",
+                  "B",
+                  "A",
+                  "B"
+                ],
+                "pos": 2,
+                "matchStart": 0,
+                "matchLen": 4,
+                "offset": 2,
+                "tokens": [
+                  "A",
+                  "B",
+                  "(2,4)"
+                ],
+                "phase": "从当前位置看到 ABAB, 它和窗口里的 AB 重复延展"
+              }
+            }
+          },
+          {
+            "step": 3,
+            "line": 7,
+            "type": "exec",
+            "vars": {
+              "pos": 6,
+              "match": "无",
+              "token": "C",
+              "phase": "C 是新字符, 原样输出",
+              "concept": {
+                "kind": "lz77",
+                "text": [
+                  "A",
+                  "B",
+                  "A",
+                  "B",
+                  "A",
+                  "B",
+                  "C",
+                  "A",
+                  "A",
+                  "B",
+                  "A",
+                  "B"
+                ],
+                "pos": 6,
+                "matchStart": 0,
+                "matchLen": 0,
+                "offset": 0,
+                "tokens": [
+                  "A",
+                  "B",
+                  "(2,4)",
+                  "C"
+                ],
+                "phase": "C 是新字符, 原样输出"
+              }
+            }
+          },
+          {
+            "step": 4,
+            "line": 8,
+            "type": "exec",
+            "vars": {
+              "pos": 7,
+              "match": "无",
+              "token": "A",
+              "phase": "A 能找到, 但重复太短, 仍按字面量处理更直观",
+              "concept": {
+                "kind": "lz77",
+                "text": [
+                  "A",
+                  "B",
+                  "A",
+                  "B",
+                  "A",
+                  "B",
+                  "C",
+                  "A",
+                  "A",
+                  "B",
+                  "A",
+                  "B"
+                ],
+                "pos": 7,
+                "matchStart": 3,
+                "matchLen": 1,
+                "offset": 0,
+                "tokens": [
+                  "A",
+                  "B",
+                  "(2,4)",
+                  "C",
+                  "A"
+                ],
+                "phase": "A 能找到, 但重复太短, 仍按字面量处理更直观"
+              }
+            }
+          },
+          {
+            "step": 5,
+            "line": 8,
+            "type": "exec",
+            "vars": {
+              "pos": 8,
+              "match": "4 个字符",
+              "token": "(6,4)",
+              "phase": "最后的 ABAB 再次用回溯引用表示",
+              "concept": {
+                "kind": "lz77",
+                "text": [
+                  "A",
+                  "B",
+                  "A",
+                  "B",
+                  "A",
+                  "B",
+                  "C",
+                  "A",
+                  "A",
+                  "B",
+                  "A",
+                  "B"
+                ],
+                "pos": 8,
+                "matchStart": 2,
+                "matchLen": 4,
+                "offset": 6,
+                "tokens": [
+                  "A",
+                  "B",
+                  "(2,4)",
+                  "C",
+                  "A",
+                  "(6,4)"
+                ],
+                "phase": "最后的 ABAB 再次用回溯引用表示"
+              }
+            }
+          }
+        ]
+      },
+      "trace": {
+        "title": "LZ77压缩",
+        "source": [
+          "#include <stdio.h>",
+          "#include <string.h>",
+          "",
+          "/*",
+          " * LZ77 压缩简化演示",
+          " *",
+          " * 类比：你写作文抄了前面的句子，老师说“你抄袭！”",
+          " * LZ77 说：重复没关系，标注清楚“从哪复制，复制多少字”就行",
+          " */",
+          "",
+          "#define WINDOW_SIZE 20   /* 滑动窗口大小 */",
+          "#define MAX_MATCH 10     /* 最长匹配长度 */",
+          "",
+          "typedef struct {",
+          "    int is_literal;      /* 1 = 原样输出，0 = 引用 */",
+          "    char ch;             /* 字面字符 */",
+          "    int offset;          /* 回退偏移量 */",
+          "    int length;          /* 匹配长度 */",
+          "} Token;",
+          "",
+          "int find_match(const char *text, int pos, int *out_offset, int *out_length) {",
+          "    int best_len = 0;",
+          "    int best_offset = 0;",
+          "    int win_start = (pos > WINDOW_SIZE) ? pos - WINDOW_SIZE : 0;",
+          "    int text_len = strlen(text);  /* 缓存长度，避免循环里反复调用 strlen */",
+          "",
+          "    /* 在滑动窗口里找最长匹配 */",
+          "    for (int i = win_start; i < pos; i++) {",
+          "        int len = 0;",
+          "        while (len < MAX_MATCH &&",
+          "               pos + len < text_len &&",
+          "               text[i + len] == text[pos + len]) {",
+          "            len++;",
+          "        }",
+          "        if (len > best_len) {",
+          "            best_len = len;",
+          "            best_offset = pos - i;",
+          "        }",
+          "    }",
+          "",
+          "    *out_offset = best_offset;",
+          "    *out_length = best_len;",
+          "    return (best_len >= 3);  /* 匹配至少 3 个字符才值得用引用 */",
+          "}",
+          "",
+          "int main(void) {",
+          "    const char *text = \"ABCDABCDABCDABCD\";",
+          "    Token tokens[100];",
+          "    int tcount = 0;",
+          "    int pos = 0;",
+          "    int total_len = strlen(text);",
+          "",
+          "    printf(\"原文： %s\\n\", text);",
+          "    printf(\"原文长度： %d 字节\\n\\n\", total_len);",
+          "",
+          "    while (pos < total_len) {",
+          "        int offset, length;",
+          "",
+          "        if (find_match(text, pos, &offset, &length)) {",
+          "            tokens[tcount].is_literal = 0;",
+          "            tokens[tcount].offset = offset;",
+          "            tokens[tcount].length = length;",
+          "            printf(\"位置 %2d：引用（回退 %d，长度 %d）\\n\", pos, offset, length);",
+          "            pos += length;",
+          "        } else {",
+          "            tokens[tcount].is_literal = 1;",
+          "            tokens[tcount].ch = text[pos];",
+          "            printf(\"位置 %2d：字面 '%c'\\n\", pos, text[pos]);",
+          "            pos++;",
+          "        }",
+          "        tcount++;",
+          "    }",
+          "",
+          "    printf(\"\\n总计 %d 个 Token\\n\", tcount);",
+          "",
+          "    return 0;",
+          "}",
+          ""
+        ],
+        "important_vars": {
+          "i": "索引",
+          "len": "参数",
+          "pos": "索引"
+        },
+        "track_vars": {
+          "primary": [
+            "i",
+            "len",
+            "pos"
+          ],
+          "secondary": [
+            "_return",
+            "best_len",
+            "best_offset",
+            "tcount",
+            "total_len"
+          ]
+        },
+        "var_classes": {
+          "_return": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "best_len": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "best_offset": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "i": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "len": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "pos": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "tcount": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "total_len": {
+            "category": "secondary",
+            "type": "scalar"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 14,
+            "text": "原文： ABCDABCDABCDABCD 原文长度： 16 字节；位置 0: 字面 'A'；位置 1: 字面 'B'；位置 2: 字面 'C'；位置 3: 字面 'D'；位置 4: 引用(回退4, 长度10)；位置14: 字面 'C'；位置15: 字面 'D' 总计 7 个Token"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 39,
+            "type": "enter",
+            "func": "main",
+            "vars": {}
+          },
+          {
+            "step": 1,
+            "line": 49,
+            "type": "enter",
+            "func": "find_match",
+            "vars": {
+              "pos": 0
+            }
+          },
+          {
+            "step": 2,
+            "line": 37,
+            "type": "exit",
+            "func": "find_match",
+            "vars": {}
+          },
+          {
+            "step": 3,
+            "line": 37,
+            "type": "exit",
+            "func": "find_match",
+            "vars": {}
+          },
+          {
+            "step": 4,
+            "line": 49,
+            "type": "enter",
+            "func": "find_match",
+            "vars": {
+              "pos": 2
+            }
+          },
+          {
+            "step": 5,
+            "line": 37,
+            "type": "exit",
+            "func": "find_match",
+            "vars": {}
+          },
+          {
+            "step": 6,
+            "line": 49,
+            "type": "enter",
+            "func": "find_match",
+            "vars": {
+              "pos": 3
+            }
+          },
+          {
+            "step": 7,
+            "line": 49,
+            "type": "enter",
+            "func": "find_match",
+            "vars": {
+              "pos": 4
+            }
+          },
+          {
+            "step": 8,
+            "line": 37,
+            "type": "exit",
+            "func": "find_match",
+            "vars": {}
+          },
+          {
+            "step": 9,
+            "line": 37,
+            "type": "exit",
+            "func": "find_match",
+            "vars": {}
+          },
+          {
+            "step": 10,
+            "line": 49,
+            "type": "enter",
+            "func": "find_match",
+            "vars": {
+              "pos": 14
+            }
+          },
+          {
+            "step": 11,
+            "line": 49,
+            "type": "enter",
+            "func": "find_match",
+            "vars": {
+              "pos": 15
+            }
+          },
+          {
+            "step": 12,
+            "line": 37,
+            "type": "exit",
+            "func": "find_match",
+            "vars": {}
+          },
+          {
+            "step": 13,
+            "line": 64,
+            "type": "exit",
+            "func": "main",
+            "vars": {
+              "pos": "-",
+              "phase": "程序执行完成，结果见下方输出"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "04_Dijkstra导航_现实版": {
+    "title": "Dijkstra导航（现实版）",
+    "defaultMode": "concept",
+    "modeLabels": {
+      "concept": "理解动画",
+      "trace": "代码执行"
+    },
+    "modes": {
+      "concept": {
+        "title": "Dijkstra导航（现实版）",
+        "source": [
+          "算法: 导航里的 Dijkstra",
+          "输入: 路口图 graph, 起点 0",
+          "输出: 从起点到各路口的最短时间",
+          "",
+          "dist[起点] = 0, 其他路口 = ∞",
+          "重复:",
+          "    选当前已知最近的未确定路口 u",
+          "    确定 u 的最短时间",
+          "    用 u 周围道路更新邻居时间",
+          "直到目标路口确定"
+        ],
+        "important_vars": {
+          "current": "当前点",
+          "frontier": "待处理",
+          "best": "当前最短",
+          "phase": "阶段"
+        },
+        "track_vars": {
+          "primary": [
+            "current",
+            "frontier",
+            "best",
+            "phase"
+          ],
+          "secondary": []
+        },
+        "var_classes": {
+          "current": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "frontier": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "best": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "phase": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "concept": {
+            "category": "secondary",
+            "type": "concept"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 6,
+            "text": "理解动画：导航把路口和道路变成图, Dijkstra 每次从当前最近的路口继续向外扩展。"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 5,
+            "type": "exec",
+            "vars": {
+              "current": "A",
+              "frontier": "A",
+              "best": 0,
+              "phase": "从路口 A 出发, 当前只知道 A=0",
+              "concept": {
+                "kind": "shortest_path",
+                "mode": "dijkstra",
+                "title": "Dijkstra导航_现实版",
+                "nodes": [
+                  {
+                    "id": "A",
+                    "x": 0.12,
+                    "y": 0.5
+                  },
+                  {
+                    "id": "B",
+                    "x": 0.33,
+                    "y": 0.24
+                  },
+                  {
+                    "id": "C",
+                    "x": 0.34,
+                    "y": 0.72
+                  },
+                  {
+                    "id": "D",
+                    "x": 0.58,
+                    "y": 0.28
+                  },
+                  {
+                    "id": "E",
+                    "x": 0.6,
+                    "y": 0.7
+                  },
+                  {
+                    "id": "F",
+                    "x": 0.84,
+                    "y": 0.5
+                  }
+                ],
+                "edges": [
+                  [
+                    "A",
+                    "B",
+                    4
+                  ],
+                  [
+                    "A",
+                    "C",
+                    2
+                  ],
+                  [
+                    "B",
+                    "D",
+                    5
+                  ],
+                  [
+                    "B",
+                    "C",
+                    1
+                  ],
+                  [
+                    "C",
+                    "E",
+                    7
+                  ],
+                  [
+                    "D",
+                    "F",
+                    3
+                  ],
+                  [
+                    "E",
+                    "F",
+                    2
+                  ],
+                  [
+                    "D",
+                    "E",
+                    1
+                  ]
+                ],
+                "line": 5,
+                "phase": "从路口 A 出发, 当前只知道 A=0",
+                "current": "A",
+                "frontier": "A",
+                "best": 0,
+                "dist": {
+                  "A": 0
+                },
+                "settled": [],
+                "activeEdges": []
+              }
+            }
+          },
+          {
+            "step": 1,
+            "line": 8,
+            "type": "exec",
+            "vars": {
+              "current": "A",
+              "frontier": "B,C",
+              "best": 0,
+              "phase": "确定 A, 发现到 B 要 4 分钟, 到 C 要 2 分钟",
+              "concept": {
+                "kind": "shortest_path",
+                "mode": "dijkstra",
+                "title": "Dijkstra导航_现实版",
+                "nodes": [
+                  {
+                    "id": "A",
+                    "x": 0.12,
+                    "y": 0.5
+                  },
+                  {
+                    "id": "B",
+                    "x": 0.33,
+                    "y": 0.24
+                  },
+                  {
+                    "id": "C",
+                    "x": 0.34,
+                    "y": 0.72
+                  },
+                  {
+                    "id": "D",
+                    "x": 0.58,
+                    "y": 0.28
+                  },
+                  {
+                    "id": "E",
+                    "x": 0.6,
+                    "y": 0.7
+                  },
+                  {
+                    "id": "F",
+                    "x": 0.84,
+                    "y": 0.5
+                  }
+                ],
+                "edges": [
+                  [
+                    "A",
+                    "B",
+                    4
+                  ],
+                  [
+                    "A",
+                    "C",
+                    2
+                  ],
+                  [
+                    "B",
+                    "D",
+                    5
+                  ],
+                  [
+                    "B",
+                    "C",
+                    1
+                  ],
+                  [
+                    "C",
+                    "E",
+                    7
+                  ],
+                  [
+                    "D",
+                    "F",
+                    3
+                  ],
+                  [
+                    "E",
+                    "F",
+                    2
+                  ],
+                  [
+                    "D",
+                    "E",
+                    1
+                  ]
+                ],
+                "line": 8,
+                "phase": "确定 A, 发现到 B 要 4 分钟, 到 C 要 2 分钟",
+                "current": "A",
+                "frontier": "B,C",
+                "best": 0,
+                "dist": {
+                  "A": 0,
+                  "B": 4,
+                  "C": 2
+                },
+                "settled": [
+                  "A"
+                ],
+                "activeEdges": [
+                  [
+                    "A",
+                    "B"
+                  ],
+                  [
+                    "A",
+                    "C"
+                  ]
+                ]
+              }
+            }
+          },
+          {
+            "step": 2,
+            "line": 7,
+            "type": "exec",
+            "vars": {
+              "current": "C",
+              "frontier": "B,E",
+              "best": 2,
+              "phase": "C 是当前最近的未确定路口, 先扩展 C",
+              "concept": {
+                "kind": "shortest_path",
+                "mode": "dijkstra",
+                "title": "Dijkstra导航_现实版",
+                "nodes": [
+                  {
+                    "id": "A",
+                    "x": 0.12,
+                    "y": 0.5
+                  },
+                  {
+                    "id": "B",
+                    "x": 0.33,
+                    "y": 0.24
+                  },
+                  {
+                    "id": "C",
+                    "x": 0.34,
+                    "y": 0.72
+                  },
+                  {
+                    "id": "D",
+                    "x": 0.58,
+                    "y": 0.28
+                  },
+                  {
+                    "id": "E",
+                    "x": 0.6,
+                    "y": 0.7
+                  },
+                  {
+                    "id": "F",
+                    "x": 0.84,
+                    "y": 0.5
+                  }
+                ],
+                "edges": [
+                  [
+                    "A",
+                    "B",
+                    4
+                  ],
+                  [
+                    "A",
+                    "C",
+                    2
+                  ],
+                  [
+                    "B",
+                    "D",
+                    5
+                  ],
+                  [
+                    "B",
+                    "C",
+                    1
+                  ],
+                  [
+                    "C",
+                    "E",
+                    7
+                  ],
+                  [
+                    "D",
+                    "F",
+                    3
+                  ],
+                  [
+                    "E",
+                    "F",
+                    2
+                  ],
+                  [
+                    "D",
+                    "E",
+                    1
+                  ]
+                ],
+                "line": 7,
+                "phase": "C 是当前最近的未确定路口, 先扩展 C",
+                "current": "C",
+                "frontier": "B,E",
+                "best": 2,
+                "dist": {
+                  "A": 0,
+                  "B": 4,
+                  "C": 2,
+                  "E": 12
+                },
+                "settled": [
+                  "A",
+                  "C"
+                ],
+                "activeEdges": [
+                  [
+                    "C",
+                    "B"
+                  ],
+                  [
+                    "C",
+                    "E"
+                  ]
+                ]
+              }
+            }
+          },
+          {
+            "step": 3,
+            "line": 9,
+            "type": "exec",
+            "vars": {
+              "current": "C",
+              "frontier": "B,E",
+              "best": 3,
+              "phase": "经 C 到 B 只要 3 分钟, 比原来的 4 更快",
+              "concept": {
+                "kind": "shortest_path",
+                "mode": "dijkstra",
+                "title": "Dijkstra导航_现实版",
+                "nodes": [
+                  {
+                    "id": "A",
+                    "x": 0.12,
+                    "y": 0.5
+                  },
+                  {
+                    "id": "B",
+                    "x": 0.33,
+                    "y": 0.24
+                  },
+                  {
+                    "id": "C",
+                    "x": 0.34,
+                    "y": 0.72
+                  },
+                  {
+                    "id": "D",
+                    "x": 0.58,
+                    "y": 0.28
+                  },
+                  {
+                    "id": "E",
+                    "x": 0.6,
+                    "y": 0.7
+                  },
+                  {
+                    "id": "F",
+                    "x": 0.84,
+                    "y": 0.5
+                  }
+                ],
+                "edges": [
+                  [
+                    "A",
+                    "B",
+                    4
+                  ],
+                  [
+                    "A",
+                    "C",
+                    2
+                  ],
+                  [
+                    "B",
+                    "D",
+                    5
+                  ],
+                  [
+                    "B",
+                    "C",
+                    1
+                  ],
+                  [
+                    "C",
+                    "E",
+                    7
+                  ],
+                  [
+                    "D",
+                    "F",
+                    3
+                  ],
+                  [
+                    "E",
+                    "F",
+                    2
+                  ],
+                  [
+                    "D",
+                    "E",
+                    1
+                  ]
+                ],
+                "line": 9,
+                "phase": "经 C 到 B 只要 3 分钟, 比原来的 4 更快",
+                "current": "C",
+                "frontier": "B,E",
+                "best": 3,
+                "dist": {
+                  "A": 0,
+                  "B": 3,
+                  "C": 2,
+                  "E": 12
+                },
+                "settled": [
+                  "A",
+                  "C"
+                ],
+                "activeEdges": [
+                  [
+                    "C",
+                    "B"
+                  ]
+                ]
+              }
+            }
+          },
+          {
+            "step": 4,
+            "line": 9,
+            "type": "exec",
+            "vars": {
+              "current": "D",
+              "frontier": "E,F",
+              "best": 8,
+              "phase": "继续扩展 B 和 D, 最短时间像水波一样向外稳定",
+              "concept": {
+                "kind": "shortest_path",
+                "mode": "dijkstra",
+                "title": "Dijkstra导航_现实版",
+                "nodes": [
+                  {
+                    "id": "A",
+                    "x": 0.12,
+                    "y": 0.5
+                  },
+                  {
+                    "id": "B",
+                    "x": 0.33,
+                    "y": 0.24
+                  },
+                  {
+                    "id": "C",
+                    "x": 0.34,
+                    "y": 0.72
+                  },
+                  {
+                    "id": "D",
+                    "x": 0.58,
+                    "y": 0.28
+                  },
+                  {
+                    "id": "E",
+                    "x": 0.6,
+                    "y": 0.7
+                  },
+                  {
+                    "id": "F",
+                    "x": 0.84,
+                    "y": 0.5
+                  }
+                ],
+                "edges": [
+                  [
+                    "A",
+                    "B",
+                    4
+                  ],
+                  [
+                    "A",
+                    "C",
+                    2
+                  ],
+                  [
+                    "B",
+                    "D",
+                    5
+                  ],
+                  [
+                    "B",
+                    "C",
+                    1
+                  ],
+                  [
+                    "C",
+                    "E",
+                    7
+                  ],
+                  [
+                    "D",
+                    "F",
+                    3
+                  ],
+                  [
+                    "E",
+                    "F",
+                    2
+                  ],
+                  [
+                    "D",
+                    "E",
+                    1
+                  ]
+                ],
+                "line": 9,
+                "phase": "继续扩展 B 和 D, 最短时间像水波一样向外稳定",
+                "current": "D",
+                "frontier": "E,F",
+                "best": 8,
+                "dist": {
+                  "A": 0,
+                  "B": 3,
+                  "C": 2,
+                  "D": 8,
+                  "E": 10,
+                  "F": 14
+                },
+                "settled": [
+                  "A",
+                  "C",
+                  "B",
+                  "D"
+                ],
+                "activeEdges": [
+                  [
+                    "B",
+                    "D"
+                  ],
+                  [
+                    "D",
+                    "E"
+                  ],
+                  [
+                    "D",
+                    "F"
+                  ]
+                ]
+              }
+            }
+          },
+          {
+            "step": 5,
+            "line": 10,
+            "type": "exec",
+            "vars": {
+              "current": "F",
+              "frontier": "-",
+              "best": 11,
+              "phase": "终点 F 的最短时间确定, 导航路线就能回溯出来",
+              "concept": {
+                "kind": "shortest_path",
+                "mode": "dijkstra",
+                "title": "Dijkstra导航_现实版",
+                "nodes": [
+                  {
+                    "id": "A",
+                    "x": 0.12,
+                    "y": 0.5
+                  },
+                  {
+                    "id": "B",
+                    "x": 0.33,
+                    "y": 0.24
+                  },
+                  {
+                    "id": "C",
+                    "x": 0.34,
+                    "y": 0.72
+                  },
+                  {
+                    "id": "D",
+                    "x": 0.58,
+                    "y": 0.28
+                  },
+                  {
+                    "id": "E",
+                    "x": 0.6,
+                    "y": 0.7
+                  },
+                  {
+                    "id": "F",
+                    "x": 0.84,
+                    "y": 0.5
+                  }
+                ],
+                "edges": [
+                  [
+                    "A",
+                    "B",
+                    4
+                  ],
+                  [
+                    "A",
+                    "C",
+                    2
+                  ],
+                  [
+                    "B",
+                    "D",
+                    5
+                  ],
+                  [
+                    "B",
+                    "C",
+                    1
+                  ],
+                  [
+                    "C",
+                    "E",
+                    7
+                  ],
+                  [
+                    "D",
+                    "F",
+                    3
+                  ],
+                  [
+                    "E",
+                    "F",
+                    2
+                  ],
+                  [
+                    "D",
+                    "E",
+                    1
+                  ]
+                ],
+                "line": 10,
+                "phase": "终点 F 的最短时间确定, 导航路线就能回溯出来",
+                "current": "F",
+                "frontier": "-",
+                "best": 11,
+                "dist": {
+                  "A": 0,
+                  "B": 3,
+                  "C": 2,
+                  "D": 8,
+                  "E": 10,
+                  "F": 11
+                },
+                "settled": [
+                  "A",
+                  "B",
+                  "C",
+                  "D",
+                  "E",
+                  "F"
+                ],
+                "path": [
+                  [
+                    "A",
+                    "C"
+                  ],
+                  [
+                    "C",
+                    "B"
+                  ],
+                  [
+                    "B",
+                    "D"
+                  ],
+                  [
+                    "D",
+                    "F"
+                  ]
+                ],
+                "activeEdges": [
+                  [
+                    "D",
+                    "F"
+                  ]
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "trace": {
+        "title": "Dijkstra导航（现实版）",
+        "source": [
+          "#include <stdio.h>",
+          "#include <limits.h>",
+          "#include <string.h>",
+          "",
+          "/*",
+          " * Dijkstra 算法简化版",
+          " *",
+          " * 类比：你站在上海某个路口，想去东方明珠",
+          " * 每到一个路口，你就问“从出发到这里走了多久？”",
+          " * 然后选最快的那条路继续走",
+          " */",
+          "",
+          "#define V 6          /* 路口数量 */",
+          "#define INF 99999    /* 无穷大（不通） */",
+          "",
+          "int min_distance(int dist[], int visited[]) {",
+          "    int min = INF, min_index = -1;",
+          "    int v;",
+          "    for (v = 0; v < V; v++) {",
+          "        if (!visited[v] && dist[v] < min) {",
+          "            min = dist[v];",
+          "            min_index = v;",
+          "        }",
+          "    }",
+          "    return min_index;",
+          "}",
+          "",
+          "void dijkstra(int graph[V][V], int src) {",
+          "    int dist[V];     /* 从起点到每个路口的最短时间 */",
+          "    int visited[V];  /* 是否已经“走过” */",
+          "    int count, u, v;",
+          "",
+          "    /* 初始化：所有路口都是“无穷远” */",
+          "    for (int i = 0; i < V; i++) {",
+          "        dist[i] = INF;",
+          "        visited[i] = 0;",
+          "    }",
+          "    dist[src] = 0;  /* 起点到自己的距离是 0 */",
+          "",
+          "    for (count = 0; count < V - 1; count++) {",
+          "        /* 找当前最近的未访问路口 */",
+          "        u = min_distance(dist, visited);",
+          "        if (u == -1) break;",
+          "        visited[u] = 1;",
+          "",
+          "        /* 更新 u 的所有邻居的距离 */",
+          "        for (v = 0; v < V; v++) {",
+          "            if (!visited[v] && graph[u][v] &&",
+          "                dist[u] + graph[u][v] < dist[v]) {",
+          "                dist[v] = dist[u] + graph[u][v];",
+          "            }",
+          "        }",
+          "    }",
+          "",
+          "    printf(\"从路口 %d 出发的最短时间：\\n\", src);",
+          "    for (int i = 0; i < V; i++) {",
+          "        printf(\"  到路口 %d：%d 分钟\\n\", i, dist[i]);",
+          "    }",
+          "}",
+          "",
+          "int main(void) {",
+          "    /* 邻接矩阵：graph[i][j] 表示从 i 到 j 的通行时间（分钟） */",
+          "    /* 本例假设所有通行时间都是正整数，0 表示不通；如果允许 0 权边，应改用 INF 或邻接表表示无边 */",
+          "    int graph[V][V] = {",
+          "    /*    0    1    2    3    4    5  */",
+          "        {  0,   4,   2,   0,   0,   0 },  /* 路口 0 */",
+          "        {  4,   0,   1,   5,   0,   0 },  /* 路口 1 */",
+          "        {  2,   1,   0,   8,  10,   0 },  /* 路口 2 */",
+          "        {  0,   5,   8,   0,   2,   6 },  /* 路口 3 */",
+          "        {  0,   0,  10,   2,   0,   3 },  /* 路口 4 */",
+          "        {  0,   0,   0,   6,   3,   0 }   /* 路口 5 */",
+          "    };",
+          "",
+          "    dijkstra(graph, 0);  /* 从路口 0 出发 */",
+          "",
+          "    return 0;",
+          "}",
+          ""
+        ],
+        "important_vars": {
+          "min": "变量",
+          "i": "索引",
+          "dist": "数据",
+          "visited": "数据",
+          "graph": "数据"
+        },
+        "track_vars": {
+          "primary": [
+            "dist",
+            "i",
+            "min",
+            "visited"
+          ],
+          "secondary": [
+            "_return",
+            "min_index",
+            "src",
+            "u",
+            "v"
+          ]
+        },
+        "var_classes": {
+          "_return": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "dist": {
+            "category": "primary",
+            "type": "array"
+          },
+          "i": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "min": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "min_index": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "src": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "u": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "v": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "visited": {
+            "category": "primary",
+            "type": "array"
+          }
+        },
+        "initial_data": {
+          "visited": [
+            196333104,
+            2,
+            199135944,
+            2,
+            196329568,
+            2
+          ],
+          "dist": [
+            1799989712,
+            1,
+            -1617033592,
+            1,
+            199135944,
+            2
+          ]
+        },
+        "program_output": [
+          {
+            "after_step": 14,
+            "text": "从路口0出发的最短时间： 到路口0: 0 分钟 到路口1: 3 分钟 到路口2: 2 分钟 到路口3: 8 分钟 到路口4: 10 分钟 到路口5: 13 分钟"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 52,
+            "type": "enter",
+            "func": "main",
+            "vars": {}
+          },
+          {
+            "step": 1,
+            "line": 64,
+            "type": "enter",
+            "func": "dijkstra",
+            "vars": {
+              "src": 0
+            }
+          },
+          {
+            "step": 2,
+            "line": 25,
+            "type": "exec",
+            "vars": {
+              "dist": [
+                1799989712,
+                1,
+                -1617033592,
+                1,
+                199135944,
+                2
+              ]
+            }
+          },
+          {
+            "step": 3,
+            "line": 16,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "v": 3
+            }
+          },
+          {
+            "step": 4,
+            "line": 22,
+            "type": "exit",
+            "func": "min_distance",
+            "vars": {}
+          },
+          {
+            "step": 5,
+            "line": 22,
+            "type": "exec",
+            "vars": {
+              "_return": 2
+            }
+          },
+          {
+            "step": 6,
+            "line": 22,
+            "type": "exit",
+            "func": "min_distance",
+            "vars": {}
+          },
+          {
+            "step": 7,
+            "line": 22,
+            "type": "exit",
+            "func": "min_distance",
+            "vars": {}
+          },
+          {
+            "step": 8,
+            "line": 40,
+            "type": "cond",
+            "result": true,
+            "vars": {}
+          },
+          {
+            "step": 9,
+            "line": 22,
+            "type": "exit",
+            "func": "min_distance",
+            "vars": {}
+          },
+          {
+            "step": 10,
+            "line": 43,
+            "type": "exec",
+            "vars": {
+              "dist": [
+                0,
+                3,
+                2,
+                8,
+                10,
+                14
+              ]
+            }
+          },
+          {
+            "step": 11,
+            "line": 22,
+            "type": "exit",
+            "func": "min_distance",
+            "vars": {}
+          },
+          {
+            "step": 12,
+            "line": 65,
+            "type": "exec",
+            "vars": {
+              "_return": 0
+            }
+          },
+          {
+            "step": 13,
+            "line": 65,
+            "type": "exit",
+            "func": "main",
+            "vars": {
+              "v": "-",
+              "src": "-",
+              "dist": "-",
+              "phase": "程序执行完成，结果见下方输出"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "05_梯度下降_一元函数": {
+    "title": "梯度下降（一元函数）",
+    "defaultMode": "concept",
+    "modeLabels": {
+      "concept": "理解动画",
+      "trace": "代码执行"
+    },
+    "modes": {
+      "concept": {
+        "title": "梯度下降（一元函数）",
+        "source": [
+          "算法: 梯度下降",
+          "目标: 最小化 y = (x - 3)^2",
+          "输入: 初始 x, 学习率 lr",
+          "",
+          "重复:",
+          "    gradient = 2 * (x - 3)",
+          "    x = x - lr * gradient",
+          "    y = (x - 3)^2",
+          "直到足够接近最低点"
+        ],
+        "important_vars": {
+          "x": "当前位置",
+          "gradient": "梯度",
+          "loss": "损失",
+          "phase": "阶段"
+        },
+        "track_vars": {
+          "primary": [
+            "x",
+            "gradient",
+            "loss",
+            "phase"
+          ],
+          "secondary": []
+        },
+        "var_classes": {
+          "x": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "gradient": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "loss": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "phase": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "concept": {
+            "category": "secondary",
+            "type": "concept"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 8,
+            "text": "概念动画：梯度告诉我们坡往哪边升高, 反方向走就会靠近最低点。"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 6,
+            "type": "exec",
+            "vars": {
+              "x": 0.0,
+              "gradient": -6.0,
+              "loss": 9.0,
+              "phase": "看斜率方向",
+              "concept": {
+                "kind": "gradient",
+                "x": 0.0,
+                "gradient": -6.0,
+                "loss": 9.0,
+                "target": 3,
+                "trail": [
+                  0.0
+                ]
+              }
+            }
+          },
+          {
+            "step": 1,
+            "line": 7,
+            "type": "exec",
+            "vars": {
+              "x": 1.2,
+              "gradient": -3.6,
+              "loss": 3.24,
+              "phase": "沿着负梯度往低处走",
+              "concept": {
+                "kind": "gradient",
+                "x": 1.2,
+                "gradient": -3.6,
+                "loss": 3.24,
+                "target": 3,
+                "trail": [
+                  0.0,
+                  1.2
+                ]
+              }
+            }
+          },
+          {
+            "step": 2,
+            "line": 7,
+            "type": "exec",
+            "vars": {
+              "x": 1.92,
+              "gradient": -2.16,
+              "loss": 1.166,
+              "phase": "沿着负梯度往低处走",
+              "concept": {
+                "kind": "gradient",
+                "x": 1.92,
+                "gradient": -2.16,
+                "loss": 1.1664,
+                "target": 3,
+                "trail": [
+                  0.0,
+                  1.2,
+                  1.92
+                ]
+              }
+            }
+          },
+          {
+            "step": 3,
+            "line": 7,
+            "type": "exec",
+            "vars": {
+              "x": 2.352,
+              "gradient": -1.296,
+              "loss": 0.42,
+              "phase": "沿着负梯度往低处走",
+              "concept": {
+                "kind": "gradient",
+                "x": 2.352,
+                "gradient": -1.2960000000000003,
+                "loss": 0.41990400000000017,
+                "target": 3,
+                "trail": [
+                  0.0,
+                  1.2,
+                  1.92,
+                  2.352
+                ]
+              }
+            }
+          },
+          {
+            "step": 4,
+            "line": 7,
+            "type": "exec",
+            "vars": {
+              "x": 2.611,
+              "gradient": -0.778,
+              "loss": 0.151,
+              "phase": "沿着负梯度往低处走",
+              "concept": {
+                "kind": "gradient",
+                "x": 2.611,
+                "gradient": -0.7779999999999996,
+                "loss": 0.15132099999999984,
+                "target": 3,
+                "trail": [
+                  0.0,
+                  1.2,
+                  1.92,
+                  2.352,
+                  2.611
+                ]
+              }
+            }
+          },
+          {
+            "step": 5,
+            "line": 7,
+            "type": "exec",
+            "vars": {
+              "x": 2.767,
+              "gradient": -0.466,
+              "loss": 0.054,
+              "phase": "沿着负梯度往低处走",
+              "concept": {
+                "kind": "gradient",
+                "x": 2.767,
+                "gradient": -0.4660000000000002,
+                "loss": 0.054289000000000046,
+                "target": 3,
+                "trail": [
+                  0.0,
+                  1.2,
+                  1.92,
+                  2.352,
+                  2.611,
+                  2.767
+                ]
+              }
+            }
+          },
+          {
+            "step": 6,
+            "line": 7,
+            "type": "exec",
+            "vars": {
+              "x": 2.86,
+              "gradient": -0.28,
+              "loss": 0.02,
+              "phase": "沿着负梯度往低处走",
+              "concept": {
+                "kind": "gradient",
+                "x": 2.86,
+                "gradient": -0.28000000000000025,
+                "loss": 0.019600000000000034,
+                "target": 3,
+                "trail": [
+                  0.0,
+                  1.2,
+                  1.92,
+                  2.352,
+                  2.611,
+                  2.767,
+                  2.86
+                ]
+              }
+            }
+          },
+          {
+            "step": 7,
+            "line": 9,
+            "type": "exec",
+            "vars": {
+              "x": 2.916,
+              "gradient": -0.168,
+              "loss": 0.007,
+              "phase": "已经靠近最低点 x=3",
+              "concept": {
+                "kind": "gradient",
+                "x": 2.916,
+                "gradient": -0.16800000000000015,
+                "loss": 0.007056000000000013,
+                "target": 3,
+                "trail": [
+                  0.0,
+                  1.2,
+                  1.92,
+                  2.352,
+                  2.611,
+                  2.767,
+                  2.86,
+                  2.916
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "trace": {
+        "title": "梯度下降（一元函数）",
+        "source": [
+          "#include <stdio.h>",
+          "#include <math.h>",
+          "",
+          "/*",
+          " * 梯度下降求解 y = (x-3)^2 的最小值",
+          " *",
+          " * 类比：你在雾里下山",
+          " * 目标：找到最低点（x = 3）",
+          " * 方法：感受坡度，往下走",
+          " */",
+          "",
+          "double cost(double x) {",
+          "    return (x - 3) * (x - 3);  /* 损失函数：一个开口向上的抛物线 */",
+          "}",
+          "",
+          "double gradient(double x) {",
+          "    return 2 * (x - 3);  /* 梯度：损失函数的导数 */",
+          "}",
+          "",
+          "int main(void) {",
+          "    double x = 0.0;           /* 起始位置（随机的，可能很远） */",
+          "    double learning_rate = 0.1; /* 学习率：每步走多大 */",
+          "    int max_steps = 100;      /* 最多走 100 步 */",
+          "",
+          "    printf(\"=== 梯度下降演示 ===\\n\");",
+          "    printf(\"目标：找到 y=(x-3)^2 的最小值（答案是 x = 3）\\n\\n\");",
+          "    printf(\"步骤    x值       损失值      梯度\\n\");",
+          "    printf(\"----------------------------------------\\n\");",
+          "",
+          "    for (int i = 0; i < max_steps; i++) {",
+          "        double loss = cost(x);",
+          "        double grad = gradient(x);",
+          "",
+          "        if (i % 10 == 0) {",
+          "            printf(\"%3d    %6.4f    %6.4f    %6.4f\\n\", i, x, loss, grad);",
+          "        }",
+          "",
+          "        /* 梯度下降核心：往梯度的反方向走 */",
+          "        x = x - learning_rate * grad;",
+          "",
+          "        /* 如果梯度足够小，说明已经到了最低点 */",
+          "        if (fabs(grad) < 0.0001) break;",
+          "    }",
+          "",
+          "    printf(\"\\n找到最优解： x = %.4f (真实答案： 3.0)\\n\", x);",
+          "    printf(\"最低损失： %.6f\\n\", cost(x));",
+          "",
+          "    return 0;",
+          "}",
+          ""
+        ],
+        "important_vars": {
+          "x": "参数",
+          "i": "索引"
+        },
+        "track_vars": {
+          "primary": [
+            "i"
+          ],
+          "secondary": [
+            "_return",
+            "grad",
+            "max_steps",
+            "x"
+          ]
+        },
+        "var_classes": {
+          "_return": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "grad": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "i": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "max_steps": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "x": {
+            "category": "secondary",
+            "type": "scalar"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 14,
+            "text": "=== 梯度下降演示 === 目标：找到 y=(x-3)^2 的最小值（答案是x=3） 步骤    x值       损失值      梯度 ----------------------------------------；0    0.0000    9.0000    -6.0000；10    2.6779    0.1038    -0.6442；20    2.9654    0.0012    -0.0692；30    2.9963    0.0000    -0.0074；40    2.9996    0.0000    -0.0008；50    3.0000    0.0000    -0.0001 找到最优解： x = 3.0000 (真实答案： 3.0)；最低损失： 0.000000"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 16,
+            "type": "enter",
+            "func": "main",
+            "vars": {}
+          },
+          {
+            "step": 1,
+            "line": 26,
+            "type": "enter",
+            "func": "gradient",
+            "vars": {
+              "x": 0
+            }
+          },
+          {
+            "step": 2,
+            "line": 11,
+            "type": "exit",
+            "func": "cost",
+            "vars": {}
+          },
+          {
+            "step": 3,
+            "line": 25,
+            "type": "enter",
+            "func": "cost",
+            "vars": {
+              "x": 1.08
+            }
+          },
+          {
+            "step": 4,
+            "line": 14,
+            "type": "exit",
+            "func": "gradient",
+            "vars": {}
+          },
+          {
+            "step": 5,
+            "line": 26,
+            "type": "enter",
+            "func": "gradient",
+            "vars": {
+              "x": 1.464
+            }
+          },
+          {
+            "step": 6,
+            "line": 11,
+            "type": "exit",
+            "func": "cost",
+            "vars": {}
+          },
+          {
+            "step": 7,
+            "line": 11,
+            "type": "exit",
+            "func": "cost",
+            "vars": {}
+          },
+          {
+            "step": 8,
+            "line": 25,
+            "type": "enter",
+            "func": "cost",
+            "vars": {
+              "x": 2.21357
+            }
+          },
+          {
+            "step": 9,
+            "line": 26,
+            "type": "enter",
+            "func": "gradient",
+            "vars": {
+              "x": 2.99993
+            }
+          },
+          {
+            "step": 10,
+            "line": 11,
+            "type": "exit",
+            "func": "cost",
+            "vars": {}
+          },
+          {
+            "step": 11,
+            "line": 25,
+            "type": "enter",
+            "func": "cost",
+            "vars": {
+              "x": 2.99996
+            }
+          },
+          {
+            "step": 12,
+            "line": 14,
+            "type": "exit",
+            "func": "gradient",
+            "vars": {}
+          },
+          {
+            "step": 13,
+            "line": 37,
+            "type": "exit",
+            "func": "main",
+            "vars": {
+              "x": "-",
+              "phase": "程序执行完成，结果见下方输出"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "06_学习率_步长对比": {
+    "title": "学习率（步长对比）",
+    "defaultMode": "concept",
+    "modeLabels": {
+      "concept": "理解动画",
+      "trace": "代码执行"
+    },
+    "modes": {
+      "concept": {
+        "title": "学习率（步长对比）",
+        "source": [
+          "算法: 学习率对比",
+          "目标: 最小化 y = (x - 3)^2",
+          "输入: 初始 x=0, 两个学习率",
+          "",
+          "合适的学习率:",
+          "    每一步都靠近最低点",
+          "过大的学习率:",
+          "    一步跨过谷底, 又从另一边跨回来",
+          "观察轨迹, 理解步子太大为什么会震荡"
+        ],
+        "important_vars": {
+          "round": "轮次",
+          "state": "阶段",
+          "smooth_x": "小步 x",
+          "jumpy_x": "大步 x",
+          "phase": "观察"
+        },
+        "track_vars": {
+          "primary": [
+            "round",
+            "state",
+            "smooth_x",
+            "jumpy_x",
+            "phase"
+          ],
+          "secondary": []
+        },
+        "var_classes": {
+          "round": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "state": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "smooth_x": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "jumpy_x": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "phase": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "concept": {
+            "category": "secondary",
+            "type": "concept"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 6,
+            "text": "概念动画：学习率太大时会越过谷底并震荡, 稳定比盲目迈大步更重要。"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 6,
+            "type": "exec",
+            "vars": {
+              "round": 0,
+              "state": "x=0",
+              "smooth_x": 0.0,
+              "jumpy_x": 0.0,
+              "phase": "从同一个起点出发",
+              "concept": {
+                "kind": "gradient",
+                "target": 3,
+                "x": 0.0,
+                "gradient": -6.0,
+                "loss": 9.0,
+                "paths": [
+                  {
+                    "label": "lr=0.10 稳定",
+                    "trail": [
+                      0.0
+                    ],
+                    "color": "#34d399"
+                  },
+                  {
+                    "label": "lr=0.80 震荡",
+                    "trail": [
+                      0.0
+                    ],
+                    "color": "#fb7185"
+                  }
+                ],
+                "note": "从同一个起点出发"
+              }
+            }
+          },
+          {
+            "step": 1,
+            "line": 6,
+            "type": "exec",
+            "vars": {
+              "round": 1,
+              "state": "第一次更新",
+              "smooth_x": 0.6,
+              "jumpy_x": 4.8,
+              "phase": "合适学习率小步下降, 过大学习率直接冲过谷底",
+              "concept": {
+                "kind": "gradient",
+                "target": 3,
+                "x": 0.6,
+                "gradient": -4.8,
+                "loss": 5.76,
+                "paths": [
+                  {
+                    "label": "lr=0.10 稳定",
+                    "trail": [
+                      0.0,
+                      0.6
+                    ],
+                    "color": "#34d399"
+                  },
+                  {
+                    "label": "lr=0.80 震荡",
+                    "trail": [
+                      0.0,
+                      4.8
+                    ],
+                    "color": "#fb7185"
+                  }
+                ],
+                "note": "合适学习率小步下降, 过大学习率直接冲过谷底"
+              }
+            }
+          },
+          {
+            "step": 2,
+            "line": 7,
+            "type": "exec",
+            "vars": {
+              "round": 2,
+              "state": "第二次更新",
+              "smooth_x": 1.08,
+              "jumpy_x": 1.92,
+              "phase": "过大的步子开始左右横跳",
+              "concept": {
+                "kind": "gradient",
+                "target": 3,
+                "x": 1.08,
+                "gradient": -3.84,
+                "loss": 3.6864,
+                "paths": [
+                  {
+                    "label": "lr=0.10 稳定",
+                    "trail": [
+                      0.0,
+                      0.6,
+                      1.08
+                    ],
+                    "color": "#34d399"
+                  },
+                  {
+                    "label": "lr=0.80 震荡",
+                    "trail": [
+                      0.0,
+                      4.8,
+                      1.92
+                    ],
+                    "color": "#fb7185"
+                  }
+                ],
+                "note": "过大的步子开始左右横跳"
+              }
+            }
+          },
+          {
+            "step": 3,
+            "line": 7,
+            "type": "exec",
+            "vars": {
+              "round": 4,
+              "state": "观察趋势",
+              "smooth_x": 1.771,
+              "jumpy_x": 2.611,
+              "phase": "小步轨迹持续收敛, 大步轨迹仍在摆动",
+              "concept": {
+                "kind": "gradient",
+                "target": 3,
+                "x": 1.771,
+                "gradient": -2.458,
+                "loss": 1.5104410000000001,
+                "paths": [
+                  {
+                    "label": "lr=0.10 稳定",
+                    "trail": [
+                      0.0,
+                      0.6,
+                      1.08,
+                      1.464,
+                      1.771
+                    ],
+                    "color": "#34d399"
+                  },
+                  {
+                    "label": "lr=0.80 震荡",
+                    "trail": [
+                      0.0,
+                      4.8,
+                      1.92,
+                      3.648,
+                      2.611
+                    ],
+                    "color": "#fb7185"
+                  }
+                ],
+                "note": "小步轨迹持续收敛, 大步轨迹仍在摆动"
+              }
+            }
+          },
+          {
+            "step": 4,
+            "line": 9,
+            "type": "exec",
+            "vars": {
+              "round": 7,
+              "state": "接近谷底",
+              "smooth_x": 2.371,
+              "jumpy_x": 3.084,
+              "phase": "合适学习率已经很稳, 大学习率逐渐被拉回来",
+              "concept": {
+                "kind": "gradient",
+                "target": 3,
+                "x": 2.371,
+                "gradient": -1.258,
+                "loss": 0.395641,
+                "paths": [
+                  {
+                    "label": "lr=0.10 稳定",
+                    "trail": [
+                      0.0,
+                      0.6,
+                      1.08,
+                      1.464,
+                      1.771,
+                      2.017,
+                      2.214,
+                      2.371
+                    ],
+                    "color": "#34d399"
+                  },
+                  {
+                    "label": "lr=0.80 震荡",
+                    "trail": [
+                      0.0,
+                      4.8,
+                      1.92,
+                      3.648,
+                      2.611,
+                      3.233,
+                      2.86,
+                      3.084
+                    ],
+                    "color": "#fb7185"
+                  }
+                ],
+                "note": "合适学习率已经很稳, 大学习率逐渐被拉回来"
+              }
+            }
+          },
+          {
+            "step": 5,
+            "line": 9,
+            "type": "exec",
+            "vars": {
+              "round": 10,
+              "state": "结论",
+              "smooth_x": 2.678,
+              "jumpy_x": 2.982,
+              "phase": "学习率不是越大越快, 关键是稳定靠近目标",
+              "concept": {
+                "kind": "gradient",
+                "target": 3,
+                "x": 2.678,
+                "gradient": -0.6440000000000001,
+                "loss": 0.10368400000000004,
+                "paths": [
+                  {
+                    "label": "lr=0.10 稳定",
+                    "trail": [
+                      0.0,
+                      0.6,
+                      1.08,
+                      1.464,
+                      1.771,
+                      2.017,
+                      2.214,
+                      2.371,
+                      2.497,
+                      2.598,
+                      2.678
+                    ],
+                    "color": "#34d399"
+                  },
+                  {
+                    "label": "lr=0.80 震荡",
+                    "trail": [
+                      0.0,
+                      4.8,
+                      1.92,
+                      3.648,
+                      2.611,
+                      3.233,
+                      2.86,
+                      3.084,
+                      2.95,
+                      3.03,
+                      2.982
+                    ],
+                    "color": "#fb7185"
+                  }
+                ],
+                "note": "学习率不是越大越快, 关键是稳定靠近目标"
+              }
+            }
+          }
+        ]
+      },
+      "trace": {
+        "title": "学习率（步长对比）",
+        "source": [
+          "#include <stdio.h>",
+          "",
+          "/*",
+          " * 学习率对比：同一个函数、同一个起点，",
+          " * 学习率不同，下降轨迹会完全不同。",
+          " */",
+          "",
+          "double f(double x) { return (x - 3) * (x - 3); }      /* f(x) = (x - 3)^2，最小值在 x = 3 */",
+          "double grad(double x) { return 2 * (x - 3); }         /* 导数 f'(x) = 2(x - 3) */",
+          "",
+          "/* 梯度下降：对比合适的学习率 vs 太大的学习率 */",
+          "void gd(double lr, const char* label) {",
+          "    double x = 0;",
+          "    printf(\"%s (lr=%.2f): \", label, lr);",
+          "    for (int i = 0; i < 12; i++) {",
+          "        x = x - lr * grad(x);",
+          "    }",
+          "    printf(\"12 步后 x=%.4f，f(x)=%.4f\\n\", x, f(x));",
+          "}",
+          "",
+          "int main(void) {",
+          "    gd(0.1, \"合适的学习率\");   /* 平稳收敛到 3 */",
+          "    printf(\"\\n\");",
+          "    gd(1.1, \"太大的学习率\");   /* 震荡并发散 */",
+          "    return 0;",
+          "}",
+          ""
+        ],
+        "important_vars": {
+          "x": "参数",
+          "i": "索引"
+        },
+        "track_vars": {
+          "primary": [
+            "i"
+          ],
+          "secondary": [
+            "_return",
+            "lr",
+            "x"
+          ]
+        },
+        "var_classes": {
+          "_return": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "i": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "lr": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "x": {
+            "category": "secondary",
+            "type": "scalar"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 14,
+            "text": "合适的学习率 (lr=0.10):；收敛到 x=2.7938, f(x)=0.0425 太大的学习率 (lr=0.80):；收敛到 x=2.9935, f(x)=0.0000"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 17,
+            "type": "enter",
+            "func": "main",
+            "vars": {}
+          },
+          {
+            "step": 1,
+            "line": 9,
+            "type": "enter",
+            "func": "gd",
+            "vars": {
+              "lr": 0.1
+            }
+          },
+          {
+            "step": 2,
+            "line": 12,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 0
+            }
+          },
+          {
+            "step": 3,
+            "line": 13,
+            "type": "exec",
+            "vars": {
+              "x": 1.464
+            }
+          },
+          {
+            "step": 4,
+            "line": 13,
+            "type": "exec",
+            "vars": {
+              "x": 2.21357
+            }
+          },
+          {
+            "step": 5,
+            "line": 12,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 8
+            }
+          },
+          {
+            "step": 6,
+            "line": 13,
+            "type": "exec",
+            "vars": {
+              "x": 2.7423
+            }
+          },
+          {
+            "step": 7,
+            "line": 9,
+            "type": "enter",
+            "func": "gd",
+            "vars": {
+              "lr": 0.8
+            }
+          },
+          {
+            "step": 8,
+            "line": 13,
+            "type": "exec",
+            "vars": {
+              "x": 1.92
+            }
+          },
+          {
+            "step": 9,
+            "line": 12,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 4
+            }
+          },
+          {
+            "step": 10,
+            "line": 13,
+            "type": "exec",
+            "vars": {
+              "x": 3.08398
+            }
+          },
+          {
+            "step": 11,
+            "line": 13,
+            "type": "exec",
+            "vars": {
+              "x": 2.98186
+            }
+          },
+          {
+            "step": 12,
+            "line": 21,
+            "type": "exec",
+            "vars": {
+              "_return": 0
+            }
+          },
+          {
+            "step": 13,
+            "line": 21,
+            "type": "exit",
+            "func": "main",
+            "vars": {
+              "x": "-",
+              "lr": "-",
+              "i": "-",
+              "phase": "程序执行完成，结果见下方输出"
+            }
+          }
+        ]
+      }
+    }
+  }
+};
+const firstKey = Object.keys(ALGOS)[0];
+const requestedKey = new URLSearchParams(location.search).get('algo');
+const savedAtOpen = DHLearning.load();
+let currentKey = ALGOS[requestedKey]
+  ? requestedKey
+  : (savedAtOpen.last && savedAtOpen.last.chapter === CHAPTER_NUM && ALGOS[savedAtOpen.last.algorithm]
+      ? savedAtOpen.last.algorithm
+      : firstKey);
+let currentMode = null;
+const engine = new TraceEngine('viz-canvas', 'code-body', 'var-grid', 'callstack');
+const tabsEl = document.getElementById('algo-tabs');
+const modeTabsEl = document.getElementById('mode-tabs');
+
+function has_modes(algo) {
+  return algo && algo.modes && typeof algo.modes === 'object';
+}
+
+function mode_label(rawAlgo, mode) {
+  const labels = rawAlgo.modeLabels || {};
+  if (labels[mode]) return labels[mode];
+  if (mode === 'concept') return '理解动画';
+  if (mode === 'trace') return '代码执行';
+  return mode;
+}
+
+function resolve_algo(rawAlgo) {
+  if (!has_modes(rawAlgo)) return rawAlgo;
+  const mode = currentMode || rawAlgo.defaultMode || Object.keys(rawAlgo.modes)[0];
+  return rawAlgo.modes[mode] || rawAlgo.modes[rawAlgo.defaultMode] || Object.values(rawAlgo.modes)[0];
+}
+
+function is_concept_algo(algo) {
+  if (!algo) return false;
+  const classes = algo.var_classes || {};
+  if (Object.values(classes).some(info => info && info.type === 'concept')) return true;
+  return (algo.steps || []).some(step => step.vars && step.vars.concept);
+}
+
+function update_tab_states() {
+  const completed = new Set(DHLearning.load().completedDemos);
+  tabsEl.querySelectorAll('.algo-tab').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.key === currentKey);
+    btn.classList.toggle('completed', completed.has(DHLearning.demoId(CHAPTER_NUM, btn.dataset.key)));
+    btn.setAttribute('aria-selected', String(btn.dataset.key === currentKey));
+  });
+}
+
+function update_chapter_progress() {
+  const state = DHLearning.load();
+  const completed = new Set(state.completedDemos);
+  const keys = Object.keys(ALGOS);
+  const done = keys.filter(key => completed.has(DHLearning.demoId(CHAPTER_NUM, key))).length;
+  document.getElementById('chapter-progress-text').textContent = `${done} / ${keys.length} 个演示完成`;
+  document.getElementById('chapter-progress-fill').style.width = `${keys.length ? done / keys.length * 100 : 0}%`;
+  update_tab_states();
+}
+
+function render_mode_tabs(rawAlgo) {
+  modeTabsEl.innerHTML = '';
+  if (!has_modes(rawAlgo)) {
+    modeTabsEl.classList.remove('visible');
+    currentMode = null;
+    return;
+  }
+  modeTabsEl.classList.add('visible');
+  const label = document.createElement('span');
+  label.className = 'mode-label';
+  label.textContent = '学习方式';
+  modeTabsEl.appendChild(label);
+  const activeMode = currentMode || rawAlgo.defaultMode || Object.keys(rawAlgo.modes)[0];
+  Object.keys(rawAlgo.modes).forEach(mode => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'mode-tab' + (mode === activeMode ? ' active' : '');
+    btn.textContent = mode_label(rawAlgo, mode);
+    btn.setAttribute('role', 'tab');
+    btn.setAttribute('aria-selected', String(mode === activeMode));
+    btn.addEventListener('click', () => {
+      if (currentMode === mode) return;
+      currentMode = mode;
+      load_current_algo(false);
+      if (matchMedia('(max-width: 900px)').matches) {
+        set_mobile_view(mode === 'trace' ? 'code' : 'animation');
+      }
+    });
+    modeTabsEl.appendChild(btn);
+  });
+}
+
+function load_current_algo(allowRestore = true) {
+  const rawAlgo = ALGOS[currentKey];
+  const beforeLoad = DHLearning.load().last;
+  if (has_modes(rawAlgo)) {
+    const savedMode = beforeLoad && beforeLoad.chapter === CHAPTER_NUM && beforeLoad.algorithm === currentKey
+      ? beforeLoad.mode
+      : null;
+    if (!currentMode) currentMode = savedMode && rawAlgo.modes[savedMode]
+      ? savedMode
+      : (rawAlgo.defaultMode || Object.keys(rawAlgo.modes)[0]);
+  } else {
+    currentMode = null;
+  }
+  render_mode_tabs(rawAlgo);
+  const activeAlgo = resolve_algo(rawAlgo);
+  document.body.classList.toggle('concept-mode', currentMode === 'concept' || is_concept_algo(activeAlgo));
+  engine.stop_play();
+  engine.load(activeAlgo);
+  try {
+    const currentUrl = new URL(location.href);
+    currentUrl.searchParams.set('algo', currentKey);
+    history.replaceState(null, '', currentUrl.href);
+  } catch (_) {
+    // file:// 预览环境可能限制 history API，不影响演示本身。
+  }
+  update_tab_states();
+
+  if (
+    allowRestore
+    && beforeLoad
+    && beforeLoad.chapter === CHAPTER_NUM
+    && beforeLoad.algorithm === currentKey
+    && beforeLoad.mode === currentMode
+    && beforeLoad.step > 0
+    && activeAlgo.steps.length
+  ) {
+    const restoreStep = Math.min(beforeLoad.step, activeAlgo.steps.length - 1);
+    requestAnimationFrame(() => engine.go_to_step(restoreStep));
+  }
+}
+
+Object.entries(ALGOS).forEach(([key, algo]) => {
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'algo-tab';
+  btn.dataset.key = key;
+  btn.textContent = algo.title;
+  btn.setAttribute('role', 'tab');
+  btn.setAttribute('aria-selected', String(key === currentKey));
+  btn.addEventListener('click', () => {
+    if (currentKey === key) return;
+    currentKey = key;
+    currentMode = has_modes(algo) ? (algo.defaultMode || Object.keys(algo.modes)[0]) : null;
+    load_current_algo(true);
+  });
+  tabsEl.appendChild(btn);
+});
+
+document.addEventListener('dh:stepchange', event => {
+  const detail = event.detail || {};
+  DHLearning.updateLast(CHAPTER_NUM, currentKey, currentMode, detail.currentStep);
+  if (detail.atEnd) DHLearning.markDemoComplete(CHAPTER_NUM, currentKey);
+  update_chapter_progress();
+});
+
+document.getElementById('btn-play').addEventListener('click', () => engine.playing ? engine.stop_play() : engine.start_play());
+document.getElementById('btn-step').addEventListener('click', () => { engine.stop_play(); engine.step_forward(); });
+document.getElementById('btn-reset').addEventListener('click', () => engine.reset());
+document.getElementById('btn-back').addEventListener('click', () => { engine.stop_play(); engine.step_backward(); });
+document.getElementById('btn-to-bp').addEventListener('click', () => { engine.stop_play(); engine.play_to_bp(); });
+
+const speedSlider = document.getElementById('speed-slider');
+const savedSpeed = localStorage.getItem('dh_speed');
+if (savedSpeed !== null) speedSlider.value = savedSpeed;
+speedSlider.setAttribute('aria-valuetext', `速度 ${speedSlider.value}`);
+speedSlider.addEventListener('input', () => {
+  localStorage.setItem('dh_speed', speedSlider.value);
+  speedSlider.setAttribute('aria-valuetext', `速度 ${speedSlider.value}`);
+  if (engine.playing) { clearTimeout(engine.playTimer); engine._play_loop(); }
+});
+speedSlider.addEventListener('keydown', event => {
+  if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+  event.preventDefault();
+  event.stopPropagation();
+  const direction = event.key === 'ArrowRight' ? 1 : -1;
+  speedSlider.value = String(Math.max(Number(speedSlider.min), Math.min(Number(speedSlider.max), Number(speedSlider.value) + direction)));
+  speedSlider.dispatchEvent(new Event('input', { bubbles: true }));
+});
+document.getElementById('font-dec').addEventListener('click', () => engine.font_dec());
+document.getElementById('font-inc').addEventListener('click', () => engine.font_inc());
+
+document.addEventListener('keydown', event => {
+  const target = event.target;
+  if (target && target.closest && target.closest('button,input,select,textarea,a,summary,[contenteditable="true"]')) return;
+  if (event.key === ' ') {
+    event.preventDefault();
+    engine.playing ? engine.stop_play() : engine.start_play();
+  } else if (event.key === 'ArrowRight') {
+    event.preventDefault();
+    engine.stop_play();
+    engine.step_forward();
+  } else if (event.key === 'ArrowLeft') {
+    event.preventDefault();
+    engine.stop_play();
+    engine.step_backward();
+  } else if (event.key.toLowerCase() === 'r' && !event.metaKey && !event.ctrlKey && !event.altKey) {
+    engine.reset();
+  }
+});
+
+function set_mobile_view(view) {
+  document.body.dataset.mobileView = view;
+  document.querySelectorAll('.mobile-view-switcher button').forEach(btn => {
+    const active = btn.dataset.mobileView === view;
+    btn.classList.toggle('active', active);
+    btn.setAttribute('aria-selected', String(active));
+  });
+  if (view === 'animation' && engine.currentStep >= 0) {
+    requestAnimationFrame(() => engine.go_to_step(engine.currentStep));
+  }
+}
+
+document.querySelectorAll('.mobile-view-switcher button').forEach(btn => {
+  btn.addEventListener('click', () => set_mobile_view(btn.dataset.mobileView));
+});
+
+DHLearning.visitChapter(CHAPTER_NUM);
+update_chapter_progress();
+load_current_algo(true);
+</script>
+</body>
+</html>

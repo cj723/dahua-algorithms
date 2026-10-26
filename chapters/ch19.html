@@ -1,0 +1,2721 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#171b28">
+<link rel="icon" href="../assets/mascots/student-dog.png">
+<title>第19章 链表与树的指尖舞蹈 · 大话算法</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #1e2336;
+  --panel: #1a1f30;
+  --panel-deep: #151920;
+  --surface: #21283a;
+  --border: #30384c;
+  --text: #d7dae0;
+  --text-soft: #abb4c3;
+  --text-dim: #929caf;
+  --accent: #59a8ee;
+  --accent-soft: #243f5e;
+  --success: #98c379;
+  --control-height: 64px;
+}
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Noto Sans SC', 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text-soft);
+  overflow: hidden;
+}
+button, input, summary { font: inherit; }
+button:focus-visible, a:focus-visible, input:focus-visible, summary:focus-visible, [tabindex]:focus-visible {
+  outline: 3px solid rgba(89,168,238,.58);
+  outline-offset: 2px;
+}
+.header {
+  height: 65px;
+  background: rgba(23,28,43,.96);
+  padding: 0 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  position: relative;
+  z-index: 30;
+}
+.back-link {
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 13px;
+  white-space: nowrap;
+}
+.back-link:hover { text-decoration: underline; }
+.chapter-heading { min-width: 0; flex: 1; }
+.chapter-kicker { color: var(--text-dim); font-size: 12px; margin-bottom: 2px; }
+.chapter-heading h1 {
+  font-size: 19px;
+  line-height: 1.25;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.chapter-status {
+  min-width: 138px;
+  display: grid;
+  gap: 5px;
+}
+.chapter-status-text { color: var(--text-dim); font-size: 11px; text-align: right; }
+.chapter-status-track { height: 4px; background: #252c3e; border-radius: 99px; overflow: hidden; }
+.chapter-status-fill {
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, var(--accent), var(--success));
+  border-radius: inherit;
+  transition: width .3s ease;
+}
+.chapter-nav { display: flex; gap: 6px; }
+.chapter-nav a, .chapter-nav span {
+  min-width: 36px;
+  height: 36px;
+  padding: 0 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-soft);
+  text-decoration: none;
+  font-size: 12px;
+}
+.chapter-nav a:hover { border-color: var(--accent); color: var(--text); background: #202b40; }
+.chapter-nav .disabled { opacity: .35; cursor: default; }
+.mobile-view-switcher { display: none; }
+.main { display: flex; height: calc(100dvh - 65px); min-height: 0; }
+.code-panel {
+  width: 45%;
+  min-width: 360px;
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.code-header {
+  background: var(--panel);
+  padding: 9px 14px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.algo-tabs {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  flex: 1;
+  min-width: 0;
+}
+.algo-tab, .mode-tab {
+  border: 1px solid var(--border);
+  background: #22283a;
+  color: var(--text-dim);
+  border-radius: 7px;
+  cursor: pointer;
+  transition: background .18s ease, border-color .18s ease, color .18s ease;
+}
+.algo-tab { padding: 6px 11px; font-size: 12px; position: relative; }
+.algo-tab:hover, .mode-tab:hover { color: var(--text); border-color: #48536b; }
+.algo-tab.active, .mode-tab.active {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: #e8f3ff;
+}
+.algo-tab.completed::after {
+  content: '✓';
+  margin-left: 6px;
+  color: var(--success);
+  font-weight: 800;
+}
+.breakpoint-hint {
+  color: #737e92;
+  font-size: 11px;
+  line-height: 29px;
+  white-space: nowrap;
+}
+.mode-tabs {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: #171c2b;
+  border-bottom: 1px solid var(--border);
+}
+.mode-tabs.visible { display: flex; }
+.mode-label { font-size: 12px; color: var(--text-dim); margin-right: 2px; }
+.mode-tab { padding: 5px 12px; border-radius: 999px; font-size: 12px; }
+.code-body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  font-family: 'SFMono-Regular', 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+  font-size: var(--code-font-size, 15px);
+  line-height: 1.8;
+  scrollbar-color: #3b455c transparent;
+}
+.code-line { display: flex; min-width: max-content; padding: 0 16px 0 7px; position: relative; }
+.code-line:hover { background: #22283a; }
+.code-line.active {
+  background: rgba(73,164,238,.32);
+  border-left: 3px solid var(--accent);
+  box-shadow: inset 0 0 16px rgba(73,164,238,.18);
+}
+.code-line.executed { background: rgba(73,164,238,.035); }
+.code-line.setup { background: rgba(127,132,142,.045); color: #667084; }
+.line-num {
+  width: 42px;
+  border: 0;
+  background: transparent;
+  text-align: right;
+  color: #748096;
+  padding-right: 12px;
+  user-select: none;
+  flex-shrink: 0;
+  position: relative;
+  cursor: pointer;
+}
+.line-num:hover { color: var(--accent); }
+.line-num .breakpoint {
+  position: absolute;
+  left: 3px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #e05561;
+}
+.line-content { flex: 1; white-space: pre; }
+.kw, .num { color: #F3A862; }
+.fn { color: #59a8ee; }
+.var { color: #D980FA; }
+.str { color: #74C589; }
+.cmt { color: #71939a; font-style: italic; }
+.right-panel { flex: 1; display: flex; flex-direction: column; min-width: 0; min-height: 0; overflow: hidden; }
+.viz-panel {
+  flex: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 20px;
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
+}
+.viz-panel canvas { width: 100%; height: 100%; display: block; }
+body.concept-mode .viz-panel { flex: 1 1 auto; padding: 6px 20px; }
+body.concept-mode .vars-panel { flex: 0 1 168px; padding: 8px 18px; }
+body.concept-mode .output-panel { flex: 0 1 68px; padding: 6px 16px; }
+body.concept-mode .callstack { display: none; }
+.callstack {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  max-width: calc(100% - 24px);
+  background: rgba(33,38,54,.92);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 12px;
+  pointer-events: none;
+}
+.callstack-title, .vars-panel h3, .output-panel h3 { color: var(--text-dim); }
+.callstack-title { margin-bottom: 4px; }
+.callstack-item { color: var(--accent); padding: 2px 0; }
+.callstack-item::before { content: '▸ '; color: #68758a; }
+.vars-panel {
+  flex: 2;
+  background: var(--panel);
+  padding: 10px 18px;
+  border-top: 1px solid var(--border);
+  overflow-y: auto;
+  min-height: 0;
+}
+.output-panel {
+  flex: 1;
+  background: var(--panel-deep);
+  border-top: 1px solid var(--border);
+  padding: 8px 16px;
+  overflow-y: auto;
+  min-height: 0;
+  font-family: 'SFMono-Regular', 'JetBrains Mono', monospace;
+  font-size: var(--output-font-size, 13px);
+  color: var(--text-dim);
+}
+.output-panel h3 {
+  font-size: 12px;
+  margin-bottom: 4px;
+  position: sticky;
+  top: 0;
+  background: var(--panel-deep);
+  padding-bottom: 4px;
+  z-index: 1;
+}
+.output-line { padding: 1px 0; white-space: pre-wrap; word-break: break-word; }
+.vars-panel h3 { font-size: 13px; margin-bottom: 9px; }
+.var-grid { display: flex; flex-direction: column; gap: 6px; }
+.var-section-title { font-size: 11px; color: var(--text-dim); margin: 8px 0 4px; }
+.var-section:first-child .var-section-title { margin-top: 0; }
+.var-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.var-item {
+  background: #22283a;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 6px 13px;
+  font-family: monospace;
+  font-size: var(--var-font-size, 14px);
+}
+.var-name { color: var(--accent); }
+.var-val { color: var(--text); font-weight: 650; }
+.var-changed { animation: varPulse .5s ease; border-color: var(--accent); }
+.var-highlight { border-color: var(--accent); background: var(--accent-soft); }
+@keyframes varPulse { 0% { background: var(--accent-soft); } 100% { background: #22283a; } }
+.var-toggle { font-size: 12px; color: var(--text-dim); cursor: pointer; padding: 4px 0; user-select: none; }
+.control-bar {
+  min-height: var(--control-height);
+  flex-shrink: 0;
+  background: var(--panel);
+  border-top: 1px solid var(--border);
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+  z-index: 20;
+}
+.transport-controls { display: flex; align-items: center; gap: 7px; }
+.btn {
+  min-height: 38px;
+  background: #22283a;
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  white-space: nowrap;
+}
+.btn:hover:not(:disabled) { background: #2a3247; border-color: #4c5872; }
+.btn:disabled { opacity: .36; cursor: not-allowed; }
+.btn-primary { min-width: 82px; background: var(--accent-soft); border-color: var(--accent); }
+.btn-active { background: #285176; border-color: #77bfff; }
+.step-info {
+  margin-left: auto;
+  min-width: 68px;
+  font-size: 12px;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+.step-info strong { color: var(--text); }
+.settings-menu { position: relative; }
+.settings-menu summary {
+  list-style: none;
+  min-height: 38px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-soft);
+  cursor: pointer;
+  font-size: 12px;
+  user-select: none;
+}
+.settings-menu summary::-webkit-details-marker { display: none; }
+.settings-menu[open] summary { border-color: var(--accent); background: var(--accent-soft); color: var(--text); }
+.settings-popover {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 10px);
+  width: 250px;
+  padding: 14px;
+  display: grid;
+  gap: 12px;
+  background: rgba(23,28,43,.98);
+  border: 1px solid #3a465f;
+  border-radius: 12px;
+  box-shadow: 0 16px 42px rgba(0,0,0,.38);
+}
+.setting-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.setting-row label, .shortcut-help { font-size: 12px; color: var(--text-dim); }
+.speed-slider { width: 130px; accent-color: var(--accent); }
+.font-control { display: flex; align-items: center; gap: 6px; }
+.btn-sm { min-height: 32px; padding: 5px 10px; font-size: 12px; }
+.settings-divider { height: 1px; background: var(--border); }
+.shortcut-help { line-height: 1.65; }
+
+@media (max-width: 1050px) {
+  .code-panel { width: 42%; min-width: 320px; }
+  .chapter-status { display: none; }
+  .breakpoint-hint { display: none; }
+  .btn { padding-inline: 10px; }
+}
+
+@media (max-width: 900px) {
+  body { overflow: auto; padding-bottom: 72px; }
+  .header {
+    height: auto;
+    min-height: 60px;
+    padding: 8px 12px;
+    gap: 10px;
+    position: sticky;
+    top: 0;
+  }
+  .back-link { font-size: 0; width: 36px; height: 36px; display: grid; place-items: center; }
+  .back-link::before { content: '←'; font-size: 21px; }
+  .chapter-kicker { font-size: 10px; }
+  .chapter-heading h1 { font-size: 16px; }
+  .chapter-nav a, .chapter-nav span { width: 34px; min-width: 34px; padding: 0; font-size: 0; }
+  .chapter-nav a:first-child::before, .chapter-nav span:first-child::before { content: '‹'; font-size: 22px; }
+  .chapter-nav a:last-child::before, .chapter-nav span:last-child::before { content: '›'; font-size: 22px; }
+  .mobile-view-switcher {
+    position: sticky;
+    top: 60px;
+    z-index: 25;
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 4px;
+    padding: 7px 10px;
+    background: rgba(23,28,43,.97);
+    border-bottom: 1px solid var(--border);
+  }
+  .mobile-view-switcher button {
+    min-height: 38px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text-dim);
+  }
+  .mobile-view-switcher button.active {
+    color: #e8f3ff;
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+  .main { display: block; height: auto; min-height: calc(100dvh - 114px); }
+  .code-panel, .right-panel { width: 100%; min-width: 0; border: 0; }
+  .code-panel { height: calc(100dvh - 186px); }
+  .code-header { padding: 8px 10px; overflow: hidden; }
+  .algo-tabs { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 3px; scrollbar-width: thin; }
+  .algo-tab { flex: 0 0 auto; min-height: 38px; }
+  .mode-tabs { padding: 7px 10px; overflow-x: auto; }
+  .code-body { min-height: 0; font-size: max(13px,var(--code-font-size,15px)); }
+  .code-line { padding-right: 12px; }
+  .right-panel { min-height: calc(100dvh - 186px); overflow: visible; }
+  .viz-panel { height: calc(100dvh - 186px); min-height: 430px; flex: none !important; padding: 8px 10px !important; }
+  .vars-panel { min-height: 50dvh; padding: 14px; }
+  .output-panel { min-height: 28dvh; padding: 12px 14px; }
+  body[data-mobile-view="animation"] .code-panel,
+  body[data-mobile-view="animation"] .vars-panel,
+  body[data-mobile-view="animation"] .output-panel { display: none; }
+  body[data-mobile-view="code"] .right-panel > :not(.control-bar),
+  body[data-mobile-view="code"] .vars-panel,
+  body[data-mobile-view="code"] .output-panel { display: none; }
+  body[data-mobile-view="code"] .right-panel { min-height: 0; }
+  body[data-mobile-view="data"] .code-panel,
+  body[data-mobile-view="data"] .viz-panel { display: none; }
+  body[data-mobile-view="data"] .right-panel { min-height: calc(100dvh - 186px); }
+  .control-bar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    min-height: 72px;
+    padding: 9px max(10px,env(safe-area-inset-right)) calc(9px + env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left));
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 -10px 30px rgba(9,12,20,.36);
+  }
+  .transport-controls { gap: 7px; }
+  #btn-reset { display: none; }
+  .btn { min-width: 48px; min-height: 44px; padding: 8px 10px; font-size: 0; }
+  #btn-back::after { content: '◀'; font-size: 16px; }
+  #btn-play { min-width: 92px; font-size: 14px; }
+  #btn-step::after { content: '▶'; font-size: 16px; }
+  .step-info { margin-left: 0; min-width: 52px; text-align: center; font-size: 11px; }
+  .step-info .step-prefix { display: none; }
+  .settings-menu summary { width: 44px; min-height: 44px; padding: 0; justify-content: center; font-size: 0; }
+  .settings-menu summary::before { content: '⚙'; font-size: 17px; }
+  .settings-popover { right: -2px; width: min(280px,calc(100vw - 20px)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: .001ms !important;
+  }
+}
+</style>
+</head>
+<body data-mobile-view="animation">
+
+<header class="header">
+  <a class="back-link" href="../index.html" aria-label="返回学习地图">← 学习地图</a>
+  <div class="chapter-heading">
+    <div class="chapter-kicker">第19章</div>
+    <h1>链表与树的指尖舞蹈</h1>
+  </div>
+  <div class="chapter-status" aria-label="本章学习进度">
+    <div class="chapter-status-text" id="chapter-progress-text">0 / 0 个演示完成</div>
+    <div class="chapter-status-track"><div class="chapter-status-fill" id="chapter-progress-fill"></div></div>
+  </div>
+  <nav class="chapter-nav" aria-label="章节导航">
+    <a href="ch18.html" aria-label="上一章：算法在现实世界" title="上一章：算法在现实世界">上一章</a>
+    <a href="ch20.html" aria-label="下一章：动态规划的降维打击" title="下一章：动态规划的降维打击">下一章</a>
+  </nav>
+</header>
+
+<div class="mobile-view-switcher" role="tablist" aria-label="学习视图">
+  <button type="button" class="active" data-mobile-view="animation" role="tab" aria-selected="true">动画</button>
+  <button type="button" data-mobile-view="code" role="tab" aria-selected="false">代码</button>
+  <button type="button" data-mobile-view="data" role="tab" aria-selected="false">变量</button>
+</div>
+
+<main class="main">
+  <section class="code-panel" aria-label="算法代码">
+    <div class="code-header">
+      <div class="algo-tabs" id="algo-tabs" role="tablist" aria-label="本章算法"></div>
+      <span class="breakpoint-hint">点击行号可设断点</span>
+    </div>
+    <div class="mode-tabs" id="mode-tabs" role="tablist" aria-label="演示模式"></div>
+    <div class="code-body" id="code-body" aria-label="代码执行过程"></div>
+  </section>
+
+  <section class="right-panel" aria-label="算法可视化与状态">
+    <div class="viz-panel">
+      <canvas id="viz-canvas" width="800" height="300" role="img" aria-label="算法执行动画"></canvas>
+      <div class="callstack" id="callstack"><div class="callstack-title">调用栈</div></div>
+    </div>
+    <div class="vars-panel">
+      <h3>变量状态</h3>
+      <div class="var-grid" id="var-grid"></div>
+    </div>
+    <div class="output-panel" id="output-panel">
+      <h3>程序输出</h3>
+      <div id="output-content" aria-live="polite"></div>
+    </div>
+
+    <div class="control-bar" aria-label="播放控制">
+      <div class="transport-controls">
+        <button class="btn" id="btn-reset" type="button" aria-label="重置当前演示" title="重置当前演示">⏮ 重置</button>
+        <button class="btn" id="btn-back" type="button" aria-label="上一步" title="上一步">◀ 后退</button>
+        <button class="btn btn-primary" id="btn-play" type="button" aria-label="播放或暂停">▶ 播放</button>
+        <button class="btn" id="btn-step" type="button" aria-label="下一步" title="下一步">⏭ 单步</button>
+      </div>
+      <div class="step-info" aria-live="polite">
+        <span class="step-prefix">步骤 </span><strong id="step-cur">0</strong> / <strong id="step-total">0</strong>
+      </div>
+      <details class="settings-menu">
+        <summary aria-label="播放设置">⚙ 设置</summary>
+        <div class="settings-popover">
+          <div class="setting-row">
+            <label for="speed-slider">播放速度</label>
+            <input type="range" class="speed-slider" id="speed-slider" min="1" max="10" value="5" aria-valuetext="速度 5">
+          </div>
+          <div class="setting-row">
+            <span class="mode-label">代码字体</span>
+            <div class="font-control">
+              <button class="btn btn-sm" type="button" id="font-dec" aria-label="减小代码字体">A−</button>
+              <button class="btn btn-sm" type="button" id="font-inc" aria-label="增大代码字体">A＋</button>
+            </div>
+          </div>
+          <button class="btn" id="btn-to-bp" type="button">运行到断点</button>
+          <div class="settings-divider"></div>
+          <div class="shortcut-help">页面空白处：空格播放/暂停，← → 单步，R 重置</div>
+        </div>
+      </details>
+    </div>
+  </section>
+</main>
+
+<script src="../js/learning-state.js?v=20260725"></script>
+<script src="../js/engine.js?v=20260725-ux2"></script>
+<script src="../js/viz-renderers.js?v=20260725-layout-audit"></script>
+<script>
+const CHAPTER_NUM = 19;
+const ALGOS = {
+  "01_反转链表": {
+    "title": "反转链表",
+    "defaultMode": "concept",
+    "modeLabels": {
+      "concept": "理解动画",
+      "trace": "代码执行"
+    },
+    "modes": {
+      "concept": {
+        "title": "反转链表",
+        "source": [
+          "算法: 反转链表",
+          "输入: 1 → 2 → 3 → 4 → 5 → NULL",
+          "输出: 5 → 4 → 3 → 2 → 1 → NULL",
+          "",
+          "prev = NULL, curr = head",
+          "while curr != NULL:",
+          "    nextTemp = curr->next  # 留后路",
+          "    curr->next = prev       # 向后转",
+          "    prev = curr             # prev 跟上",
+          "    curr = nextTemp         # curr 前进"
+        ],
+        "important_vars": {
+          "phase": "阶段",
+          "prev": "prev",
+          "curr": "curr",
+          "nextTemp": "nextTemp"
+        },
+        "track_vars": {
+          "primary": [
+            "phase",
+            "prev",
+            "curr",
+            "nextTemp"
+          ],
+          "secondary": []
+        },
+        "var_classes": {
+          "list": {
+            "category": "primary",
+            "type": "list"
+          },
+          "phase": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "prev": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "curr": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "nextTemp": {
+            "category": "primary",
+            "type": "scalar"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 6,
+            "text": "理解动画：反转链表的关键是先用 nextTemp 留后路, 再让当前节点向后转。"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 5,
+            "type": "exec",
+            "vars": {
+              "list": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "prev": -1,
+              "curr": 0,
+              "nextTemp": -1,
+              "phase": "一开始 prev 指向 NULL, curr 站在头节点 1"
+            }
+          },
+          {
+            "step": 1,
+            "line": 7,
+            "type": "exec",
+            "vars": {
+              "list": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "prev": -1,
+              "curr": 0,
+              "nextTemp": 1,
+              "phase": "先保存 nextTemp=2, 否则 1 转身后会找不到后面的链"
+            }
+          },
+          {
+            "step": 2,
+            "line": 8,
+            "type": "exec",
+            "vars": {
+              "list": [
+                1
+              ],
+              "prev": -1,
+              "curr": 0,
+              "nextTemp": 1,
+              "phase": "让 1 指向 NULL, 已反转部分变成 1 → NULL"
+            }
+          },
+          {
+            "step": 3,
+            "line": 8,
+            "type": "exec",
+            "vars": {
+              "list": [
+                2,
+                1
+              ],
+              "prev": 1,
+              "curr": 0,
+              "nextTemp": 2,
+              "phase": "处理 2: 让 2 指向 1, 已反转部分变成 2 → 1"
+            }
+          },
+          {
+            "step": 4,
+            "line": 8,
+            "type": "exec",
+            "vars": {
+              "list": [
+                3,
+                2,
+                1
+              ],
+              "prev": 1,
+              "curr": 0,
+              "nextTemp": 3,
+              "phase": "处理 3: 已反转链条继续向左增长"
+            }
+          },
+          {
+            "step": 5,
+            "line": 8,
+            "type": "exec",
+            "vars": {
+              "list": [
+                5,
+                4,
+                3,
+                2,
+                1
+              ],
+              "prev": 0,
+              "curr": -1,
+              "nextTemp": -1,
+              "phase": "curr 到达 NULL, prev 停在新头节点 5"
+            }
+          }
+        ]
+      },
+      "trace": {
+        "title": "反转链表",
+        "source": [
+          "#include <stdio.h>",
+          "#include <stdlib.h>",
+          "",
+          "struct ListNode {",
+          "    int val;",
+          "    struct ListNode *next;",
+          "};",
+          "",
+          "struct ListNode *reverse_list(struct ListNode *head) {",
+          "    struct ListNode *prev = NULL;       /* 前一个节点（最初没有前驱，所以是 NULL） */",
+          "    struct ListNode *curr = head;       /* 当前节点 */",
+          "    struct ListNode *nextTemp = NULL;   /* 临时工，用来保存下一个节点 */",
+          "",
+          "    while (curr != NULL) {",
+          "        nextTemp = curr->next;  /* 1. 留后路：临时工先抱住下一个节点 */",
+          "        curr->next = prev;      /* 2. 向后转：当前节点指针反转，指向前一个节点 */",
+          "        prev = curr;            /* 3. prev 跟上：prev 移至当前节点（为下一轮做前驱） */",
+          "        curr = nextTemp;        /* 4. curr 前进：curr 移至下一个节点（继续迭代） */",
+          "    }",
+          "",
+          "    /* 循环结束时，curr 变成了 NULL，prev 刚好停在原来链表的最后一个节点 */",
+          "    return prev;",
+          "}",
+          "",
+          "/* 辅助：创建节点 */",
+          "struct ListNode *make_node(int val) {",
+          "    struct ListNode *n = (struct ListNode *)malloc(sizeof(struct ListNode));",
+          "    n->val = val; n->next = NULL;",
+          "    return n;",
+          "}",
+          "",
+          "/* 辅助：释放链表 */",
+          "void free_list(struct ListNode *head) {",
+          "    while (head != NULL) {",
+          "        struct ListNode *next = head->next;",
+          "        free(head);",
+          "        head = next;",
+          "    }",
+          "}",
+          "",
+          "/* 测试：反转链表 */",
+          "int main(void) {",
+          "    /* 构建链表 1 → 2 → 3 → 4 → 5 → NULL */",
+          "    struct ListNode *head = make_node(1);",
+          "    head->next = make_node(2);",
+          "    head->next->next = make_node(3);",
+          "    head->next->next->next = make_node(4);",
+          "    head->next->next->next->next = make_node(5);",
+          "",
+          "    printf(\"原链表：\");",
+          "    for (struct ListNode *p = head; p; p = p->next)",
+          "        printf(\"%d \", p->val);",
+          "    printf(\"\\n\");",
+          "",
+          "    head = reverse_list(head);",
+          "",
+          "    printf(\"反转后：\");",
+          "    for (struct ListNode *p = head; p; p = p->next)",
+          "        printf(\"%d \", p->val);",
+          "    printf(\"\\n\");",
+          "",
+          "    free_list(head);",
+          "    return 0;",
+          "}",
+          ""
+        ],
+        "important_vars": {},
+        "track_vars": {
+          "primary": [
+            "curr",
+            "head",
+            "prev",
+            "val"
+          ],
+          "secondary": [
+            "_return",
+            "nextTemp"
+          ]
+        },
+        "var_classes": {
+          "_return": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "curr": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "head": {
+            "category": "primary",
+            "type": "list"
+          },
+          "nextTemp": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "prev": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "val": {
+            "category": "primary",
+            "type": "scalar"
+          }
+        },
+        "initial_data": {
+          "head": [
+            1
+          ]
+        },
+        "program_output": [
+          {
+            "after_step": 14,
+            "text": "原链表：1 2 3 4 5；反转后：5 4 3 2 1"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 37,
+            "type": "enter",
+            "func": "make_node",
+            "vars": {
+              "val": 1
+            }
+          },
+          {
+            "step": 1,
+            "line": 24,
+            "type": "exit",
+            "func": "make_node",
+            "vars": {}
+          },
+          {
+            "step": 2,
+            "line": 35,
+            "type": "enter",
+            "func": "main",
+            "vars": {}
+          },
+          {
+            "step": 3,
+            "line": 38,
+            "type": "enter",
+            "func": "make_node",
+            "vars": {
+              "val": 2
+            }
+          },
+          {
+            "step": 4,
+            "line": 24,
+            "type": "exit",
+            "func": "make_node",
+            "vars": {}
+          },
+          {
+            "step": 5,
+            "line": 39,
+            "type": "enter",
+            "func": "make_node",
+            "vars": {
+              "val": 3
+            }
+          },
+          {
+            "step": 6,
+            "line": 24,
+            "type": "exit",
+            "func": "make_node",
+            "vars": {}
+          },
+          {
+            "step": 7,
+            "line": 24,
+            "type": "exit",
+            "func": "make_node",
+            "vars": {}
+          },
+          {
+            "step": 8,
+            "line": 41,
+            "type": "enter",
+            "func": "make_node",
+            "vars": {
+              "val": 5
+            }
+          },
+          {
+            "step": 9,
+            "line": 24,
+            "type": "exit",
+            "func": "make_node",
+            "vars": {}
+          },
+          {
+            "step": 10,
+            "line": 46,
+            "type": "enter",
+            "func": "reverse_list",
+            "vars": {
+              "head": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ]
+            }
+          },
+          {
+            "step": 11,
+            "line": 18,
+            "type": "exit",
+            "func": "reverse_list",
+            "vars": {}
+          },
+          {
+            "step": 12,
+            "line": 51,
+            "type": "enter",
+            "func": "free_list",
+            "vars": {
+              "head": [
+                5,
+                4,
+                3,
+                2,
+                1
+              ]
+            }
+          },
+          {
+            "step": 13,
+            "line": 52,
+            "type": "exit",
+            "func": "main",
+            "vars": {
+              "val": "-",
+              "head": "-",
+              "phase": "程序执行完成，结果见下方输出"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "02_快慢指针_环检测": {
+    "title": "快慢指针（环检测）",
+    "defaultMode": "concept",
+    "modeLabels": {
+      "concept": "理解动画",
+      "trace": "代码执行"
+    },
+    "modes": {
+      "concept": {
+        "title": "快慢指针（环检测）",
+        "source": [
+          "算法: 快慢指针找环入口",
+          "输入: 1 → 2 → 3 → 4 → 5, 且 5 指回 3",
+          "输出: 环入口节点 3",
+          "",
+          "slow 每次走 1 步, fast 每次走 2 步",
+          "如果两者相遇, 说明有环",
+          "把 fast 拉回 head",
+          "slow 和 fast 同速前进",
+          "再次相遇处就是环入口"
+        ],
+        "important_vars": {
+          "phase": "阶段",
+          "slow": "slow",
+          "fast": "fast",
+          "entry": "entry"
+        },
+        "track_vars": {
+          "primary": [
+            "phase",
+            "slow",
+            "fast",
+            "entry"
+          ],
+          "secondary": []
+        },
+        "var_classes": {
+          "list": {
+            "category": "primary",
+            "type": "list"
+          },
+          "phase": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "slow": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "fast": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "entry": {
+            "category": "primary",
+            "type": "scalar"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 6,
+            "text": "理解动画：快慢指针先证明有环, 再通过同速相遇找出环入口。"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 4,
+            "type": "exec",
+            "vars": {
+              "list": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "slow": 0,
+              "fast": 0,
+              "entry": 2,
+              "phase": "链表尾部 5 实际指回 3, 形成一个环"
+            }
+          },
+          {
+            "step": 1,
+            "line": 5,
+            "type": "exec",
+            "vars": {
+              "list": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "slow": 1,
+              "fast": 2,
+              "entry": 2,
+              "phase": "第一轮: slow 到 2, fast 到 3"
+            }
+          },
+          {
+            "step": 2,
+            "line": 5,
+            "type": "exec",
+            "vars": {
+              "list": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "slow": 2,
+              "fast": 4,
+              "entry": 2,
+              "phase": "第二轮: slow 进入环入口 3, fast 到 5"
+            }
+          },
+          {
+            "step": 3,
+            "line": 6,
+            "type": "exec",
+            "vars": {
+              "list": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "slow": 3,
+              "fast": 3,
+              "entry": 2,
+              "phase": "继续跑, slow 和 fast 在环里相遇, 说明有环"
+            }
+          },
+          {
+            "step": 4,
+            "line": 7,
+            "type": "exec",
+            "vars": {
+              "list": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "slow": 3,
+              "fast": 0,
+              "entry": 2,
+              "phase": "把 fast 拉回头节点, 两个指针改成同速"
+            }
+          },
+          {
+            "step": 5,
+            "line": 9,
+            "type": "exec",
+            "vars": {
+              "list": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "slow": 2,
+              "fast": 2,
+              "entry": 2,
+              "phase": "再次相遇在节点 3, 它就是环入口"
+            }
+          }
+        ]
+      },
+      "trace": {
+        "title": "快慢指针（环检测）",
+        "source": [
+          "#include <stdio.h>",
+          "#include <stdlib.h>",
+          "",
+          "struct ListNode {",
+          "    int val;",
+          "    struct ListNode *next;",
+          "};",
+          "",
+          "struct ListNode *detect_cycle(struct ListNode *head) {",
+          "    struct ListNode *slow = head;",
+          "    struct ListNode *fast = head;",
+          "",
+          "    /* 1. 判断是否有环 */",
+          "    while (fast != NULL && fast->next != NULL) {",
+          "        slow = slow->next;          /* 龟走一步 */",
+          "        fast = fast->next->next;    /* 兔走两步 */",
+          "",
+          "        /* 发现相遇，说明有环！ */",
+          "        if (slow == fast) {",
+          "            /* 2. 寻找环的入口 */",
+          "            fast = head;            /* 兔回到起点 */",
+          "            while (slow != fast) {",
+          "                slow = slow->next;  /* 两人现在同速 */",
+          "                fast = fast->next;",
+          "            }",
+          "            return slow;            /* 再次相遇的点，就是环入口 */",
+          "        }",
+          "    }",
+          "    return NULL;  /* 无环 */",
+          "}",
+          "",
+          "/* 测试：环形链表检测 */",
+          "int main(void) {",
+          "    /* 构建链表 1 → 2 → 3 → 4 → 5，然后 5 指向 3 形成环 */",
+          "    struct ListNode nodes[5];",
+          "    for (int i = 0; i < 5; i++) {",
+          "        nodes[i].val = i + 1;",
+          "        nodes[i].next = (i < 4) ? &nodes[i+1] : &nodes[2];  // 5 → 3",
+          "    }",
+          "",
+          "    struct ListNode *entry = detect_cycle(&nodes[0]);",
+          "    if (entry)",
+          "        printf(\"检测到环，入口为节点：%d\\n\", entry->val);",
+          "    else",
+          "        printf(\"无环\\n\");",
+          "",
+          "    return 0;",
+          "}",
+          ""
+        ],
+        "important_vars": {
+          "i": "索引"
+        },
+        "track_vars": {
+          "primary": [
+            "i"
+          ],
+          "secondary": [
+            "_return"
+          ]
+        },
+        "var_classes": {
+          "_return": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "i": {
+            "category": "primary",
+            "type": "scalar"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 6,
+            "text": "检测到环，入口为节点：3"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 28,
+            "type": "enter",
+            "func": "main",
+            "vars": {}
+          },
+          {
+            "step": 1,
+            "line": 31,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 0
+            }
+          },
+          {
+            "step": 2,
+            "line": 31,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 1
+            }
+          },
+          {
+            "step": 3,
+            "line": 31,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 2
+            }
+          },
+          {
+            "step": 4,
+            "line": 31,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 3
+            }
+          },
+          {
+            "step": 5,
+            "line": 31,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 4
+            }
+          },
+          {
+            "step": 6,
+            "line": 40,
+            "type": "exec",
+            "vars": {
+              "_return": 0
+            }
+          },
+          {
+            "step": 7,
+            "line": 40,
+            "type": "exit",
+            "func": "main",
+            "vars": {}
+          }
+        ]
+      }
+    }
+  },
+  "03_层序遍历": {
+    "title": "层序遍历",
+    "defaultMode": "concept",
+    "modeLabels": {
+      "concept": "理解动画",
+      "trace": "代码执行"
+    },
+    "modes": {
+      "concept": {
+        "title": "层序遍历",
+        "source": [
+          "算法: 二叉树层序遍历",
+          "输入: 一棵二叉树",
+          "输出: 按层排列的节点值",
+          "",
+          "root 先入队",
+          "while 队列不空:",
+          "    先记下当前层人数 currentLevelSize",
+          "    出队当前层所有节点",
+          "    把它们的左右孩子加入队尾"
+        ],
+        "important_vars": {
+          "phase": "阶段",
+          "root": "root",
+          "node": "node"
+        },
+        "track_vars": {
+          "primary": [
+            "phase",
+            "root",
+            "node"
+          ],
+          "secondary": []
+        },
+        "var_classes": {
+          "tree": {
+            "category": "primary",
+            "type": "tree"
+          },
+          "phase": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "root": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "node": {
+            "category": "primary",
+            "type": "scalar"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 6,
+            "text": "理解动画：层序遍历一定要先固定当前层人数, 再让下一层节点去队尾排队。"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 5,
+            "type": "exec",
+            "vars": {
+              "tree": [
+                3,
+                [
+                  9,
+                  null,
+                  null
+                ],
+                [
+                  20,
+                  [
+                    15,
+                    null,
+                    null
+                  ],
+                  [
+                    7,
+                    null,
+                    null
+                  ]
+                ]
+              ],
+              "root": 3,
+              "node": 3,
+              "phase": "根节点 3 先入队, 队列里只有第一层"
+            }
+          },
+          {
+            "step": 1,
+            "line": 7,
+            "type": "exec",
+            "vars": {
+              "tree": [
+                3,
+                [
+                  9,
+                  null,
+                  null
+                ],
+                [
+                  20,
+                  [
+                    15,
+                    null,
+                    null
+                  ],
+                  [
+                    7,
+                    null,
+                    null
+                  ]
+                ]
+              ],
+              "root": 3,
+              "node": 3,
+              "phase": "先固定 currentLevelSize=1, 这一轮只处理第 1 层"
+            }
+          },
+          {
+            "step": 2,
+            "line": 8,
+            "type": "exec",
+            "vars": {
+              "tree": [
+                3,
+                [
+                  9,
+                  null,
+                  null
+                ],
+                [
+                  20,
+                  [
+                    15,
+                    null,
+                    null
+                  ],
+                  [
+                    7,
+                    null,
+                    null
+                  ]
+                ]
+              ],
+              "root": 3,
+              "node": 9,
+              "phase": "处理 3 后, 它的孩子 9 和 20 排到队尾"
+            }
+          },
+          {
+            "step": 3,
+            "line": 7,
+            "type": "exec",
+            "vars": {
+              "tree": [
+                3,
+                [
+                  9,
+                  null,
+                  null
+                ],
+                [
+                  20,
+                  [
+                    15,
+                    null,
+                    null
+                  ],
+                  [
+                    7,
+                    null,
+                    null
+                  ]
+                ]
+              ],
+              "root": 3,
+              "node": 20,
+              "phase": "第二层人数固定为 2, 不会把第三层混进来"
+            }
+          },
+          {
+            "step": 4,
+            "line": 9,
+            "type": "exec",
+            "vars": {
+              "tree": [
+                3,
+                [
+                  9,
+                  null,
+                  null
+                ],
+                [
+                  20,
+                  [
+                    15,
+                    null,
+                    null
+                  ],
+                  [
+                    7,
+                    null,
+                    null
+                  ]
+                ]
+              ],
+              "root": 3,
+              "node": 15,
+              "phase": "处理 20 时, 15 和 7 进入下一层队列"
+            }
+          },
+          {
+            "step": 5,
+            "line": 9,
+            "type": "exec",
+            "vars": {
+              "tree": [
+                3,
+                [
+                  9,
+                  null,
+                  null
+                ],
+                [
+                  20,
+                  [
+                    15,
+                    null,
+                    null
+                  ],
+                  [
+                    7,
+                    null,
+                    null
+                  ]
+                ]
+              ],
+              "root": 3,
+              "node": 7,
+              "phase": "队列按先进先出工作, 结果是 [3], [9,20], [15,7]"
+            }
+          }
+        ]
+      },
+      "trace": {
+        "title": "层序遍历",
+        "source": [
+          "#include <stdio.h>",
+          "#include <stdlib.h>",
+          "",
+          "/* 树节点定义 */",
+          "struct TreeNode {",
+          "    int val;",
+          "    struct TreeNode *left;",
+          "    struct TreeNode *right;",
+          "};",
+          "",
+          "/* C 语言层序遍历的难点，一半在队列，一半在返回值。 */",
+          "int **level_order(struct TreeNode *root, int *returnSize, int **returnColumnSizes) {",
+          "    *returnSize = 0;              /* 记录总共有多少层 */",
+          "    *returnColumnSizes = NULL;    /* 先把输出参数初始化，避免空树时留下野指针 */",
+          "",
+          "    if (root == NULL) {",
+          "        return NULL;",
+          "    }",
+          "",
+          "    int resCapacity = 16;  /* 当前结果数组最多能装多少层 */",
+          "    int **res = (int **)malloc(resCapacity * sizeof(int *));",
+          "    *returnColumnSizes = (int *)malloc(resCapacity * sizeof(int));",
+          "",
+          "    int queueCapacity = 1024;  /* 队列容量不写死为某个题目的节点上限 */",
+          "    struct TreeNode **queue = (struct TreeNode **)malloc(queueCapacity * sizeof(struct TreeNode *));",
+          "    int head = 0, tail = 0;",
+          "",
+          "    if (res == NULL || *returnColumnSizes == NULL || queue == NULL) {",
+          "        free(res);",
+          "        free(*returnColumnSizes);",
+          "        free(queue);",
+          "        *returnColumnSizes = NULL;",
+          "        return NULL;",
+          "    }",
+          "",
+          "    queue[tail++] = root;  /* CEO 入队 */",
+          "",
+          "    while (head < tail) {",
+          "        int currentLevelSize = tail - head;  /* [关键]记录当前层的总人数！ */",
+          "",
+          "        /* 结果数组容量不够时扩容 */",
+          "        if (*returnSize == resCapacity) {",
+          "            resCapacity *= 2;",
+          "            int **newRes = (int **)realloc(res, resCapacity * sizeof(int *));",
+          "            if (newRes == NULL) {",
+          "                free(queue);",
+          "                return res;",
+          "            }",
+          "            res = newRes;",
+          "",
+          "            int *newColumnSizes = (int *)realloc(*returnColumnSizes, resCapacity * sizeof(int));",
+          "            if (newColumnSizes == NULL) {",
+          "                free(queue);",
+          "                return res;",
+          "            }",
+          "            *returnColumnSizes = newColumnSizes;",
+          "        }",
+          "",
+          "        /* 为当前层分配存放结果的内存 */",
+          "        res[*returnSize] = (int *)malloc(currentLevelSize * sizeof(int));",
+          "        if (res[*returnSize] == NULL) {",
+          "            free(queue);",
+          "            return res;",
+          "        }",
+          "        (*returnColumnSizes)[*returnSize] = currentLevelSize;",
+          "",
+          "        /* 集中处理当前这一层的所有人 */",
+          "        for (int i = 0; i < currentLevelSize; i++) {",
+          "            struct TreeNode *node = queue[head++];  /* 出队 */",
+          "            res[*returnSize][i] = node->val;        /* 领红包（存入结果） */",
+          "",
+          "            /* 下属去排队。入队前检查容量，容量不够就扩容 */",
+          "            if (node->left != NULL) {",
+          "                if (tail == queueCapacity) {",
+          "                    queueCapacity *= 2;",
+          "                    struct TreeNode **newQueue = (struct TreeNode **)realloc(queue, queueCapacity * sizeof(struct TreeNode *));",
+          "                    if (newQueue == NULL) {",
+          "                        free(queue);",
+          "                        return res;",
+          "                    }",
+          "                    queue = newQueue;",
+          "                }",
+          "                queue[tail++] = node->left;",
+          "            }",
+          "            if (node->right != NULL) {",
+          "                if (tail == queueCapacity) {",
+          "                    queueCapacity *= 2;",
+          "                    struct TreeNode **newQueue = (struct TreeNode **)realloc(queue, queueCapacity * sizeof(struct TreeNode *));",
+          "                    if (newQueue == NULL) {",
+          "                        free(queue);",
+          "                        return res;",
+          "                    }",
+          "                    queue = newQueue;",
+          "                }",
+          "                queue[tail++] = node->right;",
+          "            }",
+          "        }",
+          "        (*returnSize)++;  /* 层数加 1 */",
+          "    }",
+          "",
+          "    free(queue);  /* 结果数组要返回给调用者，队列只是临时工具，用完释放 */",
+          "    return res;",
+          "}",
+          "",
+          "",
+          "",
+          "// 辅助：创建节点",
+          "struct TreeNode *make_node(int val) {",
+          "    struct TreeNode *n = (struct TreeNode *)malloc(sizeof(struct TreeNode));",
+          "    n->val = val; n->left = NULL; n->right = NULL;",
+          "    return n;",
+          "}",
+          "",
+          "/* ===== 测试入口 ===== */",
+          "int main(void) {",
+          "    /*",
+          "     * 构建测试树:    3",
+          "     *              / \\",
+          "     *             9  20",
+          "     *               /  \\",
+          "     *              15   7",
+          "     */",
+          "    struct TreeNode *root = make_node(3);",
+          "    root->left = make_node(9);",
+          "    root->right = make_node(20);",
+          "    root->right->left = make_node(15);",
+          "    root->right->right = make_node(7);",
+          "",
+          "    int returnSize;",
+          "    int *returnColumnSizes;",
+          "    int **result = level_order(root, &returnSize, &returnColumnSizes);",
+          "",
+          "    printf(\"层序遍历结果：\\n\");",
+          "    for (int i = 0; i < returnSize; i++) {",
+          "        printf(\"第%d层: \", i + 1);",
+          "        for (int j = 0; j < returnColumnSizes[i]; j++) {",
+          "            printf(\"%d \", result[i][j]);",
+          "        }",
+          "        printf(\"\\n\");",
+          "    }",
+          "",
+          "    /* 释放内存 */",
+          "    for (int i = 0; i < returnSize; i++) free(result[i]);",
+          "    free(result);",
+          "    free(returnColumnSizes);",
+          "    free(root->right->right); free(root->right->left);",
+          "    free(root->right); free(root->left); free(root);",
+          "    return 0;",
+          "}",
+          ""
+        ],
+        "important_vars": {
+          "head": "指针",
+          "i": "索引",
+          "j": "索引"
+        },
+        "track_vars": {
+          "primary": [
+            "head",
+            "i",
+            "j",
+            "root",
+            "val"
+          ],
+          "secondary": [
+            "_return",
+            "currentLevelSize",
+            "returnSize"
+          ]
+        },
+        "var_classes": {
+          "_return": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "currentLevelSize": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "head": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "i": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "j": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "returnSize": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "root": {
+            "category": "primary",
+            "type": "tree"
+          },
+          "val": {
+            "category": "primary",
+            "type": "scalar"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 14,
+            "text": "层序遍历结果： 第1层: 3 第2层: 9 20 第3层: 15 7"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 97,
+            "type": "enter",
+            "func": "main",
+            "vars": {}
+          },
+          {
+            "step": 1,
+            "line": 94,
+            "type": "exit",
+            "func": "make_node",
+            "vars": {}
+          },
+          {
+            "step": 2,
+            "line": 106,
+            "type": "enter",
+            "func": "make_node",
+            "vars": {
+              "val": 9
+            }
+          },
+          {
+            "step": 3,
+            "line": 94,
+            "type": "exit",
+            "func": "make_node",
+            "vars": {}
+          },
+          {
+            "step": 4,
+            "line": 107,
+            "type": "enter",
+            "func": "make_node",
+            "vars": {
+              "val": 20
+            }
+          },
+          {
+            "step": 5,
+            "line": 94,
+            "type": "exit",
+            "func": "make_node",
+            "vars": {}
+          },
+          {
+            "step": 6,
+            "line": 108,
+            "type": "enter",
+            "func": "make_node",
+            "vars": {
+              "val": 15
+            }
+          },
+          {
+            "step": 7,
+            "line": 94,
+            "type": "exit",
+            "func": "make_node",
+            "vars": {}
+          },
+          {
+            "step": 8,
+            "line": 109,
+            "type": "enter",
+            "func": "make_node",
+            "vars": {
+              "val": 7
+            }
+          },
+          {
+            "step": 9,
+            "line": 94,
+            "type": "exit",
+            "func": "make_node",
+            "vars": {}
+          },
+          {
+            "step": 10,
+            "line": 112,
+            "type": "enter",
+            "func": "level_order",
+            "vars": {
+              "root": [
+                3,
+                [
+                  9,
+                  null,
+                  null
+                ],
+                [
+                  20,
+                  [
+                    15,
+                    null,
+                    null
+                  ],
+                  [
+                    7,
+                    null,
+                    null
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "step": 11,
+            "line": 30,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "head": 0
+            }
+          },
+          {
+            "step": 12,
+            "line": 88,
+            "type": "exit",
+            "func": "level_order",
+            "vars": {}
+          },
+          {
+            "step": 13,
+            "line": 127,
+            "type": "exit",
+            "func": "main",
+            "vars": {
+              "root": "-",
+              "val": "-",
+              "head": "-",
+              "phase": "程序执行完成，结果见下方输出"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "04_最近公共祖先": {
+    "title": "最近公共祖先",
+    "defaultMode": "concept",
+    "modeLabels": {
+      "concept": "理解动画",
+      "trace": "代码执行"
+    },
+    "modes": {
+      "concept": {
+        "title": "最近公共祖先",
+        "source": [
+          "算法: 最近公共祖先 LCA",
+          "输入: root, p, q",
+          "输出: p 和 q 最近的公共祖先",
+          "",
+          "如果 root 是空、p 或 q, 直接返回 root",
+          "left = 去左子树找",
+          "right = 去右子树找",
+          "如果 left 和 right 都不空, root 就是 LCA",
+          "否则把非空结果继续往上报"
+        ],
+        "important_vars": {
+          "phase": "阶段",
+          "root": "root",
+          "node": "node",
+          "p": "p",
+          "q": "q",
+          "lca": "lca"
+        },
+        "track_vars": {
+          "primary": [
+            "phase",
+            "root",
+            "node",
+            "p",
+            "q",
+            "lca"
+          ],
+          "secondary": []
+        },
+        "var_classes": {
+          "tree": {
+            "category": "primary",
+            "type": "tree"
+          },
+          "phase": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "root": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "node": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "p": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "q": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "lca": {
+            "category": "primary",
+            "type": "scalar"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 6,
+            "text": "理解动画：LCA 是后序遍历的汇报题, 左右两边都找到目标时, 当前节点就是汇合点。"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 5,
+            "type": "exec",
+            "vars": {
+              "tree": [
+                3,
+                [
+                  5,
+                  [
+                    6,
+                    null,
+                    null
+                  ],
+                  [
+                    2,
+                    null,
+                    null
+                  ]
+                ],
+                [
+                  1,
+                  [
+                    0,
+                    null,
+                    null
+                  ],
+                  [
+                    8,
+                    null,
+                    null
+                  ]
+                ]
+              ],
+              "root": 3,
+              "p": 6,
+              "q": 2,
+              "phase": "目标是找 6 和 2 的最近公共祖先"
+            }
+          },
+          {
+            "step": 1,
+            "line": 6,
+            "type": "exec",
+            "vars": {
+              "tree": [
+                3,
+                [
+                  5,
+                  [
+                    6,
+                    null,
+                    null
+                  ],
+                  [
+                    2,
+                    null,
+                    null
+                  ]
+                ],
+                [
+                  1,
+                  [
+                    0,
+                    null,
+                    null
+                  ],
+                  [
+                    8,
+                    null,
+                    null
+                  ]
+                ]
+              ],
+              "root": 3,
+              "node": 6,
+              "p": 6,
+              "q": 2,
+              "phase": "左边先找到 p=6, 把这个消息往上报"
+            }
+          },
+          {
+            "step": 2,
+            "line": 7,
+            "type": "exec",
+            "vars": {
+              "tree": [
+                3,
+                [
+                  5,
+                  [
+                    6,
+                    null,
+                    null
+                  ],
+                  [
+                    2,
+                    null,
+                    null
+                  ]
+                ],
+                [
+                  1,
+                  [
+                    0,
+                    null,
+                    null
+                  ],
+                  [
+                    8,
+                    null,
+                    null
+                  ]
+                ]
+              ],
+              "root": 3,
+              "node": 2,
+              "p": 6,
+              "q": 2,
+              "phase": "右边又找到 q=2, 也把消息往上报"
+            }
+          },
+          {
+            "step": 3,
+            "line": 8,
+            "type": "exec",
+            "vars": {
+              "tree": [
+                3,
+                [
+                  5,
+                  [
+                    6,
+                    null,
+                    null
+                  ],
+                  [
+                    2,
+                    null,
+                    null
+                  ]
+                ],
+                [
+                  1,
+                  [
+                    0,
+                    null,
+                    null
+                  ],
+                  [
+                    8,
+                    null,
+                    null
+                  ]
+                ]
+              ],
+              "root": 3,
+              "node": 5,
+              "p": 6,
+              "q": 2,
+              "lca": 5,
+              "phase": "节点 5 的左右两边各找到一个目标, 5 就是 LCA"
+            }
+          },
+          {
+            "step": 4,
+            "line": 9,
+            "type": "exec",
+            "vars": {
+              "tree": [
+                3,
+                [
+                  5,
+                  [
+                    6,
+                    null,
+                    null
+                  ],
+                  [
+                    2,
+                    null,
+                    null
+                  ]
+                ],
+                [
+                  1,
+                  [
+                    0,
+                    null,
+                    null
+                  ],
+                  [
+                    8,
+                    null,
+                    null
+                  ]
+                ]
+              ],
+              "root": 3,
+              "p": 6,
+              "q": 8,
+              "phase": "换成找 6 和 8: 两个目标分散在根的两侧"
+            }
+          },
+          {
+            "step": 5,
+            "line": 8,
+            "type": "exec",
+            "vars": {
+              "tree": [
+                3,
+                [
+                  5,
+                  [
+                    6,
+                    null,
+                    null
+                  ],
+                  [
+                    2,
+                    null,
+                    null
+                  ]
+                ],
+                [
+                  1,
+                  [
+                    0,
+                    null,
+                    null
+                  ],
+                  [
+                    8,
+                    null,
+                    null
+                  ]
+                ]
+              ],
+              "root": 3,
+              "p": 6,
+              "q": 8,
+              "lca": 3,
+              "phase": "左右子树各报告一个目标, 根节点 3 就是最近公共祖先"
+            }
+          }
+        ]
+      },
+      "trace": {
+        "title": "最近公共祖先",
+        "source": [
+          "#include <stdio.h>",
+          "#include <stdlib.h>",
+          "",
+          "struct TreeNode {",
+          "    int val;",
+          "    struct TreeNode *left;",
+          "    struct TreeNode *right;",
+          "};",
+          "",
+          "struct TreeNode *lowest_common_ancestor(struct TreeNode *root,",
+          "                                        struct TreeNode *p,",
+          "                                        struct TreeNode *q) {",
+          "    /* 递归终止条件：到了空节点，或者找到了 p 或 q */",
+          "    if (root == NULL || root == p || root == q) {",
+          "        return root;",
+          "    }",
+          "",
+          "    /* 1. 问左副手：左边有 p 或 q 吗？ */",
+          "    struct TreeNode *left = lowest_common_ancestor(root->left, p, q);",
+          "",
+          "    /* 2. 问右副手：右边有 p 或 q 吗？ */",
+          "    struct TreeNode *right = lowest_common_ancestor(root->right, p, q);",
+          "",
+          "    /* 3. 根据汇报结果做决策（处理当前节点逻辑，典型的后序位置） */",
+          "    if (left != NULL && right != NULL) {",
+          "        /* 左右两边各找到了一个，那我就是最近公共祖先！ */",
+          "        return root;",
+          "    }",
+          "",
+          "    if (left != NULL) {",
+          "        /* 只有左边找到了，那就把左边的结果原样往上报 */",
+          "        return left;",
+          "    }",
+          "",
+          "    if (right != NULL) {",
+          "        /* 只有右边找到了，那就把右边的结果原样往上报 */",
+          "        return right;",
+          "    }",
+          "",
+          "    /* 左右都没找到 */",
+          "    return NULL;",
+          "}",
+          "",
+          "/* 测试：最近公共祖先 */",
+          "int main(void) {",
+          "    /*",
+          "     * 构建树：",
+          "     *       3",
+          "     *     /   \\",
+          "     *    5     1",
+          "     *   / \\   / \\",
+          "     *  6   2 0   8",
+          "     */",
+          "    struct TreeNode nodes[7];",
+          "    for (int i = 0; i < 7; i++) {",
+          "        nodes[i].left = nodes[i].right = NULL;",
+          "    }",
+          "    nodes[0].val = 3; nodes[0].left = &nodes[1]; nodes[0].right = &nodes[2];",
+          "    nodes[1].val = 5; nodes[1].left = &nodes[3]; nodes[1].right = &nodes[4];",
+          "    nodes[2].val = 1; nodes[2].left = &nodes[5]; nodes[2].right = &nodes[6];",
+          "    nodes[3].val = 6;",
+          "    nodes[4].val = 2;",
+          "    nodes[5].val = 0;",
+          "    nodes[6].val = 8;",
+          "",
+          "    struct TreeNode *lca = lowest_common_ancestor(&nodes[0], &nodes[3], &nodes[4]);",
+          "    printf(\"6 和 2 的 LCA: %d（期望 5）\\n\", lca->val);",
+          "",
+          "    lca = lowest_common_ancestor(&nodes[0], &nodes[3], &nodes[6]);",
+          "    printf(\"6 和 8 的 LCA: %d（期望 3）\\n\", lca->val);",
+          "",
+          "    return 0;",
+          "}",
+          ""
+        ],
+        "important_vars": {
+          "i": "索引"
+        },
+        "track_vars": {
+          "primary": [
+            "i",
+            "root"
+          ],
+          "secondary": [
+            "_return",
+            "lca",
+            "p",
+            "q"
+          ]
+        },
+        "var_classes": {
+          "_return": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "i": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "lca": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "p": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "q": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "root": {
+            "category": "primary",
+            "type": "tree"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 14,
+            "text": "6 和 2 的 LCA: 5（期望 5）；6 和 8 的 LCA: 3（期望 3）"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 36,
+            "type": "enter",
+            "func": "main",
+            "vars": {}
+          },
+          {
+            "step": 1,
+            "line": 16,
+            "type": "enter",
+            "func": "lowest_common_ancestor",
+            "vars": {
+              "root": [
+                6,
+                null,
+                null
+              ],
+              "p": 6,
+              "q": 2
+            }
+          },
+          {
+            "step": 2,
+            "line": 22,
+            "type": "exit",
+            "func": "lowest_common_ancestor",
+            "vars": {}
+          },
+          {
+            "step": 3,
+            "line": 16,
+            "type": "enter",
+            "func": "lowest_common_ancestor",
+            "vars": {
+              "root": null,
+              "p": 6,
+              "q": 2
+            }
+          },
+          {
+            "step": 4,
+            "line": 33,
+            "type": "exit",
+            "func": "lowest_common_ancestor",
+            "vars": {}
+          },
+          {
+            "step": 5,
+            "line": 13,
+            "type": "exit",
+            "func": "lowest_common_ancestor",
+            "vars": {}
+          },
+          {
+            "step": 6,
+            "line": 33,
+            "type": "exit",
+            "func": "lowest_common_ancestor",
+            "vars": {}
+          },
+          {
+            "step": 7,
+            "line": 16,
+            "type": "enter",
+            "func": "lowest_common_ancestor",
+            "vars": {
+              "root": [
+                5,
+                [
+                  6,
+                  null,
+                  null
+                ],
+                [
+                  2,
+                  null,
+                  null
+                ]
+              ],
+              "p": 6,
+              "q": 8
+            }
+          },
+          {
+            "step": 8,
+            "line": 16,
+            "type": "enter",
+            "func": "lowest_common_ancestor",
+            "vars": {
+              "root": null,
+              "p": 6,
+              "q": 8
+            }
+          },
+          {
+            "step": 9,
+            "line": 13,
+            "type": "exit",
+            "func": "lowest_common_ancestor",
+            "vars": {}
+          },
+          {
+            "step": 10,
+            "line": 16,
+            "type": "enter",
+            "func": "lowest_common_ancestor",
+            "vars": {
+              "root": [
+                0,
+                null,
+                null
+              ],
+              "p": 6,
+              "q": 8
+            }
+          },
+          {
+            "step": 11,
+            "line": 18,
+            "type": "enter",
+            "func": "lowest_common_ancestor",
+            "vars": {
+              "root": null,
+              "p": 6,
+              "q": 8
+            }
+          },
+          {
+            "step": 12,
+            "line": 13,
+            "type": "exit",
+            "func": "lowest_common_ancestor",
+            "vars": {}
+          },
+          {
+            "step": 13,
+            "line": 60,
+            "type": "exit",
+            "func": "main",
+            "vars": {
+              "root": "-",
+              "q": "-",
+              "p": "-",
+              "phase": "程序执行完成，结果见下方输出"
+            }
+          }
+        ]
+      }
+    }
+  }
+};
+const firstKey = Object.keys(ALGOS)[0];
+const requestedKey = new URLSearchParams(location.search).get('algo');
+const savedAtOpen = DHLearning.load();
+let currentKey = ALGOS[requestedKey]
+  ? requestedKey
+  : (savedAtOpen.last && savedAtOpen.last.chapter === CHAPTER_NUM && ALGOS[savedAtOpen.last.algorithm]
+      ? savedAtOpen.last.algorithm
+      : firstKey);
+let currentMode = null;
+const engine = new TraceEngine('viz-canvas', 'code-body', 'var-grid', 'callstack');
+const tabsEl = document.getElementById('algo-tabs');
+const modeTabsEl = document.getElementById('mode-tabs');
+
+function has_modes(algo) {
+  return algo && algo.modes && typeof algo.modes === 'object';
+}
+
+function mode_label(rawAlgo, mode) {
+  const labels = rawAlgo.modeLabels || {};
+  if (labels[mode]) return labels[mode];
+  if (mode === 'concept') return '理解动画';
+  if (mode === 'trace') return '代码执行';
+  return mode;
+}
+
+function resolve_algo(rawAlgo) {
+  if (!has_modes(rawAlgo)) return rawAlgo;
+  const mode = currentMode || rawAlgo.defaultMode || Object.keys(rawAlgo.modes)[0];
+  return rawAlgo.modes[mode] || rawAlgo.modes[rawAlgo.defaultMode] || Object.values(rawAlgo.modes)[0];
+}
+
+function is_concept_algo(algo) {
+  if (!algo) return false;
+  const classes = algo.var_classes || {};
+  if (Object.values(classes).some(info => info && info.type === 'concept')) return true;
+  return (algo.steps || []).some(step => step.vars && step.vars.concept);
+}
+
+function update_tab_states() {
+  const completed = new Set(DHLearning.load().completedDemos);
+  tabsEl.querySelectorAll('.algo-tab').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.key === currentKey);
+    btn.classList.toggle('completed', completed.has(DHLearning.demoId(CHAPTER_NUM, btn.dataset.key)));
+    btn.setAttribute('aria-selected', String(btn.dataset.key === currentKey));
+  });
+}
+
+function update_chapter_progress() {
+  const state = DHLearning.load();
+  const completed = new Set(state.completedDemos);
+  const keys = Object.keys(ALGOS);
+  const done = keys.filter(key => completed.has(DHLearning.demoId(CHAPTER_NUM, key))).length;
+  document.getElementById('chapter-progress-text').textContent = `${done} / ${keys.length} 个演示完成`;
+  document.getElementById('chapter-progress-fill').style.width = `${keys.length ? done / keys.length * 100 : 0}%`;
+  update_tab_states();
+}
+
+function render_mode_tabs(rawAlgo) {
+  modeTabsEl.innerHTML = '';
+  if (!has_modes(rawAlgo)) {
+    modeTabsEl.classList.remove('visible');
+    currentMode = null;
+    return;
+  }
+  modeTabsEl.classList.add('visible');
+  const label = document.createElement('span');
+  label.className = 'mode-label';
+  label.textContent = '学习方式';
+  modeTabsEl.appendChild(label);
+  const activeMode = currentMode || rawAlgo.defaultMode || Object.keys(rawAlgo.modes)[0];
+  Object.keys(rawAlgo.modes).forEach(mode => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'mode-tab' + (mode === activeMode ? ' active' : '');
+    btn.textContent = mode_label(rawAlgo, mode);
+    btn.setAttribute('role', 'tab');
+    btn.setAttribute('aria-selected', String(mode === activeMode));
+    btn.addEventListener('click', () => {
+      if (currentMode === mode) return;
+      currentMode = mode;
+      load_current_algo(false);
+      if (matchMedia('(max-width: 900px)').matches) {
+        set_mobile_view(mode === 'trace' ? 'code' : 'animation');
+      }
+    });
+    modeTabsEl.appendChild(btn);
+  });
+}
+
+function load_current_algo(allowRestore = true) {
+  const rawAlgo = ALGOS[currentKey];
+  const beforeLoad = DHLearning.load().last;
+  if (has_modes(rawAlgo)) {
+    const savedMode = beforeLoad && beforeLoad.chapter === CHAPTER_NUM && beforeLoad.algorithm === currentKey
+      ? beforeLoad.mode
+      : null;
+    if (!currentMode) currentMode = savedMode && rawAlgo.modes[savedMode]
+      ? savedMode
+      : (rawAlgo.defaultMode || Object.keys(rawAlgo.modes)[0]);
+  } else {
+    currentMode = null;
+  }
+  render_mode_tabs(rawAlgo);
+  const activeAlgo = resolve_algo(rawAlgo);
+  document.body.classList.toggle('concept-mode', currentMode === 'concept' || is_concept_algo(activeAlgo));
+  engine.stop_play();
+  engine.load(activeAlgo);
+  try {
+    const currentUrl = new URL(location.href);
+    currentUrl.searchParams.set('algo', currentKey);
+    history.replaceState(null, '', currentUrl.href);
+  } catch (_) {
+    // file:// 预览环境可能限制 history API，不影响演示本身。
+  }
+  update_tab_states();
+
+  if (
+    allowRestore
+    && beforeLoad
+    && beforeLoad.chapter === CHAPTER_NUM
+    && beforeLoad.algorithm === currentKey
+    && beforeLoad.mode === currentMode
+    && beforeLoad.step > 0
+    && activeAlgo.steps.length
+  ) {
+    const restoreStep = Math.min(beforeLoad.step, activeAlgo.steps.length - 1);
+    requestAnimationFrame(() => engine.go_to_step(restoreStep));
+  }
+}
+
+Object.entries(ALGOS).forEach(([key, algo]) => {
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'algo-tab';
+  btn.dataset.key = key;
+  btn.textContent = algo.title;
+  btn.setAttribute('role', 'tab');
+  btn.setAttribute('aria-selected', String(key === currentKey));
+  btn.addEventListener('click', () => {
+    if (currentKey === key) return;
+    currentKey = key;
+    currentMode = has_modes(algo) ? (algo.defaultMode || Object.keys(algo.modes)[0]) : null;
+    load_current_algo(true);
+  });
+  tabsEl.appendChild(btn);
+});
+
+document.addEventListener('dh:stepchange', event => {
+  const detail = event.detail || {};
+  DHLearning.updateLast(CHAPTER_NUM, currentKey, currentMode, detail.currentStep);
+  if (detail.atEnd) DHLearning.markDemoComplete(CHAPTER_NUM, currentKey);
+  update_chapter_progress();
+});
+
+document.getElementById('btn-play').addEventListener('click', () => engine.playing ? engine.stop_play() : engine.start_play());
+document.getElementById('btn-step').addEventListener('click', () => { engine.stop_play(); engine.step_forward(); });
+document.getElementById('btn-reset').addEventListener('click', () => engine.reset());
+document.getElementById('btn-back').addEventListener('click', () => { engine.stop_play(); engine.step_backward(); });
+document.getElementById('btn-to-bp').addEventListener('click', () => { engine.stop_play(); engine.play_to_bp(); });
+
+const speedSlider = document.getElementById('speed-slider');
+const savedSpeed = localStorage.getItem('dh_speed');
+if (savedSpeed !== null) speedSlider.value = savedSpeed;
+speedSlider.setAttribute('aria-valuetext', `速度 ${speedSlider.value}`);
+speedSlider.addEventListener('input', () => {
+  localStorage.setItem('dh_speed', speedSlider.value);
+  speedSlider.setAttribute('aria-valuetext', `速度 ${speedSlider.value}`);
+  if (engine.playing) { clearTimeout(engine.playTimer); engine._play_loop(); }
+});
+speedSlider.addEventListener('keydown', event => {
+  if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+  event.preventDefault();
+  event.stopPropagation();
+  const direction = event.key === 'ArrowRight' ? 1 : -1;
+  speedSlider.value = String(Math.max(Number(speedSlider.min), Math.min(Number(speedSlider.max), Number(speedSlider.value) + direction)));
+  speedSlider.dispatchEvent(new Event('input', { bubbles: true }));
+});
+document.getElementById('font-dec').addEventListener('click', () => engine.font_dec());
+document.getElementById('font-inc').addEventListener('click', () => engine.font_inc());
+
+document.addEventListener('keydown', event => {
+  const target = event.target;
+  if (target && target.closest && target.closest('button,input,select,textarea,a,summary,[contenteditable="true"]')) return;
+  if (event.key === ' ') {
+    event.preventDefault();
+    engine.playing ? engine.stop_play() : engine.start_play();
+  } else if (event.key === 'ArrowRight') {
+    event.preventDefault();
+    engine.stop_play();
+    engine.step_forward();
+  } else if (event.key === 'ArrowLeft') {
+    event.preventDefault();
+    engine.stop_play();
+    engine.step_backward();
+  } else if (event.key.toLowerCase() === 'r' && !event.metaKey && !event.ctrlKey && !event.altKey) {
+    engine.reset();
+  }
+});
+
+function set_mobile_view(view) {
+  document.body.dataset.mobileView = view;
+  document.querySelectorAll('.mobile-view-switcher button').forEach(btn => {
+    const active = btn.dataset.mobileView === view;
+    btn.classList.toggle('active', active);
+    btn.setAttribute('aria-selected', String(active));
+  });
+  if (view === 'animation' && engine.currentStep >= 0) {
+    requestAnimationFrame(() => engine.go_to_step(engine.currentStep));
+  }
+}
+
+document.querySelectorAll('.mobile-view-switcher button').forEach(btn => {
+  btn.addEventListener('click', () => set_mobile_view(btn.dataset.mobileView));
+});
+
+DHLearning.visitChapter(CHAPTER_NUM);
+update_chapter_progress();
+load_current_algo(true);
+</script>
+</body>
+</html>

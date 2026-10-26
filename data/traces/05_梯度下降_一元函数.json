@@ -1,0 +1,863 @@
+{
+  "meta": {
+    "algo": "05_梯度下降_一元函数",
+    "source_lines": [
+      "#include <stdio.h>",
+      "#include <math.h>",
+      "/*",
+      " * 梯度下降求解 y = (x-3)^2 的最小值",
+      " *",
+      " * 类比：你在雾里下山",
+      " * 目标：找到最低点（x=3）",
+      " * 方法：感受坡度，往下走",
+      " */",
+      "double cost(double x) {",
+      "    return (x - 3) * (x - 3);  /* 损失函数：一个开口向上的抛物线 */",
+      "}",
+      "double gradient(double x) {",
+      "    return 2 * (x - 3);  /* 梯度：损失函数的导数 */",
+      "}",
+      "int main() {",
+      "    double x = 0.0;           /* 起始位置（随机的，可能很远） */",
+      "    double learning_rate = 0.1; /* 学习率：每步走多大 */",
+      "    int max_steps = 100;      /* 最多走100步 */",
+      "    printf(\"=== 梯度下降演示 ===\\n\");",
+      "    printf(\"目标：找到 y=(x-3)^2 的最小值（答案是x=3）\\n\\n\");",
+      "    printf(\"步骤    x值       损失值      梯度\\n\");",
+      "    printf(\"----------------------------------------\\n\");",
+      "    for (int i = 0; i < max_steps; i++) {",
+      "        double loss = cost(x);",
+      "        double grad = gradient(x);",
+      "        if (i % 10 == 0) {",
+      "            printf(\"%3d    %6.4f    %6.4f    %6.4f\\n\", i, x, loss, grad);",
+      "        }",
+      "        /* 梯度下降核心：往梯度的反方向走 */",
+      "        x = x - learning_rate * grad;",
+      "        /* 如果梯度足够小，说明已经到了最低点 */",
+      "        if (fabs(grad) < 0.0001) break;",
+      "    }",
+      "    printf(\"\\n找到最优解： x = %.4f (真实答案： 3.0)\\n\", x);",
+      "    printf(\"最低损失： %.6f\\n\", cost(x));",
+      "    return 0;",
+      "}"
+    ],
+    "track_vars": {
+      "primary": [
+        "i"
+      ],
+      "secondary": [
+        "_return",
+        "grad",
+        "max_steps",
+        "x"
+      ]
+    },
+    "var_classes": {
+      "_return": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "grad": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "i": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "max_steps": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "x": {
+        "category": "secondary",
+        "type": "scalar"
+      }
+    },
+    "viz_type": "array",
+    "initial_data": {},
+    "program_output": [
+      {
+        "after_step": 90,
+        "text": "=== 梯度下降演示 === 目标：找到 y=(x-3)^2 的最小值（答案是x=3） 步骤    x值       损失值      梯度 ----------------------------------------"
+      },
+      {
+        "after_step": 90,
+        "text": "0    0.0000    9.0000    -6.0000"
+      },
+      {
+        "after_step": 90,
+        "text": "10    2.6779    0.1038    -0.6442"
+      },
+      {
+        "after_step": 90,
+        "text": "20    2.9654    0.0012    -0.0692"
+      },
+      {
+        "after_step": 90,
+        "text": "30    2.9963    0.0000    -0.0074"
+      },
+      {
+        "after_step": 90,
+        "text": "40    2.9996    0.0000    -0.0008"
+      },
+      {
+        "after_step": 90,
+        "text": "50    3.0000    0.0000    -0.0001 找到最优解： x = 3.0000 (真实答案： 3.0)"
+      },
+      {
+        "after_step": 90,
+        "text": "最低损失： 0.000000"
+      }
+    ],
+    "trace_note": "原始执行共有 470 步，网页保留前 60 步和最后 30 步，省略中间重复迭代。"
+  },
+  "steps": [
+    {
+      "step": 0,
+      "line": 16,
+      "type": "enter",
+      "func": "main",
+      "vars": {}
+    },
+    {
+      "step": 1,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0,
+        "max_steps": 100
+      }
+    },
+    {
+      "step": 2,
+      "line": 25,
+      "type": "enter",
+      "func": "cost",
+      "vars": {
+        "x": 0
+      }
+    },
+    {
+      "step": 3,
+      "line": 11,
+      "type": "exec",
+      "vars": {
+        "_return": 9
+      }
+    },
+    {
+      "step": 4,
+      "line": 11,
+      "type": "exit",
+      "func": "cost",
+      "vars": {}
+    },
+    {
+      "step": 5,
+      "line": 26,
+      "type": "enter",
+      "func": "gradient",
+      "vars": {
+        "x": 0
+      }
+    },
+    {
+      "step": 6,
+      "line": 14,
+      "type": "exec",
+      "vars": {
+        "_return": -6
+      }
+    },
+    {
+      "step": 7,
+      "line": 14,
+      "type": "exit",
+      "func": "gradient",
+      "vars": {}
+    },
+    {
+      "step": 8,
+      "line": 27,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0
+      }
+    },
+    {
+      "step": 9,
+      "line": 31,
+      "type": "exec",
+      "vars": {
+        "x": 0.6
+      }
+    },
+    {
+      "step": 10,
+      "line": 33,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "grad": -6
+      }
+    },
+    {
+      "step": 11,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "max_steps": 100
+      }
+    },
+    {
+      "step": 12,
+      "line": 25,
+      "type": "enter",
+      "func": "cost",
+      "vars": {
+        "x": 0.6
+      }
+    },
+    {
+      "step": 13,
+      "line": 11,
+      "type": "exec",
+      "vars": {
+        "_return": 5.76
+      }
+    },
+    {
+      "step": 14,
+      "line": 11,
+      "type": "exit",
+      "func": "cost",
+      "vars": {}
+    },
+    {
+      "step": 15,
+      "line": 26,
+      "type": "enter",
+      "func": "gradient",
+      "vars": {
+        "x": 0.6
+      }
+    },
+    {
+      "step": 16,
+      "line": 14,
+      "type": "exec",
+      "vars": {
+        "_return": -4.8
+      }
+    },
+    {
+      "step": 17,
+      "line": 14,
+      "type": "exit",
+      "func": "gradient",
+      "vars": {}
+    },
+    {
+      "step": 18,
+      "line": 31,
+      "type": "exec",
+      "vars": {
+        "x": 1.08
+      }
+    },
+    {
+      "step": 19,
+      "line": 33,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "grad": -4.8
+      }
+    },
+    {
+      "step": 20,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "max_steps": 100
+      }
+    },
+    {
+      "step": 21,
+      "line": 25,
+      "type": "enter",
+      "func": "cost",
+      "vars": {
+        "x": 1.08
+      }
+    },
+    {
+      "step": 22,
+      "line": 11,
+      "type": "exec",
+      "vars": {
+        "_return": 3.6864
+      }
+    },
+    {
+      "step": 23,
+      "line": 11,
+      "type": "exit",
+      "func": "cost",
+      "vars": {}
+    },
+    {
+      "step": 24,
+      "line": 26,
+      "type": "enter",
+      "func": "gradient",
+      "vars": {
+        "x": 1.08
+      }
+    },
+    {
+      "step": 25,
+      "line": 14,
+      "type": "exec",
+      "vars": {
+        "_return": -3.84
+      }
+    },
+    {
+      "step": 26,
+      "line": 14,
+      "type": "exit",
+      "func": "gradient",
+      "vars": {}
+    },
+    {
+      "step": 27,
+      "line": 31,
+      "type": "exec",
+      "vars": {
+        "x": 1.464
+      }
+    },
+    {
+      "step": 28,
+      "line": 33,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "grad": -3.84
+      }
+    },
+    {
+      "step": 29,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3,
+        "max_steps": 100
+      }
+    },
+    {
+      "step": 30,
+      "line": 25,
+      "type": "enter",
+      "func": "cost",
+      "vars": {
+        "x": 1.464
+      }
+    },
+    {
+      "step": 31,
+      "line": 11,
+      "type": "exec",
+      "vars": {
+        "_return": 2.3593
+      }
+    },
+    {
+      "step": 32,
+      "line": 11,
+      "type": "exit",
+      "func": "cost",
+      "vars": {}
+    },
+    {
+      "step": 33,
+      "line": 26,
+      "type": "enter",
+      "func": "gradient",
+      "vars": {
+        "x": 1.464
+      }
+    },
+    {
+      "step": 34,
+      "line": 14,
+      "type": "exec",
+      "vars": {
+        "_return": -3.072
+      }
+    },
+    {
+      "step": 35,
+      "line": 14,
+      "type": "exit",
+      "func": "gradient",
+      "vars": {}
+    },
+    {
+      "step": 36,
+      "line": 31,
+      "type": "exec",
+      "vars": {
+        "x": 1.7712
+      }
+    },
+    {
+      "step": 37,
+      "line": 33,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "grad": -3.072
+      }
+    },
+    {
+      "step": 38,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 4,
+        "max_steps": 100
+      }
+    },
+    {
+      "step": 39,
+      "line": 25,
+      "type": "enter",
+      "func": "cost",
+      "vars": {
+        "x": 1.7712
+      }
+    },
+    {
+      "step": 40,
+      "line": 11,
+      "type": "exec",
+      "vars": {
+        "_return": 1.50995
+      }
+    },
+    {
+      "step": 41,
+      "line": 11,
+      "type": "exit",
+      "func": "cost",
+      "vars": {}
+    },
+    {
+      "step": 42,
+      "line": 26,
+      "type": "enter",
+      "func": "gradient",
+      "vars": {
+        "x": 1.7712
+      }
+    },
+    {
+      "step": 43,
+      "line": 14,
+      "type": "exec",
+      "vars": {
+        "_return": -2.4576
+      }
+    },
+    {
+      "step": 44,
+      "line": 14,
+      "type": "exit",
+      "func": "gradient",
+      "vars": {}
+    },
+    {
+      "step": 45,
+      "line": 31,
+      "type": "exec",
+      "vars": {
+        "x": 2.01696
+      }
+    },
+    {
+      "step": 46,
+      "line": 33,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "grad": -2.4576
+      }
+    },
+    {
+      "step": 47,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 5,
+        "max_steps": 100
+      }
+    },
+    {
+      "step": 48,
+      "line": 25,
+      "type": "enter",
+      "func": "cost",
+      "vars": {
+        "x": 2.01696
+      }
+    },
+    {
+      "step": 49,
+      "line": 11,
+      "type": "exec",
+      "vars": {
+        "_return": 0.966368
+      }
+    },
+    {
+      "step": 50,
+      "line": 11,
+      "type": "exit",
+      "func": "cost",
+      "vars": {}
+    },
+    {
+      "step": 51,
+      "line": 26,
+      "type": "enter",
+      "func": "gradient",
+      "vars": {
+        "x": 2.01696
+      }
+    },
+    {
+      "step": 52,
+      "line": 14,
+      "type": "exec",
+      "vars": {
+        "_return": -1.96608
+      }
+    },
+    {
+      "step": 53,
+      "line": 14,
+      "type": "exit",
+      "func": "gradient",
+      "vars": {}
+    },
+    {
+      "step": 54,
+      "line": 31,
+      "type": "exec",
+      "vars": {
+        "x": 2.21357
+      }
+    },
+    {
+      "step": 55,
+      "line": 33,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "grad": -1.96608
+      }
+    },
+    {
+      "step": 56,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 6,
+        "max_steps": 100
+      }
+    },
+    {
+      "step": 57,
+      "line": 25,
+      "type": "enter",
+      "func": "cost",
+      "vars": {
+        "x": 2.21357
+      }
+    },
+    {
+      "step": 58,
+      "line": 11,
+      "type": "exec",
+      "vars": {
+        "_return": 0.618475
+      }
+    },
+    {
+      "step": 59,
+      "line": 11,
+      "type": "exit",
+      "func": "cost",
+      "vars": {}
+    },
+    {
+      "step": 60,
+      "line": 11,
+      "type": "exec",
+      "vars": {
+        "_return": 4.47591e-09
+      }
+    },
+    {
+      "step": 61,
+      "line": 11,
+      "type": "exit",
+      "func": "cost",
+      "vars": {}
+    },
+    {
+      "step": 62,
+      "line": 26,
+      "type": "enter",
+      "func": "gradient",
+      "vars": {
+        "x": 2.99993
+      }
+    },
+    {
+      "step": 63,
+      "line": 14,
+      "type": "exec",
+      "vars": {
+        "_return": -0.000133804
+      }
+    },
+    {
+      "step": 64,
+      "line": 14,
+      "type": "exit",
+      "func": "gradient",
+      "vars": {}
+    },
+    {
+      "step": 65,
+      "line": 31,
+      "type": "exec",
+      "vars": {
+        "x": 2.99995
+      }
+    },
+    {
+      "step": 66,
+      "line": 33,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "grad": -0.000133804
+      }
+    },
+    {
+      "step": 67,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 49,
+        "max_steps": 100
+      }
+    },
+    {
+      "step": 68,
+      "line": 25,
+      "type": "enter",
+      "func": "cost",
+      "vars": {
+        "x": 2.99995
+      }
+    },
+    {
+      "step": 69,
+      "line": 11,
+      "type": "exec",
+      "vars": {
+        "_return": 2.86458e-09
+      }
+    },
+    {
+      "step": 70,
+      "line": 11,
+      "type": "exit",
+      "func": "cost",
+      "vars": {}
+    },
+    {
+      "step": 71,
+      "line": 26,
+      "type": "enter",
+      "func": "gradient",
+      "vars": {
+        "x": 2.99995
+      }
+    },
+    {
+      "step": 72,
+      "line": 14,
+      "type": "exec",
+      "vars": {
+        "_return": -0.000107044
+      }
+    },
+    {
+      "step": 73,
+      "line": 14,
+      "type": "exit",
+      "func": "gradient",
+      "vars": {}
+    },
+    {
+      "step": 74,
+      "line": 31,
+      "type": "exec",
+      "vars": {
+        "x": 2.99996
+      }
+    },
+    {
+      "step": 75,
+      "line": 33,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "grad": -0.000107044
+      }
+    },
+    {
+      "step": 76,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 50,
+        "max_steps": 100
+      }
+    },
+    {
+      "step": 77,
+      "line": 25,
+      "type": "enter",
+      "func": "cost",
+      "vars": {
+        "x": 2.99996
+      }
+    },
+    {
+      "step": 78,
+      "line": 11,
+      "type": "exec",
+      "vars": {
+        "_return": 1.83333e-09
+      }
+    },
+    {
+      "step": 79,
+      "line": 11,
+      "type": "exit",
+      "func": "cost",
+      "vars": {}
+    },
+    {
+      "step": 80,
+      "line": 26,
+      "type": "enter",
+      "func": "gradient",
+      "vars": {
+        "x": 2.99996
+      }
+    },
+    {
+      "step": 81,
+      "line": 14,
+      "type": "exec",
+      "vars": {
+        "_return": -8.56349e-05
+      }
+    },
+    {
+      "step": 82,
+      "line": 14,
+      "type": "exit",
+      "func": "gradient",
+      "vars": {}
+    },
+    {
+      "step": 83,
+      "line": 27,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 50
+      }
+    },
+    {
+      "step": 84,
+      "line": 31,
+      "type": "exec",
+      "vars": {
+        "x": 2.99997
+      }
+    },
+    {
+      "step": 85,
+      "line": 36,
+      "type": "enter",
+      "func": "cost",
+      "vars": {
+        "x": 2.99997
+      }
+    },
+    {
+      "step": 86,
+      "line": 11,
+      "type": "exec",
+      "vars": {
+        "_return": 1.17333e-09
+      }
+    },
+    {
+      "step": 87,
+      "line": 11,
+      "type": "exit",
+      "func": "cost",
+      "vars": {}
+    },
+    {
+      "step": 88,
+      "line": 37,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 89,
+      "line": 37,
+      "type": "exit",
+      "func": "main",
+      "vars": {}
+    }
+  ],
+  "total_steps": 90
+}

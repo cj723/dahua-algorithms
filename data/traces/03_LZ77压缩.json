@@ -1,0 +1,1321 @@
+{
+  "meta": {
+    "algo": "03_LZ77压缩",
+    "source_lines": [
+      "#include <stdio.h>",
+      "#include <string.h>",
+      "/*",
+      " * LZ77 压缩简化演示",
+      " *",
+      " * 类比：你写作文抄了前面的句子，老师说\"你抄袭！\"",
+      " * LZ77说：重复没关系，标注清楚\"从哪复制，复制多少字\"就行",
+      " */",
+      "#define WINDOW_SIZE 20   /* 滑动窗口大小 */",
+      "#define MAX_MATCH 10     /* 最长匹配长度 */",
+      "typedef struct {",
+      "    int is_literal;      /* 1=原样输出, 0=引用 */",
+      "    char ch;             /* 字面字符 */",
+      "    int offset;          /* 回退偏移量 */",
+      "    int length;          /* 匹配长度 */",
+      "} Token;",
+      "int find_match(const char *text, int pos, int *out_offset, int *out_length) {",
+      "    int best_len = 0;",
+      "    int best_offset = 0;",
+      "    int win_start = (pos > WINDOW_SIZE) ? pos - WINDOW_SIZE : 0;",
+      "    int text_len = strlen(text);  /* 缓存长度，避免循环里反复调用strlen */",
+      "    /* 在滑动窗口里找最长匹配 */",
+      "    for (int i = win_start; i < pos; i++) {",
+      "        int len = 0;",
+      "        while (len < MAX_MATCH && ",
+      "               pos + len < text_len && ",
+      "               text[i + len] == text[pos + len]) {",
+      "            len++;",
+      "        }",
+      "        if (len > best_len) {",
+      "            best_len = len;",
+      "            best_offset = pos - i;",
+      "        }",
+      "    }",
+      "    *out_offset = best_offset;",
+      "    *out_length = best_len;",
+      "    return (best_len >= 3);  /* 匹配至少3个字符才值得用引用 */",
+      "}",
+      "int main() {",
+      "    const char *text = \"ABCDABCDABCDABCD\";",
+      "    Token tokens[100];",
+      "    int tcount = 0;",
+      "    int pos = 0;",
+      "    int total_len = strlen(text);",
+      "    printf(\"原文： %s\\n\", text);",
+      "    printf(\"原文长度： %d 字节\\n\\n\", total_len);",
+      "    while (pos < total_len) {",
+      "        int offset, length;",
+      "        if (find_match(text, pos, &offset, &length)) {",
+      "            tokens[tcount].is_literal = 0;",
+      "            tokens[tcount].offset = offset;",
+      "            tokens[tcount].length = length;",
+      "            printf(\"位置%2d: 引用(回退%d, 长度%d)\\n\", pos, offset, length);",
+      "            pos += length;",
+      "        } else {",
+      "            tokens[tcount].is_literal = 1;",
+      "            tokens[tcount].ch = text[pos];",
+      "            printf(\"位置%2d: 字面 '%c'\\n\", pos, text[pos]);",
+      "            pos++;",
+      "        }",
+      "        tcount++;",
+      "    }",
+      "    printf(\"\\n总计 %d 个Token\\n\", tcount);",
+      "    return 0;",
+      "}"
+    ],
+    "track_vars": {
+      "primary": [
+        "i",
+        "len",
+        "pos"
+      ],
+      "secondary": [
+        "_return",
+        "best_len",
+        "best_offset",
+        "tcount",
+        "total_len"
+      ]
+    },
+    "var_classes": {
+      "_return": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "best_len": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "best_offset": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "i": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "len": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "pos": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "tcount": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "total_len": {
+        "category": "secondary",
+        "type": "scalar"
+      }
+    },
+    "viz_type": "array",
+    "initial_data": {},
+    "program_output": [
+      {
+        "after_step": 1,
+        "text": "原文： ABCDABCDABCDABCD 原文长度： 16 字节"
+      },
+      {
+        "after_step": 5,
+        "text": "位置 0: 字面 'A'"
+      },
+      {
+        "after_step": 12,
+        "text": "位置 1: 字面 'B'"
+      },
+      {
+        "after_step": 20,
+        "text": "位置 2: 字面 'C'"
+      },
+      {
+        "after_step": 29,
+        "text": "位置 3: 字面 'D'"
+      },
+      {
+        "after_step": 72,
+        "text": "位置 4: 引用(回退4, 长度10)"
+      },
+      {
+        "after_step": 101,
+        "text": "位置14: 字面 'C'"
+      },
+      {
+        "after_step": 128,
+        "text": "位置15: 字面 'D' 总计 7 个Token"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step": 0,
+      "line": 39,
+      "type": "enter",
+      "func": "main",
+      "vars": {}
+    },
+    {
+      "step": 1,
+      "line": 47,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "pos": 0,
+        "total_len": 16
+      }
+    },
+    {
+      "step": 2,
+      "line": 49,
+      "type": "enter",
+      "func": "find_match",
+      "vars": {
+        "pos": 0
+      }
+    },
+    {
+      "step": 3,
+      "line": 37,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 4,
+      "line": 37,
+      "type": "exit",
+      "func": "find_match",
+      "vars": {}
+    },
+    {
+      "step": 5,
+      "line": 59,
+      "type": "exec",
+      "vars": {
+        "pos": 1
+      }
+    },
+    {
+      "step": 6,
+      "line": 61,
+      "type": "exec",
+      "vars": {
+        "tcount": 1
+      }
+    },
+    {
+      "step": 7,
+      "line": 47,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "pos": 1,
+        "total_len": 16
+      }
+    },
+    {
+      "step": 8,
+      "line": 49,
+      "type": "enter",
+      "func": "find_match",
+      "vars": {
+        "pos": 1
+      }
+    },
+    {
+      "step": 9,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0,
+        "pos": 1
+      }
+    },
+    {
+      "step": 10,
+      "line": 37,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 11,
+      "line": 37,
+      "type": "exit",
+      "func": "find_match",
+      "vars": {}
+    },
+    {
+      "step": 12,
+      "line": 59,
+      "type": "exec",
+      "vars": {
+        "pos": 2
+      }
+    },
+    {
+      "step": 13,
+      "line": 61,
+      "type": "exec",
+      "vars": {
+        "tcount": 2
+      }
+    },
+    {
+      "step": 14,
+      "line": 47,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "pos": 2,
+        "total_len": 16
+      }
+    },
+    {
+      "step": 15,
+      "line": 49,
+      "type": "enter",
+      "func": "find_match",
+      "vars": {
+        "pos": 2
+      }
+    },
+    {
+      "step": 16,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0,
+        "pos": 2
+      }
+    },
+    {
+      "step": 17,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "pos": 2
+      }
+    },
+    {
+      "step": 18,
+      "line": 37,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 19,
+      "line": 37,
+      "type": "exit",
+      "func": "find_match",
+      "vars": {}
+    },
+    {
+      "step": 20,
+      "line": 59,
+      "type": "exec",
+      "vars": {
+        "pos": 3
+      }
+    },
+    {
+      "step": 21,
+      "line": 61,
+      "type": "exec",
+      "vars": {
+        "tcount": 3
+      }
+    },
+    {
+      "step": 22,
+      "line": 47,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "pos": 3,
+        "total_len": 16
+      }
+    },
+    {
+      "step": 23,
+      "line": 49,
+      "type": "enter",
+      "func": "find_match",
+      "vars": {
+        "pos": 3
+      }
+    },
+    {
+      "step": 24,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0,
+        "pos": 3
+      }
+    },
+    {
+      "step": 25,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "pos": 3
+      }
+    },
+    {
+      "step": 26,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "pos": 3
+      }
+    },
+    {
+      "step": 27,
+      "line": 37,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 28,
+      "line": 37,
+      "type": "exit",
+      "func": "find_match",
+      "vars": {}
+    },
+    {
+      "step": 29,
+      "line": 59,
+      "type": "exec",
+      "vars": {
+        "pos": 4
+      }
+    },
+    {
+      "step": 30,
+      "line": 61,
+      "type": "exec",
+      "vars": {
+        "tcount": 4
+      }
+    },
+    {
+      "step": 31,
+      "line": 47,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "pos": 4,
+        "total_len": 16
+      }
+    },
+    {
+      "step": 32,
+      "line": 49,
+      "type": "enter",
+      "func": "find_match",
+      "vars": {
+        "pos": 4
+      }
+    },
+    {
+      "step": 33,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0,
+        "pos": 4
+      }
+    },
+    {
+      "step": 34,
+      "line": 28,
+      "type": "exec",
+      "vars": {
+        "len": 1
+      }
+    },
+    {
+      "step": 35,
+      "line": 28,
+      "type": "exec",
+      "vars": {
+        "len": 2
+      }
+    },
+    {
+      "step": 36,
+      "line": 28,
+      "type": "exec",
+      "vars": {
+        "len": 3
+      }
+    },
+    {
+      "step": 37,
+      "line": 28,
+      "type": "exec",
+      "vars": {
+        "len": 4
+      }
+    },
+    {
+      "step": 38,
+      "line": 28,
+      "type": "exec",
+      "vars": {
+        "len": 5
+      }
+    },
+    {
+      "step": 39,
+      "line": 28,
+      "type": "exec",
+      "vars": {
+        "len": 6
+      }
+    },
+    {
+      "step": 40,
+      "line": 28,
+      "type": "exec",
+      "vars": {
+        "len": 7
+      }
+    },
+    {
+      "step": 41,
+      "line": 28,
+      "type": "exec",
+      "vars": {
+        "len": 8
+      }
+    },
+    {
+      "step": 42,
+      "line": 28,
+      "type": "exec",
+      "vars": {
+        "len": 9
+      }
+    },
+    {
+      "step": 43,
+      "line": 28,
+      "type": "exec",
+      "vars": {
+        "len": 10
+      }
+    },
+    {
+      "step": 44,
+      "line": 30,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "best_len": 0,
+        "len": 10
+      }
+    },
+    {
+      "step": 45,
+      "line": 31,
+      "type": "exec",
+      "vars": {
+        "best_len": 10
+      }
+    },
+    {
+      "step": 46,
+      "line": 32,
+      "type": "exec",
+      "vars": {
+        "best_offset": 4
+      }
+    },
+    {
+      "step": 47,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "pos": 4
+      }
+    },
+    {
+      "step": 48,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "pos": 4
+      }
+    },
+    {
+      "step": 49,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3,
+        "pos": 4
+      }
+    },
+    {
+      "step": 50,
+      "line": 37,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 51,
+      "line": 37,
+      "type": "exit",
+      "func": "find_match",
+      "vars": {}
+    },
+    {
+      "step": 52,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0,
+        "pos": 4
+      }
+    },
+    {
+      "step": 53,
+      "line": 28,
+      "type": "exec",
+      "vars": {
+        "len": 1
+      }
+    },
+    {
+      "step": 54,
+      "line": 28,
+      "type": "exec",
+      "vars": {
+        "len": 2
+      }
+    },
+    {
+      "step": 55,
+      "line": 28,
+      "type": "exec",
+      "vars": {
+        "len": 3
+      }
+    },
+    {
+      "step": 56,
+      "line": 28,
+      "type": "exec",
+      "vars": {
+        "len": 4
+      }
+    },
+    {
+      "step": 57,
+      "line": 28,
+      "type": "exec",
+      "vars": {
+        "len": 5
+      }
+    },
+    {
+      "step": 58,
+      "line": 28,
+      "type": "exec",
+      "vars": {
+        "len": 6
+      }
+    },
+    {
+      "step": 59,
+      "line": 28,
+      "type": "exec",
+      "vars": {
+        "len": 7
+      }
+    },
+    {
+      "step": 60,
+      "line": 28,
+      "type": "exec",
+      "vars": {
+        "len": 8
+      }
+    },
+    {
+      "step": 61,
+      "line": 28,
+      "type": "exec",
+      "vars": {
+        "len": 9
+      }
+    },
+    {
+      "step": 62,
+      "line": 28,
+      "type": "exec",
+      "vars": {
+        "len": 10
+      }
+    },
+    {
+      "step": 63,
+      "line": 30,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "best_len": 0,
+        "len": 10
+      }
+    },
+    {
+      "step": 64,
+      "line": 31,
+      "type": "exec",
+      "vars": {
+        "best_len": 10
+      }
+    },
+    {
+      "step": 65,
+      "line": 32,
+      "type": "exec",
+      "vars": {
+        "best_offset": 4
+      }
+    },
+    {
+      "step": 66,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "pos": 4
+      }
+    },
+    {
+      "step": 67,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "pos": 4
+      }
+    },
+    {
+      "step": 68,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3,
+        "pos": 4
+      }
+    },
+    {
+      "step": 69,
+      "line": 37,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 70,
+      "line": 37,
+      "type": "exit",
+      "func": "find_match",
+      "vars": {}
+    },
+    {
+      "step": 71,
+      "line": 49,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "pos": 4
+      }
+    },
+    {
+      "step": 72,
+      "line": 54,
+      "type": "exec",
+      "vars": {
+        "pos": 14
+      }
+    },
+    {
+      "step": 73,
+      "line": 61,
+      "type": "exec",
+      "vars": {
+        "tcount": 5
+      }
+    },
+    {
+      "step": 74,
+      "line": 47,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "pos": 14,
+        "total_len": 16
+      }
+    },
+    {
+      "step": 75,
+      "line": 49,
+      "type": "enter",
+      "func": "find_match",
+      "vars": {
+        "pos": 14
+      }
+    },
+    {
+      "step": 76,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0,
+        "pos": 14
+      }
+    },
+    {
+      "step": 77,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "pos": 14
+      }
+    },
+    {
+      "step": 78,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "pos": 14
+      }
+    },
+    {
+      "step": 79,
+      "line": 28,
+      "type": "exec",
+      "vars": {
+        "len": 1
+      }
+    },
+    {
+      "step": 80,
+      "line": 28,
+      "type": "exec",
+      "vars": {
+        "len": 2
+      }
+    },
+    {
+      "step": 81,
+      "line": 30,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "best_len": 0,
+        "len": 2
+      }
+    },
+    {
+      "step": 82,
+      "line": 31,
+      "type": "exec",
+      "vars": {
+        "best_len": 2
+      }
+    },
+    {
+      "step": 83,
+      "line": 32,
+      "type": "exec",
+      "vars": {
+        "best_offset": 12
+      }
+    },
+    {
+      "step": 84,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3,
+        "pos": 14
+      }
+    },
+    {
+      "step": 85,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 4,
+        "pos": 14
+      }
+    },
+    {
+      "step": 86,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 5,
+        "pos": 14
+      }
+    },
+    {
+      "step": 87,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 6,
+        "pos": 14
+      }
+    },
+    {
+      "step": 88,
+      "line": 28,
+      "type": "exec",
+      "vars": {
+        "len": 1
+      }
+    },
+    {
+      "step": 89,
+      "line": 28,
+      "type": "exec",
+      "vars": {
+        "len": 2
+      }
+    },
+    {
+      "step": 90,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 7,
+        "pos": 14
+      }
+    },
+    {
+      "step": 91,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 8,
+        "pos": 14
+      }
+    },
+    {
+      "step": 92,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 9,
+        "pos": 14
+      }
+    },
+    {
+      "step": 93,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 10,
+        "pos": 14
+      }
+    },
+    {
+      "step": 94,
+      "line": 28,
+      "type": "exec",
+      "vars": {
+        "len": 1
+      }
+    },
+    {
+      "step": 95,
+      "line": 28,
+      "type": "exec",
+      "vars": {
+        "len": 2
+      }
+    },
+    {
+      "step": 96,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 11,
+        "pos": 14
+      }
+    },
+    {
+      "step": 97,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 12,
+        "pos": 14
+      }
+    },
+    {
+      "step": 98,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 13,
+        "pos": 14
+      }
+    },
+    {
+      "step": 99,
+      "line": 37,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 100,
+      "line": 37,
+      "type": "exit",
+      "func": "find_match",
+      "vars": {}
+    },
+    {
+      "step": 101,
+      "line": 59,
+      "type": "exec",
+      "vars": {
+        "pos": 15
+      }
+    },
+    {
+      "step": 102,
+      "line": 61,
+      "type": "exec",
+      "vars": {
+        "tcount": 6
+      }
+    },
+    {
+      "step": 103,
+      "line": 47,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "pos": 15,
+        "total_len": 16
+      }
+    },
+    {
+      "step": 104,
+      "line": 49,
+      "type": "enter",
+      "func": "find_match",
+      "vars": {
+        "pos": 15
+      }
+    },
+    {
+      "step": 105,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0,
+        "pos": 15
+      }
+    },
+    {
+      "step": 106,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "pos": 15
+      }
+    },
+    {
+      "step": 107,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "pos": 15
+      }
+    },
+    {
+      "step": 108,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3,
+        "pos": 15
+      }
+    },
+    {
+      "step": 109,
+      "line": 28,
+      "type": "exec",
+      "vars": {
+        "len": 1
+      }
+    },
+    {
+      "step": 110,
+      "line": 30,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "best_len": 0,
+        "len": 1
+      }
+    },
+    {
+      "step": 111,
+      "line": 31,
+      "type": "exec",
+      "vars": {
+        "best_len": 1
+      }
+    },
+    {
+      "step": 112,
+      "line": 32,
+      "type": "exec",
+      "vars": {
+        "best_offset": 12
+      }
+    },
+    {
+      "step": 113,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 4,
+        "pos": 15
+      }
+    },
+    {
+      "step": 114,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 5,
+        "pos": 15
+      }
+    },
+    {
+      "step": 115,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 6,
+        "pos": 15
+      }
+    },
+    {
+      "step": 116,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 7,
+        "pos": 15
+      }
+    },
+    {
+      "step": 117,
+      "line": 28,
+      "type": "exec",
+      "vars": {
+        "len": 1
+      }
+    },
+    {
+      "step": 118,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 8,
+        "pos": 15
+      }
+    },
+    {
+      "step": 119,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 9,
+        "pos": 15
+      }
+    },
+    {
+      "step": 120,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 10,
+        "pos": 15
+      }
+    },
+    {
+      "step": 121,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 11,
+        "pos": 15
+      }
+    },
+    {
+      "step": 122,
+      "line": 28,
+      "type": "exec",
+      "vars": {
+        "len": 1
+      }
+    },
+    {
+      "step": 123,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 12,
+        "pos": 15
+      }
+    },
+    {
+      "step": 124,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 13,
+        "pos": 15
+      }
+    },
+    {
+      "step": 125,
+      "line": 23,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 14,
+        "pos": 15
+      }
+    },
+    {
+      "step": 126,
+      "line": 37,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 127,
+      "line": 37,
+      "type": "exit",
+      "func": "find_match",
+      "vars": {}
+    },
+    {
+      "step": 128,
+      "line": 59,
+      "type": "exec",
+      "vars": {
+        "pos": 16
+      }
+    },
+    {
+      "step": 129,
+      "line": 61,
+      "type": "exec",
+      "vars": {
+        "tcount": 7
+      }
+    },
+    {
+      "step": 130,
+      "line": 64,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 131,
+      "line": 64,
+      "type": "exit",
+      "func": "main",
+      "vars": {}
+    }
+  ],
+  "total_steps": 132
+}

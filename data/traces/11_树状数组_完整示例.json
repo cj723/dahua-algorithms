@@ -1,0 +1,881 @@
+{
+  "meta": {
+    "algo": "11_树状数组_完整示例",
+    "source_lines": [
+      "#include <stdio.h>",
+      "#define MAXN 500010",
+      "int n;",
+      "long long c[MAXN], a[MAXN];",
+      "int lowbit(int x) { return x & (-x); }",
+      "void update(int x, long long v) {",
+      "    if (x <= 0) {",
+      "        printf(\"错误：树状数组下标必须从1开始\\n\");",
+      "        return;",
+      "    }",
+      "    for (int i = x; i <= n; i += lowbit(i))",
+      "        c[i] += v;",
+      "}",
+      "long long query(int x) {",
+      "    long long s = 0;",
+      "    for (int i = x; i > 0; i -= lowbit(i))",
+      "        s += c[i];",
+      "    return s;",
+      "}",
+      "int main() {",
+      "    // 固定测试数据，便于直接运行观察结果",
+      "    n = 8;",
+      "    long long init[] = {0, 1, 2, 3, 4, 5, 6, 7, 8};  // 1-indexed",
+      "    for (int i = 1; i <= n; i++) {",
+      "        a[i] = init[i];",
+      "        update(i, init[i]);",
+      "    }",
+      "    printf(\"树状数组测试：\\n\");",
+      "    printf(\"下标：1 2 3 4 5 6 7 8\\n\");",
+      "    printf(\"数值：1 2 3 4 5 6 7 8\\n\");",
+      "    printf(\"前缀和 sum(7): %lld\\n\", query(7));",
+      "    printf(\"区间和[3,7]: %lld\\n\", query(7) - query(2));",
+      "    update(5, 10);  // a[5]从5加到15，影响c[5]、c[6]、c[8]",
+      "    a[5] += 10;",
+      "    printf(\"a[5]加10后，前缀和 sum(7): %lld\\n\", query(7));",
+      "    printf(\"a[5]加10后，区间和[3,7]: %lld\\n\", query(7) - query(2));",
+      "    return 0;",
+      "}"
+    ],
+    "track_vars": {
+      "primary": [
+        "i",
+        "n"
+      ],
+      "secondary": [
+        "_return",
+        "s",
+        "v",
+        "x"
+      ]
+    },
+    "var_classes": {
+      "_return": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "i": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "n": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "s": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "v": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "x": {
+        "category": "secondary",
+        "type": "scalar"
+      }
+    },
+    "viz_type": "array",
+    "initial_data": {},
+    "program_output": [
+      {
+        "after_step": 38,
+        "text": "树状数组测试： 下标：1 2 3 4 5 6 7 8 数值：1 2 3 4 5 6 7 8"
+      },
+      {
+        "after_step": 47,
+        "text": "前缀和 sum(7): 28"
+      },
+      {
+        "after_step": 60,
+        "text": "区间和[3,7]: 25"
+      },
+      {
+        "after_step": 73,
+        "text": "a[5]加10后，前缀和 sum(7): 38"
+      },
+      {
+        "after_step": 86,
+        "text": "a[5]加10后，区间和[3,7]: 35"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step": 0,
+      "line": 20,
+      "type": "enter",
+      "func": "main",
+      "vars": {}
+    },
+    {
+      "step": 1,
+      "line": 22,
+      "type": "exec",
+      "vars": {
+        "n": 8
+      }
+    },
+    {
+      "step": 2,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "n": 8
+      }
+    },
+    {
+      "step": 3,
+      "line": 26,
+      "type": "enter",
+      "func": "update",
+      "vars": {
+        "x": 1,
+        "v": 1
+      }
+    },
+    {
+      "step": 4,
+      "line": 11,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1
+      }
+    },
+    {
+      "step": 5,
+      "line": 11,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2
+      }
+    },
+    {
+      "step": 6,
+      "line": 11,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 4
+      }
+    },
+    {
+      "step": 7,
+      "line": 11,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 8
+      }
+    },
+    {
+      "step": 8,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "n": 8
+      }
+    },
+    {
+      "step": 9,
+      "line": 26,
+      "type": "enter",
+      "func": "update",
+      "vars": {
+        "x": 2,
+        "v": 2
+      }
+    },
+    {
+      "step": 10,
+      "line": 11,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2
+      }
+    },
+    {
+      "step": 11,
+      "line": 11,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 4
+      }
+    },
+    {
+      "step": 12,
+      "line": 11,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 8
+      }
+    },
+    {
+      "step": 13,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3,
+        "n": 8
+      }
+    },
+    {
+      "step": 14,
+      "line": 26,
+      "type": "enter",
+      "func": "update",
+      "vars": {
+        "x": 3,
+        "v": 3
+      }
+    },
+    {
+      "step": 15,
+      "line": 11,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3
+      }
+    },
+    {
+      "step": 16,
+      "line": 11,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 4
+      }
+    },
+    {
+      "step": 17,
+      "line": 11,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 8
+      }
+    },
+    {
+      "step": 18,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 4,
+        "n": 8
+      }
+    },
+    {
+      "step": 19,
+      "line": 26,
+      "type": "enter",
+      "func": "update",
+      "vars": {
+        "x": 4,
+        "v": 4
+      }
+    },
+    {
+      "step": 20,
+      "line": 11,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 4
+      }
+    },
+    {
+      "step": 21,
+      "line": 11,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 8
+      }
+    },
+    {
+      "step": 22,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 5,
+        "n": 8
+      }
+    },
+    {
+      "step": 23,
+      "line": 26,
+      "type": "enter",
+      "func": "update",
+      "vars": {
+        "x": 5,
+        "v": 5
+      }
+    },
+    {
+      "step": 24,
+      "line": 11,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 5
+      }
+    },
+    {
+      "step": 25,
+      "line": 11,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 6
+      }
+    },
+    {
+      "step": 26,
+      "line": 11,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 8
+      }
+    },
+    {
+      "step": 27,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 6,
+        "n": 8
+      }
+    },
+    {
+      "step": 28,
+      "line": 26,
+      "type": "enter",
+      "func": "update",
+      "vars": {
+        "x": 6,
+        "v": 6
+      }
+    },
+    {
+      "step": 29,
+      "line": 11,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 6
+      }
+    },
+    {
+      "step": 30,
+      "line": 11,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 8
+      }
+    },
+    {
+      "step": 31,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 7,
+        "n": 8
+      }
+    },
+    {
+      "step": 32,
+      "line": 26,
+      "type": "enter",
+      "func": "update",
+      "vars": {
+        "x": 7,
+        "v": 7
+      }
+    },
+    {
+      "step": 33,
+      "line": 11,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 7
+      }
+    },
+    {
+      "step": 34,
+      "line": 11,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 8
+      }
+    },
+    {
+      "step": 35,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 8,
+        "n": 8
+      }
+    },
+    {
+      "step": 36,
+      "line": 26,
+      "type": "enter",
+      "func": "update",
+      "vars": {
+        "x": 8,
+        "v": 8
+      }
+    },
+    {
+      "step": 37,
+      "line": 11,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 8
+      }
+    },
+    {
+      "step": 38,
+      "line": 31,
+      "type": "enter",
+      "func": "query",
+      "vars": {
+        "x": 7
+      }
+    },
+    {
+      "step": 39,
+      "line": 17,
+      "type": "exec",
+      "vars": {
+        "s": 7
+      }
+    },
+    {
+      "step": 40,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 7
+      }
+    },
+    {
+      "step": 41,
+      "line": 17,
+      "type": "exec",
+      "vars": {
+        "s": 18
+      }
+    },
+    {
+      "step": 42,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 6
+      }
+    },
+    {
+      "step": 43,
+      "line": 17,
+      "type": "exec",
+      "vars": {
+        "s": 28
+      }
+    },
+    {
+      "step": 44,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 4
+      }
+    },
+    {
+      "step": 45,
+      "line": 18,
+      "type": "exec",
+      "vars": {
+        "_return": 28
+      }
+    },
+    {
+      "step": 46,
+      "line": 18,
+      "type": "exit",
+      "func": "query",
+      "vars": {}
+    },
+    {
+      "step": 47,
+      "line": 32,
+      "type": "enter",
+      "func": "query",
+      "vars": {
+        "x": 7
+      }
+    },
+    {
+      "step": 48,
+      "line": 17,
+      "type": "exec",
+      "vars": {
+        "s": 7
+      }
+    },
+    {
+      "step": 49,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 7
+      }
+    },
+    {
+      "step": 50,
+      "line": 17,
+      "type": "exec",
+      "vars": {
+        "s": 18
+      }
+    },
+    {
+      "step": 51,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 6
+      }
+    },
+    {
+      "step": 52,
+      "line": 17,
+      "type": "exec",
+      "vars": {
+        "s": 28
+      }
+    },
+    {
+      "step": 53,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 4
+      }
+    },
+    {
+      "step": 54,
+      "line": 18,
+      "type": "exec",
+      "vars": {
+        "_return": 28
+      }
+    },
+    {
+      "step": 55,
+      "line": 18,
+      "type": "exit",
+      "func": "query",
+      "vars": {}
+    },
+    {
+      "step": 56,
+      "line": 17,
+      "type": "exec",
+      "vars": {
+        "s": 3
+      }
+    },
+    {
+      "step": 57,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2
+      }
+    },
+    {
+      "step": 58,
+      "line": 18,
+      "type": "exec",
+      "vars": {
+        "_return": 3
+      }
+    },
+    {
+      "step": 59,
+      "line": 18,
+      "type": "exit",
+      "func": "query",
+      "vars": {}
+    },
+    {
+      "step": 60,
+      "line": 33,
+      "type": "enter",
+      "func": "update",
+      "vars": {
+        "x": 5,
+        "v": 10
+      }
+    },
+    {
+      "step": 61,
+      "line": 11,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 5
+      }
+    },
+    {
+      "step": 62,
+      "line": 11,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 6
+      }
+    },
+    {
+      "step": 63,
+      "line": 11,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 8
+      }
+    },
+    {
+      "step": 64,
+      "line": 35,
+      "type": "enter",
+      "func": "query",
+      "vars": {
+        "x": 7
+      }
+    },
+    {
+      "step": 65,
+      "line": 17,
+      "type": "exec",
+      "vars": {
+        "s": 7
+      }
+    },
+    {
+      "step": 66,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 7
+      }
+    },
+    {
+      "step": 67,
+      "line": 17,
+      "type": "exec",
+      "vars": {
+        "s": 28
+      }
+    },
+    {
+      "step": 68,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 6
+      }
+    },
+    {
+      "step": 69,
+      "line": 17,
+      "type": "exec",
+      "vars": {
+        "s": 38
+      }
+    },
+    {
+      "step": 70,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 4
+      }
+    },
+    {
+      "step": 71,
+      "line": 18,
+      "type": "exec",
+      "vars": {
+        "_return": 38
+      }
+    },
+    {
+      "step": 72,
+      "line": 18,
+      "type": "exit",
+      "func": "query",
+      "vars": {}
+    },
+    {
+      "step": 73,
+      "line": 36,
+      "type": "enter",
+      "func": "query",
+      "vars": {
+        "x": 7
+      }
+    },
+    {
+      "step": 74,
+      "line": 17,
+      "type": "exec",
+      "vars": {
+        "s": 7
+      }
+    },
+    {
+      "step": 75,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 7
+      }
+    },
+    {
+      "step": 76,
+      "line": 17,
+      "type": "exec",
+      "vars": {
+        "s": 28
+      }
+    },
+    {
+      "step": 77,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 6
+      }
+    },
+    {
+      "step": 78,
+      "line": 17,
+      "type": "exec",
+      "vars": {
+        "s": 38
+      }
+    },
+    {
+      "step": 79,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 4
+      }
+    },
+    {
+      "step": 80,
+      "line": 18,
+      "type": "exec",
+      "vars": {
+        "_return": 38
+      }
+    },
+    {
+      "step": 81,
+      "line": 18,
+      "type": "exit",
+      "func": "query",
+      "vars": {}
+    },
+    {
+      "step": 82,
+      "line": 17,
+      "type": "exec",
+      "vars": {
+        "s": 3
+      }
+    },
+    {
+      "step": 83,
+      "line": 16,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2
+      }
+    },
+    {
+      "step": 84,
+      "line": 18,
+      "type": "exec",
+      "vars": {
+        "_return": 3
+      }
+    },
+    {
+      "step": 85,
+      "line": 18,
+      "type": "exit",
+      "func": "query",
+      "vars": {}
+    },
+    {
+      "step": 86,
+      "line": 37,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 87,
+      "line": 37,
+      "type": "exit",
+      "func": "main",
+      "vars": {}
+    }
+  ],
+  "total_steps": 88
+}

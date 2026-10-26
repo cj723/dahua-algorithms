@@ -1,0 +1,630 @@
+{
+  "meta": {
+    "algo": "04_二分查找_旋转数组",
+    "source_lines": [
+      "#include <stdio.h>",
+      "int search_rotated(int arr[], int n, int target) {",
+      "    int left = 0, right = n - 1;",
+      "    while (left <= right) {",
+      "        int mid = left + (right - left) / 2;",
+      "        if (arr[mid] == target) {",
+      "            return mid;",
+      "        }",
+      "        /* 判断左半边是否有序 */",
+      "        if (arr[left] <= arr[mid]) {",
+      "            /* 左半边有序，看看 target 是不是在左半边的范围内 */",
+      "            if (arr[left] <= target && target < arr[mid]) {",
+      "                right = mid - 1;  /* 在左半边 */",
+      "            } else {",
+      "                left = mid + 1;   /* 在右半边 */",
+      "            }",
+      "        } else {",
+      "            /* 右半边有序，看看 target 是不是在右半边的范围内 */",
+      "            if (arr[mid] < target && target <= arr[right]) {",
+      "                left = mid + 1;   /* 在右半边 */",
+      "            } else {",
+      "                right = mid - 1;  /* 在左半边 */",
+      "            }",
+      "        }",
+      "    }",
+      "    return -1;",
+      "}",
+      "// 测试：旋转数组搜索（如 {4,5,6,7,0,1,2} 是 {0,1,2,4,5,6,7} 旋转而来）",
+      "int main(void) {",
+      "    int arr[] = {4, 5, 6, 7, 0, 1, 2};",
+      "    int n = sizeof(arr) / sizeof(arr[0]);",
+      "    printf(\"旋转数组：\");",
+      "    for (int i = 0; i < n; i++) printf(\"%d \", arr[i]);",
+      "    printf(\"\\n\\n\");",
+      "    printf(\"search_rotated(0) → 位置 %d（期望 4）\\n\", search_rotated(arr, n, 0));",
+      "    printf(\"search_rotated(4) → 位置 %d（期望 0）\\n\", search_rotated(arr, n, 4));",
+      "    printf(\"search_rotated(2) → 位置 %d（期望 6）\\n\", search_rotated(arr, n, 2));",
+      "    printf(\"search_rotated(3) → 位置 %d（未找到）\\n\", search_rotated(arr, n, 3));",
+      "    return 0;",
+      "}"
+    ],
+    "track_vars": {
+      "primary": [
+        "arr",
+        "left",
+        "mid",
+        "n",
+        "right",
+        "target"
+      ],
+      "secondary": [
+        "_return"
+      ]
+    },
+    "var_classes": {
+      "_return": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "arr": {
+        "category": "primary",
+        "type": "array"
+      },
+      "left": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "mid": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "n": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "right": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "target": {
+        "category": "primary",
+        "type": "scalar"
+      }
+    },
+    "viz_type": "array",
+    "initial_data": {
+      "arr": [
+        4,
+        5,
+        6,
+        7,
+        0,
+        1,
+        2
+      ]
+    },
+    "program_output": [
+      {
+        "after_step": 1,
+        "text": "旋转数组：4 5 6 7 0 1 2"
+      },
+      {
+        "after_step": 13,
+        "text": "search_rotated(0) → 位置 4（期望 4）"
+      },
+      {
+        "after_step": 26,
+        "text": "search_rotated(4) → 位置 0（期望 0）"
+      },
+      {
+        "after_step": 37,
+        "text": "search_rotated(2) → 位置 6（期望 6）"
+      },
+      {
+        "after_step": 49,
+        "text": "search_rotated(3) → 位置 -1（未找到）"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step": 0,
+      "line": 29,
+      "type": "enter",
+      "func": "main",
+      "vars": {}
+    },
+    {
+      "step": 1,
+      "line": 35,
+      "type": "enter",
+      "func": "search_rotated",
+      "vars": {
+        "arr": [
+          4,
+          5,
+          6,
+          7,
+          0,
+          1,
+          2
+        ],
+        "n": 7,
+        "target": 0
+      }
+    },
+    {
+      "step": 2,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 0,
+        "right": 6
+      }
+    },
+    {
+      "step": 3,
+      "line": 10,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 0,
+        "mid": 3
+      }
+    },
+    {
+      "step": 4,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "left": 4
+      }
+    },
+    {
+      "step": 5,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 4,
+        "right": 6
+      }
+    },
+    {
+      "step": 6,
+      "line": 10,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 4,
+        "mid": 5
+      }
+    },
+    {
+      "step": 7,
+      "line": 12,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 4,
+        "mid": 5,
+        "target": 0
+      }
+    },
+    {
+      "step": 8,
+      "line": 13,
+      "type": "exec",
+      "vars": {
+        "right": 4
+      }
+    },
+    {
+      "step": 9,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 4,
+        "right": 4
+      }
+    },
+    {
+      "step": 10,
+      "line": 6,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "mid": 4,
+        "target": 0
+      }
+    },
+    {
+      "step": 11,
+      "line": 7,
+      "type": "exec",
+      "vars": {
+        "_return": 4
+      }
+    },
+    {
+      "step": 12,
+      "line": 7,
+      "type": "exit",
+      "func": "search_rotated",
+      "vars": {}
+    },
+    {
+      "step": 13,
+      "line": 36,
+      "type": "enter",
+      "func": "search_rotated",
+      "vars": {
+        "arr": [
+          4,
+          5,
+          6,
+          7,
+          0,
+          1,
+          2
+        ],
+        "n": 7,
+        "target": 4
+      }
+    },
+    {
+      "step": 14,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 0,
+        "right": 6
+      }
+    },
+    {
+      "step": 15,
+      "line": 10,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 0,
+        "mid": 3
+      }
+    },
+    {
+      "step": 16,
+      "line": 12,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 0,
+        "mid": 3,
+        "target": 4
+      }
+    },
+    {
+      "step": 17,
+      "line": 13,
+      "type": "exec",
+      "vars": {
+        "right": 2
+      }
+    },
+    {
+      "step": 18,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 0,
+        "right": 2
+      }
+    },
+    {
+      "step": 19,
+      "line": 10,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 0,
+        "mid": 1
+      }
+    },
+    {
+      "step": 20,
+      "line": 12,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 0,
+        "mid": 1,
+        "target": 4
+      }
+    },
+    {
+      "step": 21,
+      "line": 13,
+      "type": "exec",
+      "vars": {
+        "right": 0
+      }
+    },
+    {
+      "step": 22,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 0,
+        "right": 0
+      }
+    },
+    {
+      "step": 23,
+      "line": 6,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "mid": 0,
+        "target": 4
+      }
+    },
+    {
+      "step": 24,
+      "line": 7,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 25,
+      "line": 7,
+      "type": "exit",
+      "func": "search_rotated",
+      "vars": {}
+    },
+    {
+      "step": 26,
+      "line": 37,
+      "type": "enter",
+      "func": "search_rotated",
+      "vars": {
+        "arr": [
+          4,
+          5,
+          6,
+          7,
+          0,
+          1,
+          2
+        ],
+        "n": 7,
+        "target": 2
+      }
+    },
+    {
+      "step": 27,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 0,
+        "right": 6
+      }
+    },
+    {
+      "step": 28,
+      "line": 10,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 0,
+        "mid": 3
+      }
+    },
+    {
+      "step": 29,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "left": 4
+      }
+    },
+    {
+      "step": 30,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 4,
+        "right": 6
+      }
+    },
+    {
+      "step": 31,
+      "line": 10,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 4,
+        "mid": 5
+      }
+    },
+    {
+      "step": 32,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "left": 6
+      }
+    },
+    {
+      "step": 33,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 6,
+        "right": 6
+      }
+    },
+    {
+      "step": 34,
+      "line": 6,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "mid": 6,
+        "target": 2
+      }
+    },
+    {
+      "step": 35,
+      "line": 7,
+      "type": "exec",
+      "vars": {
+        "_return": 6
+      }
+    },
+    {
+      "step": 36,
+      "line": 7,
+      "type": "exit",
+      "func": "search_rotated",
+      "vars": {}
+    },
+    {
+      "step": 37,
+      "line": 38,
+      "type": "enter",
+      "func": "search_rotated",
+      "vars": {
+        "arr": [
+          4,
+          5,
+          6,
+          7,
+          0,
+          1,
+          2
+        ],
+        "n": 7,
+        "target": 3
+      }
+    },
+    {
+      "step": 38,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 0,
+        "right": 6
+      }
+    },
+    {
+      "step": 39,
+      "line": 10,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 0,
+        "mid": 3
+      }
+    },
+    {
+      "step": 40,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "left": 4
+      }
+    },
+    {
+      "step": 41,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 4,
+        "right": 6
+      }
+    },
+    {
+      "step": 42,
+      "line": 10,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 4,
+        "mid": 5
+      }
+    },
+    {
+      "step": 43,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "left": 6
+      }
+    },
+    {
+      "step": 44,
+      "line": 4,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 6,
+        "right": 6
+      }
+    },
+    {
+      "step": 45,
+      "line": 10,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "left": 6,
+        "mid": 6
+      }
+    },
+    {
+      "step": 46,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "left": 7
+      }
+    },
+    {
+      "step": 47,
+      "line": 26,
+      "type": "exec",
+      "vars": {
+        "_return": -1
+      }
+    },
+    {
+      "step": 48,
+      "line": 26,
+      "type": "exit",
+      "func": "search_rotated",
+      "vars": {}
+    },
+    {
+      "step": 49,
+      "line": 39,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 50,
+      "line": 39,
+      "type": "exit",
+      "func": "main",
+      "vars": {}
+    }
+  ],
+  "total_steps": 51
+}

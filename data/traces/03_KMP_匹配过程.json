@@ -1,0 +1,1398 @@
+{
+  "meta": {
+    "algo": "03_KMP_匹配过程",
+    "source_lines": [
+      "#include <stdio.h>",
+      "#include <string.h>",
+      "#include <stdlib.h>",
+      "void build_next(const char *pattern, int *next, int m) {",
+      "    next[0] = -1;",
+      "    int i = 0, j = -1;",
+      "    while (i < m - 1) {",
+      "        if (j == -1 || pattern[i] == pattern[j]) {",
+      "            i++;",
+      "            j++;",
+      "            next[i] = j;",
+      "        } else {",
+      "            j = next[j];",
+      "        }",
+      "    }",
+      "}",
+      "/* KMP匹配算法 */",
+      "int kmp_search(const char *text, const char *pattern) {",
+      "    int n = (int)strlen(text);",
+      "    int m = (int)strlen(pattern);",
+      "    if (m == 0) return 0;      /* 空模式串：约定匹配在起始位置 */",
+      "    if (n < m) return -1;      /* 模式串比文本还长，不可能匹配 */",
+      "    int *next = (int *)malloc(m * sizeof(int));",
+      "    if (next == NULL) {",
+      "        printf(\"内存分配失败\\n\");",
+      "        return -1;",
+      "    }",
+      "    build_next(pattern, next, m);",
+      "    int i = 0, j = 0;  /* i是text的指针，j是pattern的指针 */",
+      "    while (i < n && j < m) {",
+      "        if (j == -1 || text[i] == pattern[j]) {",
+      "            i++;",
+      "            j++;",
+      "        } else {",
+      "            j = next[j];  /* 模式串回退，文本指针不动！ */",
+      "        }",
+      "    }",
+      "    free(next);",
+      "    if (j == m) {",
+      "        return i - m;  /* 找到了，返回起始位置 */",
+      "    }",
+      "    return -1;",
+      "}",
+      "int main() {",
+      "    char text[] = \"ABABDABACDABABCABAB\";",
+      "    char pattern[] = \"ABABCABAB\";",
+      "    int pos = kmp_search(text, pattern);",
+      "    if (pos != -1) {",
+      "        printf(\"KMP匹配成功！起始位置：%d\\n\", pos);",
+      "    } else {",
+      "        printf(\"未找到匹配\\n\");",
+      "    }",
+      "    return 0;",
+      "}"
+    ],
+    "track_vars": {
+      "primary": [
+        "i",
+        "j",
+        "m",
+        "n",
+        "pos"
+      ],
+      "secondary": [
+        "_return"
+      ]
+    },
+    "var_classes": {
+      "_return": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "i": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "j": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "m": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "n": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "pos": {
+        "category": "primary",
+        "type": "scalar"
+      }
+    },
+    "viz_type": "array",
+    "initial_data": {},
+    "program_output": [
+      {
+        "after_step": 136,
+        "text": "KMP匹配成功！起始位置：10"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step": 0,
+      "line": 21,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "m": 9
+      }
+    },
+    {
+      "step": 1,
+      "line": 22,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "m": 9,
+        "n": 19
+      }
+    },
+    {
+      "step": 2,
+      "line": 28,
+      "type": "enter",
+      "func": "build_next",
+      "vars": {
+        "m": 9
+      }
+    },
+    {
+      "step": 3,
+      "line": 7,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0,
+        "m": 9
+      }
+    },
+    {
+      "step": 4,
+      "line": 8,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0,
+        "j": -1
+      }
+    },
+    {
+      "step": 5,
+      "line": 9,
+      "type": "exec",
+      "vars": {
+        "i": 1
+      }
+    },
+    {
+      "step": 6,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "j": 0
+      }
+    },
+    {
+      "step": 7,
+      "line": 7,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "m": 9
+      }
+    },
+    {
+      "step": 8,
+      "line": 13,
+      "type": "exec",
+      "vars": {
+        "j": -1
+      }
+    },
+    {
+      "step": 9,
+      "line": 7,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "m": 9
+      }
+    },
+    {
+      "step": 10,
+      "line": 8,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "j": -1
+      }
+    },
+    {
+      "step": 11,
+      "line": 9,
+      "type": "exec",
+      "vars": {
+        "i": 2
+      }
+    },
+    {
+      "step": 12,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "j": 0
+      }
+    },
+    {
+      "step": 13,
+      "line": 7,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "m": 9
+      }
+    },
+    {
+      "step": 14,
+      "line": 8,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "j": 0
+      }
+    },
+    {
+      "step": 15,
+      "line": 9,
+      "type": "exec",
+      "vars": {
+        "i": 3
+      }
+    },
+    {
+      "step": 16,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "j": 1
+      }
+    },
+    {
+      "step": 17,
+      "line": 7,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3,
+        "m": 9
+      }
+    },
+    {
+      "step": 18,
+      "line": 8,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3,
+        "j": 1
+      }
+    },
+    {
+      "step": 19,
+      "line": 9,
+      "type": "exec",
+      "vars": {
+        "i": 4
+      }
+    },
+    {
+      "step": 20,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "j": 2
+      }
+    },
+    {
+      "step": 21,
+      "line": 7,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 4,
+        "m": 9
+      }
+    },
+    {
+      "step": 22,
+      "line": 13,
+      "type": "exec",
+      "vars": {
+        "j": 0
+      }
+    },
+    {
+      "step": 23,
+      "line": 7,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 4,
+        "m": 9
+      }
+    },
+    {
+      "step": 24,
+      "line": 13,
+      "type": "exec",
+      "vars": {
+        "j": -1
+      }
+    },
+    {
+      "step": 25,
+      "line": 7,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 4,
+        "m": 9
+      }
+    },
+    {
+      "step": 26,
+      "line": 8,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 4,
+        "j": -1
+      }
+    },
+    {
+      "step": 27,
+      "line": 9,
+      "type": "exec",
+      "vars": {
+        "i": 5
+      }
+    },
+    {
+      "step": 28,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "j": 0
+      }
+    },
+    {
+      "step": 29,
+      "line": 7,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 5,
+        "m": 9
+      }
+    },
+    {
+      "step": 30,
+      "line": 8,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 5,
+        "j": 0
+      }
+    },
+    {
+      "step": 31,
+      "line": 9,
+      "type": "exec",
+      "vars": {
+        "i": 6
+      }
+    },
+    {
+      "step": 32,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "j": 1
+      }
+    },
+    {
+      "step": 33,
+      "line": 7,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 6,
+        "m": 9
+      }
+    },
+    {
+      "step": 34,
+      "line": 8,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 6,
+        "j": 1
+      }
+    },
+    {
+      "step": 35,
+      "line": 9,
+      "type": "exec",
+      "vars": {
+        "i": 7
+      }
+    },
+    {
+      "step": 36,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "j": 2
+      }
+    },
+    {
+      "step": 37,
+      "line": 7,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 7,
+        "m": 9
+      }
+    },
+    {
+      "step": 38,
+      "line": 8,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 7,
+        "j": 2
+      }
+    },
+    {
+      "step": 39,
+      "line": 9,
+      "type": "exec",
+      "vars": {
+        "i": 8
+      }
+    },
+    {
+      "step": 40,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "j": 3
+      }
+    },
+    {
+      "step": 41,
+      "line": 30,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0,
+        "j": 0,
+        "m": 9,
+        "n": 19
+      }
+    },
+    {
+      "step": 42,
+      "line": 31,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0,
+        "j": 0
+      }
+    },
+    {
+      "step": 43,
+      "line": 32,
+      "type": "exec",
+      "vars": {
+        "i": 1
+      }
+    },
+    {
+      "step": 44,
+      "line": 33,
+      "type": "exec",
+      "vars": {
+        "j": 1
+      }
+    },
+    {
+      "step": 45,
+      "line": 30,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "j": 1,
+        "m": 9,
+        "n": 19
+      }
+    },
+    {
+      "step": 46,
+      "line": 31,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "j": 1
+      }
+    },
+    {
+      "step": 47,
+      "line": 32,
+      "type": "exec",
+      "vars": {
+        "i": 2
+      }
+    },
+    {
+      "step": 48,
+      "line": 33,
+      "type": "exec",
+      "vars": {
+        "j": 2
+      }
+    },
+    {
+      "step": 49,
+      "line": 30,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "j": 2,
+        "m": 9,
+        "n": 19
+      }
+    },
+    {
+      "step": 50,
+      "line": 31,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "j": 2
+      }
+    },
+    {
+      "step": 51,
+      "line": 32,
+      "type": "exec",
+      "vars": {
+        "i": 3
+      }
+    },
+    {
+      "step": 52,
+      "line": 33,
+      "type": "exec",
+      "vars": {
+        "j": 3
+      }
+    },
+    {
+      "step": 53,
+      "line": 30,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3,
+        "j": 3,
+        "m": 9,
+        "n": 19
+      }
+    },
+    {
+      "step": 54,
+      "line": 31,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3,
+        "j": 3
+      }
+    },
+    {
+      "step": 55,
+      "line": 32,
+      "type": "exec",
+      "vars": {
+        "i": 4
+      }
+    },
+    {
+      "step": 56,
+      "line": 33,
+      "type": "exec",
+      "vars": {
+        "j": 4
+      }
+    },
+    {
+      "step": 57,
+      "line": 30,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 4,
+        "j": 4,
+        "m": 9,
+        "n": 19
+      }
+    },
+    {
+      "step": 58,
+      "line": 35,
+      "type": "exec",
+      "vars": {
+        "j": 2
+      }
+    },
+    {
+      "step": 59,
+      "line": 30,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 4,
+        "j": 2,
+        "m": 9,
+        "n": 19
+      }
+    },
+    {
+      "step": 60,
+      "line": 35,
+      "type": "exec",
+      "vars": {
+        "j": 0
+      }
+    },
+    {
+      "step": 61,
+      "line": 30,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 4,
+        "j": 0,
+        "m": 9,
+        "n": 19
+      }
+    },
+    {
+      "step": 62,
+      "line": 35,
+      "type": "exec",
+      "vars": {
+        "j": -1
+      }
+    },
+    {
+      "step": 63,
+      "line": 30,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 4,
+        "j": -1,
+        "m": 9,
+        "n": 19
+      }
+    },
+    {
+      "step": 64,
+      "line": 31,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 4,
+        "j": -1
+      }
+    },
+    {
+      "step": 65,
+      "line": 32,
+      "type": "exec",
+      "vars": {
+        "i": 5
+      }
+    },
+    {
+      "step": 66,
+      "line": 33,
+      "type": "exec",
+      "vars": {
+        "j": 0
+      }
+    },
+    {
+      "step": 67,
+      "line": 30,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 5,
+        "j": 0,
+        "m": 9,
+        "n": 19
+      }
+    },
+    {
+      "step": 68,
+      "line": 31,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 5,
+        "j": 0
+      }
+    },
+    {
+      "step": 69,
+      "line": 32,
+      "type": "exec",
+      "vars": {
+        "i": 6
+      }
+    },
+    {
+      "step": 70,
+      "line": 33,
+      "type": "exec",
+      "vars": {
+        "j": 1
+      }
+    },
+    {
+      "step": 71,
+      "line": 30,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 6,
+        "j": 1,
+        "m": 9,
+        "n": 19
+      }
+    },
+    {
+      "step": 72,
+      "line": 31,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 6,
+        "j": 1
+      }
+    },
+    {
+      "step": 73,
+      "line": 32,
+      "type": "exec",
+      "vars": {
+        "i": 7
+      }
+    },
+    {
+      "step": 74,
+      "line": 33,
+      "type": "exec",
+      "vars": {
+        "j": 2
+      }
+    },
+    {
+      "step": 75,
+      "line": 30,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 7,
+        "j": 2,
+        "m": 9,
+        "n": 19
+      }
+    },
+    {
+      "step": 76,
+      "line": 31,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 7,
+        "j": 2
+      }
+    },
+    {
+      "step": 77,
+      "line": 32,
+      "type": "exec",
+      "vars": {
+        "i": 8
+      }
+    },
+    {
+      "step": 78,
+      "line": 33,
+      "type": "exec",
+      "vars": {
+        "j": 3
+      }
+    },
+    {
+      "step": 79,
+      "line": 30,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 8,
+        "j": 3,
+        "m": 9,
+        "n": 19
+      }
+    },
+    {
+      "step": 80,
+      "line": 35,
+      "type": "exec",
+      "vars": {
+        "j": 1
+      }
+    },
+    {
+      "step": 81,
+      "line": 30,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 8,
+        "j": 1,
+        "m": 9,
+        "n": 19
+      }
+    },
+    {
+      "step": 82,
+      "line": 35,
+      "type": "exec",
+      "vars": {
+        "j": 0
+      }
+    },
+    {
+      "step": 83,
+      "line": 30,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 8,
+        "j": 0,
+        "m": 9,
+        "n": 19
+      }
+    },
+    {
+      "step": 84,
+      "line": 35,
+      "type": "exec",
+      "vars": {
+        "j": -1
+      }
+    },
+    {
+      "step": 85,
+      "line": 30,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 8,
+        "j": -1,
+        "m": 9,
+        "n": 19
+      }
+    },
+    {
+      "step": 86,
+      "line": 31,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 8,
+        "j": -1
+      }
+    },
+    {
+      "step": 87,
+      "line": 32,
+      "type": "exec",
+      "vars": {
+        "i": 9
+      }
+    },
+    {
+      "step": 88,
+      "line": 33,
+      "type": "exec",
+      "vars": {
+        "j": 0
+      }
+    },
+    {
+      "step": 89,
+      "line": 30,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 9,
+        "j": 0,
+        "m": 9,
+        "n": 19
+      }
+    },
+    {
+      "step": 90,
+      "line": 35,
+      "type": "exec",
+      "vars": {
+        "j": -1
+      }
+    },
+    {
+      "step": 91,
+      "line": 30,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 9,
+        "j": -1,
+        "m": 9,
+        "n": 19
+      }
+    },
+    {
+      "step": 92,
+      "line": 31,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 9,
+        "j": -1
+      }
+    },
+    {
+      "step": 93,
+      "line": 32,
+      "type": "exec",
+      "vars": {
+        "i": 10
+      }
+    },
+    {
+      "step": 94,
+      "line": 33,
+      "type": "exec",
+      "vars": {
+        "j": 0
+      }
+    },
+    {
+      "step": 95,
+      "line": 30,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 10,
+        "j": 0,
+        "m": 9,
+        "n": 19
+      }
+    },
+    {
+      "step": 96,
+      "line": 31,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 10,
+        "j": 0
+      }
+    },
+    {
+      "step": 97,
+      "line": 32,
+      "type": "exec",
+      "vars": {
+        "i": 11
+      }
+    },
+    {
+      "step": 98,
+      "line": 33,
+      "type": "exec",
+      "vars": {
+        "j": 1
+      }
+    },
+    {
+      "step": 99,
+      "line": 30,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 11,
+        "j": 1,
+        "m": 9,
+        "n": 19
+      }
+    },
+    {
+      "step": 100,
+      "line": 31,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 11,
+        "j": 1
+      }
+    },
+    {
+      "step": 101,
+      "line": 32,
+      "type": "exec",
+      "vars": {
+        "i": 12
+      }
+    },
+    {
+      "step": 102,
+      "line": 33,
+      "type": "exec",
+      "vars": {
+        "j": 2
+      }
+    },
+    {
+      "step": 103,
+      "line": 30,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 12,
+        "j": 2,
+        "m": 9,
+        "n": 19
+      }
+    },
+    {
+      "step": 104,
+      "line": 31,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 12,
+        "j": 2
+      }
+    },
+    {
+      "step": 105,
+      "line": 32,
+      "type": "exec",
+      "vars": {
+        "i": 13
+      }
+    },
+    {
+      "step": 106,
+      "line": 33,
+      "type": "exec",
+      "vars": {
+        "j": 3
+      }
+    },
+    {
+      "step": 107,
+      "line": 30,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 13,
+        "j": 3,
+        "m": 9,
+        "n": 19
+      }
+    },
+    {
+      "step": 108,
+      "line": 31,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 13,
+        "j": 3
+      }
+    },
+    {
+      "step": 109,
+      "line": 32,
+      "type": "exec",
+      "vars": {
+        "i": 14
+      }
+    },
+    {
+      "step": 110,
+      "line": 33,
+      "type": "exec",
+      "vars": {
+        "j": 4
+      }
+    },
+    {
+      "step": 111,
+      "line": 30,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 14,
+        "j": 4,
+        "m": 9,
+        "n": 19
+      }
+    },
+    {
+      "step": 112,
+      "line": 31,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 14,
+        "j": 4
+      }
+    },
+    {
+      "step": 113,
+      "line": 32,
+      "type": "exec",
+      "vars": {
+        "i": 15
+      }
+    },
+    {
+      "step": 114,
+      "line": 33,
+      "type": "exec",
+      "vars": {
+        "j": 5
+      }
+    },
+    {
+      "step": 115,
+      "line": 30,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 15,
+        "j": 5,
+        "m": 9,
+        "n": 19
+      }
+    },
+    {
+      "step": 116,
+      "line": 31,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 15,
+        "j": 5
+      }
+    },
+    {
+      "step": 117,
+      "line": 32,
+      "type": "exec",
+      "vars": {
+        "i": 16
+      }
+    },
+    {
+      "step": 118,
+      "line": 33,
+      "type": "exec",
+      "vars": {
+        "j": 6
+      }
+    },
+    {
+      "step": 119,
+      "line": 30,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 16,
+        "j": 6,
+        "m": 9,
+        "n": 19
+      }
+    },
+    {
+      "step": 120,
+      "line": 31,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 16,
+        "j": 6
+      }
+    },
+    {
+      "step": 121,
+      "line": 32,
+      "type": "exec",
+      "vars": {
+        "i": 17
+      }
+    },
+    {
+      "step": 122,
+      "line": 33,
+      "type": "exec",
+      "vars": {
+        "j": 7
+      }
+    },
+    {
+      "step": 123,
+      "line": 30,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 17,
+        "j": 7,
+        "m": 9,
+        "n": 19
+      }
+    },
+    {
+      "step": 124,
+      "line": 31,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 17,
+        "j": 7
+      }
+    },
+    {
+      "step": 125,
+      "line": 32,
+      "type": "exec",
+      "vars": {
+        "i": 18
+      }
+    },
+    {
+      "step": 126,
+      "line": 33,
+      "type": "exec",
+      "vars": {
+        "j": 8
+      }
+    },
+    {
+      "step": 127,
+      "line": 30,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 18,
+        "j": 8,
+        "m": 9,
+        "n": 19
+      }
+    },
+    {
+      "step": 128,
+      "line": 31,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 18,
+        "j": 8
+      }
+    },
+    {
+      "step": 129,
+      "line": 32,
+      "type": "exec",
+      "vars": {
+        "i": 19
+      }
+    },
+    {
+      "step": 130,
+      "line": 33,
+      "type": "exec",
+      "vars": {
+        "j": 9
+      }
+    },
+    {
+      "step": 131,
+      "line": 39,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "j": 9,
+        "m": 9
+      }
+    },
+    {
+      "step": 132,
+      "line": 40,
+      "type": "exec",
+      "vars": {
+        "_return": 10
+      }
+    },
+    {
+      "step": 133,
+      "line": 40,
+      "type": "exit",
+      "func": "kmp_search",
+      "vars": {}
+    },
+    {
+      "step": 134,
+      "line": 44,
+      "type": "enter",
+      "func": "main",
+      "vars": {}
+    },
+    {
+      "step": 135,
+      "line": 48,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "pos": 10
+      }
+    },
+    {
+      "step": 136,
+      "line": 53,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 137,
+      "line": 53,
+      "type": "exit",
+      "func": "main",
+      "vars": {}
+    }
+  ],
+  "total_steps": 138
+}

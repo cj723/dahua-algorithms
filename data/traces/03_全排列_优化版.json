@@ -1,0 +1,617 @@
+{
+  "meta": {
+    "algo": "03_全排列_优化版",
+    "source_lines": [
+      "#include <stdio.h>",
+      "void swap(int *a, int *b) {",
+      "    int tmp = *a;",
+      "    *a = *b;",
+      "    *b = tmp;",
+      "}",
+      "void print_array(int arr[], int n) {",
+      "    for (int i = 0; i < n; i++) {",
+      "        printf(\"%d \", arr[i]);",
+      "    }",
+      "    printf(\"\\n\");",
+      "}",
+      "void permute(int arr[], int first, int n) {",
+      "    if (first == n) {",
+      "        print_array(arr, n);",
+      "        return;",
+      "    }",
+      "    for (int i = first; i < n; i++) {",
+      "        swap(&arr[first], &arr[i]);   /* 做选择 */",
+      "        permute(arr, first + 1, n);   /* 递归 */",
+      "        swap(&arr[first], &arr[i]);   /* 撤销选择 */",
+      "    }",
+      "}",
+      "int main(void) {",
+      "    int arr[] = {1, 2, 3};",
+      "    int n = sizeof(arr) / sizeof(arr[0]);",
+      "    permute(arr, 0, n);",
+      "    return 0;",
+      "}"
+    ],
+    "track_vars": {
+      "primary": [
+        "arr",
+        "i",
+        "n"
+      ],
+      "secondary": [
+        "_return",
+        "first"
+      ]
+    },
+    "var_classes": {
+      "_return": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "arr": {
+        "category": "primary",
+        "type": "array"
+      },
+      "first": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "i": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "n": {
+        "category": "primary",
+        "type": "scalar"
+      }
+    },
+    "viz_type": "array",
+    "initial_data": {
+      "arr": [
+        1,
+        2,
+        3
+      ]
+    },
+    "program_output": [
+      {
+        "after_step": 8,
+        "text": "1 2 3"
+      },
+      {
+        "after_step": 15,
+        "text": "1 3 2"
+      },
+      {
+        "after_step": 23,
+        "text": "2 1 3"
+      },
+      {
+        "after_step": 30,
+        "text": "2 3 1"
+      },
+      {
+        "after_step": 38,
+        "text": "3 2 1"
+      },
+      {
+        "after_step": 45,
+        "text": "3 1 2"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step": 0,
+      "line": 24,
+      "type": "enter",
+      "func": "main",
+      "vars": {}
+    },
+    {
+      "step": 1,
+      "line": 27,
+      "type": "enter",
+      "func": "permute",
+      "vars": {
+        "arr": [
+          1,
+          2,
+          3
+        ],
+        "first": 0,
+        "n": 3
+      }
+    },
+    {
+      "step": 2,
+      "line": 18,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0,
+        "n": 3
+      }
+    },
+    {
+      "step": 3,
+      "line": 18,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "n": 3
+      }
+    },
+    {
+      "step": 4,
+      "line": 18,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "n": 3
+      }
+    },
+    {
+      "step": 5,
+      "line": 14,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "first": 3,
+        "n": 3
+      }
+    },
+    {
+      "step": 6,
+      "line": 15,
+      "type": "enter",
+      "func": "print_array",
+      "vars": {
+        "arr": [
+          1,
+          2,
+          3
+        ],
+        "n": 3
+      }
+    },
+    {
+      "step": 7,
+      "line": 8,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0,
+        "n": 3
+      }
+    },
+    {
+      "step": 8,
+      "line": 8,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "n": 3
+      }
+    },
+    {
+      "step": 9,
+      "line": 8,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "n": 3
+      }
+    },
+    {
+      "step": 10,
+      "line": 18,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "n": 3
+      }
+    },
+    {
+      "step": 11,
+      "line": 18,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "n": 3
+      }
+    },
+    {
+      "step": 12,
+      "line": 14,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "first": 3,
+        "n": 3
+      }
+    },
+    {
+      "step": 13,
+      "line": 15,
+      "type": "enter",
+      "func": "print_array",
+      "vars": {
+        "arr": [
+          1,
+          3,
+          2
+        ],
+        "n": 3
+      }
+    },
+    {
+      "step": 14,
+      "line": 8,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0,
+        "n": 3
+      }
+    },
+    {
+      "step": 15,
+      "line": 8,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "n": 3
+      }
+    },
+    {
+      "step": 16,
+      "line": 8,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "n": 3
+      }
+    },
+    {
+      "step": 17,
+      "line": 18,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "n": 3
+      }
+    },
+    {
+      "step": 18,
+      "line": 18,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "n": 3
+      }
+    },
+    {
+      "step": 19,
+      "line": 18,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "n": 3
+      }
+    },
+    {
+      "step": 20,
+      "line": 14,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "first": 3,
+        "n": 3
+      }
+    },
+    {
+      "step": 21,
+      "line": 15,
+      "type": "enter",
+      "func": "print_array",
+      "vars": {
+        "arr": [
+          2,
+          1,
+          3
+        ],
+        "n": 3
+      }
+    },
+    {
+      "step": 22,
+      "line": 8,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0,
+        "n": 3
+      }
+    },
+    {
+      "step": 23,
+      "line": 8,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "n": 3
+      }
+    },
+    {
+      "step": 24,
+      "line": 8,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "n": 3
+      }
+    },
+    {
+      "step": 25,
+      "line": 18,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "n": 3
+      }
+    },
+    {
+      "step": 26,
+      "line": 18,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "n": 3
+      }
+    },
+    {
+      "step": 27,
+      "line": 14,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "first": 3,
+        "n": 3
+      }
+    },
+    {
+      "step": 28,
+      "line": 15,
+      "type": "enter",
+      "func": "print_array",
+      "vars": {
+        "arr": [
+          2,
+          3,
+          1
+        ],
+        "n": 3
+      }
+    },
+    {
+      "step": 29,
+      "line": 8,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0,
+        "n": 3
+      }
+    },
+    {
+      "step": 30,
+      "line": 8,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "n": 3
+      }
+    },
+    {
+      "step": 31,
+      "line": 8,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "n": 3
+      }
+    },
+    {
+      "step": 32,
+      "line": 18,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "n": 3
+      }
+    },
+    {
+      "step": 33,
+      "line": 18,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "n": 3
+      }
+    },
+    {
+      "step": 34,
+      "line": 18,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "n": 3
+      }
+    },
+    {
+      "step": 35,
+      "line": 14,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "first": 3,
+        "n": 3
+      }
+    },
+    {
+      "step": 36,
+      "line": 15,
+      "type": "enter",
+      "func": "print_array",
+      "vars": {
+        "arr": [
+          3,
+          2,
+          1
+        ],
+        "n": 3
+      }
+    },
+    {
+      "step": 37,
+      "line": 8,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0,
+        "n": 3
+      }
+    },
+    {
+      "step": 38,
+      "line": 8,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "n": 3
+      }
+    },
+    {
+      "step": 39,
+      "line": 8,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "n": 3
+      }
+    },
+    {
+      "step": 40,
+      "line": 18,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "n": 3
+      }
+    },
+    {
+      "step": 41,
+      "line": 18,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "n": 3
+      }
+    },
+    {
+      "step": 42,
+      "line": 14,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "first": 3,
+        "n": 3
+      }
+    },
+    {
+      "step": 43,
+      "line": 15,
+      "type": "enter",
+      "func": "print_array",
+      "vars": {
+        "arr": [
+          3,
+          1,
+          2
+        ],
+        "n": 3
+      }
+    },
+    {
+      "step": 44,
+      "line": 8,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0,
+        "n": 3
+      }
+    },
+    {
+      "step": 45,
+      "line": 8,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "n": 3
+      }
+    },
+    {
+      "step": 46,
+      "line": 8,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "n": 3
+      }
+    },
+    {
+      "step": 47,
+      "line": 28,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 48,
+      "line": 28,
+      "type": "exit",
+      "func": "main",
+      "vars": {}
+    }
+  ],
+  "total_steps": 49
+}

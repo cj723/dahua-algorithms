@@ -1,0 +1,615 @@
+{
+  "meta": {
+    "algo": "01_打家劫舍",
+    "source_lines": [
+      "#include <stdio.h>",
+      "static int max_value(int a, int b) {",
+      "    return a > b ? a : b;",
+      "}",
+      "int rob(int* nums, int numsSize) {",
+      "    if (numsSize <= 0) return 0;",
+      "    if (numsSize == 1) return nums[0];",
+      "    int prev2 = 0;        /* 对应 dp[i-2] */",
+      "    int prev1 = nums[0];  /* 对应 dp[i-1] */",
+      "    int current = 0;      /* 对应 dp[i] */",
+      "    for (int i = 1; i < numsSize; i++) {",
+      "        current = max_value(prev1, prev2 + nums[i]);",
+      "        /* 历史向前滚动一格 */",
+      "        prev2 = prev1;",
+      "        prev1 = current;",
+      "    }",
+      "    return prev1;",
+      "}",
+      "// 测试：打家劫舍（滚动变量优化）",
+      "int main() {",
+      "    int houses1[] = {1, 2, 3, 1};",
+      "    printf(\"房屋[1,2,3,1] → 最高：%d（期望 4）\\n\",",
+      "           rob(houses1, 4));",
+      "    int houses2[] = {2, 7, 9, 3, 1};",
+      "    printf(\"房屋[2,7,9,3,1] → 最高：%d（期望 12）\\n\",",
+      "           rob(houses2, 5));",
+      "    printf(\"\\n说明：只用 prev2, prev1, current 三个变量，\\n\");",
+      "    printf(\"空间从 O(n) 降到 O(1)\\n\");",
+      "    return 0;",
+      "}"
+    ],
+    "track_vars": {
+      "primary": [
+        "a",
+        "i"
+      ],
+      "secondary": [
+        "_return",
+        "b",
+        "current",
+        "numsSize",
+        "prev1",
+        "prev2"
+      ]
+    },
+    "var_classes": {
+      "_return": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "a": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "b": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "current": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "i": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "numsSize": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "prev1": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "prev2": {
+        "category": "secondary",
+        "type": "scalar"
+      }
+    },
+    "viz_type": "array",
+    "initial_data": {
+      "houses1": [
+        1,
+        2,
+        3,
+        1
+      ],
+      "houses2": [
+        2,
+        7,
+        9,
+        3,
+        1
+      ]
+    },
+    "program_output": [
+      {
+        "after_step": 26,
+        "text": "房屋[1,2,3,1] → 最高：4（期望 4）"
+      },
+      {
+        "after_step": 58,
+        "text": "房屋[2,7,9,3,1] → 最高：12（期望 12） 说明：只用 prev2, prev1, current 三个变量， 空间从 O(n) 降到 O(1)"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step": 0,
+      "line": 20,
+      "type": "enter",
+      "func": "main",
+      "vars": {}
+    },
+    {
+      "step": 1,
+      "line": 6,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "numsSize": 4
+      }
+    },
+    {
+      "step": 2,
+      "line": 7,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "numsSize": 4
+      }
+    },
+    {
+      "step": 3,
+      "line": 11,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "numsSize": 4
+      }
+    },
+    {
+      "step": 4,
+      "line": 12,
+      "type": "enter",
+      "func": "max_value",
+      "vars": {
+        "a": 1,
+        "b": 2
+      }
+    },
+    {
+      "step": 5,
+      "line": 3,
+      "type": "exec",
+      "vars": {
+        "_return": 2
+      }
+    },
+    {
+      "step": 6,
+      "line": 3,
+      "type": "exit",
+      "func": "max_value",
+      "vars": {}
+    },
+    {
+      "step": 7,
+      "line": 12,
+      "type": "exec",
+      "vars": {
+        "current": 2
+      }
+    },
+    {
+      "step": 8,
+      "line": 14,
+      "type": "exec",
+      "vars": {
+        "prev2": 1
+      }
+    },
+    {
+      "step": 9,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "prev1": 2
+      }
+    },
+    {
+      "step": 10,
+      "line": 11,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "numsSize": 4
+      }
+    },
+    {
+      "step": 11,
+      "line": 12,
+      "type": "enter",
+      "func": "max_value",
+      "vars": {
+        "a": 2,
+        "b": 4
+      }
+    },
+    {
+      "step": 12,
+      "line": 3,
+      "type": "exec",
+      "vars": {
+        "_return": 4
+      }
+    },
+    {
+      "step": 13,
+      "line": 3,
+      "type": "exit",
+      "func": "max_value",
+      "vars": {}
+    },
+    {
+      "step": 14,
+      "line": 12,
+      "type": "exec",
+      "vars": {
+        "current": 4
+      }
+    },
+    {
+      "step": 15,
+      "line": 14,
+      "type": "exec",
+      "vars": {
+        "prev2": 2
+      }
+    },
+    {
+      "step": 16,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "prev1": 4
+      }
+    },
+    {
+      "step": 17,
+      "line": 11,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3,
+        "numsSize": 4
+      }
+    },
+    {
+      "step": 18,
+      "line": 12,
+      "type": "enter",
+      "func": "max_value",
+      "vars": {
+        "a": 4,
+        "b": 3
+      }
+    },
+    {
+      "step": 19,
+      "line": 3,
+      "type": "exec",
+      "vars": {
+        "_return": 4
+      }
+    },
+    {
+      "step": 20,
+      "line": 3,
+      "type": "exit",
+      "func": "max_value",
+      "vars": {}
+    },
+    {
+      "step": 21,
+      "line": 12,
+      "type": "exec",
+      "vars": {
+        "current": 4
+      }
+    },
+    {
+      "step": 22,
+      "line": 14,
+      "type": "exec",
+      "vars": {
+        "prev2": 4
+      }
+    },
+    {
+      "step": 23,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "prev1": 4
+      }
+    },
+    {
+      "step": 24,
+      "line": 17,
+      "type": "exec",
+      "vars": {
+        "_return": 4
+      }
+    },
+    {
+      "step": 25,
+      "line": 17,
+      "type": "exit",
+      "func": "rob",
+      "vars": {}
+    },
+    {
+      "step": 26,
+      "line": 6,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "numsSize": 5
+      }
+    },
+    {
+      "step": 27,
+      "line": 7,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "numsSize": 5
+      }
+    },
+    {
+      "step": 28,
+      "line": 11,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "numsSize": 5
+      }
+    },
+    {
+      "step": 29,
+      "line": 12,
+      "type": "enter",
+      "func": "max_value",
+      "vars": {
+        "a": 2,
+        "b": 7
+      }
+    },
+    {
+      "step": 30,
+      "line": 3,
+      "type": "exec",
+      "vars": {
+        "_return": 7
+      }
+    },
+    {
+      "step": 31,
+      "line": 3,
+      "type": "exit",
+      "func": "max_value",
+      "vars": {}
+    },
+    {
+      "step": 32,
+      "line": 12,
+      "type": "exec",
+      "vars": {
+        "current": 7
+      }
+    },
+    {
+      "step": 33,
+      "line": 14,
+      "type": "exec",
+      "vars": {
+        "prev2": 2
+      }
+    },
+    {
+      "step": 34,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "prev1": 7
+      }
+    },
+    {
+      "step": 35,
+      "line": 11,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "numsSize": 5
+      }
+    },
+    {
+      "step": 36,
+      "line": 12,
+      "type": "enter",
+      "func": "max_value",
+      "vars": {
+        "a": 7,
+        "b": 11
+      }
+    },
+    {
+      "step": 37,
+      "line": 3,
+      "type": "exec",
+      "vars": {
+        "_return": 11
+      }
+    },
+    {
+      "step": 38,
+      "line": 3,
+      "type": "exit",
+      "func": "max_value",
+      "vars": {}
+    },
+    {
+      "step": 39,
+      "line": 12,
+      "type": "exec",
+      "vars": {
+        "current": 11
+      }
+    },
+    {
+      "step": 40,
+      "line": 14,
+      "type": "exec",
+      "vars": {
+        "prev2": 7
+      }
+    },
+    {
+      "step": 41,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "prev1": 11
+      }
+    },
+    {
+      "step": 42,
+      "line": 11,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3,
+        "numsSize": 5
+      }
+    },
+    {
+      "step": 43,
+      "line": 12,
+      "type": "enter",
+      "func": "max_value",
+      "vars": {
+        "a": 11,
+        "b": 10
+      }
+    },
+    {
+      "step": 44,
+      "line": 3,
+      "type": "exec",
+      "vars": {
+        "_return": 11
+      }
+    },
+    {
+      "step": 45,
+      "line": 3,
+      "type": "exit",
+      "func": "max_value",
+      "vars": {}
+    },
+    {
+      "step": 46,
+      "line": 12,
+      "type": "exec",
+      "vars": {
+        "current": 11
+      }
+    },
+    {
+      "step": 47,
+      "line": 14,
+      "type": "exec",
+      "vars": {
+        "prev2": 11
+      }
+    },
+    {
+      "step": 48,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "prev1": 11
+      }
+    },
+    {
+      "step": 49,
+      "line": 11,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 4,
+        "numsSize": 5
+      }
+    },
+    {
+      "step": 50,
+      "line": 12,
+      "type": "enter",
+      "func": "max_value",
+      "vars": {
+        "a": 11,
+        "b": 12
+      }
+    },
+    {
+      "step": 51,
+      "line": 3,
+      "type": "exec",
+      "vars": {
+        "_return": 12
+      }
+    },
+    {
+      "step": 52,
+      "line": 3,
+      "type": "exit",
+      "func": "max_value",
+      "vars": {}
+    },
+    {
+      "step": 53,
+      "line": 12,
+      "type": "exec",
+      "vars": {
+        "current": 12
+      }
+    },
+    {
+      "step": 54,
+      "line": 14,
+      "type": "exec",
+      "vars": {
+        "prev2": 11
+      }
+    },
+    {
+      "step": 55,
+      "line": 15,
+      "type": "exec",
+      "vars": {
+        "prev1": 12
+      }
+    },
+    {
+      "step": 56,
+      "line": 17,
+      "type": "exec",
+      "vars": {
+        "_return": 12
+      }
+    },
+    {
+      "step": 57,
+      "line": 17,
+      "type": "exit",
+      "func": "rob",
+      "vars": {}
+    },
+    {
+      "step": 58,
+      "line": 29,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 59,
+      "line": 29,
+      "type": "exit",
+      "func": "main",
+      "vars": {}
+    }
+  ],
+  "total_steps": 60
+}

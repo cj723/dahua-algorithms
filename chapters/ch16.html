@@ -1,0 +1,3981 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#171b28">
+<link rel="icon" href="../assets/mascots/student-dog.png">
+<title>第16章 位运算魔法 · 大话算法</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #1e2336;
+  --panel: #1a1f30;
+  --panel-deep: #151920;
+  --surface: #21283a;
+  --border: #30384c;
+  --text: #d7dae0;
+  --text-soft: #abb4c3;
+  --text-dim: #929caf;
+  --accent: #59a8ee;
+  --accent-soft: #243f5e;
+  --success: #98c379;
+  --control-height: 64px;
+}
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Noto Sans SC', 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text-soft);
+  overflow: hidden;
+}
+button, input, summary { font: inherit; }
+button:focus-visible, a:focus-visible, input:focus-visible, summary:focus-visible, [tabindex]:focus-visible {
+  outline: 3px solid rgba(89,168,238,.58);
+  outline-offset: 2px;
+}
+.header {
+  height: 65px;
+  background: rgba(23,28,43,.96);
+  padding: 0 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  position: relative;
+  z-index: 30;
+}
+.back-link {
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 13px;
+  white-space: nowrap;
+}
+.back-link:hover { text-decoration: underline; }
+.chapter-heading { min-width: 0; flex: 1; }
+.chapter-kicker { color: var(--text-dim); font-size: 12px; margin-bottom: 2px; }
+.chapter-heading h1 {
+  font-size: 19px;
+  line-height: 1.25;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.chapter-status {
+  min-width: 138px;
+  display: grid;
+  gap: 5px;
+}
+.chapter-status-text { color: var(--text-dim); font-size: 11px; text-align: right; }
+.chapter-status-track { height: 4px; background: #252c3e; border-radius: 99px; overflow: hidden; }
+.chapter-status-fill {
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, var(--accent), var(--success));
+  border-radius: inherit;
+  transition: width .3s ease;
+}
+.chapter-nav { display: flex; gap: 6px; }
+.chapter-nav a, .chapter-nav span {
+  min-width: 36px;
+  height: 36px;
+  padding: 0 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-soft);
+  text-decoration: none;
+  font-size: 12px;
+}
+.chapter-nav a:hover { border-color: var(--accent); color: var(--text); background: #202b40; }
+.chapter-nav .disabled { opacity: .35; cursor: default; }
+.mobile-view-switcher { display: none; }
+.main { display: flex; height: calc(100dvh - 65px); min-height: 0; }
+.code-panel {
+  width: 45%;
+  min-width: 360px;
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.code-header {
+  background: var(--panel);
+  padding: 9px 14px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.algo-tabs {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  flex: 1;
+  min-width: 0;
+}
+.algo-tab, .mode-tab {
+  border: 1px solid var(--border);
+  background: #22283a;
+  color: var(--text-dim);
+  border-radius: 7px;
+  cursor: pointer;
+  transition: background .18s ease, border-color .18s ease, color .18s ease;
+}
+.algo-tab { padding: 6px 11px; font-size: 12px; position: relative; }
+.algo-tab:hover, .mode-tab:hover { color: var(--text); border-color: #48536b; }
+.algo-tab.active, .mode-tab.active {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: #e8f3ff;
+}
+.algo-tab.completed::after {
+  content: '✓';
+  margin-left: 6px;
+  color: var(--success);
+  font-weight: 800;
+}
+.breakpoint-hint {
+  color: #737e92;
+  font-size: 11px;
+  line-height: 29px;
+  white-space: nowrap;
+}
+.mode-tabs {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: #171c2b;
+  border-bottom: 1px solid var(--border);
+}
+.mode-tabs.visible { display: flex; }
+.mode-label { font-size: 12px; color: var(--text-dim); margin-right: 2px; }
+.mode-tab { padding: 5px 12px; border-radius: 999px; font-size: 12px; }
+.code-body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  font-family: 'SFMono-Regular', 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+  font-size: var(--code-font-size, 15px);
+  line-height: 1.8;
+  scrollbar-color: #3b455c transparent;
+}
+.code-line { display: flex; min-width: max-content; padding: 0 16px 0 7px; position: relative; }
+.code-line:hover { background: #22283a; }
+.code-line.active {
+  background: rgba(73,164,238,.32);
+  border-left: 3px solid var(--accent);
+  box-shadow: inset 0 0 16px rgba(73,164,238,.18);
+}
+.code-line.executed { background: rgba(73,164,238,.035); }
+.code-line.setup { background: rgba(127,132,142,.045); color: #667084; }
+.line-num {
+  width: 42px;
+  border: 0;
+  background: transparent;
+  text-align: right;
+  color: #748096;
+  padding-right: 12px;
+  user-select: none;
+  flex-shrink: 0;
+  position: relative;
+  cursor: pointer;
+}
+.line-num:hover { color: var(--accent); }
+.line-num .breakpoint {
+  position: absolute;
+  left: 3px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #e05561;
+}
+.line-content { flex: 1; white-space: pre; }
+.kw, .num { color: #F3A862; }
+.fn { color: #59a8ee; }
+.var { color: #D980FA; }
+.str { color: #74C589; }
+.cmt { color: #71939a; font-style: italic; }
+.right-panel { flex: 1; display: flex; flex-direction: column; min-width: 0; min-height: 0; overflow: hidden; }
+.viz-panel {
+  flex: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 20px;
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
+}
+.viz-panel canvas { width: 100%; height: 100%; display: block; }
+body.concept-mode .viz-panel { flex: 1 1 auto; padding: 6px 20px; }
+body.concept-mode .vars-panel { flex: 0 1 168px; padding: 8px 18px; }
+body.concept-mode .output-panel { flex: 0 1 68px; padding: 6px 16px; }
+body.concept-mode .callstack { display: none; }
+.callstack {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  max-width: calc(100% - 24px);
+  background: rgba(33,38,54,.92);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 12px;
+  pointer-events: none;
+}
+.callstack-title, .vars-panel h3, .output-panel h3 { color: var(--text-dim); }
+.callstack-title { margin-bottom: 4px; }
+.callstack-item { color: var(--accent); padding: 2px 0; }
+.callstack-item::before { content: '▸ '; color: #68758a; }
+.vars-panel {
+  flex: 2;
+  background: var(--panel);
+  padding: 10px 18px;
+  border-top: 1px solid var(--border);
+  overflow-y: auto;
+  min-height: 0;
+}
+.output-panel {
+  flex: 1;
+  background: var(--panel-deep);
+  border-top: 1px solid var(--border);
+  padding: 8px 16px;
+  overflow-y: auto;
+  min-height: 0;
+  font-family: 'SFMono-Regular', 'JetBrains Mono', monospace;
+  font-size: var(--output-font-size, 13px);
+  color: var(--text-dim);
+}
+.output-panel h3 {
+  font-size: 12px;
+  margin-bottom: 4px;
+  position: sticky;
+  top: 0;
+  background: var(--panel-deep);
+  padding-bottom: 4px;
+  z-index: 1;
+}
+.output-line { padding: 1px 0; white-space: pre-wrap; word-break: break-word; }
+.vars-panel h3 { font-size: 13px; margin-bottom: 9px; }
+.var-grid { display: flex; flex-direction: column; gap: 6px; }
+.var-section-title { font-size: 11px; color: var(--text-dim); margin: 8px 0 4px; }
+.var-section:first-child .var-section-title { margin-top: 0; }
+.var-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.var-item {
+  background: #22283a;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 6px 13px;
+  font-family: monospace;
+  font-size: var(--var-font-size, 14px);
+}
+.var-name { color: var(--accent); }
+.var-val { color: var(--text); font-weight: 650; }
+.var-changed { animation: varPulse .5s ease; border-color: var(--accent); }
+.var-highlight { border-color: var(--accent); background: var(--accent-soft); }
+@keyframes varPulse { 0% { background: var(--accent-soft); } 100% { background: #22283a; } }
+.var-toggle { font-size: 12px; color: var(--text-dim); cursor: pointer; padding: 4px 0; user-select: none; }
+.control-bar {
+  min-height: var(--control-height);
+  flex-shrink: 0;
+  background: var(--panel);
+  border-top: 1px solid var(--border);
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+  z-index: 20;
+}
+.transport-controls { display: flex; align-items: center; gap: 7px; }
+.btn {
+  min-height: 38px;
+  background: #22283a;
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  white-space: nowrap;
+}
+.btn:hover:not(:disabled) { background: #2a3247; border-color: #4c5872; }
+.btn:disabled { opacity: .36; cursor: not-allowed; }
+.btn-primary { min-width: 82px; background: var(--accent-soft); border-color: var(--accent); }
+.btn-active { background: #285176; border-color: #77bfff; }
+.step-info {
+  margin-left: auto;
+  min-width: 68px;
+  font-size: 12px;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+.step-info strong { color: var(--text); }
+.settings-menu { position: relative; }
+.settings-menu summary {
+  list-style: none;
+  min-height: 38px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-soft);
+  cursor: pointer;
+  font-size: 12px;
+  user-select: none;
+}
+.settings-menu summary::-webkit-details-marker { display: none; }
+.settings-menu[open] summary { border-color: var(--accent); background: var(--accent-soft); color: var(--text); }
+.settings-popover {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 10px);
+  width: 250px;
+  padding: 14px;
+  display: grid;
+  gap: 12px;
+  background: rgba(23,28,43,.98);
+  border: 1px solid #3a465f;
+  border-radius: 12px;
+  box-shadow: 0 16px 42px rgba(0,0,0,.38);
+}
+.setting-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.setting-row label, .shortcut-help { font-size: 12px; color: var(--text-dim); }
+.speed-slider { width: 130px; accent-color: var(--accent); }
+.font-control { display: flex; align-items: center; gap: 6px; }
+.btn-sm { min-height: 32px; padding: 5px 10px; font-size: 12px; }
+.settings-divider { height: 1px; background: var(--border); }
+.shortcut-help { line-height: 1.65; }
+
+@media (max-width: 1050px) {
+  .code-panel { width: 42%; min-width: 320px; }
+  .chapter-status { display: none; }
+  .breakpoint-hint { display: none; }
+  .btn { padding-inline: 10px; }
+}
+
+@media (max-width: 900px) {
+  body { overflow: auto; padding-bottom: 72px; }
+  .header {
+    height: auto;
+    min-height: 60px;
+    padding: 8px 12px;
+    gap: 10px;
+    position: sticky;
+    top: 0;
+  }
+  .back-link { font-size: 0; width: 36px; height: 36px; display: grid; place-items: center; }
+  .back-link::before { content: '←'; font-size: 21px; }
+  .chapter-kicker { font-size: 10px; }
+  .chapter-heading h1 { font-size: 16px; }
+  .chapter-nav a, .chapter-nav span { width: 34px; min-width: 34px; padding: 0; font-size: 0; }
+  .chapter-nav a:first-child::before, .chapter-nav span:first-child::before { content: '‹'; font-size: 22px; }
+  .chapter-nav a:last-child::before, .chapter-nav span:last-child::before { content: '›'; font-size: 22px; }
+  .mobile-view-switcher {
+    position: sticky;
+    top: 60px;
+    z-index: 25;
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 4px;
+    padding: 7px 10px;
+    background: rgba(23,28,43,.97);
+    border-bottom: 1px solid var(--border);
+  }
+  .mobile-view-switcher button {
+    min-height: 38px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text-dim);
+  }
+  .mobile-view-switcher button.active {
+    color: #e8f3ff;
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+  .main { display: block; height: auto; min-height: calc(100dvh - 114px); }
+  .code-panel, .right-panel { width: 100%; min-width: 0; border: 0; }
+  .code-panel { height: calc(100dvh - 186px); }
+  .code-header { padding: 8px 10px; overflow: hidden; }
+  .algo-tabs { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 3px; scrollbar-width: thin; }
+  .algo-tab { flex: 0 0 auto; min-height: 38px; }
+  .mode-tabs { padding: 7px 10px; overflow-x: auto; }
+  .code-body { min-height: 0; font-size: max(13px,var(--code-font-size,15px)); }
+  .code-line { padding-right: 12px; }
+  .right-panel { min-height: calc(100dvh - 186px); overflow: visible; }
+  .viz-panel { height: calc(100dvh - 186px); min-height: 430px; flex: none !important; padding: 8px 10px !important; }
+  .vars-panel { min-height: 50dvh; padding: 14px; }
+  .output-panel { min-height: 28dvh; padding: 12px 14px; }
+  body[data-mobile-view="animation"] .code-panel,
+  body[data-mobile-view="animation"] .vars-panel,
+  body[data-mobile-view="animation"] .output-panel { display: none; }
+  body[data-mobile-view="code"] .right-panel > :not(.control-bar),
+  body[data-mobile-view="code"] .vars-panel,
+  body[data-mobile-view="code"] .output-panel { display: none; }
+  body[data-mobile-view="code"] .right-panel { min-height: 0; }
+  body[data-mobile-view="data"] .code-panel,
+  body[data-mobile-view="data"] .viz-panel { display: none; }
+  body[data-mobile-view="data"] .right-panel { min-height: calc(100dvh - 186px); }
+  .control-bar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    min-height: 72px;
+    padding: 9px max(10px,env(safe-area-inset-right)) calc(9px + env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left));
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 -10px 30px rgba(9,12,20,.36);
+  }
+  .transport-controls { gap: 7px; }
+  #btn-reset { display: none; }
+  .btn { min-width: 48px; min-height: 44px; padding: 8px 10px; font-size: 0; }
+  #btn-back::after { content: '◀'; font-size: 16px; }
+  #btn-play { min-width: 92px; font-size: 14px; }
+  #btn-step::after { content: '▶'; font-size: 16px; }
+  .step-info { margin-left: 0; min-width: 52px; text-align: center; font-size: 11px; }
+  .step-info .step-prefix { display: none; }
+  .settings-menu summary { width: 44px; min-height: 44px; padding: 0; justify-content: center; font-size: 0; }
+  .settings-menu summary::before { content: '⚙'; font-size: 17px; }
+  .settings-popover { right: -2px; width: min(280px,calc(100vw - 20px)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: .001ms !important;
+  }
+}
+</style>
+</head>
+<body data-mobile-view="animation">
+
+<header class="header">
+  <a class="back-link" href="../index.html" aria-label="返回学习地图">← 学习地图</a>
+  <div class="chapter-heading">
+    <div class="chapter-kicker">第16章</div>
+    <h1>位运算魔法</h1>
+  </div>
+  <div class="chapter-status" aria-label="本章学习进度">
+    <div class="chapter-status-text" id="chapter-progress-text">0 / 0 个演示完成</div>
+    <div class="chapter-status-track"><div class="chapter-status-fill" id="chapter-progress-fill"></div></div>
+  </div>
+  <nav class="chapter-nav" aria-label="章节导航">
+    <a href="ch15.html" aria-label="上一章：高级数据结构" title="上一章：高级数据结构">上一章</a>
+    <a href="ch17.html" aria-label="下一章：概率算法" title="下一章：概率算法">下一章</a>
+  </nav>
+</header>
+
+<div class="mobile-view-switcher" role="tablist" aria-label="学习视图">
+  <button type="button" class="active" data-mobile-view="animation" role="tab" aria-selected="true">动画</button>
+  <button type="button" data-mobile-view="code" role="tab" aria-selected="false">代码</button>
+  <button type="button" data-mobile-view="data" role="tab" aria-selected="false">变量</button>
+</div>
+
+<main class="main">
+  <section class="code-panel" aria-label="算法代码">
+    <div class="code-header">
+      <div class="algo-tabs" id="algo-tabs" role="tablist" aria-label="本章算法"></div>
+      <span class="breakpoint-hint">点击行号可设断点</span>
+    </div>
+    <div class="mode-tabs" id="mode-tabs" role="tablist" aria-label="演示模式"></div>
+    <div class="code-body" id="code-body" aria-label="代码执行过程"></div>
+  </section>
+
+  <section class="right-panel" aria-label="算法可视化与状态">
+    <div class="viz-panel">
+      <canvas id="viz-canvas" width="800" height="300" role="img" aria-label="算法执行动画"></canvas>
+      <div class="callstack" id="callstack"><div class="callstack-title">调用栈</div></div>
+    </div>
+    <div class="vars-panel">
+      <h3>变量状态</h3>
+      <div class="var-grid" id="var-grid"></div>
+    </div>
+    <div class="output-panel" id="output-panel">
+      <h3>程序输出</h3>
+      <div id="output-content" aria-live="polite"></div>
+    </div>
+
+    <div class="control-bar" aria-label="播放控制">
+      <div class="transport-controls">
+        <button class="btn" id="btn-reset" type="button" aria-label="重置当前演示" title="重置当前演示">⏮ 重置</button>
+        <button class="btn" id="btn-back" type="button" aria-label="上一步" title="上一步">◀ 后退</button>
+        <button class="btn btn-primary" id="btn-play" type="button" aria-label="播放或暂停">▶ 播放</button>
+        <button class="btn" id="btn-step" type="button" aria-label="下一步" title="下一步">⏭ 单步</button>
+      </div>
+      <div class="step-info" aria-live="polite">
+        <span class="step-prefix">步骤 </span><strong id="step-cur">0</strong> / <strong id="step-total">0</strong>
+      </div>
+      <details class="settings-menu">
+        <summary aria-label="播放设置">⚙ 设置</summary>
+        <div class="settings-popover">
+          <div class="setting-row">
+            <label for="speed-slider">播放速度</label>
+            <input type="range" class="speed-slider" id="speed-slider" min="1" max="10" value="5" aria-valuetext="速度 5">
+          </div>
+          <div class="setting-row">
+            <span class="mode-label">代码字体</span>
+            <div class="font-control">
+              <button class="btn btn-sm" type="button" id="font-dec" aria-label="减小代码字体">A−</button>
+              <button class="btn btn-sm" type="button" id="font-inc" aria-label="增大代码字体">A＋</button>
+            </div>
+          </div>
+          <button class="btn" id="btn-to-bp" type="button">运行到断点</button>
+          <div class="settings-divider"></div>
+          <div class="shortcut-help">页面空白处：空格播放/暂停，← → 单步，R 重置</div>
+        </div>
+      </details>
+    </div>
+  </section>
+</main>
+
+<script src="../js/learning-state.js?v=20260725"></script>
+<script src="../js/engine.js?v=20260725-ux2"></script>
+<script src="../js/viz-renderers.js?v=20260725-layout-audit"></script>
+<script>
+const CHAPTER_NUM = 16;
+const ALGOS = {
+  "01_BrianKernighan_统计1的个数": {
+    "title": "Brian Kernighan（统计 1 的个数）",
+    "defaultMode": "concept",
+    "modeLabels": {
+      "concept": "理解动画",
+      "trace": "代码执行"
+    },
+    "modes": {
+      "concept": {
+        "title": "Brian Kernighan（统计 1 的个数）",
+        "source": [
+          "算法: Brian Kernighan 统计 1 的个数",
+          "输入: n",
+          "输出: n 的二进制中 1 的数量",
+          "",
+          "count = 0",
+          "while n != 0:",
+          "    n = n & (n - 1)",
+          "    count++"
+        ],
+        "important_vars": {
+          "value": "状态",
+          "result": "状态",
+          "phase": "状态"
+        },
+        "track_vars": {
+          "primary": [
+            "value",
+            "result",
+            "phase"
+          ],
+          "secondary": []
+        },
+        "var_classes": {
+          "value": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "result": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "phase": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "concept": {
+            "category": "secondary",
+            "type": "concept"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 4,
+            "text": "概念动画：n & (n-1) 每次精准清掉最低位的 1。"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 5,
+            "type": "exec",
+            "vars": {
+              "value": 42,
+              "result": 0,
+              "phase": "42 的二进制是 101010, 里面有几个 1 就循环几次",
+              "concept": {
+                "kind": "bit_visual",
+                "title": "BrianKernighan_统计1的个数",
+                "bits": "101010",
+                "rows": [],
+                "active": [
+                  1,
+                  3,
+                  5
+                ],
+                "labels": [],
+                "caption": "42 的二进制是 101010, 里面有几个 1 就循环几次"
+              }
+            }
+          },
+          {
+            "step": 1,
+            "line": 7,
+            "type": "exec",
+            "vars": {
+              "value": "42 & 41",
+              "result": 1,
+              "phase": "第一次 n&(n-1), 清掉最右边的 1",
+              "concept": {
+                "kind": "bit_visual",
+                "title": "BrianKernighan_统计1的个数",
+                "bits": [],
+                "rows": [
+                  [
+                    "n",
+                    "101010"
+                  ],
+                  [
+                    "n-1",
+                    "101001"
+                  ],
+                  [
+                    "n&(n-1)",
+                    "101000"
+                  ]
+                ],
+                "active": [
+                  5
+                ],
+                "labels": [],
+                "caption": "第一次 n&(n-1), 清掉最右边的 1"
+              }
+            }
+          },
+          {
+            "step": 2,
+            "line": 7,
+            "type": "exec",
+            "vars": {
+              "value": "40 & 39",
+              "result": 2,
+              "phase": "第二次继续清掉当前最右边的 1",
+              "concept": {
+                "kind": "bit_visual",
+                "title": "BrianKernighan_统计1的个数",
+                "bits": [],
+                "rows": [
+                  [
+                    "n",
+                    "101000"
+                  ],
+                  [
+                    "n-1",
+                    "100111"
+                  ],
+                  [
+                    "n&(n-1)",
+                    "100000"
+                  ]
+                ],
+                "active": [
+                  3
+                ],
+                "labels": [],
+                "caption": "第二次继续清掉当前最右边的 1"
+              }
+            }
+          },
+          {
+            "step": 3,
+            "line": 8,
+            "type": "exec",
+            "vars": {
+              "value": "32 & 31",
+              "result": 3,
+              "phase": "清到 0 为止, 一共清了 3 次, 所以有 3 个 1",
+              "concept": {
+                "kind": "bit_visual",
+                "title": "BrianKernighan_统计1的个数",
+                "bits": [],
+                "rows": [
+                  [
+                    "n",
+                    "100000"
+                  ],
+                  [
+                    "n-1",
+                    "011111"
+                  ],
+                  [
+                    "n&(n-1)",
+                    "000000"
+                  ]
+                ],
+                "active": [
+                  1
+                ],
+                "labels": [],
+                "caption": "清到 0 为止, 一共清了 3 次, 所以有 3 个 1"
+              }
+            }
+          }
+        ]
+      },
+      "trace": {
+        "title": "Brian Kernighan（统计 1 的个数）",
+        "source": [
+          "#include <stdio.h>",
+          "#include <stdlib.h>",
+          "#include <string.h>",
+          "",
+          "/* 统计整数 n 的二进制表示中有多少个 1 */",
+          "/* 思路：每次 n & (n - 1) 清掉最低位的 1，计数 + 1 */",
+          "/* 类比：拔萝卜——每次拔掉最矮的那个萝卜，数拔了几次 */",
+          "",
+          "int count_bits(unsigned int n) {",
+          "    int count = 0;          /* 计数器初始化为 0 */",
+          "    while (n != 0) {        /* 只要 n 不为 0，说明还有 1 */",
+          "        n = n & (n - 1);    /* 清掉最低位的 1 */",
+          "        count++;            /* 计数加 1 */",
+          "    }",
+          "    return count;           /* 返回 1 的个数 */",
+          "}",
+          "",
+          "",
+          "// 测试：Brian Kernighan 算法统计二进制中 1 的个数",
+          "int main(void) {",
+          "    printf(\"Brian Kernighan 算法：每次 n & (n - 1) 消掉最低位的 1\\n\\n\");",
+          "    printf(\"count_bits(0)  = %d  （0b0）\\n\", count_bits(0));",
+          "    printf(\"count_bits(7)  = %d  （0b111）\\n\", count_bits(7));",
+          "    printf(\"count_bits(15) = %d （0b1111）\\n\", count_bits(15));",
+          "    printf(\"count_bits(42) = %d （0b101010）\\n\", count_bits(42));",
+          "    printf(\"\\n时间复杂度 = O(1 的个数)，比逐位检查的 O(log n) 更快\\n\");",
+          "",
+          "    return 0;",
+          "}",
+          ""
+        ],
+        "important_vars": {
+          "count": "参数"
+        },
+        "track_vars": {
+          "primary": [
+            "count",
+            "n"
+          ],
+          "secondary": [
+            "_return"
+          ]
+        },
+        "var_classes": {
+          "_return": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "count": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "n": {
+            "category": "primary",
+            "type": "scalar"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 14,
+            "text": "Brian Kernighan 算法：每次 n & (n-1) 消掉最低位的1；count_bits(0)  = 0  （0b0）；count_bits(7)  = 3  （0b111）；count_bits(15) = 4 （0b1111）；count_bits(42) = 3 （0b101010） 时间复杂度 = O(1的个数)，比逐位检查的 O(log n) 更快"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 16,
+            "type": "enter",
+            "func": "main",
+            "vars": {}
+          },
+          {
+            "step": 1,
+            "line": 18,
+            "type": "enter",
+            "func": "count_bits",
+            "vars": {
+              "n": 0
+            }
+          },
+          {
+            "step": 2,
+            "line": 13,
+            "type": "exec",
+            "vars": {
+              "_return": 0
+            }
+          },
+          {
+            "step": 3,
+            "line": 13,
+            "type": "exit",
+            "func": "count_bits",
+            "vars": {}
+          },
+          {
+            "step": 4,
+            "line": 19,
+            "type": "enter",
+            "func": "count_bits",
+            "vars": {
+              "n": 7
+            }
+          },
+          {
+            "step": 5,
+            "line": 13,
+            "type": "exit",
+            "func": "count_bits",
+            "vars": {}
+          },
+          {
+            "step": 6,
+            "line": 20,
+            "type": "enter",
+            "func": "count_bits",
+            "vars": {
+              "n": 15
+            }
+          },
+          {
+            "step": 7,
+            "line": 9,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "n": 15
+            }
+          },
+          {
+            "step": 8,
+            "line": 13,
+            "type": "exec",
+            "vars": {
+              "_return": 4
+            }
+          },
+          {
+            "step": 9,
+            "line": 13,
+            "type": "exit",
+            "func": "count_bits",
+            "vars": {}
+          },
+          {
+            "step": 10,
+            "line": 21,
+            "type": "enter",
+            "func": "count_bits",
+            "vars": {
+              "n": 42
+            }
+          },
+          {
+            "step": 11,
+            "line": 13,
+            "type": "exit",
+            "func": "count_bits",
+            "vars": {}
+          },
+          {
+            "step": 12,
+            "line": 23,
+            "type": "exec",
+            "vars": {
+              "_return": 0
+            }
+          },
+          {
+            "step": 13,
+            "line": 23,
+            "type": "exit",
+            "func": "main",
+            "vars": {
+              "n": "-",
+              "phase": "程序执行完成，结果见下方输出"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "02_判断2的幂": {
+    "title": "判断2的幂",
+    "defaultMode": "concept",
+    "modeLabels": {
+      "concept": "理解动画",
+      "trace": "代码执行"
+    },
+    "modes": {
+      "concept": {
+        "title": "判断2的幂",
+        "source": [
+          "算法: 判断 2 的幂",
+          "输入: n",
+          "输出: n 是否为 2 的幂",
+          "",
+          "如果 n <= 0: false",
+          "如果 n & (n - 1) == 0: true",
+          "否则 false"
+        ],
+        "important_vars": {
+          "value": "状态",
+          "result": "状态",
+          "phase": "状态"
+        },
+        "track_vars": {
+          "primary": [
+            "value",
+            "result",
+            "phase"
+          ],
+          "secondary": []
+        },
+        "var_classes": {
+          "value": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "result": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "phase": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "concept": {
+            "category": "secondary",
+            "type": "concept"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 3,
+            "text": "概念动画：只要 n&(n-1) 不是 0, 就说明二进制里不止一个 1。"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 5,
+            "type": "exec",
+            "vars": {
+              "value": 8,
+              "result": "true",
+              "phase": "2 的幂只有一个 1, 像独行侠",
+              "concept": {
+                "kind": "bit_visual",
+                "title": "判断2的幂",
+                "bits": "1000",
+                "rows": [],
+                "active": [
+                  0
+                ],
+                "labels": [],
+                "caption": "2 的幂只有一个 1, 像独行侠"
+              }
+            }
+          },
+          {
+            "step": 1,
+            "line": 6,
+            "type": "exec",
+            "vars": {
+              "value": "8 & 7",
+              "result": 0,
+              "phase": "唯一的 1 被清掉后变成 0, 所以 8 是 2 的幂",
+              "concept": {
+                "kind": "bit_visual",
+                "title": "判断2的幂",
+                "bits": [],
+                "rows": [
+                  [
+                    "8",
+                    "1000"
+                  ],
+                  [
+                    "7",
+                    "0111"
+                  ],
+                  [
+                    "&",
+                    "0000"
+                  ]
+                ],
+                "active": [
+                  0
+                ],
+                "labels": [],
+                "caption": "唯一的 1 被清掉后变成 0, 所以 8 是 2 的幂"
+              }
+            }
+          },
+          {
+            "step": 2,
+            "line": 7,
+            "type": "exec",
+            "vars": {
+              "value": "10 & 9",
+              "result": 8,
+              "phase": "10 有两个 1, 清掉一个后还剩 1, 所以不是 2 的幂",
+              "concept": {
+                "kind": "bit_visual",
+                "title": "判断2的幂",
+                "bits": [],
+                "rows": [
+                  [
+                    "10",
+                    "1010"
+                  ],
+                  [
+                    "9",
+                    "1001"
+                  ],
+                  [
+                    "&",
+                    "1000"
+                  ]
+                ],
+                "active": [
+                  0,
+                  2
+                ],
+                "labels": [],
+                "caption": "10 有两个 1, 清掉一个后还剩 1, 所以不是 2 的幂"
+              }
+            }
+          }
+        ]
+      },
+      "trace": {
+        "title": "判断2的幂",
+        "source": [
+          "#include <stdio.h>",
+          "#include <stdlib.h>",
+          "#include <string.h>",
+          "",
+          "/* 判断正整数 n 是否是 2 的幂 */",
+          "/* 思路：2 的幂只有一个 1，n & (n - 1) 应该等于 0 */",
+          "/* 类比：2 的幂就像独行侠——只携带一个“1” */",
+          "int is_power_of_two(unsigned int n) {",
+          "    return n != 0 && ((n & (n - 1)) == 0);",
+          "}",
+          "",
+          "",
+          "// 测试：判断一个数是否是 2 的幂",
+          "int main(void) {",
+          "    printf(\"判断依据：2 的幂的二进制只有一个 1，n & (n - 1) == 0\\n\\n\");",
+          "    printf(\"is_power_of_two(1)  = %d （0b1）\\n\", is_power_of_two(1));",
+          "    printf(\"is_power_of_two(2)  = %d （0b10）\\n\", is_power_of_two(2));",
+          "    printf(\"is_power_of_two(8)  = %d （0b1000）\\n\", is_power_of_two(8));",
+          "    printf(\"is_power_of_two(10) = %d （0b1010——不是 2 的幂）\\n\", is_power_of_two(10));",
+          "    printf(\"is_power_of_two(0)  = %d （0 不是 2 的幂）\\n\", is_power_of_two(0));",
+          "",
+          "    return 0;",
+          "}",
+          ""
+        ],
+        "important_vars": {},
+        "track_vars": {
+          "primary": [
+            "n"
+          ],
+          "secondary": [
+            "_return"
+          ]
+        },
+        "var_classes": {
+          "_return": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "n": {
+            "category": "primary",
+            "type": "scalar"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 14,
+            "text": "判断依据：2的幂的二进制只有一个1，n & (n-1) == 0；is_power_of_two(1)  = 1 （0b1）；is_power_of_two(2)  = 1 （0b10）；is_power_of_two(8)  = 1 （0b1000）；is_power_of_two(10) = 0 （0b1010——不是2的幂）；is_power_of_two(0)  = 0 （0不是2的幂）"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 11,
+            "type": "enter",
+            "func": "main",
+            "vars": {}
+          },
+          {
+            "step": 1,
+            "line": 13,
+            "type": "enter",
+            "func": "is_power_of_two",
+            "vars": {
+              "n": 1
+            }
+          },
+          {
+            "step": 2,
+            "line": 8,
+            "type": "exec",
+            "vars": {
+              "_return": 1
+            }
+          },
+          {
+            "step": 3,
+            "line": 8,
+            "type": "exit",
+            "func": "is_power_of_two",
+            "vars": {}
+          },
+          {
+            "step": 4,
+            "line": 14,
+            "type": "enter",
+            "func": "is_power_of_two",
+            "vars": {
+              "n": 2
+            }
+          },
+          {
+            "step": 5,
+            "line": 8,
+            "type": "exit",
+            "func": "is_power_of_two",
+            "vars": {}
+          },
+          {
+            "step": 6,
+            "line": 15,
+            "type": "enter",
+            "func": "is_power_of_two",
+            "vars": {
+              "n": 8
+            }
+          },
+          {
+            "step": 7,
+            "line": 8,
+            "type": "exit",
+            "func": "is_power_of_two",
+            "vars": {}
+          },
+          {
+            "step": 8,
+            "line": 16,
+            "type": "enter",
+            "func": "is_power_of_two",
+            "vars": {
+              "n": 10
+            }
+          },
+          {
+            "step": 9,
+            "line": 8,
+            "type": "exit",
+            "func": "is_power_of_two",
+            "vars": {}
+          },
+          {
+            "step": 10,
+            "line": 17,
+            "type": "enter",
+            "func": "is_power_of_two",
+            "vars": {
+              "n": 0
+            }
+          },
+          {
+            "step": 11,
+            "line": 8,
+            "type": "exit",
+            "func": "is_power_of_two",
+            "vars": {}
+          },
+          {
+            "step": 12,
+            "line": 18,
+            "type": "exec",
+            "vars": {
+              "_return": 0
+            }
+          },
+          {
+            "step": 13,
+            "line": 18,
+            "type": "exit",
+            "func": "main",
+            "vars": {
+              "n": "-",
+              "phase": "程序执行完成，结果见下方输出"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "03_异或交换": {
+    "title": "异或交换",
+    "defaultMode": "concept",
+    "modeLabels": {
+      "concept": "理解动画",
+      "trace": "代码执行"
+    },
+    "modes": {
+      "concept": {
+        "title": "异或交换",
+        "source": [
+          "算法: 异或交换",
+          "输入: a=5, b=3",
+          "输出: 交换后的 a,b",
+          "",
+          "a = a ^ b",
+          "b = a ^ b",
+          "a = a ^ b"
+        ],
+        "important_vars": {
+          "value": "状态",
+          "result": "状态",
+          "phase": "状态"
+        },
+        "track_vars": {
+          "primary": [
+            "value",
+            "result",
+            "phase"
+          ],
+          "secondary": []
+        },
+        "var_classes": {
+          "value": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "result": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "phase": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "concept": {
+            "category": "secondary",
+            "type": "concept"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 4,
+            "text": "概念动画：异或交换靠 a^a=0 和 a^0=a 把两个值还原出来。"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 1,
+            "type": "exec",
+            "vars": {
+              "value": "a=5,b=3",
+              "result": "0101 / 0011",
+              "phase": "先看成二进制: a=0101, b=0011",
+              "concept": {
+                "kind": "bit_visual",
+                "title": "异或交换",
+                "bits": [],
+                "rows": [
+                  [
+                    "a",
+                    "0101"
+                  ],
+                  [
+                    "b",
+                    "0011"
+                  ]
+                ],
+                "active": [],
+                "labels": [],
+                "caption": "先看成二进制: a=0101, b=0011"
+              }
+            }
+          },
+          {
+            "step": 1,
+            "line": 5,
+            "type": "exec",
+            "vars": {
+              "value": "a=a^b",
+              "result": "0110",
+              "phase": "第一步把两个数的差异信息暂存在 a 里",
+              "concept": {
+                "kind": "bit_visual",
+                "title": "异或交换",
+                "bits": [],
+                "rows": [
+                  [
+                    "a",
+                    "0101"
+                  ],
+                  [
+                    "b",
+                    "0011"
+                  ],
+                  [
+                    "a^b",
+                    "0110"
+                  ]
+                ],
+                "active": [
+                  1,
+                  2
+                ],
+                "labels": [],
+                "caption": "第一步把两个数的差异信息暂存在 a 里"
+              }
+            }
+          },
+          {
+            "step": 2,
+            "line": 6,
+            "type": "exec",
+            "vars": {
+              "value": "b=a^b",
+              "result": "0101",
+              "phase": "第二步 b 取回原来的 a",
+              "concept": {
+                "kind": "bit_visual",
+                "title": "异或交换",
+                "bits": [],
+                "rows": [
+                  [
+                    "a",
+                    "0110"
+                  ],
+                  [
+                    "b",
+                    "0011"
+                  ],
+                  [
+                    "new b",
+                    "0101"
+                  ]
+                ],
+                "active": [
+                  1,
+                  2
+                ],
+                "labels": [],
+                "caption": "第二步 b 取回原来的 a"
+              }
+            }
+          },
+          {
+            "step": 3,
+            "line": 7,
+            "type": "exec",
+            "vars": {
+              "value": "a=a^b",
+              "result": "0011",
+              "phase": "第三步 a 取回原来的 b, 交换完成",
+              "concept": {
+                "kind": "bit_visual",
+                "title": "异或交换",
+                "bits": [],
+                "rows": [
+                  [
+                    "a",
+                    "0110"
+                  ],
+                  [
+                    "b",
+                    "0101"
+                  ],
+                  [
+                    "new a",
+                    "0011"
+                  ]
+                ],
+                "active": [
+                  1,
+                  2
+                ],
+                "labels": [],
+                "caption": "第三步 a 取回原来的 b, 交换完成"
+              }
+            }
+          }
+        ]
+      },
+      "trace": {
+        "title": "异或交换",
+        "source": [
+          "#include <stdio.h>",
+          "#include <stdlib.h>",
+          "#include <string.h>",
+          "",
+          "/* 不使用临时变量，交换 a 和 b 的值 */",
+          "/* 利用异或的性质：a ^ a = 0, a ^ 0 = a */",
+          "/* 类比：两个人交换礼物，用纸箱中转——先放进去，再拿出来 */",
+          "void swap(int *a, int *b) {",
+          "    if (a == b) return;  /* 防止同一个地址异或自己变成 0 */",
+          "    *a = *a ^ *b;        /* 第 1 步：a 变成“a 和 b 的异或值” */",
+          "    *b = *a ^ *b;        /* 第 2 步：b = (a ^ b) ^ b = a，b 拿到了原来的 a */",
+          "    *a = *a ^ *b;        /* 第 3 步：a = (a ^ b) ^ a = b，a 拿到了原来的 b */",
+          "}",
+          "",
+          "",
+          "/* ===== 自动生成的测试入口 ===== */",
+          "int main(void) {",
+          "    int a = 5;",
+          "    int b = 3;",
+          "",
+          "    printf(\"交换前：a=%d, b=%d\\n\", a, b);",
+          "    swap(&a, &b);",
+          "    printf(\"交换后：a=%d, b=%d\\n\", a, b);",
+          "",
+          "    return 0;",
+          "}",
+          ""
+        ],
+        "important_vars": {},
+        "track_vars": {
+          "primary": [],
+          "secondary": [
+            "_return"
+          ]
+        },
+        "var_classes": {
+          "_return": {
+            "category": "secondary",
+            "type": "scalar"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 1,
+            "text": "交换前：a=5, b=3 交换后：a=3, b=5"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 14,
+            "type": "enter",
+            "func": "main",
+            "vars": {}
+          },
+          {
+            "step": 1,
+            "line": 8,
+            "type": "cond",
+            "result": false,
+            "vars": {}
+          },
+          {
+            "step": 2,
+            "line": 20,
+            "type": "exec",
+            "vars": {
+              "_return": 0
+            }
+          },
+          {
+            "step": 3,
+            "line": 20,
+            "type": "exit",
+            "func": "main",
+            "vars": {}
+          }
+        ]
+      }
+    }
+  },
+  "04_位图_Bitmap": {
+    "title": "位图（Bitmap）",
+    "defaultMode": "concept",
+    "modeLabels": {
+      "concept": "理解动画",
+      "trace": "代码执行"
+    },
+    "modes": {
+      "concept": {
+        "title": "位图（Bitmap）",
+        "source": [
+          "算法: 位图 Bitmap",
+          "输入: 要标记的编号 n",
+          "输出: 编号是否存在",
+          "",
+          "index = n / 8",
+          "offset = n % 8",
+          "set: bits[index] |= 1 << offset",
+          "get: bits[index] & (1 << offset)"
+        ],
+        "important_vars": {
+          "value": "状态",
+          "result": "状态",
+          "phase": "状态"
+        },
+        "track_vars": {
+          "primary": [
+            "value",
+            "result",
+            "phase"
+          ],
+          "secondary": []
+        },
+        "var_classes": {
+          "value": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "result": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "phase": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "concept": {
+            "category": "secondary",
+            "type": "concept"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 4,
+            "text": "概念动画：位图用一个 bit 记录一个编号是否出现, 空间非常省。"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 4,
+            "type": "exec",
+            "vars": {
+              "value": "n=5",
+              "result": "index=0 offset=5",
+              "phase": "一个字节有 8 个座位, n=5 落在第 0 字节第 5 位",
+              "concept": {
+                "kind": "bit_visual",
+                "title": "位图_Bitmap",
+                "bits": "00000000",
+                "rows": [],
+                "active": [
+                  5
+                ],
+                "labels": [
+                  "7",
+                  "6",
+                  "5",
+                  "4",
+                  "3",
+                  "2",
+                  "1",
+                  "0"
+                ],
+                "caption": "一个字节有 8 个座位, n=5 落在第 0 字节第 5 位"
+              }
+            }
+          },
+          {
+            "step": 1,
+            "line": 7,
+            "type": "exec",
+            "vars": {
+              "value": "set(5)",
+              "result": "00100000",
+              "phase": "把对应 bit 置为 1, 表示 5 存在",
+              "concept": {
+                "kind": "bit_visual",
+                "title": "位图_Bitmap",
+                "bits": "00100000",
+                "rows": [],
+                "active": [
+                  2
+                ],
+                "labels": [
+                  "7",
+                  "6",
+                  "5",
+                  "4",
+                  "3",
+                  "2",
+                  "1",
+                  "0"
+                ],
+                "caption": "把对应 bit 置为 1, 表示 5 存在"
+              }
+            }
+          },
+          {
+            "step": 2,
+            "line": 7,
+            "type": "exec",
+            "vars": {
+              "value": "set(1)",
+              "result": "00100010",
+              "phase": "再标记 1, 同一个字节里多个编号可以共用空间",
+              "concept": {
+                "kind": "bit_visual",
+                "title": "位图_Bitmap",
+                "bits": "00100010",
+                "rows": [],
+                "active": [
+                  6
+                ],
+                "labels": [
+                  "7",
+                  "6",
+                  "5",
+                  "4",
+                  "3",
+                  "2",
+                  "1",
+                  "0"
+                ],
+                "caption": "再标记 1, 同一个字节里多个编号可以共用空间"
+              }
+            }
+          },
+          {
+            "step": 3,
+            "line": 8,
+            "type": "exec",
+            "vars": {
+              "value": "get(2)",
+              "result": "false",
+              "phase": "检查 2 时看到对应位是 0, 所以它不存在",
+              "concept": {
+                "kind": "bit_visual",
+                "title": "位图_Bitmap",
+                "bits": "00100010",
+                "rows": [],
+                "active": [
+                  5
+                ],
+                "labels": [
+                  "7",
+                  "6",
+                  "5",
+                  "4",
+                  "3",
+                  "2",
+                  "1",
+                  "0"
+                ],
+                "caption": "检查 2 时看到对应位是 0, 所以它不存在"
+              }
+            }
+          }
+        ]
+      },
+      "trace": {
+        "title": "位图（Bitmap）",
+        "source": [
+          "/* 位图(Bitmap)实现 */",
+          "/* 类比：出勤点名册——每个学生一个格子，来了打勾 */",
+          "#include <stdio.h>",
+          "#include <stdlib.h>",
+          "#include <string.h>",
+          "",
+          "#define MAX_NUM 1000000  /* 最大能存储的数 */",
+          "",
+          "/* 位图结构 */",
+          "typedef struct {",
+          "    unsigned char *bits;  /* 位图数组，每个 char 有 8 个 bit */",
+          "    int size;             /* 数组大小(字节数) */",
+          "    int max;              /* 允许存储的最大数值 */",
+          "} Bitmap;",
+          "",
+          "/* 创建位图 */",
+          "/* 参数 max：能存储的最大数值（允许下标为 0..max，共 max + 1 个 bit） */",
+          "Bitmap* bitmap_create(int max) {",
+          "    if (max < 0) {",
+          "        return NULL;",
+          "    }",
+          "    Bitmap *bm = (Bitmap *)malloc(sizeof(Bitmap));  /* 分配结构体内存 */",
+          "    if (bm == NULL) {",
+          "        printf(\"位图结构体内存分配失败\\n\");",
+          "        return NULL;",
+          "    }",
+          "    /* 需要的字节数 = 能存 max + 1 个 bit，向上取整 = (max >> 3) + 1 */",
+          "    /* 例如：max = 7 需要 1 字节（能存 0-7 共 8 个 bit） */",
+          "    /*       max = 8 需要 2 字节（存下标 0-8 共 9 个 bit，1 字节只有 8 位装不下） */",
+          "    bm->size = (max >> 3) + 1;",
+          "    bm->max = max;",
+          "    /* 分配位图数组，calloc 会自动初始化为 0 */",
+          "    bm->bits = (unsigned char *)calloc(bm->size, sizeof(unsigned char));",
+          "    if (bm->bits == NULL) {",
+          "        printf(\"位图数组内存分配失败\\n\");",
+          "        free(bm);",
+          "        return NULL;",
+          "    }",
+          "    return bm;",
+          "}",
+          "",
+          "/* 设置第 n 个 bit 为 1（标记 n 存在） */",
+          "/* 参数 bm：位图指针；参数 n：要标记的数值 */",
+          "void bitmap_set(Bitmap *bm, int n) {",
+          "    if (bm == NULL || n < 0 || n > bm->max) return;",
+          "    int index = n >> 3;        /* n / 8，找到在第几个字节 */",
+          "    int offset = n & 7;        /* n % 8，找到在第几个 bit 位 */",
+          "    bm->bits[index] |= (1U << offset);  /* 把对应 bit 置为 1 */",
+          "    /* 1U << offset：生成一个只有第 offset 位是 1 的无符号数 */",
+          "    /* |=：或操作，把目标 bit 设为 1，不影响其他 bit */",
+          "}",
+          "",
+          "/* 检查第 n 个 bit 是否为 1（检查 n 是否存在） */",
+          "int bitmap_get(Bitmap *bm, int n) {",
+          "    if (bm == NULL || n < 0 || n > bm->max) return 0;",
+          "    int index = n >> 3;        /* n / 8 */",
+          "    int offset = n & 7;        /* n % 8 */",
+          "    return (bm->bits[index] & (1U << offset)) != 0;",
+          "    /* & 操作：如果对应 bit 是 1，结果非 0；是 0，结果为 0 */",
+          "}",
+          "",
+          "/* 清除第 n 个 bit（标记 n 不存在） */",
+          "void bitmap_clear(Bitmap *bm, int n) {",
+          "    if (bm == NULL || n < 0 || n > bm->max) return;",
+          "    int index = n >> 3;        /* n / 8 */",
+          "    int offset = n & 7;        /* n % 8 */",
+          "    bm->bits[index] &= ~(1U << offset);  /* 把对应 bit 清零 */",
+          "    /* ~ (1U << offset)：生成一个只有第 offset 位是 0 的无符号数 */",
+          "    /* &=：与操作，把目标 bit 清 0，不影响其他 bit */",
+          "}",
+          "",
+          "/* 释放位图内存 */",
+          "void bitmap_destroy(Bitmap *bm) {",
+          "    if (bm == NULL) return;",
+          "    free(bm->bits);   /* 先释放bits数组 */",
+          "    free(bm);         /* 再释放结构体 */",
+          "}",
+          "",
+          "/* 测试代码 */",
+          "int main(void) {",
+          "    Bitmap *bm = bitmap_create(MAX_NUM);  /* 创建一个能存 100 万个数的位图 */",
+          "    if (bm == NULL) {",
+          "        return 1;",
+          "    }",
+          "    ",
+          "    /* 模拟出勤记录：学号 1、5、100、999999 来了 */",
+          "    bitmap_set(bm, 1);",
+          "    bitmap_set(bm, 5);",
+          "    bitmap_set(bm, 100);",
+          "    bitmap_set(bm, 999999);",
+          "    ",
+          "    /* 检查出勤情况 */",
+          "    printf(\"学号 1 来了吗？%s\\n\", bitmap_get(bm, 1) ? \"来了\" : \"没来\");",
+          "    printf(\"学号 2 来了吗？%s\\n\", bitmap_get(bm, 2) ? \"来了\" : \"没来\");",
+          "    printf(\"学号 5 来了吗？%s\\n\", bitmap_get(bm, 5) ? \"来了\" : \"没来\");",
+          "    printf(\"学号 999999 来了吗？%s\\n\", bitmap_get(bm, 999999) ? \"来了\" : \"没来\");",
+          "    ",
+          "    bitmap_destroy(bm);  /* 释放内存 */",
+          "    return 0;",
+          "}",
+          ""
+        ],
+        "important_vars": {
+          "index": "索引"
+        },
+        "track_vars": {
+          "primary": [
+            "max",
+            "n"
+          ],
+          "secondary": [
+            "_return",
+            "bm"
+          ]
+        },
+        "var_classes": {
+          "_return": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "bm": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "max": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "n": {
+            "category": "primary",
+            "type": "scalar"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 14,
+            "text": "学号1来了吗？来了；学号2来了吗？没来；学号5来了吗？来了；学号999999来了吗？来了"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 72,
+            "type": "enter",
+            "func": "main",
+            "vars": {}
+          },
+          {
+            "step": 1,
+            "line": 73,
+            "type": "enter",
+            "func": "bitmap_create",
+            "vars": {
+              "max": 1000000
+            }
+          },
+          {
+            "step": 2,
+            "line": 36,
+            "type": "exit",
+            "func": "bitmap_create",
+            "vars": {}
+          },
+          {
+            "step": 3,
+            "line": 78,
+            "type": "enter",
+            "func": "bitmap_set",
+            "vars": {
+              "n": 1
+            }
+          },
+          {
+            "step": 4,
+            "line": 80,
+            "type": "enter",
+            "func": "bitmap_set",
+            "vars": {
+              "n": 100
+            }
+          },
+          {
+            "step": 5,
+            "line": 81,
+            "type": "enter",
+            "func": "bitmap_set",
+            "vars": {
+              "n": 999999
+            }
+          },
+          {
+            "step": 6,
+            "line": 83,
+            "type": "enter",
+            "func": "bitmap_get",
+            "vars": {
+              "n": 1
+            }
+          },
+          {
+            "step": 7,
+            "line": 53,
+            "type": "exit",
+            "func": "bitmap_get",
+            "vars": {}
+          },
+          {
+            "step": 8,
+            "line": 84,
+            "type": "enter",
+            "func": "bitmap_get",
+            "vars": {
+              "n": 2
+            }
+          },
+          {
+            "step": 9,
+            "line": 53,
+            "type": "exit",
+            "func": "bitmap_get",
+            "vars": {}
+          },
+          {
+            "step": 10,
+            "line": 53,
+            "type": "exit",
+            "func": "bitmap_get",
+            "vars": {}
+          },
+          {
+            "step": 11,
+            "line": 86,
+            "type": "enter",
+            "func": "bitmap_get",
+            "vars": {
+              "n": 999999
+            }
+          },
+          {
+            "step": 12,
+            "line": 53,
+            "type": "exit",
+            "func": "bitmap_get",
+            "vars": {}
+          },
+          {
+            "step": 13,
+            "line": 88,
+            "type": "exit",
+            "func": "main",
+            "vars": {
+              "max": "-",
+              "n": "-",
+              "phase": "程序执行完成，结果见下方输出"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "05_布隆过滤器": {
+    "title": "布隆过滤器",
+    "defaultMode": "concept",
+    "modeLabels": {
+      "concept": "理解动画",
+      "trace": "代码执行"
+    },
+    "modes": {
+      "concept": {
+        "title": "布隆过滤器",
+        "source": [
+          "算法: 布隆过滤器",
+          "输入: 要加入或查询的字符串 key",
+          "输出: 一定不存在 / 可能存在",
+          "",
+          "准备一个全 0 的 bit 数组",
+          "插入 key:",
+          "    用多个哈希函数算出多个位置",
+          "    把这些位置都置为 1",
+          "查询 key:",
+          "    如果任一位置是 0, 一定不存在",
+          "    如果所有位置都是 1, 只能说可能存在"
+        ],
+        "important_vars": {
+          "key": "状态",
+          "verdict": "状态",
+          "phase": "状态"
+        },
+        "track_vars": {
+          "primary": [
+            "key",
+            "verdict",
+            "phase"
+          ],
+          "secondary": []
+        },
+        "var_classes": {
+          "key": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "verdict": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "phase": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "concept": {
+            "category": "secondary",
+            "type": "concept"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 7,
+            "text": "概念动画：布隆过滤器用多个哈希位置共同判断, 0 表示一定不存在, 全 1 只表示可能存在。"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 4,
+            "type": "exec",
+            "vars": {
+              "key": "-",
+              "verdict": "准备插入",
+              "phase": "初始 bit 数组全是 0",
+              "concept": {
+                "kind": "bloom_filter",
+                "title": "布隆过滤器",
+                "size": 16,
+                "bits": [],
+                "hashes": [],
+                "key": "",
+                "mode": "init",
+                "verdict": "准备插入"
+              }
+            }
+          },
+          {
+            "step": 1,
+            "line": 6,
+            "type": "exec",
+            "vars": {
+              "key": "apple",
+              "verdict": "置 1",
+              "phase": "插入 apple: 三个哈希函数落到 2、7、11",
+              "concept": {
+                "kind": "bloom_filter",
+                "title": "布隆过滤器",
+                "size": 16,
+                "bits": [
+                  2,
+                  7,
+                  11
+                ],
+                "hashes": [
+                  2,
+                  7,
+                  11
+                ],
+                "key": "apple",
+                "mode": "insert",
+                "verdict": "置 1"
+              }
+            }
+          },
+          {
+            "step": 2,
+            "line": 6,
+            "type": "exec",
+            "vars": {
+              "key": "banana",
+              "verdict": "置 1",
+              "phase": "插入 banana: 位置 7 已经是 1, 共享没有关系",
+              "concept": {
+                "kind": "bloom_filter",
+                "title": "布隆过滤器",
+                "size": 16,
+                "bits": [
+                  1,
+                  2,
+                  7,
+                  11,
+                  14
+                ],
+                "hashes": [
+                  1,
+                  7,
+                  14
+                ],
+                "key": "banana",
+                "mode": "insert",
+                "verdict": "置 1"
+              }
+            }
+          },
+          {
+            "step": 3,
+            "line": 8,
+            "type": "exec",
+            "vars": {
+              "key": "grape",
+              "verdict": "一定不存在",
+              "phase": "查询 grape: 三个位置里 3 是 0, 所以一定不存在",
+              "concept": {
+                "kind": "bloom_filter",
+                "title": "布隆过滤器",
+                "size": 16,
+                "bits": [
+                  1,
+                  2,
+                  7,
+                  11,
+                  14
+                ],
+                "hashes": [
+                  3,
+                  7,
+                  12
+                ],
+                "key": "grape",
+                "mode": "miss",
+                "verdict": "一定不存在"
+              }
+            }
+          },
+          {
+            "step": 4,
+            "line": 8,
+            "type": "exec",
+            "vars": {
+              "key": "apple",
+              "verdict": "可能存在",
+              "phase": "查询 apple: 2、7、11 都是 1, 只能说可能存在",
+              "concept": {
+                "kind": "bloom_filter",
+                "title": "布隆过滤器",
+                "size": 16,
+                "bits": [
+                  1,
+                  2,
+                  7,
+                  11,
+                  14
+                ],
+                "hashes": [
+                  2,
+                  7,
+                  11
+                ],
+                "key": "apple",
+                "mode": "maybe",
+                "verdict": "可能存在"
+              }
+            }
+          },
+          {
+            "step": 5,
+            "line": 10,
+            "type": "exec",
+            "vars": {
+              "key": "peach",
+              "verdict": "可能误判",
+              "phase": "查询 peach: 1、2、14 都是 1, 但它其实没插入过",
+              "concept": {
+                "kind": "bloom_filter",
+                "title": "布隆过滤器",
+                "size": 16,
+                "bits": [
+                  1,
+                  2,
+                  7,
+                  11,
+                  14
+                ],
+                "hashes": [
+                  1,
+                  2,
+                  14
+                ],
+                "key": "peach",
+                "mode": "false_positive",
+                "verdict": "可能误判"
+              }
+            }
+          },
+          {
+            "step": 6,
+            "line": 10,
+            "type": "exec",
+            "vars": {
+              "key": "-",
+              "verdict": "结论",
+              "phase": "布隆过滤器不会漏报, 但可能误报",
+              "concept": {
+                "kind": "bloom_filter",
+                "title": "布隆过滤器",
+                "size": 16,
+                "bits": [
+                  1,
+                  2,
+                  7,
+                  11,
+                  14
+                ],
+                "hashes": [],
+                "key": "",
+                "mode": "done",
+                "verdict": "结论"
+              }
+            }
+          }
+        ]
+      },
+      "trace": {
+        "title": "布隆过滤器",
+        "source": [
+          "/* 布隆过滤器(Bloom Filter)简化实现 */",
+          "/* 类比：安检门——\"可能在，肯定不在\" */",
+          "#include <stdio.h>",
+          "#include <stdlib.h>",
+          "#include <string.h>",
+          "",
+          "#define BLOOM_SIZE 1024   /* 位数组大小（bit 数） */",
+          "#define HASH_COUNT 3      /* 哈希函数个数 */",
+          "/* 误报率取决于 BLOOM_SIZE、HASH_COUNT 和插入元素数量，工程中要按需求估算参数 */",
+          "",
+          "/* 布隆过滤器结构 */",
+          "typedef struct {",
+          "    unsigned char bits[(BLOOM_SIZE + 7) >> 3];  /* 位数组，用 char 数组模拟 */",
+          "} BloomFilter;",
+          "",
+          "/* 简单的哈希函数 1（DJBX33A 变体） */",
+          "unsigned int hash1(const char *str) {",
+          "    unsigned int hash = 5381;   /* 初始种子 */",
+          "    while (*str) {",
+          "        hash = ((hash << 5) + hash) + (unsigned char)(*str++);  /* hash * 33 + c */",
+          "    }",
+          "    return hash % BLOOM_SIZE;   /* 映射到 bit 数组范围内 */",
+          "}",
+          "",
+          "/* 简单的哈希函数 2（另一个种子） */",
+          "unsigned int hash2(const char *str) {",
+          "    unsigned int hash = 0;",
+          "    while (*str) {",
+          "        hash = (unsigned char)(*str++) + (hash << 6) + (hash << 16) - hash;",
+          "    }",
+          "    return hash % BLOOM_SIZE;",
+          "}",
+          "",
+          "/* 简单的哈希函数 3（再换一个种子） */",
+          "unsigned int hash3(const char *str) {",
+          "    unsigned int hash = 0x12345678;  /* 不同的初始值 */",
+          "    while (*str) {",
+          "        hash ^= ((hash << 5) + (unsigned char)(*str++) + (hash >> 2));",
+          "    }",
+          "    return hash % BLOOM_SIZE;",
+          "}",
+          "",
+          "/* 哈希函数数组，方便遍历 */",
+          "unsigned int (*hash_funcs[])(const char *) = {hash1, hash2, hash3};",
+          "",
+          "/* 本例按字节处理字符串。UTF-8 中文会拆成多个字节参与哈希；",
+          " * 工程中要先统一编码、大小写和归一化策略。 */",
+          "",
+          "/* 设置 bit 数组中的某个 bit 为 1 */",
+          "static void set_bit(BloomFilter *bf, int pos) {",
+          "    bf->bits[pos >> 3] |= (1U << (pos & 7));",
+          "}",
+          "",
+          "/* 检查 bit 数组中的某个 bit 是否为 1 */",
+          "static int get_bit(BloomFilter *bf, int pos) {",
+          "    return (bf->bits[pos >> 3] & (1U << (pos & 7))) != 0;",
+          "}",
+          "",
+          "/* 初始化布隆过滤器 */",
+          "void bloom_init(BloomFilter *bf) {",
+          "    memset(bf->bits, 0, sizeof(bf->bits));  /* 全部清零 */",
+          "}",
+          "",
+          "/* 插入元素 */",
+          "void bloom_insert(BloomFilter *bf, const char *str) {",
+          "    for (int i = 0; i < HASH_COUNT; i++) {",
+          "        unsigned int pos = hash_funcs[i](str);  /* 计算哈希位置 */",
+          "        set_bit(bf, pos);                        /* 把对应 bit 设为 1 */",
+          "    }",
+          "}",
+          "",
+          "/* 查询元素是否存在 */",
+          "/* 返回 1 = 可能存在（有假阳性）；返回 0 = 肯定不存在 */",
+          "int bloom_contains(BloomFilter *bf, const char *str) {",
+          "    for (int i = 0; i < HASH_COUNT; i++) {",
+          "        unsigned int pos = hash_funcs[i](str);  /* 计算哈希位置 */",
+          "        if (!get_bit(bf, pos)) {                 /* 如果任一 bit 是 0 */",
+          "            return 0;                             /* 肯定不存在 */",
+          "        }",
+          "    }",
+          "    return 1;  /* 所有 bit 都是 1，可能存在 */",
+          "}",
+          "",
+          "/* 测试代码 */",
+          "int main(void) {",
+          "    BloomFilter bf;",
+          "    bloom_init(&bf);  /* 初始化 */",
+          "    ",
+          "    /* 插入一些元素 */",
+          "    bloom_insert(&bf, \"苹果\");",
+          "    bloom_insert(&bf, \"香蕉\");",
+          "    bloom_insert(&bf, \"芒果\");",
+          "    ",
+          "    /* 查询 */",
+          "    printf(\"苹果：%s\\n\", bloom_contains(&bf, \"苹果\") ? \"可能存在\" : \"肯定不存在\");",
+          "    printf(\"香蕉：%s\\n\", bloom_contains(&bf, \"香蕉\") ? \"可能存在\" : \"肯定不存在\");",
+          "    printf(\"橙子：%s\\n\", bloom_contains(&bf, \"橙子\") ? \"可能存在\" : \"肯定不存在\");",
+          "    /* 橙子没有插入过，但可能因为假阳性说“可能存在” */",
+          "    ",
+          "    return 0;",
+          "}",
+          ""
+        ],
+        "important_vars": {
+          "i": "索引",
+          "pos": "索引"
+        },
+        "track_vars": {
+          "primary": [
+            "i"
+          ],
+          "secondary": [
+            "_return",
+            "hash"
+          ]
+        },
+        "var_classes": {
+          "_return": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "hash": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "i": {
+            "category": "primary",
+            "type": "scalar"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 14,
+            "text": "苹果：可能存在；香蕉：可能存在；橙子：肯定不存在"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 70,
+            "type": "enter",
+            "func": "main",
+            "vars": {}
+          },
+          {
+            "step": 1,
+            "line": 27,
+            "type": "exit",
+            "func": "hash2",
+            "vars": {}
+          },
+          {
+            "step": 2,
+            "line": 19,
+            "type": "exit",
+            "func": "hash1",
+            "vars": {}
+          },
+          {
+            "step": 3,
+            "line": 35,
+            "type": "exit",
+            "func": "hash3",
+            "vars": {}
+          },
+          {
+            "step": 4,
+            "line": 35,
+            "type": "exit",
+            "func": "hash3",
+            "vars": {}
+          },
+          {
+            "step": 5,
+            "line": 45,
+            "type": "exit",
+            "func": "get_bit",
+            "vars": {}
+          },
+          {
+            "step": 6,
+            "line": 45,
+            "type": "exit",
+            "func": "get_bit",
+            "vars": {}
+          },
+          {
+            "step": 7,
+            "line": 45,
+            "type": "exit",
+            "func": "get_bit",
+            "vars": {}
+          },
+          {
+            "step": 8,
+            "line": 19,
+            "type": "exit",
+            "func": "hash1",
+            "vars": {}
+          },
+          {
+            "step": 9,
+            "line": 27,
+            "type": "exit",
+            "func": "hash2",
+            "vars": {}
+          },
+          {
+            "step": 10,
+            "line": 45,
+            "type": "exit",
+            "func": "get_bit",
+            "vars": {}
+          },
+          {
+            "step": 11,
+            "line": 19,
+            "type": "exit",
+            "func": "hash1",
+            "vars": {}
+          },
+          {
+            "step": 12,
+            "line": 45,
+            "type": "exit",
+            "func": "get_bit",
+            "vars": {}
+          },
+          {
+            "step": 13,
+            "line": 82,
+            "type": "exit",
+            "func": "main",
+            "vars": {
+              "phase": "程序执行完成，结果见下方输出"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "06_权限管理_位运算": {
+    "title": "权限管理（位运算）",
+    "defaultMode": "concept",
+    "modeLabels": {
+      "concept": "理解动画",
+      "trace": "代码执行"
+    },
+    "modes": {
+      "concept": {
+        "title": "权限管理（位运算）",
+        "source": [
+          "算法: 权限管理位运算",
+          "输入: 用户权限 user_perm",
+          "输出: 检查/添加/移除权限",
+          "",
+          "READ=0001, WRITE=0010, EXEC=0100, ADMIN=1000",
+          "检查: user & perm",
+          "添加: user | perm",
+          "移除: user & ~perm"
+        ],
+        "important_vars": {
+          "value": "状态",
+          "result": "状态",
+          "phase": "状态"
+        },
+        "track_vars": {
+          "primary": [
+            "value",
+            "result",
+            "phase"
+          ],
+          "secondary": []
+        },
+        "var_classes": {
+          "value": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "result": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "phase": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "concept": {
+            "category": "secondary",
+            "type": "concept"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 4,
+            "text": "概念动画：一个整数的不同 bit 可以同时保存多种权限开关。"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 4,
+            "type": "exec",
+            "vars": {
+              "value": "READ",
+              "result": "0001",
+              "phase": "初始只有读权限 READ",
+              "concept": {
+                "kind": "bit_visual",
+                "title": "权限管理_位运算",
+                "bits": "0001",
+                "rows": [],
+                "active": [
+                  3
+                ],
+                "labels": [
+                  "A",
+                  "X",
+                  "W",
+                  "R"
+                ],
+                "caption": "初始只有读权限 READ"
+              }
+            }
+          },
+          {
+            "step": 1,
+            "line": 6,
+            "type": "exec",
+            "vars": {
+              "value": "user & WRITE",
+              "result": "0000",
+              "phase": "检查写权限: 对应位是 0, 所以没有",
+              "concept": {
+                "kind": "bit_visual",
+                "title": "权限管理_位运算",
+                "bits": [],
+                "rows": [
+                  [
+                    "user",
+                    "0001"
+                  ],
+                  [
+                    "WRITE",
+                    "0010"
+                  ],
+                  [
+                    "&",
+                    "0000"
+                  ]
+                ],
+                "active": [
+                  2
+                ],
+                "labels": [],
+                "caption": "检查写权限: 对应位是 0, 所以没有"
+              }
+            }
+          },
+          {
+            "step": 2,
+            "line": 7,
+            "type": "exec",
+            "vars": {
+              "value": "user | WRITE",
+              "result": "0011",
+              "phase": "添加写权限: 用 | 把 WRITE 那一位打开",
+              "concept": {
+                "kind": "bit_visual",
+                "title": "权限管理_位运算",
+                "bits": [],
+                "rows": [
+                  [
+                    "user",
+                    "0001"
+                  ],
+                  [
+                    "WRITE",
+                    "0010"
+                  ],
+                  [
+                    "|",
+                    "0011"
+                  ]
+                ],
+                "active": [
+                  2,
+                  3
+                ],
+                "labels": [],
+                "caption": "添加写权限: 用 | 把 WRITE 那一位打开"
+              }
+            }
+          },
+          {
+            "step": 3,
+            "line": 8,
+            "type": "exec",
+            "vars": {
+              "value": "user & ~READ",
+              "result": "0010",
+              "phase": "移除读权限: 用 &~ 把 READ 那一位清掉",
+              "concept": {
+                "kind": "bit_visual",
+                "title": "权限管理_位运算",
+                "bits": [],
+                "rows": [
+                  [
+                    "user",
+                    "0011"
+                  ],
+                  [
+                    "~READ",
+                    "1110"
+                  ],
+                  [
+                    "&",
+                    "0010"
+                  ]
+                ],
+                "active": [
+                  3
+                ],
+                "labels": [],
+                "caption": "移除读权限: 用 &~ 把 READ 那一位清掉"
+              }
+            }
+          }
+        ]
+      },
+      "trace": {
+        "title": "权限管理（位运算）",
+        "source": [
+          "#include <stdio.h>",
+          "#include <stdlib.h>",
+          "#include <string.h>",
+          "",
+          "/* 用位运算管理用户权限 */",
+          "/* 类比：钥匙扣——每把钥匙开一道门，权限就是钥匙的组合 */",
+          "/* 注意：这里为了演示把 READ 放在最低位，和 Unix rwx 中 r = 4, w = 2, x = 1 的编号方向不同 */",
+          "",
+          "#define PERM_READ    0x01   /* 0001：读权限 */",
+          "#define PERM_WRITE   0x02   /* 0010：写权限 */",
+          "#define PERM_EXECUTE 0x04   /* 0100：执行权限 */",
+          "#define PERM_ADMIN   0x08   /* 1000：管理员权限 */",
+          "",
+          "/* 检查是否有某项权限 */",
+          "/* 用 & 操作：如果对应 bit 是 1，说明有这个权限 */",
+          "int has_permission(int user_perm, int perm) {",
+          "    return (user_perm & perm) == perm;",
+          "}",
+          "",
+          "/* 添加权限 */",
+          "/* 用 | 操作：把对应的 bit 设为 1 */",
+          "int add_permission(int user_perm, int perm) {",
+          "    return user_perm | perm;",
+          "}",
+          "",
+          "/* 移除权限 */",
+          "/* 用 & ~ 操作：把对应的 bit 清 0 */",
+          "int remove_permission(int user_perm, int perm) {",
+          "    return user_perm & ~perm;",
+          "}",
+          "",
+          "/* 测试 */",
+          "int main(void) {",
+          "    int user = PERM_READ;  /* 用户初始只有读权限 */",
+          "    printf(\"初始权限： %d\\n\", user);",
+          "    ",
+          "    /* 检查权限 */",
+          "    printf(\"有读权限？%s\\n\", has_permission(user, PERM_READ) ? \"是\" : \"否\");",
+          "    printf(\"有写权限？%s\\n\", has_permission(user, PERM_WRITE) ? \"是\" : \"否\");",
+          "    ",
+          "    /* 添加写权限 */",
+          "    user = add_permission(user, PERM_WRITE);",
+          "    printf(\"添加写权限后： %d\\n\", user);",
+          "    printf(\"现在有写权限？%s\\n\", has_permission(user, PERM_WRITE) ? \"是\" : \"否\");",
+          "    ",
+          "    /* 移除读权限 */",
+          "    user = remove_permission(user, PERM_READ);",
+          "    printf(\"移除读权限后： %d\\n\", user);",
+          "    ",
+          "    return 0;",
+          "}",
+          ""
+        ],
+        "important_vars": {},
+        "track_vars": {
+          "primary": [],
+          "secondary": [
+            "_return",
+            "perm",
+            "user",
+            "user_perm"
+          ]
+        },
+        "var_classes": {
+          "_return": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "perm": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "user": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "user_perm": {
+            "category": "secondary",
+            "type": "scalar"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 14,
+            "text": "初始权限： 1；有读权限？是；有写权限？否；添加写权限后： 3；现在有写权限？是；移除读权限后： 2"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 27,
+            "type": "enter",
+            "func": "main",
+            "vars": {}
+          },
+          {
+            "step": 1,
+            "line": 31,
+            "type": "enter",
+            "func": "has_permission",
+            "vars": {
+              "user_perm": 1,
+              "perm": 1
+            }
+          },
+          {
+            "step": 2,
+            "line": 14,
+            "type": "exec",
+            "vars": {
+              "_return": 1
+            }
+          },
+          {
+            "step": 3,
+            "line": 14,
+            "type": "exit",
+            "func": "has_permission",
+            "vars": {}
+          },
+          {
+            "step": 4,
+            "line": 32,
+            "type": "enter",
+            "func": "has_permission",
+            "vars": {
+              "user_perm": 1,
+              "perm": 2
+            }
+          },
+          {
+            "step": 5,
+            "line": 14,
+            "type": "exit",
+            "func": "has_permission",
+            "vars": {}
+          },
+          {
+            "step": 6,
+            "line": 34,
+            "type": "enter",
+            "func": "add_permission",
+            "vars": {
+              "user_perm": 1,
+              "perm": 2
+            }
+          },
+          {
+            "step": 7,
+            "line": 19,
+            "type": "exit",
+            "func": "add_permission",
+            "vars": {}
+          },
+          {
+            "step": 8,
+            "line": 36,
+            "type": "enter",
+            "func": "has_permission",
+            "vars": {
+              "user_perm": 3,
+              "perm": 2
+            }
+          },
+          {
+            "step": 9,
+            "line": 14,
+            "type": "exit",
+            "func": "has_permission",
+            "vars": {}
+          },
+          {
+            "step": 10,
+            "line": 38,
+            "type": "enter",
+            "func": "remove_permission",
+            "vars": {
+              "user_perm": 3,
+              "perm": 1
+            }
+          },
+          {
+            "step": 11,
+            "line": 24,
+            "type": "exit",
+            "func": "remove_permission",
+            "vars": {}
+          },
+          {
+            "step": 12,
+            "line": 40,
+            "type": "exec",
+            "vars": {
+              "_return": 0
+            }
+          },
+          {
+            "step": 13,
+            "line": 40,
+            "type": "exit",
+            "func": "main",
+            "vars": {
+              "user_perm": "-",
+              "perm": "-",
+              "phase": "程序执行完成，结果见下方输出"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "07_状态压缩DP_TSP": {
+    "title": "状态压缩DP（TSP）",
+    "defaultMode": "concept",
+    "modeLabels": {
+      "concept": "理解动画",
+      "trace": "代码执行"
+    },
+    "modes": {
+      "concept": {
+        "title": "状态压缩DP（TSP）",
+        "source": [
+          "算法: 状态压缩 DP 求 TSP",
+          "输入: 城市距离矩阵 dist",
+          "输出: 从 A 出发访问所有城市再回 A 的最短路",
+          "",
+          "用 bitmask 表示已经访问过的城市集合",
+          "dp[mask][i] 表示到达城市 i 时的最短距离",
+          "从 dp[0001][A] = 0 开始",
+          "枚举下一个未访问城市 j",
+          "更新 dp[mask | (1<<j)][j]",
+          "最后从所有城市都访问的状态回到 A"
+        ],
+        "important_vars": {
+          "mask": "状态",
+          "city": "状态",
+          "cost": "状态",
+          "phase": "状态"
+        },
+        "track_vars": {
+          "primary": [
+            "mask",
+            "city",
+            "cost",
+            "phase"
+          ],
+          "secondary": []
+        },
+        "var_classes": {
+          "mask": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "city": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "cost": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "phase": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "concept": {
+            "category": "secondary",
+            "type": "concept"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 7,
+            "text": "概念动画：bitmask 把“访问过哪些城市”压成一个整数, DP 在这些集合状态之间转移。"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 6,
+            "type": "exec",
+            "vars": {
+              "mask": "0001",
+              "city": "A",
+              "cost": 0,
+              "phase": "从 A 出发, mask=0001 表示只访问了 A",
+              "concept": {
+                "kind": "bitmask_tsp",
+                "title": "状态压缩 DP · TSP",
+                "cities": [
+                  "A",
+                  "B",
+                  "C",
+                  "D"
+                ],
+                "edges": [
+                  [
+                    "A",
+                    "B",
+                    4
+                  ],
+                  [
+                    "A",
+                    "C",
+                    2
+                  ],
+                  [
+                    "A",
+                    "D",
+                    7
+                  ],
+                  [
+                    "B",
+                    "C",
+                    5
+                  ],
+                  [
+                    "B",
+                    "D",
+                    6
+                  ],
+                  [
+                    "C",
+                    "D",
+                    3
+                  ]
+                ],
+                "mask": "0001",
+                "city": "A",
+                "cost": 0,
+                "choices": [],
+                "table": [
+                  [
+                    "0001",
+                    "A",
+                    0
+                  ]
+                ],
+                "path": []
+              }
+            }
+          },
+          {
+            "step": 1,
+            "line": 8,
+            "type": "exec",
+            "vars": {
+              "mask": "0001",
+              "city": "A",
+              "cost": 0,
+              "phase": "从 A 可以去 B、C、D, 分别打开对应的 bit",
+              "concept": {
+                "kind": "bitmask_tsp",
+                "title": "状态压缩 DP · TSP",
+                "cities": [
+                  "A",
+                  "B",
+                  "C",
+                  "D"
+                ],
+                "edges": [
+                  [
+                    "A",
+                    "B",
+                    4
+                  ],
+                  [
+                    "A",
+                    "C",
+                    2
+                  ],
+                  [
+                    "A",
+                    "D",
+                    7
+                  ],
+                  [
+                    "B",
+                    "C",
+                    5
+                  ],
+                  [
+                    "B",
+                    "D",
+                    6
+                  ],
+                  [
+                    "C",
+                    "D",
+                    3
+                  ]
+                ],
+                "mask": "0001",
+                "city": "A",
+                "cost": 0,
+                "choices": [
+                  "B",
+                  "C",
+                  "D"
+                ],
+                "table": [
+                  [
+                    "0011",
+                    "B",
+                    4
+                  ],
+                  [
+                    "0101",
+                    "C",
+                    2
+                  ],
+                  [
+                    "1001",
+                    "D",
+                    7
+                  ]
+                ],
+                "path": [
+                  [
+                    "A",
+                    "B"
+                  ],
+                  [
+                    "A",
+                    "C"
+                  ],
+                  [
+                    "A",
+                    "D"
+                  ]
+                ]
+              }
+            }
+          },
+          {
+            "step": 2,
+            "line": 8,
+            "type": "exec",
+            "vars": {
+              "mask": "0101",
+              "city": "C",
+              "cost": 2,
+              "phase": "当前较短状态是到 C, mask=0101",
+              "concept": {
+                "kind": "bitmask_tsp",
+                "title": "状态压缩 DP · TSP",
+                "cities": [
+                  "A",
+                  "B",
+                  "C",
+                  "D"
+                ],
+                "edges": [
+                  [
+                    "A",
+                    "B",
+                    4
+                  ],
+                  [
+                    "A",
+                    "C",
+                    2
+                  ],
+                  [
+                    "A",
+                    "D",
+                    7
+                  ],
+                  [
+                    "B",
+                    "C",
+                    5
+                  ],
+                  [
+                    "B",
+                    "D",
+                    6
+                  ],
+                  [
+                    "C",
+                    "D",
+                    3
+                  ]
+                ],
+                "mask": "0101",
+                "city": "C",
+                "cost": 2,
+                "choices": [
+                  "B",
+                  "D"
+                ],
+                "table": [
+                  [
+                    "0111",
+                    "B",
+                    7
+                  ],
+                  [
+                    "1101",
+                    "D",
+                    5
+                  ]
+                ],
+                "path": [
+                  [
+                    "A",
+                    "C"
+                  ],
+                  [
+                    "C",
+                    "D"
+                  ]
+                ]
+              }
+            }
+          },
+          {
+            "step": 3,
+            "line": 8,
+            "type": "exec",
+            "vars": {
+              "mask": "0111",
+              "city": "B",
+              "cost": 7,
+              "phase": "访问 B 后形成 mask=0111, 还差 D",
+              "concept": {
+                "kind": "bitmask_tsp",
+                "title": "状态压缩 DP · TSP",
+                "cities": [
+                  "A",
+                  "B",
+                  "C",
+                  "D"
+                ],
+                "edges": [
+                  [
+                    "A",
+                    "B",
+                    4
+                  ],
+                  [
+                    "A",
+                    "C",
+                    2
+                  ],
+                  [
+                    "A",
+                    "D",
+                    7
+                  ],
+                  [
+                    "B",
+                    "C",
+                    5
+                  ],
+                  [
+                    "B",
+                    "D",
+                    6
+                  ],
+                  [
+                    "C",
+                    "D",
+                    3
+                  ]
+                ],
+                "mask": "0111",
+                "city": "B",
+                "cost": 7,
+                "choices": [
+                  "D"
+                ],
+                "table": [
+                  [
+                    "1111",
+                    "D",
+                    13
+                  ]
+                ],
+                "path": [
+                  [
+                    "C",
+                    "B"
+                  ],
+                  [
+                    "B",
+                    "D"
+                  ]
+                ]
+              }
+            }
+          },
+          {
+            "step": 4,
+            "line": 8,
+            "type": "exec",
+            "vars": {
+              "mask": "1111",
+              "city": "B",
+              "cost": 11,
+              "phase": "另一条路 A-C-D-B 更短, 更新 full mask 的 B 状态",
+              "concept": {
+                "kind": "bitmask_tsp",
+                "title": "状态压缩 DP · TSP",
+                "cities": [
+                  "A",
+                  "B",
+                  "C",
+                  "D"
+                ],
+                "edges": [
+                  [
+                    "A",
+                    "B",
+                    4
+                  ],
+                  [
+                    "A",
+                    "C",
+                    2
+                  ],
+                  [
+                    "A",
+                    "D",
+                    7
+                  ],
+                  [
+                    "B",
+                    "C",
+                    5
+                  ],
+                  [
+                    "B",
+                    "D",
+                    6
+                  ],
+                  [
+                    "C",
+                    "D",
+                    3
+                  ]
+                ],
+                "mask": "1111",
+                "city": "B",
+                "cost": 11,
+                "choices": [],
+                "table": [
+                  [
+                    "1111",
+                    "B",
+                    11
+                  ],
+                  [
+                    "1111",
+                    "D",
+                    13
+                  ]
+                ],
+                "path": [
+                  [
+                    "A",
+                    "C"
+                  ],
+                  [
+                    "C",
+                    "D"
+                  ],
+                  [
+                    "D",
+                    "B"
+                  ]
+                ]
+              }
+            }
+          },
+          {
+            "step": 5,
+            "line": 9,
+            "type": "exec",
+            "vars": {
+              "mask": "1111",
+              "city": "B",
+              "cost": 11,
+              "phase": "所有城市都访问后, 还要回到 A",
+              "concept": {
+                "kind": "bitmask_tsp",
+                "title": "状态压缩 DP · TSP",
+                "cities": [
+                  "A",
+                  "B",
+                  "C",
+                  "D"
+                ],
+                "edges": [
+                  [
+                    "A",
+                    "B",
+                    4
+                  ],
+                  [
+                    "A",
+                    "C",
+                    2
+                  ],
+                  [
+                    "A",
+                    "D",
+                    7
+                  ],
+                  [
+                    "B",
+                    "C",
+                    5
+                  ],
+                  [
+                    "B",
+                    "D",
+                    6
+                  ],
+                  [
+                    "C",
+                    "D",
+                    3
+                  ]
+                ],
+                "mask": "1111",
+                "city": "B",
+                "cost": 11,
+                "choices": [
+                  "A"
+                ],
+                "table": [
+                  [
+                    "1111",
+                    "B",
+                    11
+                  ]
+                ],
+                "path": [
+                  [
+                    "D",
+                    "B"
+                  ],
+                  [
+                    "B",
+                    "A"
+                  ]
+                ]
+              }
+            }
+          },
+          {
+            "step": 6,
+            "line": 9,
+            "type": "exec",
+            "vars": {
+              "mask": "1111",
+              "city": "A",
+              "cost": 15,
+              "phase": "最短环路示意: A → C → D → B → A",
+              "concept": {
+                "kind": "bitmask_tsp",
+                "title": "状态压缩 DP · TSP",
+                "cities": [
+                  "A",
+                  "B",
+                  "C",
+                  "D"
+                ],
+                "edges": [
+                  [
+                    "A",
+                    "B",
+                    4
+                  ],
+                  [
+                    "A",
+                    "C",
+                    2
+                  ],
+                  [
+                    "A",
+                    "D",
+                    7
+                  ],
+                  [
+                    "B",
+                    "C",
+                    5
+                  ],
+                  [
+                    "B",
+                    "D",
+                    6
+                  ],
+                  [
+                    "C",
+                    "D",
+                    3
+                  ]
+                ],
+                "mask": "1111",
+                "city": "A",
+                "cost": 15,
+                "choices": [],
+                "table": [
+                  [
+                    "答案",
+                    "A-C-D-B-A",
+                    15
+                  ]
+                ],
+                "path": [
+                  [
+                    "A",
+                    "C"
+                  ],
+                  [
+                    "C",
+                    "D"
+                  ],
+                  [
+                    "D",
+                    "B"
+                  ],
+                  [
+                    "B",
+                    "A"
+                  ]
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "trace": {
+        "title": "状态压缩DP（TSP）",
+        "source": [
+          "#include <stdio.h>",
+          "#include <stdlib.h>",
+          "#include <string.h>",
+          "",
+          "/* 状态压缩 DP 示意（旅行商问题的简化版） */",
+          "/* 假设有 4 个城市，编号 0-3 */",
+          "",
+          "#define MAXN 4           /* 城市数 */",
+          "#define INF 0x3f3f3f3f   /* 无穷大，两个 INF 相加也不会溢出 int */",
+          "",
+          "int dist[MAXN][MAXN] = { /* 距离矩阵 */",
+          "    {0, 10, 15, 20},",
+          "    {10,  0, 35, 25},",
+          "    {15, 35,  0, 30},",
+          "    {20, 25, 30,  0}",
+          "};",
+          "",
+          "int dp[1 << MAXN][MAXN];  /* dp[S][i]：已经访问集合 S，当前在城市 i 的最短距离 */",
+          "                          /* S 用 4 位二进制表示，最多 2^4 = 16 种状态 */",
+          "",
+          "int tsp(void) {",
+          "    int S, full;",
+          "    ",
+          "    /* 初始化所有状态为无穷大 */",
+          "    for (S = 0; S < (1 << MAXN); S++) {",
+          "        for (int i = 0; i < MAXN; i++) {",
+          "            dp[S][i] = INF;",
+          "        }",
+          "    }",
+          "    ",
+          "    /* 起点：从城市 0 出发，状态为 0001 */",
+          "    dp[1][0] = 0;  /* 1 = 0001，表示只访问了城市 0 */",
+          "    ",
+          "    /* 状态转移 */",
+          "    full = (1 << MAXN) - 1;  /* 1111，表示所有城市都访问了 */",
+          "    ",
+          "    for (S = 1; S <= full; S++) {           /* 遍历所有状态 */",
+          "        for (int i = 0; i < MAXN; i++) {    /* 当前所在城市 */",
+          "            if (dp[S][i] == INF) continue;  /* 这个状态不可达 */",
+          "            if (!((S >> i) & 1)) continue;   /* 确认城市 i 在集合 S 中 */",
+          "            ",
+          "            for (int j = 0; j < MAXN; j++) { /* 尝试去下一个城市 */",
+          "                if ((S >> j) & 1) continue;  /* 如果 j 已在集合中，跳过 */",
+          "                /* S | (1 << j)：把城市 j 加入访问集合 */",
+          "                int newS = S | (1 << j);",
+          "                if (dp[S][i] > INF - dist[i][j]) continue;  /* 防止 INF 加法溢出 */",
+          "                if (dp[S][i] + dist[i][j] < dp[newS][j]) {",
+          "                    dp[newS][j] = dp[S][i] + dist[i][j];",
+          "                }",
+          "            }",
+          "        }",
+          "    }",
+          "    ",
+          "    /* 找到访问所有城市后的最短距离 */",
+          "    int ans = INF;",
+          "    for (int i = 0; i < MAXN; i++) {",
+          "        if (dp[full][i] == INF) continue;  /* 不可达状态不能参与加法 */",
+          "        if (dp[full][i] > INF - dist[i][0]) continue;",
+          "        if (dp[full][i] + dist[i][0] < ans) {",
+          "            ans = dp[full][i] + dist[i][0];  /* 加上回到起点的距离 */",
+          "        }",
+          "    }",
+          "    return ans;",
+          "}",
+          "",
+          "int main(void) {",
+          "    printf(\"最短路径长度： %d\\n\", tsp());",
+          "    return 0;",
+          "}",
+          ""
+        ],
+        "important_vars": {
+          "i": "索引",
+          "j": "索引",
+          "ans": "变量",
+          "dist": "数据",
+          "dp": "数据"
+        },
+        "track_vars": {
+          "primary": [
+            "ans",
+            "dp",
+            "i",
+            "j"
+          ],
+          "secondary": [
+            "_return",
+            "full",
+            "newS"
+          ]
+        },
+        "var_classes": {
+          "_return": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "ans": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "dp": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "full": {
+            "category": "secondary",
+            "type": "scalar"
+          },
+          "i": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "j": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "newS": {
+            "category": "secondary",
+            "type": "scalar"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 14,
+            "text": "最短路径长度： 80"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 51,
+            "type": "enter",
+            "func": "main",
+            "vars": {}
+          },
+          {
+            "step": 1,
+            "line": 19,
+            "type": "cond",
+            "result": true,
+            "vars": {}
+          },
+          {
+            "step": 2,
+            "line": 27,
+            "type": "exec",
+            "vars": {
+              "full": 15
+            }
+          },
+          {
+            "step": 3,
+            "line": 29,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 2
+            }
+          },
+          {
+            "step": 4,
+            "line": 29,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 3
+            }
+          },
+          {
+            "step": 5,
+            "line": 28,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "full": 15
+            }
+          },
+          {
+            "step": 6,
+            "line": 29,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 1
+            }
+          },
+          {
+            "step": 7,
+            "line": 29,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 2
+            }
+          },
+          {
+            "step": 8,
+            "line": 36,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "dp": 75661388,
+              "i": 3,
+              "j": 2,
+              "newS": 15
+            }
+          },
+          {
+            "step": 9,
+            "line": 31,
+            "type": "cond",
+            "result": false,
+            "vars": {
+              "i": 3
+            }
+          },
+          {
+            "step": 10,
+            "line": 29,
+            "type": "cond",
+            "result": true,
+            "vars": {
+              "i": 2
+            }
+          },
+          {
+            "step": 11,
+            "line": 49,
+            "type": "exit",
+            "func": "tsp",
+            "vars": {}
+          },
+          {
+            "step": 12,
+            "line": 53,
+            "type": "exec",
+            "vars": {
+              "_return": 0
+            }
+          },
+          {
+            "step": 13,
+            "line": 53,
+            "type": "exit",
+            "func": "main",
+            "vars": {
+              "dp": "-",
+              "i": "-",
+              "newS": "-",
+              "j": "-",
+              "full": "-",
+              "phase": "程序执行完成，结果见下方输出"
+            }
+          }
+        ]
+      }
+    }
+  }
+};
+const firstKey = Object.keys(ALGOS)[0];
+const requestedKey = new URLSearchParams(location.search).get('algo');
+const savedAtOpen = DHLearning.load();
+let currentKey = ALGOS[requestedKey]
+  ? requestedKey
+  : (savedAtOpen.last && savedAtOpen.last.chapter === CHAPTER_NUM && ALGOS[savedAtOpen.last.algorithm]
+      ? savedAtOpen.last.algorithm
+      : firstKey);
+let currentMode = null;
+const engine = new TraceEngine('viz-canvas', 'code-body', 'var-grid', 'callstack');
+const tabsEl = document.getElementById('algo-tabs');
+const modeTabsEl = document.getElementById('mode-tabs');
+
+function has_modes(algo) {
+  return algo && algo.modes && typeof algo.modes === 'object';
+}
+
+function mode_label(rawAlgo, mode) {
+  const labels = rawAlgo.modeLabels || {};
+  if (labels[mode]) return labels[mode];
+  if (mode === 'concept') return '理解动画';
+  if (mode === 'trace') return '代码执行';
+  return mode;
+}
+
+function resolve_algo(rawAlgo) {
+  if (!has_modes(rawAlgo)) return rawAlgo;
+  const mode = currentMode || rawAlgo.defaultMode || Object.keys(rawAlgo.modes)[0];
+  return rawAlgo.modes[mode] || rawAlgo.modes[rawAlgo.defaultMode] || Object.values(rawAlgo.modes)[0];
+}
+
+function is_concept_algo(algo) {
+  if (!algo) return false;
+  const classes = algo.var_classes || {};
+  if (Object.values(classes).some(info => info && info.type === 'concept')) return true;
+  return (algo.steps || []).some(step => step.vars && step.vars.concept);
+}
+
+function update_tab_states() {
+  const completed = new Set(DHLearning.load().completedDemos);
+  tabsEl.querySelectorAll('.algo-tab').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.key === currentKey);
+    btn.classList.toggle('completed', completed.has(DHLearning.demoId(CHAPTER_NUM, btn.dataset.key)));
+    btn.setAttribute('aria-selected', String(btn.dataset.key === currentKey));
+  });
+}
+
+function update_chapter_progress() {
+  const state = DHLearning.load();
+  const completed = new Set(state.completedDemos);
+  const keys = Object.keys(ALGOS);
+  const done = keys.filter(key => completed.has(DHLearning.demoId(CHAPTER_NUM, key))).length;
+  document.getElementById('chapter-progress-text').textContent = `${done} / ${keys.length} 个演示完成`;
+  document.getElementById('chapter-progress-fill').style.width = `${keys.length ? done / keys.length * 100 : 0}%`;
+  update_tab_states();
+}
+
+function render_mode_tabs(rawAlgo) {
+  modeTabsEl.innerHTML = '';
+  if (!has_modes(rawAlgo)) {
+    modeTabsEl.classList.remove('visible');
+    currentMode = null;
+    return;
+  }
+  modeTabsEl.classList.add('visible');
+  const label = document.createElement('span');
+  label.className = 'mode-label';
+  label.textContent = '学习方式';
+  modeTabsEl.appendChild(label);
+  const activeMode = currentMode || rawAlgo.defaultMode || Object.keys(rawAlgo.modes)[0];
+  Object.keys(rawAlgo.modes).forEach(mode => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'mode-tab' + (mode === activeMode ? ' active' : '');
+    btn.textContent = mode_label(rawAlgo, mode);
+    btn.setAttribute('role', 'tab');
+    btn.setAttribute('aria-selected', String(mode === activeMode));
+    btn.addEventListener('click', () => {
+      if (currentMode === mode) return;
+      currentMode = mode;
+      load_current_algo(false);
+      if (matchMedia('(max-width: 900px)').matches) {
+        set_mobile_view(mode === 'trace' ? 'code' : 'animation');
+      }
+    });
+    modeTabsEl.appendChild(btn);
+  });
+}
+
+function load_current_algo(allowRestore = true) {
+  const rawAlgo = ALGOS[currentKey];
+  const beforeLoad = DHLearning.load().last;
+  if (has_modes(rawAlgo)) {
+    const savedMode = beforeLoad && beforeLoad.chapter === CHAPTER_NUM && beforeLoad.algorithm === currentKey
+      ? beforeLoad.mode
+      : null;
+    if (!currentMode) currentMode = savedMode && rawAlgo.modes[savedMode]
+      ? savedMode
+      : (rawAlgo.defaultMode || Object.keys(rawAlgo.modes)[0]);
+  } else {
+    currentMode = null;
+  }
+  render_mode_tabs(rawAlgo);
+  const activeAlgo = resolve_algo(rawAlgo);
+  document.body.classList.toggle('concept-mode', currentMode === 'concept' || is_concept_algo(activeAlgo));
+  engine.stop_play();
+  engine.load(activeAlgo);
+  try {
+    const currentUrl = new URL(location.href);
+    currentUrl.searchParams.set('algo', currentKey);
+    history.replaceState(null, '', currentUrl.href);
+  } catch (_) {
+    // file:// 预览环境可能限制 history API，不影响演示本身。
+  }
+  update_tab_states();
+
+  if (
+    allowRestore
+    && beforeLoad
+    && beforeLoad.chapter === CHAPTER_NUM
+    && beforeLoad.algorithm === currentKey
+    && beforeLoad.mode === currentMode
+    && beforeLoad.step > 0
+    && activeAlgo.steps.length
+  ) {
+    const restoreStep = Math.min(beforeLoad.step, activeAlgo.steps.length - 1);
+    requestAnimationFrame(() => engine.go_to_step(restoreStep));
+  }
+}
+
+Object.entries(ALGOS).forEach(([key, algo]) => {
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'algo-tab';
+  btn.dataset.key = key;
+  btn.textContent = algo.title;
+  btn.setAttribute('role', 'tab');
+  btn.setAttribute('aria-selected', String(key === currentKey));
+  btn.addEventListener('click', () => {
+    if (currentKey === key) return;
+    currentKey = key;
+    currentMode = has_modes(algo) ? (algo.defaultMode || Object.keys(algo.modes)[0]) : null;
+    load_current_algo(true);
+  });
+  tabsEl.appendChild(btn);
+});
+
+document.addEventListener('dh:stepchange', event => {
+  const detail = event.detail || {};
+  DHLearning.updateLast(CHAPTER_NUM, currentKey, currentMode, detail.currentStep);
+  if (detail.atEnd) DHLearning.markDemoComplete(CHAPTER_NUM, currentKey);
+  update_chapter_progress();
+});
+
+document.getElementById('btn-play').addEventListener('click', () => engine.playing ? engine.stop_play() : engine.start_play());
+document.getElementById('btn-step').addEventListener('click', () => { engine.stop_play(); engine.step_forward(); });
+document.getElementById('btn-reset').addEventListener('click', () => engine.reset());
+document.getElementById('btn-back').addEventListener('click', () => { engine.stop_play(); engine.step_backward(); });
+document.getElementById('btn-to-bp').addEventListener('click', () => { engine.stop_play(); engine.play_to_bp(); });
+
+const speedSlider = document.getElementById('speed-slider');
+const savedSpeed = localStorage.getItem('dh_speed');
+if (savedSpeed !== null) speedSlider.value = savedSpeed;
+speedSlider.setAttribute('aria-valuetext', `速度 ${speedSlider.value}`);
+speedSlider.addEventListener('input', () => {
+  localStorage.setItem('dh_speed', speedSlider.value);
+  speedSlider.setAttribute('aria-valuetext', `速度 ${speedSlider.value}`);
+  if (engine.playing) { clearTimeout(engine.playTimer); engine._play_loop(); }
+});
+speedSlider.addEventListener('keydown', event => {
+  if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+  event.preventDefault();
+  event.stopPropagation();
+  const direction = event.key === 'ArrowRight' ? 1 : -1;
+  speedSlider.value = String(Math.max(Number(speedSlider.min), Math.min(Number(speedSlider.max), Number(speedSlider.value) + direction)));
+  speedSlider.dispatchEvent(new Event('input', { bubbles: true }));
+});
+document.getElementById('font-dec').addEventListener('click', () => engine.font_dec());
+document.getElementById('font-inc').addEventListener('click', () => engine.font_inc());
+
+document.addEventListener('keydown', event => {
+  const target = event.target;
+  if (target && target.closest && target.closest('button,input,select,textarea,a,summary,[contenteditable="true"]')) return;
+  if (event.key === ' ') {
+    event.preventDefault();
+    engine.playing ? engine.stop_play() : engine.start_play();
+  } else if (event.key === 'ArrowRight') {
+    event.preventDefault();
+    engine.stop_play();
+    engine.step_forward();
+  } else if (event.key === 'ArrowLeft') {
+    event.preventDefault();
+    engine.stop_play();
+    engine.step_backward();
+  } else if (event.key.toLowerCase() === 'r' && !event.metaKey && !event.ctrlKey && !event.altKey) {
+    engine.reset();
+  }
+});
+
+function set_mobile_view(view) {
+  document.body.dataset.mobileView = view;
+  document.querySelectorAll('.mobile-view-switcher button').forEach(btn => {
+    const active = btn.dataset.mobileView === view;
+    btn.classList.toggle('active', active);
+    btn.setAttribute('aria-selected', String(active));
+  });
+  if (view === 'animation' && engine.currentStep >= 0) {
+    requestAnimationFrame(() => engine.go_to_step(engine.currentStep));
+  }
+}
+
+document.querySelectorAll('.mobile-view-switcher button').forEach(btn => {
+  btn.addEventListener('click', () => set_mobile_view(btn.dataset.mobileView));
+});
+
+DHLearning.visitChapter(CHAPTER_NUM);
+update_chapter_progress();
+load_current_algo(true);
+</script>
+</body>
+</html>

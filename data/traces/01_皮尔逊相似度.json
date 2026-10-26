@@ -1,0 +1,702 @@
+{
+  "meta": {
+    "algo": "01_皮尔逊相似度",
+    "source_lines": [
+      "#include <stdio.h>",
+      "#include <math.h>",
+      "/*",
+      " * 计算两个用户的相似度（皮尔逊相关系数简化版）",
+      " * 就像比较两个人的\"品味向量\"",
+      " *",
+      " * 类比：你和小明各有一张打分卡",
+      " * 你：  苹果5  香蕉3  橘子4  西瓜1",
+      " * 小明：苹果4  香蕉4  橘子5  西瓜2",
+      " * 越接近，说明口味越像",
+      " */",
+      "#define NUM_ITEMS 4  /* 商品数量 */",
+      "/* 计算两个用户的相似度（皮尔逊相关系数简化版） */",
+      "double similarity(int userA[], int userB[], int n) {",
+      "    double sumA = 0, sumB = 0;",
+      "    double sumAB = 0, sumA2 = 0, sumB2 = 0;",
+      "    for (int i = 0; i < n; i++) {",
+      "        sumA  += userA[i];",
+      "        sumB  += userB[i];",
+      "        sumAB += userA[i] * userB[i];",
+      "        sumA2 += userA[i] * userA[i];",
+      "        sumB2 += userB[i] * userB[i];",
+      "    }",
+      "    /* 皮尔逊相关系数公式 */",
+      "    double numerator = n * sumAB - sumA * sumB;",
+      "    double var_product = (n * sumA2 - sumA * sumA) * (n * sumB2 - sumB * sumB);",
+      "    if (var_product <= 0) return 0;  /* 防止浮点误差导致对负数开根号 */",
+      "    double denominator = sqrt(var_product);",
+      "    if (denominator == 0) return 0;",
+      "    return numerator / denominator;",
+      "}",
+      "int main() {",
+      "    /*           苹果  香蕉  橘子  西瓜 */",
+      "    int userA[] = {5,    3,    4,    1};  /* 你 */",
+      "    int userB[] = {4,    4,    5,    2};  /* 小明 */",
+      "    int userC[] = {1,    5,    2,    5};  /* 小红 */",
+      "    double simAB = similarity(userA, userB, NUM_ITEMS);",
+      "    double simAC = similarity(userA, userC, NUM_ITEMS);",
+      "    printf(\"你和小明的相似度： %.2f\\n\", simAB);",
+      "    printf(\"你和小红的相似度： %.2f\\n\", simAC);",
+      "    if (simAB > simAC) {",
+      "        printf(\"推荐：去看看小明喜欢什么！\\n\");",
+      "    } else {",
+      "        printf(\"推荐：去看看小红喜欢什么！\\n\");",
+      "    }",
+      "    return 0;",
+      "}"
+    ],
+    "track_vars": {
+      "primary": [
+        "i",
+        "n"
+      ],
+      "secondary": [
+        "_return",
+        "denominator",
+        "simAB",
+        "simAC",
+        "sumA",
+        "sumA2",
+        "sumAB",
+        "sumB",
+        "sumB2",
+        "userA",
+        "userB",
+        "var_product"
+      ]
+    },
+    "var_classes": {
+      "_return": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "denominator": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "i": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "n": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "simAB": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "simAC": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "sumA": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "sumA2": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "sumAB": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "sumB": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "sumB2": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "userA": {
+        "category": "secondary",
+        "type": "array"
+      },
+      "userB": {
+        "category": "secondary",
+        "type": "array"
+      },
+      "var_product": {
+        "category": "secondary",
+        "type": "scalar"
+      }
+    },
+    "viz_type": "array",
+    "initial_data": {
+      "userA": [
+        5,
+        3,
+        4,
+        1
+      ],
+      "userB": [
+        4,
+        4,
+        5,
+        2
+      ],
+      "userC": [
+        1,
+        5,
+        2,
+        5
+      ]
+    },
+    "program_output": [
+      {
+        "after_step": 59,
+        "text": "你和小明的相似度： 0.81 你和小红的相似度： -0.88 推荐：去看看小明喜欢什么！"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step": 0,
+      "line": 32,
+      "type": "enter",
+      "func": "main",
+      "vars": {}
+    },
+    {
+      "step": 1,
+      "line": 37,
+      "type": "enter",
+      "func": "similarity",
+      "vars": {
+        "userA": [
+          5,
+          3,
+          4,
+          1
+        ],
+        "userB": [
+          4,
+          4,
+          5,
+          2
+        ],
+        "n": 4
+      }
+    },
+    {
+      "step": 2,
+      "line": 17,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0,
+        "n": 4
+      }
+    },
+    {
+      "step": 3,
+      "line": 18,
+      "type": "exec",
+      "vars": {
+        "sumA": 5
+      }
+    },
+    {
+      "step": 4,
+      "line": 19,
+      "type": "exec",
+      "vars": {
+        "sumB": 0
+      }
+    },
+    {
+      "step": 5,
+      "line": 20,
+      "type": "exec",
+      "vars": {
+        "sumAB": 20
+      }
+    },
+    {
+      "step": 6,
+      "line": 21,
+      "type": "exec",
+      "vars": {
+        "sumA2": 0
+      }
+    },
+    {
+      "step": 7,
+      "line": 22,
+      "type": "exec",
+      "vars": {
+        "sumB2": 0
+      }
+    },
+    {
+      "step": 8,
+      "line": 17,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "n": 4
+      }
+    },
+    {
+      "step": 9,
+      "line": 18,
+      "type": "exec",
+      "vars": {
+        "sumA": 8
+      }
+    },
+    {
+      "step": 10,
+      "line": 19,
+      "type": "exec",
+      "vars": {
+        "sumB": 0
+      }
+    },
+    {
+      "step": 11,
+      "line": 20,
+      "type": "exec",
+      "vars": {
+        "sumAB": 32
+      }
+    },
+    {
+      "step": 12,
+      "line": 21,
+      "type": "exec",
+      "vars": {
+        "sumA2": 0
+      }
+    },
+    {
+      "step": 13,
+      "line": 22,
+      "type": "exec",
+      "vars": {
+        "sumB2": 0
+      }
+    },
+    {
+      "step": 14,
+      "line": 17,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "n": 4
+      }
+    },
+    {
+      "step": 15,
+      "line": 18,
+      "type": "exec",
+      "vars": {
+        "sumA": 12
+      }
+    },
+    {
+      "step": 16,
+      "line": 19,
+      "type": "exec",
+      "vars": {
+        "sumB": 0
+      }
+    },
+    {
+      "step": 17,
+      "line": 20,
+      "type": "exec",
+      "vars": {
+        "sumAB": 52
+      }
+    },
+    {
+      "step": 18,
+      "line": 21,
+      "type": "exec",
+      "vars": {
+        "sumA2": 0
+      }
+    },
+    {
+      "step": 19,
+      "line": 22,
+      "type": "exec",
+      "vars": {
+        "sumB2": 0
+      }
+    },
+    {
+      "step": 20,
+      "line": 17,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3,
+        "n": 4
+      }
+    },
+    {
+      "step": 21,
+      "line": 18,
+      "type": "exec",
+      "vars": {
+        "sumA": 13
+      }
+    },
+    {
+      "step": 22,
+      "line": 19,
+      "type": "exec",
+      "vars": {
+        "sumB": 0
+      }
+    },
+    {
+      "step": 23,
+      "line": 20,
+      "type": "exec",
+      "vars": {
+        "sumAB": 54
+      }
+    },
+    {
+      "step": 24,
+      "line": 21,
+      "type": "exec",
+      "vars": {
+        "sumA2": 0
+      }
+    },
+    {
+      "step": 25,
+      "line": 22,
+      "type": "exec",
+      "vars": {
+        "sumB2": 0
+      }
+    },
+    {
+      "step": 26,
+      "line": 27,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "var_product": 665
+      }
+    },
+    {
+      "step": 27,
+      "line": 29,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "denominator": 25.7876
+      }
+    },
+    {
+      "step": 28,
+      "line": 30,
+      "type": "exec",
+      "vars": {
+        "_return": 0.814345
+      }
+    },
+    {
+      "step": 29,
+      "line": 30,
+      "type": "exit",
+      "func": "similarity",
+      "vars": {}
+    },
+    {
+      "step": 30,
+      "line": 38,
+      "type": "enter",
+      "func": "similarity",
+      "vars": {
+        "userA": [
+          5,
+          3,
+          4,
+          1
+        ],
+        "userB": [
+          1,
+          5,
+          2,
+          5
+        ],
+        "n": 4
+      }
+    },
+    {
+      "step": 31,
+      "line": 17,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0,
+        "n": 4
+      }
+    },
+    {
+      "step": 32,
+      "line": 18,
+      "type": "exec",
+      "vars": {
+        "sumA": 5
+      }
+    },
+    {
+      "step": 33,
+      "line": 19,
+      "type": "exec",
+      "vars": {
+        "sumB": 0
+      }
+    },
+    {
+      "step": 34,
+      "line": 20,
+      "type": "exec",
+      "vars": {
+        "sumAB": 5
+      }
+    },
+    {
+      "step": 35,
+      "line": 21,
+      "type": "exec",
+      "vars": {
+        "sumA2": 0
+      }
+    },
+    {
+      "step": 36,
+      "line": 22,
+      "type": "exec",
+      "vars": {
+        "sumB2": 0
+      }
+    },
+    {
+      "step": 37,
+      "line": 17,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "n": 4
+      }
+    },
+    {
+      "step": 38,
+      "line": 18,
+      "type": "exec",
+      "vars": {
+        "sumA": 8
+      }
+    },
+    {
+      "step": 39,
+      "line": 19,
+      "type": "exec",
+      "vars": {
+        "sumB": 0
+      }
+    },
+    {
+      "step": 40,
+      "line": 20,
+      "type": "exec",
+      "vars": {
+        "sumAB": 20
+      }
+    },
+    {
+      "step": 41,
+      "line": 21,
+      "type": "exec",
+      "vars": {
+        "sumA2": 0
+      }
+    },
+    {
+      "step": 42,
+      "line": 22,
+      "type": "exec",
+      "vars": {
+        "sumB2": 0
+      }
+    },
+    {
+      "step": 43,
+      "line": 17,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "n": 4
+      }
+    },
+    {
+      "step": 44,
+      "line": 18,
+      "type": "exec",
+      "vars": {
+        "sumA": 12
+      }
+    },
+    {
+      "step": 45,
+      "line": 19,
+      "type": "exec",
+      "vars": {
+        "sumB": 0
+      }
+    },
+    {
+      "step": 46,
+      "line": 20,
+      "type": "exec",
+      "vars": {
+        "sumAB": 28
+      }
+    },
+    {
+      "step": 47,
+      "line": 21,
+      "type": "exec",
+      "vars": {
+        "sumA2": 0
+      }
+    },
+    {
+      "step": 48,
+      "line": 22,
+      "type": "exec",
+      "vars": {
+        "sumB2": 0
+      }
+    },
+    {
+      "step": 49,
+      "line": 17,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3,
+        "n": 4
+      }
+    },
+    {
+      "step": 50,
+      "line": 18,
+      "type": "exec",
+      "vars": {
+        "sumA": 13
+      }
+    },
+    {
+      "step": 51,
+      "line": 19,
+      "type": "exec",
+      "vars": {
+        "sumB": 0
+      }
+    },
+    {
+      "step": 52,
+      "line": 20,
+      "type": "exec",
+      "vars": {
+        "sumAB": 33
+      }
+    },
+    {
+      "step": 53,
+      "line": 21,
+      "type": "exec",
+      "vars": {
+        "sumA2": 0
+      }
+    },
+    {
+      "step": 54,
+      "line": 22,
+      "type": "exec",
+      "vars": {
+        "sumB2": 0
+      }
+    },
+    {
+      "step": 55,
+      "line": 27,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "var_product": 1785
+      }
+    },
+    {
+      "step": 56,
+      "line": 29,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "denominator": 42.2493
+      }
+    },
+    {
+      "step": 57,
+      "line": 30,
+      "type": "exec",
+      "vars": {
+        "_return": -0.875755
+      }
+    },
+    {
+      "step": 58,
+      "line": 30,
+      "type": "exit",
+      "func": "similarity",
+      "vars": {}
+    },
+    {
+      "step": 59,
+      "line": 41,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "simAB": 0.814345,
+        "simAC": -0.875755
+      }
+    },
+    {
+      "step": 60,
+      "line": 46,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 61,
+      "line": 46,
+      "type": "exit",
+      "func": "main",
+      "vars": {}
+    }
+  ],
+  "total_steps": 62
+}

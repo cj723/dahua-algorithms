@@ -1,0 +1,1169 @@
+{
+  "meta": {
+    "algo": "03_外部排序_多路归并",
+    "source_lines": [
+      "/* 外部排序 多路归并 */",
+      "#include <stdio.h>",
+      "#include <stdlib.h>",
+      "#include <limits.h>",
+      "#define MEMORY_SIZE 10  // 内存一次只能放10个元素",
+      "// 比较函数",
+      "int cmp(const void *a, const void *b) {",
+      "    int x = *(const int *)a;",
+      "    int y = *(const int *)b;",
+      "    return (x > y) - (x < y);",
+      "}",
+      "/*",
+      " * 步骤1：生成初始归并段",
+      " * 每次从大文件读MEMORY_SIZE个数，排序后写入一个小文件",
+      " */",
+      "int create_runs(const char *inputFile, char runFiles[][50], int maxRuns) {",
+      "    FILE *fin = fopen(inputFile, \"r\");",
+      "    if (!fin) return -1;",
+      "    int buffer[MEMORY_SIZE];",
+      "    int runCount = 0;",
+      "    while (!feof(fin) && runCount < maxRuns) {",
+      "        int count = 0;",
+      "        // 读一批数据到内存",
+      "        while (count < MEMORY_SIZE && fscanf(fin, \"%d\", &buffer[count]) == 1) {",
+      "            count++;",
+      "        }",
+      "        if (count == 0) break;",
+      "        // 内部排序",
+      "        qsort(buffer, count, sizeof(int), cmp);",
+      "        // 写入临时文件",
+      "        FILE *frun = fopen(runFiles[runCount], \"w\");",
+      "        if (!frun) {",
+      "            fclose(fin);",
+      "            return -1;",
+      "        }",
+      "        for (int i = 0; i < count; i++) {",
+      "            fprintf(frun, \"%d\\n\", buffer[i]);",
+      "        }",
+      "        fclose(frun);",
+      "        runCount++;",
+      "    }",
+      "    fclose(fin);",
+      "    return runCount;",
+      "}",
+      "/*",
+      " * 步骤2：二路归并（简化版，实际可以用多路）",
+      " */",
+      "int two_way_merge(char file1[], char file2[], char output[]) {",
+      "    FILE *f1 = fopen(file1, \"r\");",
+      "    FILE *f2 = fopen(file2, \"r\");",
+      "    FILE *fout = fopen(output, \"w\");",
+      "    if (!f1 || !f2 || !fout) {",
+      "        if (f1) fclose(f1);",
+      "        if (f2) fclose(f2);",
+      "        if (fout) fclose(fout);",
+      "        return 0;",
+      "    }",
+      "    int a, b;",
+      "    int hasA = (fscanf(f1, \"%d\", &a) == 1);",
+      "    int hasB = (fscanf(f2, \"%d\", &b) == 1);",
+      "    while (hasA && hasB) {",
+      "        if (a <= b) {",
+      "            fprintf(fout, \"%d\\n\", a);",
+      "            hasA = (fscanf(f1, \"%d\", &a) == 1);",
+      "        } else {",
+      "            fprintf(fout, \"%d\\n\", b);",
+      "            hasB = (fscanf(f2, \"%d\", &b) == 1);",
+      "        }",
+      "    }",
+      "    while (hasA) {",
+      "        fprintf(fout, \"%d\\n\", a);",
+      "        hasA = (fscanf(f1, \"%d\", &a) == 1);",
+      "    }",
+      "    while (hasB) {",
+      "        fprintf(fout, \"%d\\n\", b);",
+      "        hasB = (fscanf(f2, \"%d\", &b) == 1);",
+      "    }",
+      "    fclose(f1); fclose(f2); fclose(fout);",
+      "    return 1;",
+      "}",
+      "// 测试：外部排序——模拟\"数据太大，内存放不下\"的场景",
+      "int main(void) {",
+      "    // 1. 生成一个模拟的大文件（20个整数）",
+      "    const char *inputFile = \"/tmp/ext_sort_input.txt\";",
+      "    FILE *f = fopen(inputFile, \"w\");",
+      "    if (!f) {",
+      "        printf(\"创建输入文件失败\\n\");",
+      "        return 1;",
+      "    }",
+      "    int testData[] = {42, 15, 73, 28, 61, 9, 34, 88, 17, 55,",
+      "                      3, 67, 21, 49, 82, 11, 36, 94, 25, 70};",
+      "    for (int i = 0; i < 20; i++) {",
+      "        fprintf(f, \"%d\\n\", testData[i]);",
+      "    }",
+      "    fclose(f);",
+      "    printf(\"生成了 20 个数的输入文件: %s\\n\", inputFile);",
+      "    // 2. 生成初始归并段（每次读 MEMORY_SIZE=10 个，排序后写临时文件）",
+      "    char runFiles[10][50] = {",
+      "        \"/tmp/ext_run_0.txt\", \"/tmp/ext_run_1.txt\"",
+      "    };",
+      "    int runCount = create_runs(inputFile, runFiles, 10);",
+      "    if (runCount < 0) {",
+      "        printf(\"生成归并段失败\\n\");",
+      "        remove(inputFile);",
+      "        return 1;",
+      "    }",
+      "    printf(\"生成了 %d 个初始归并段\\n\", runCount);",
+      "    // 3. 二路归并",
+      "    char outputFile[] = \"/tmp/ext_sort_output.txt\";",
+      "    if (runCount >= 2) {",
+      "        if (!two_way_merge(runFiles[0], runFiles[1], outputFile)) {",
+      "            printf(\"归并失败\\n\");",
+      "            remove(inputFile);",
+      "            for (int i = 0; i < runCount; i++) remove(runFiles[i]);",
+      "            return 1;",
+      "        }",
+      "        printf(\"归并完成 → %s\\n\", outputFile);",
+      "        // 打印结果",
+      "        printf(\"最终排序结果: \");",
+      "        FILE *fout = fopen(outputFile, \"r\");",
+      "        if (!fout) {",
+      "            printf(\"读取输出文件失败\\n\");",
+      "            remove(inputFile);",
+      "            for (int i = 0; i < runCount; i++) remove(runFiles[i]);",
+      "            remove(outputFile);",
+      "            return 1;",
+      "        }",
+      "        int val;",
+      "        while (fscanf(fout, \"%d\", &val) == 1) {",
+      "            printf(\"%d \", val);",
+      "        }",
+      "        printf(\"\\n\");",
+      "        fclose(fout);",
+      "    }",
+      "    // 清理临时文件",
+      "    remove(inputFile);",
+      "    for (int i = 0; i < runCount; i++) remove(runFiles[i]);",
+      "    remove(outputFile);",
+      "    return 0;",
+      "}"
+    ],
+    "track_vars": {
+      "primary": [
+        "count",
+        "i"
+      ],
+      "secondary": [
+        "_return",
+        "buffer",
+        "maxRuns",
+        "runCount"
+      ]
+    },
+    "var_classes": {
+      "_return": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "buffer": {
+        "category": "secondary",
+        "type": "array"
+      },
+      "count": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "i": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "maxRuns": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "runCount": {
+        "category": "secondary",
+        "type": "scalar"
+      }
+    },
+    "viz_type": "array",
+    "initial_data": {
+      "testData": [
+        42,
+        15,
+        73,
+        28,
+        61,
+        9,
+        34,
+        88,
+        17,
+        55,
+        3,
+        67,
+        21,
+        49,
+        82,
+        11,
+        36,
+        94,
+        25,
+        70
+      ],
+      "buffer": [
+        -125009664,
+        1,
+        -125009832,
+        1,
+        1831184256,
+        1,
+        -1937012276,
+        1,
+        -125009664,
+        1
+      ]
+    },
+    "program_output": [
+      {
+        "after_step": 21,
+        "text": "生成了 20 个数的输入文件: /tmp/ext_sort_input.txt"
+      },
+      {
+        "after_step": 110,
+        "text": "生成了 1 个初始归并段"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step": 0,
+      "line": 82,
+      "type": "enter",
+      "func": "main",
+      "vars": {}
+    },
+    {
+      "step": 1,
+      "line": 92,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0
+      }
+    },
+    {
+      "step": 2,
+      "line": 92,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1
+      }
+    },
+    {
+      "step": 3,
+      "line": 92,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2
+      }
+    },
+    {
+      "step": 4,
+      "line": 92,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3
+      }
+    },
+    {
+      "step": 5,
+      "line": 92,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 4
+      }
+    },
+    {
+      "step": 6,
+      "line": 92,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 5
+      }
+    },
+    {
+      "step": 7,
+      "line": 92,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 6
+      }
+    },
+    {
+      "step": 8,
+      "line": 92,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 7
+      }
+    },
+    {
+      "step": 9,
+      "line": 92,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 8
+      }
+    },
+    {
+      "step": 10,
+      "line": 92,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 9
+      }
+    },
+    {
+      "step": 11,
+      "line": 92,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 10
+      }
+    },
+    {
+      "step": 12,
+      "line": 92,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 11
+      }
+    },
+    {
+      "step": 13,
+      "line": 92,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 12
+      }
+    },
+    {
+      "step": 14,
+      "line": 92,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 13
+      }
+    },
+    {
+      "step": 15,
+      "line": 92,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 14
+      }
+    },
+    {
+      "step": 16,
+      "line": 92,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 15
+      }
+    },
+    {
+      "step": 17,
+      "line": 92,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 16
+      }
+    },
+    {
+      "step": 18,
+      "line": 92,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 17
+      }
+    },
+    {
+      "step": 19,
+      "line": 92,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 18
+      }
+    },
+    {
+      "step": 20,
+      "line": 92,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 19
+      }
+    },
+    {
+      "step": 21,
+      "line": 101,
+      "type": "enter",
+      "func": "create_runs",
+      "vars": {
+        "maxRuns": 10
+      }
+    },
+    {
+      "step": 22,
+      "line": 18,
+      "type": "cond",
+      "result": false,
+      "vars": {}
+    },
+    {
+      "step": 23,
+      "line": 19,
+      "type": "exec",
+      "vars": {
+        "buffer": [
+          -125009664,
+          1,
+          -125009832,
+          1,
+          1831184256,
+          1,
+          -1937012276,
+          1,
+          -125009664,
+          1
+        ]
+      }
+    },
+    {
+      "step": 24,
+      "line": 21,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "maxRuns": 10,
+        "runCount": 0
+      }
+    },
+    {
+      "step": 25,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "count": 0
+      }
+    },
+    {
+      "step": 26,
+      "line": 25,
+      "type": "exec",
+      "vars": {
+        "count": 1
+      }
+    },
+    {
+      "step": 27,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "count": 1
+      }
+    },
+    {
+      "step": 28,
+      "line": 25,
+      "type": "exec",
+      "vars": {
+        "count": 2
+      }
+    },
+    {
+      "step": 29,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "count": 2
+      }
+    },
+    {
+      "step": 30,
+      "line": 25,
+      "type": "exec",
+      "vars": {
+        "count": 3
+      }
+    },
+    {
+      "step": 31,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "count": 3
+      }
+    },
+    {
+      "step": 32,
+      "line": 25,
+      "type": "exec",
+      "vars": {
+        "count": 4
+      }
+    },
+    {
+      "step": 33,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "count": 4
+      }
+    },
+    {
+      "step": 34,
+      "line": 25,
+      "type": "exec",
+      "vars": {
+        "count": 5
+      }
+    },
+    {
+      "step": 35,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "count": 5
+      }
+    },
+    {
+      "step": 36,
+      "line": 25,
+      "type": "exec",
+      "vars": {
+        "count": 6
+      }
+    },
+    {
+      "step": 37,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "count": 6
+      }
+    },
+    {
+      "step": 38,
+      "line": 25,
+      "type": "exec",
+      "vars": {
+        "count": 7
+      }
+    },
+    {
+      "step": 39,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "count": 7
+      }
+    },
+    {
+      "step": 40,
+      "line": 25,
+      "type": "exec",
+      "vars": {
+        "count": 8
+      }
+    },
+    {
+      "step": 41,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "count": 8
+      }
+    },
+    {
+      "step": 42,
+      "line": 25,
+      "type": "exec",
+      "vars": {
+        "count": 9
+      }
+    },
+    {
+      "step": 43,
+      "line": 24,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "count": 9
+      }
+    },
+    {
+      "step": 44,
+      "line": 25,
+      "type": "exec",
+      "vars": {
+        "count": 10
+      }
+    },
+    {
+      "step": 45,
+      "line": 27,
+      "type": "cond",
+      "result": false,
+      "vars": {
+        "count": 10
+      }
+    },
+    {
+      "step": 46,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "_return": -1
+      }
+    },
+    {
+      "step": 47,
+      "line": 10,
+      "type": "exit",
+      "func": "cmp",
+      "vars": {}
+    },
+    {
+      "step": 48,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "_return": -1
+      }
+    },
+    {
+      "step": 49,
+      "line": 10,
+      "type": "exit",
+      "func": "cmp",
+      "vars": {}
+    },
+    {
+      "step": 50,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "_return": -1
+      }
+    },
+    {
+      "step": 51,
+      "line": 10,
+      "type": "exit",
+      "func": "cmp",
+      "vars": {}
+    },
+    {
+      "step": 52,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "_return": -1
+      }
+    },
+    {
+      "step": 53,
+      "line": 10,
+      "type": "exit",
+      "func": "cmp",
+      "vars": {}
+    },
+    {
+      "step": 54,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 55,
+      "line": 10,
+      "type": "exit",
+      "func": "cmp",
+      "vars": {}
+    },
+    {
+      "step": 56,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 57,
+      "line": 10,
+      "type": "exit",
+      "func": "cmp",
+      "vars": {}
+    },
+    {
+      "step": 58,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 59,
+      "line": 10,
+      "type": "exit",
+      "func": "cmp",
+      "vars": {}
+    },
+    {
+      "step": 60,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "_return": -1
+      }
+    },
+    {
+      "step": 61,
+      "line": 10,
+      "type": "exit",
+      "func": "cmp",
+      "vars": {}
+    },
+    {
+      "step": 62,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "_return": -1
+      }
+    },
+    {
+      "step": 63,
+      "line": 10,
+      "type": "exit",
+      "func": "cmp",
+      "vars": {}
+    },
+    {
+      "step": 64,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "_return": -1
+      }
+    },
+    {
+      "step": 65,
+      "line": 10,
+      "type": "exit",
+      "func": "cmp",
+      "vars": {}
+    },
+    {
+      "step": 66,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "_return": -1
+      }
+    },
+    {
+      "step": 67,
+      "line": 10,
+      "type": "exit",
+      "func": "cmp",
+      "vars": {}
+    },
+    {
+      "step": 68,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "_return": -1
+      }
+    },
+    {
+      "step": 69,
+      "line": 10,
+      "type": "exit",
+      "func": "cmp",
+      "vars": {}
+    },
+    {
+      "step": 70,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 71,
+      "line": 10,
+      "type": "exit",
+      "func": "cmp",
+      "vars": {}
+    },
+    {
+      "step": 72,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 73,
+      "line": 10,
+      "type": "exit",
+      "func": "cmp",
+      "vars": {}
+    },
+    {
+      "step": 74,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 75,
+      "line": 10,
+      "type": "exit",
+      "func": "cmp",
+      "vars": {}
+    },
+    {
+      "step": 76,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 77,
+      "line": 10,
+      "type": "exit",
+      "func": "cmp",
+      "vars": {}
+    },
+    {
+      "step": 78,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 79,
+      "line": 10,
+      "type": "exit",
+      "func": "cmp",
+      "vars": {}
+    },
+    {
+      "step": 80,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 81,
+      "line": 10,
+      "type": "exit",
+      "func": "cmp",
+      "vars": {}
+    },
+    {
+      "step": 82,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 83,
+      "line": 10,
+      "type": "exit",
+      "func": "cmp",
+      "vars": {}
+    },
+    {
+      "step": 84,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "_return": -1
+      }
+    },
+    {
+      "step": 85,
+      "line": 10,
+      "type": "exit",
+      "func": "cmp",
+      "vars": {}
+    },
+    {
+      "step": 86,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "_return": -1
+      }
+    },
+    {
+      "step": 87,
+      "line": 10,
+      "type": "exit",
+      "func": "cmp",
+      "vars": {}
+    },
+    {
+      "step": 88,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 89,
+      "line": 10,
+      "type": "exit",
+      "func": "cmp",
+      "vars": {}
+    },
+    {
+      "step": 90,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 91,
+      "line": 10,
+      "type": "exit",
+      "func": "cmp",
+      "vars": {}
+    },
+    {
+      "step": 92,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 93,
+      "line": 10,
+      "type": "exit",
+      "func": "cmp",
+      "vars": {}
+    },
+    {
+      "step": 94,
+      "line": 10,
+      "type": "exec",
+      "vars": {
+        "_return": -1
+      }
+    },
+    {
+      "step": 95,
+      "line": 10,
+      "type": "exit",
+      "func": "cmp",
+      "vars": {}
+    },
+    {
+      "step": 96,
+      "line": 36,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "count": 10,
+        "i": 0
+      }
+    },
+    {
+      "step": 97,
+      "line": 36,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "count": 10,
+        "i": 1
+      }
+    },
+    {
+      "step": 98,
+      "line": 36,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "count": 10,
+        "i": 2
+      }
+    },
+    {
+      "step": 99,
+      "line": 36,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "count": 10,
+        "i": 3
+      }
+    },
+    {
+      "step": 100,
+      "line": 36,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "count": 10,
+        "i": 4
+      }
+    },
+    {
+      "step": 101,
+      "line": 36,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "count": 10,
+        "i": 5
+      }
+    },
+    {
+      "step": 102,
+      "line": 36,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "count": 10,
+        "i": 6
+      }
+    },
+    {
+      "step": 103,
+      "line": 36,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "count": 10,
+        "i": 7
+      }
+    },
+    {
+      "step": 104,
+      "line": 36,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "count": 10,
+        "i": 8
+      }
+    },
+    {
+      "step": 105,
+      "line": 36,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "count": 10,
+        "i": 9
+      }
+    },
+    {
+      "step": 106,
+      "line": 40,
+      "type": "exec",
+      "vars": {
+        "runCount": 1
+      }
+    },
+    {
+      "step": 107,
+      "line": 21,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "maxRuns": 10,
+        "runCount": 1
+      }
+    },
+    {
+      "step": 108,
+      "line": 43,
+      "type": "exec",
+      "vars": {
+        "_return": 1
+      }
+    },
+    {
+      "step": 109,
+      "line": 43,
+      "type": "exit",
+      "func": "create_runs",
+      "vars": {}
+    },
+    {
+      "step": 110,
+      "line": 139,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 111,
+      "line": 139,
+      "type": "exit",
+      "func": "main",
+      "vars": {}
+    }
+  ],
+  "total_steps": 112
+}

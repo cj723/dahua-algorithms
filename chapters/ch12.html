@@ -1,0 +1,3596 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#171b28">
+<link rel="icon" href="../assets/mascots/student-dog.png">
+<title>第12章 图的进阶 · 大话算法</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #1e2336;
+  --panel: #1a1f30;
+  --panel-deep: #151920;
+  --surface: #21283a;
+  --border: #30384c;
+  --text: #d7dae0;
+  --text-soft: #abb4c3;
+  --text-dim: #929caf;
+  --accent: #59a8ee;
+  --accent-soft: #243f5e;
+  --success: #98c379;
+  --control-height: 64px;
+}
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Noto Sans SC', 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text-soft);
+  overflow: hidden;
+}
+button, input, summary { font: inherit; }
+button:focus-visible, a:focus-visible, input:focus-visible, summary:focus-visible, [tabindex]:focus-visible {
+  outline: 3px solid rgba(89,168,238,.58);
+  outline-offset: 2px;
+}
+.header {
+  height: 65px;
+  background: rgba(23,28,43,.96);
+  padding: 0 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  position: relative;
+  z-index: 30;
+}
+.back-link {
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 13px;
+  white-space: nowrap;
+}
+.back-link:hover { text-decoration: underline; }
+.chapter-heading { min-width: 0; flex: 1; }
+.chapter-kicker { color: var(--text-dim); font-size: 12px; margin-bottom: 2px; }
+.chapter-heading h1 {
+  font-size: 19px;
+  line-height: 1.25;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.chapter-status {
+  min-width: 138px;
+  display: grid;
+  gap: 5px;
+}
+.chapter-status-text { color: var(--text-dim); font-size: 11px; text-align: right; }
+.chapter-status-track { height: 4px; background: #252c3e; border-radius: 99px; overflow: hidden; }
+.chapter-status-fill {
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, var(--accent), var(--success));
+  border-radius: inherit;
+  transition: width .3s ease;
+}
+.chapter-nav { display: flex; gap: 6px; }
+.chapter-nav a, .chapter-nav span {
+  min-width: 36px;
+  height: 36px;
+  padding: 0 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-soft);
+  text-decoration: none;
+  font-size: 12px;
+}
+.chapter-nav a:hover { border-color: var(--accent); color: var(--text); background: #202b40; }
+.chapter-nav .disabled { opacity: .35; cursor: default; }
+.mobile-view-switcher { display: none; }
+.main { display: flex; height: calc(100dvh - 65px); min-height: 0; }
+.code-panel {
+  width: 45%;
+  min-width: 360px;
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.code-header {
+  background: var(--panel);
+  padding: 9px 14px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.algo-tabs {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  flex: 1;
+  min-width: 0;
+}
+.algo-tab, .mode-tab {
+  border: 1px solid var(--border);
+  background: #22283a;
+  color: var(--text-dim);
+  border-radius: 7px;
+  cursor: pointer;
+  transition: background .18s ease, border-color .18s ease, color .18s ease;
+}
+.algo-tab { padding: 6px 11px; font-size: 12px; position: relative; }
+.algo-tab:hover, .mode-tab:hover { color: var(--text); border-color: #48536b; }
+.algo-tab.active, .mode-tab.active {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: #e8f3ff;
+}
+.algo-tab.completed::after {
+  content: '✓';
+  margin-left: 6px;
+  color: var(--success);
+  font-weight: 800;
+}
+.breakpoint-hint {
+  color: #737e92;
+  font-size: 11px;
+  line-height: 29px;
+  white-space: nowrap;
+}
+.mode-tabs {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: #171c2b;
+  border-bottom: 1px solid var(--border);
+}
+.mode-tabs.visible { display: flex; }
+.mode-label { font-size: 12px; color: var(--text-dim); margin-right: 2px; }
+.mode-tab { padding: 5px 12px; border-radius: 999px; font-size: 12px; }
+.code-body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  font-family: 'SFMono-Regular', 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+  font-size: var(--code-font-size, 15px);
+  line-height: 1.8;
+  scrollbar-color: #3b455c transparent;
+}
+.code-line { display: flex; min-width: max-content; padding: 0 16px 0 7px; position: relative; }
+.code-line:hover { background: #22283a; }
+.code-line.active {
+  background: rgba(73,164,238,.32);
+  border-left: 3px solid var(--accent);
+  box-shadow: inset 0 0 16px rgba(73,164,238,.18);
+}
+.code-line.executed { background: rgba(73,164,238,.035); }
+.code-line.setup { background: rgba(127,132,142,.045); color: #667084; }
+.line-num {
+  width: 42px;
+  border: 0;
+  background: transparent;
+  text-align: right;
+  color: #748096;
+  padding-right: 12px;
+  user-select: none;
+  flex-shrink: 0;
+  position: relative;
+  cursor: pointer;
+}
+.line-num:hover { color: var(--accent); }
+.line-num .breakpoint {
+  position: absolute;
+  left: 3px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #e05561;
+}
+.line-content { flex: 1; white-space: pre; }
+.kw, .num { color: #F3A862; }
+.fn { color: #59a8ee; }
+.var { color: #D980FA; }
+.str { color: #74C589; }
+.cmt { color: #71939a; font-style: italic; }
+.right-panel { flex: 1; display: flex; flex-direction: column; min-width: 0; min-height: 0; overflow: hidden; }
+.viz-panel {
+  flex: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 20px;
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
+}
+.viz-panel canvas { width: 100%; height: 100%; display: block; }
+body.concept-mode .viz-panel { flex: 1 1 auto; padding: 6px 20px; }
+body.concept-mode .vars-panel { flex: 0 1 168px; padding: 8px 18px; }
+body.concept-mode .output-panel { flex: 0 1 68px; padding: 6px 16px; }
+body.concept-mode .callstack { display: none; }
+.callstack {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  max-width: calc(100% - 24px);
+  background: rgba(33,38,54,.92);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 12px;
+  pointer-events: none;
+}
+.callstack-title, .vars-panel h3, .output-panel h3 { color: var(--text-dim); }
+.callstack-title { margin-bottom: 4px; }
+.callstack-item { color: var(--accent); padding: 2px 0; }
+.callstack-item::before { content: '▸ '; color: #68758a; }
+.vars-panel {
+  flex: 2;
+  background: var(--panel);
+  padding: 10px 18px;
+  border-top: 1px solid var(--border);
+  overflow-y: auto;
+  min-height: 0;
+}
+.output-panel {
+  flex: 1;
+  background: var(--panel-deep);
+  border-top: 1px solid var(--border);
+  padding: 8px 16px;
+  overflow-y: auto;
+  min-height: 0;
+  font-family: 'SFMono-Regular', 'JetBrains Mono', monospace;
+  font-size: var(--output-font-size, 13px);
+  color: var(--text-dim);
+}
+.output-panel h3 {
+  font-size: 12px;
+  margin-bottom: 4px;
+  position: sticky;
+  top: 0;
+  background: var(--panel-deep);
+  padding-bottom: 4px;
+  z-index: 1;
+}
+.output-line { padding: 1px 0; white-space: pre-wrap; word-break: break-word; }
+.vars-panel h3 { font-size: 13px; margin-bottom: 9px; }
+.var-grid { display: flex; flex-direction: column; gap: 6px; }
+.var-section-title { font-size: 11px; color: var(--text-dim); margin: 8px 0 4px; }
+.var-section:first-child .var-section-title { margin-top: 0; }
+.var-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.var-item {
+  background: #22283a;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 6px 13px;
+  font-family: monospace;
+  font-size: var(--var-font-size, 14px);
+}
+.var-name { color: var(--accent); }
+.var-val { color: var(--text); font-weight: 650; }
+.var-changed { animation: varPulse .5s ease; border-color: var(--accent); }
+.var-highlight { border-color: var(--accent); background: var(--accent-soft); }
+@keyframes varPulse { 0% { background: var(--accent-soft); } 100% { background: #22283a; } }
+.var-toggle { font-size: 12px; color: var(--text-dim); cursor: pointer; padding: 4px 0; user-select: none; }
+.control-bar {
+  min-height: var(--control-height);
+  flex-shrink: 0;
+  background: var(--panel);
+  border-top: 1px solid var(--border);
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+  z-index: 20;
+}
+.transport-controls { display: flex; align-items: center; gap: 7px; }
+.btn {
+  min-height: 38px;
+  background: #22283a;
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  white-space: nowrap;
+}
+.btn:hover:not(:disabled) { background: #2a3247; border-color: #4c5872; }
+.btn:disabled { opacity: .36; cursor: not-allowed; }
+.btn-primary { min-width: 82px; background: var(--accent-soft); border-color: var(--accent); }
+.btn-active { background: #285176; border-color: #77bfff; }
+.step-info {
+  margin-left: auto;
+  min-width: 68px;
+  font-size: 12px;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+.step-info strong { color: var(--text); }
+.settings-menu { position: relative; }
+.settings-menu summary {
+  list-style: none;
+  min-height: 38px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-soft);
+  cursor: pointer;
+  font-size: 12px;
+  user-select: none;
+}
+.settings-menu summary::-webkit-details-marker { display: none; }
+.settings-menu[open] summary { border-color: var(--accent); background: var(--accent-soft); color: var(--text); }
+.settings-popover {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 10px);
+  width: 250px;
+  padding: 14px;
+  display: grid;
+  gap: 12px;
+  background: rgba(23,28,43,.98);
+  border: 1px solid #3a465f;
+  border-radius: 12px;
+  box-shadow: 0 16px 42px rgba(0,0,0,.38);
+}
+.setting-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.setting-row label, .shortcut-help { font-size: 12px; color: var(--text-dim); }
+.speed-slider { width: 130px; accent-color: var(--accent); }
+.font-control { display: flex; align-items: center; gap: 6px; }
+.btn-sm { min-height: 32px; padding: 5px 10px; font-size: 12px; }
+.settings-divider { height: 1px; background: var(--border); }
+.shortcut-help { line-height: 1.65; }
+
+@media (max-width: 1050px) {
+  .code-panel { width: 42%; min-width: 320px; }
+  .chapter-status { display: none; }
+  .breakpoint-hint { display: none; }
+  .btn { padding-inline: 10px; }
+}
+
+@media (max-width: 900px) {
+  body { overflow: auto; padding-bottom: 72px; }
+  .header {
+    height: auto;
+    min-height: 60px;
+    padding: 8px 12px;
+    gap: 10px;
+    position: sticky;
+    top: 0;
+  }
+  .back-link { font-size: 0; width: 36px; height: 36px; display: grid; place-items: center; }
+  .back-link::before { content: '←'; font-size: 21px; }
+  .chapter-kicker { font-size: 10px; }
+  .chapter-heading h1 { font-size: 16px; }
+  .chapter-nav a, .chapter-nav span { width: 34px; min-width: 34px; padding: 0; font-size: 0; }
+  .chapter-nav a:first-child::before, .chapter-nav span:first-child::before { content: '‹'; font-size: 22px; }
+  .chapter-nav a:last-child::before, .chapter-nav span:last-child::before { content: '›'; font-size: 22px; }
+  .mobile-view-switcher {
+    position: sticky;
+    top: 60px;
+    z-index: 25;
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 4px;
+    padding: 7px 10px;
+    background: rgba(23,28,43,.97);
+    border-bottom: 1px solid var(--border);
+  }
+  .mobile-view-switcher button {
+    min-height: 38px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text-dim);
+  }
+  .mobile-view-switcher button.active {
+    color: #e8f3ff;
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+  .main { display: block; height: auto; min-height: calc(100dvh - 114px); }
+  .code-panel, .right-panel { width: 100%; min-width: 0; border: 0; }
+  .code-panel { height: calc(100dvh - 186px); }
+  .code-header { padding: 8px 10px; overflow: hidden; }
+  .algo-tabs { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 3px; scrollbar-width: thin; }
+  .algo-tab { flex: 0 0 auto; min-height: 38px; }
+  .mode-tabs { padding: 7px 10px; overflow-x: auto; }
+  .code-body { min-height: 0; font-size: max(13px,var(--code-font-size,15px)); }
+  .code-line { padding-right: 12px; }
+  .right-panel { min-height: calc(100dvh - 186px); overflow: visible; }
+  .viz-panel { height: calc(100dvh - 186px); min-height: 430px; flex: none !important; padding: 8px 10px !important; }
+  .vars-panel { min-height: 50dvh; padding: 14px; }
+  .output-panel { min-height: 28dvh; padding: 12px 14px; }
+  body[data-mobile-view="animation"] .code-panel,
+  body[data-mobile-view="animation"] .vars-panel,
+  body[data-mobile-view="animation"] .output-panel { display: none; }
+  body[data-mobile-view="code"] .right-panel > :not(.control-bar),
+  body[data-mobile-view="code"] .vars-panel,
+  body[data-mobile-view="code"] .output-panel { display: none; }
+  body[data-mobile-view="code"] .right-panel { min-height: 0; }
+  body[data-mobile-view="data"] .code-panel,
+  body[data-mobile-view="data"] .viz-panel { display: none; }
+  body[data-mobile-view="data"] .right-panel { min-height: calc(100dvh - 186px); }
+  .control-bar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    min-height: 72px;
+    padding: 9px max(10px,env(safe-area-inset-right)) calc(9px + env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left));
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 -10px 30px rgba(9,12,20,.36);
+  }
+  .transport-controls { gap: 7px; }
+  #btn-reset { display: none; }
+  .btn { min-width: 48px; min-height: 44px; padding: 8px 10px; font-size: 0; }
+  #btn-back::after { content: '◀'; font-size: 16px; }
+  #btn-play { min-width: 92px; font-size: 14px; }
+  #btn-step::after { content: '▶'; font-size: 16px; }
+  .step-info { margin-left: 0; min-width: 52px; text-align: center; font-size: 11px; }
+  .step-info .step-prefix { display: none; }
+  .settings-menu summary { width: 44px; min-height: 44px; padding: 0; justify-content: center; font-size: 0; }
+  .settings-menu summary::before { content: '⚙'; font-size: 17px; }
+  .settings-popover { right: -2px; width: min(280px,calc(100vw - 20px)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: .001ms !important;
+  }
+}
+</style>
+</head>
+<body data-mobile-view="animation">
+
+<header class="header">
+  <a class="back-link" href="../index.html" aria-label="返回学习地图">← 学习地图</a>
+  <div class="chapter-heading">
+    <div class="chapter-kicker">第12章</div>
+    <h1>图的进阶</h1>
+  </div>
+  <div class="chapter-status" aria-label="本章学习进度">
+    <div class="chapter-status-text" id="chapter-progress-text">0 / 0 个演示完成</div>
+    <div class="chapter-status-track"><div class="chapter-status-fill" id="chapter-progress-fill"></div></div>
+  </div>
+  <nav class="chapter-nav" aria-label="章节导航">
+    <a href="ch11.html" aria-label="上一章：分支限界" title="上一章：分支限界">上一章</a>
+    <a href="ch13.html" aria-label="下一章：最短路径的升级版" title="下一章：最短路径的升级版">下一章</a>
+  </nav>
+</header>
+
+<div class="mobile-view-switcher" role="tablist" aria-label="学习视图">
+  <button type="button" class="active" data-mobile-view="animation" role="tab" aria-selected="true">动画</button>
+  <button type="button" data-mobile-view="code" role="tab" aria-selected="false">代码</button>
+  <button type="button" data-mobile-view="data" role="tab" aria-selected="false">变量</button>
+</div>
+
+<main class="main">
+  <section class="code-panel" aria-label="算法代码">
+    <div class="code-header">
+      <div class="algo-tabs" id="algo-tabs" role="tablist" aria-label="本章算法"></div>
+      <span class="breakpoint-hint">点击行号可设断点</span>
+    </div>
+    <div class="mode-tabs" id="mode-tabs" role="tablist" aria-label="演示模式"></div>
+    <div class="code-body" id="code-body" aria-label="代码执行过程"></div>
+  </section>
+
+  <section class="right-panel" aria-label="算法可视化与状态">
+    <div class="viz-panel">
+      <canvas id="viz-canvas" width="800" height="300" role="img" aria-label="算法执行动画"></canvas>
+      <div class="callstack" id="callstack"><div class="callstack-title">调用栈</div></div>
+    </div>
+    <div class="vars-panel">
+      <h3>变量状态</h3>
+      <div class="var-grid" id="var-grid"></div>
+    </div>
+    <div class="output-panel" id="output-panel">
+      <h3>程序输出</h3>
+      <div id="output-content" aria-live="polite"></div>
+    </div>
+
+    <div class="control-bar" aria-label="播放控制">
+      <div class="transport-controls">
+        <button class="btn" id="btn-reset" type="button" aria-label="重置当前演示" title="重置当前演示">⏮ 重置</button>
+        <button class="btn" id="btn-back" type="button" aria-label="上一步" title="上一步">◀ 后退</button>
+        <button class="btn btn-primary" id="btn-play" type="button" aria-label="播放或暂停">▶ 播放</button>
+        <button class="btn" id="btn-step" type="button" aria-label="下一步" title="下一步">⏭ 单步</button>
+      </div>
+      <div class="step-info" aria-live="polite">
+        <span class="step-prefix">步骤 </span><strong id="step-cur">0</strong> / <strong id="step-total">0</strong>
+      </div>
+      <details class="settings-menu">
+        <summary aria-label="播放设置">⚙ 设置</summary>
+        <div class="settings-popover">
+          <div class="setting-row">
+            <label for="speed-slider">播放速度</label>
+            <input type="range" class="speed-slider" id="speed-slider" min="1" max="10" value="5" aria-valuetext="速度 5">
+          </div>
+          <div class="setting-row">
+            <span class="mode-label">代码字体</span>
+            <div class="font-control">
+              <button class="btn btn-sm" type="button" id="font-dec" aria-label="减小代码字体">A−</button>
+              <button class="btn btn-sm" type="button" id="font-inc" aria-label="增大代码字体">A＋</button>
+            </div>
+          </div>
+          <button class="btn" id="btn-to-bp" type="button">运行到断点</button>
+          <div class="settings-divider"></div>
+          <div class="shortcut-help">页面空白处：空格播放/暂停，← → 单步，R 重置</div>
+        </div>
+      </details>
+    </div>
+  </section>
+</main>
+
+<script src="../js/learning-state.js?v=20260725"></script>
+<script src="../js/engine.js?v=20260725-ux2"></script>
+<script src="../js/viz-renderers.js?v=20260725-layout-audit"></script>
+<script>
+const CHAPTER_NUM = 12;
+const ALGOS = {
+  "01_Tarjan强连通分量": {
+    "title": "Tarjan强连通分量",
+    "defaultMode": "concept",
+    "modeLabels": {
+      "concept": "理解动画",
+      "trace": "代码执行"
+    },
+    "modes": {
+      "concept": {
+        "title": "Tarjan强连通分量",
+        "source": [
+          "算法: Tarjan 强连通分量",
+          "输入: 有向图",
+          "输出: 每个强连通分量",
+          "",
+          "先理解 DFS 搜索树和回头路",
+          "DFS 访问 u:",
+          "    dfn[u] = low[u] = 时间戳",
+          "    u 入栈",
+          "    遍历 u 的邻居 v",
+          "        v 未访问: 递归 v, 用 low[v] 更新 low[u]",
+          "        v 在栈中: 用 dfn[v] 更新 low[u]",
+          "    如果 dfn[u] == low[u]: 弹栈形成一个 SCC"
+        ],
+        "important_vars": {
+          "u": "状态",
+          "stack": "状态",
+          "scc_count": "状态",
+          "phase": "状态"
+        },
+        "track_vars": {
+          "primary": [
+            "u",
+            "stack",
+            "scc_count",
+            "phase"
+          ],
+          "secondary": []
+        },
+        "var_classes": {
+          "u": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "stack": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "scc_count": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "phase": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "concept": {
+            "category": "secondary",
+            "type": "concept"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 7,
+            "text": "概念动画：Tarjan 用 dfn/low 和一个栈, 一次 DFS 就能把环状关系摘出来。"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 5,
+            "type": "exec",
+            "vars": {
+              "u": "1",
+              "stack": "1",
+              "scc_count": 0,
+              "phase": "从 1 开始 DFS, 1 入栈, dfn/low 都是 1",
+              "concept": {
+                "kind": "tarjan_scc",
+                "title": "Tarjan 强连通分量",
+                "subtitle": "dfn 是访问顺序, low 是沿 DFS 搜索树和回头路能绕回的最早节点",
+                "nodes": [
+                  {
+                    "id": "1",
+                    "x": 0.14,
+                    "y": 0.5
+                  },
+                  {
+                    "id": "2",
+                    "x": 0.34,
+                    "y": 0.26
+                  },
+                  {
+                    "id": "3",
+                    "x": 0.56,
+                    "y": 0.26
+                  },
+                  {
+                    "id": "4",
+                    "x": 0.74,
+                    "y": 0.5
+                  },
+                  {
+                    "id": "5",
+                    "x": 0.48,
+                    "y": 0.72
+                  }
+                ],
+                "edges": [
+                  [
+                    "1",
+                    "2"
+                  ],
+                  [
+                    "2",
+                    "3"
+                  ],
+                  [
+                    "3",
+                    "4"
+                  ],
+                  [
+                    "4",
+                    "5"
+                  ],
+                  [
+                    "5",
+                    "2"
+                  ]
+                ],
+                "current": "1",
+                "stack": [
+                  "1"
+                ],
+                "dfn": {
+                  "1": 1
+                },
+                "low": {
+                  "1": 1
+                },
+                "activeEdges": [],
+                "sccs": []
+              }
+            }
+          },
+          {
+            "step": 1,
+            "line": 8,
+            "type": "exec",
+            "vars": {
+              "u": "2",
+              "stack": "1 → 2",
+              "scc_count": 0,
+              "phase": "沿 1→2 访问 2, 2 是后面大环的入口",
+              "concept": {
+                "kind": "tarjan_scc",
+                "title": "Tarjan 强连通分量",
+                "subtitle": "dfn 是访问顺序, low 是沿 DFS 搜索树和回头路能绕回的最早节点",
+                "nodes": [
+                  {
+                    "id": "1",
+                    "x": 0.14,
+                    "y": 0.5
+                  },
+                  {
+                    "id": "2",
+                    "x": 0.34,
+                    "y": 0.26
+                  },
+                  {
+                    "id": "3",
+                    "x": 0.56,
+                    "y": 0.26
+                  },
+                  {
+                    "id": "4",
+                    "x": 0.74,
+                    "y": 0.5
+                  },
+                  {
+                    "id": "5",
+                    "x": 0.48,
+                    "y": 0.72
+                  }
+                ],
+                "edges": [
+                  [
+                    "1",
+                    "2"
+                  ],
+                  [
+                    "2",
+                    "3"
+                  ],
+                  [
+                    "3",
+                    "4"
+                  ],
+                  [
+                    "4",
+                    "5"
+                  ],
+                  [
+                    "5",
+                    "2"
+                  ]
+                ],
+                "current": "2",
+                "stack": [
+                  "1",
+                  "2"
+                ],
+                "dfn": {
+                  "1": 1,
+                  "2": 2
+                },
+                "low": {
+                  "1": 1,
+                  "2": 2
+                },
+                "activeEdges": [
+                  [
+                    "1",
+                    "2"
+                  ]
+                ],
+                "sccs": []
+              }
+            }
+          },
+          {
+            "step": 2,
+            "line": 8,
+            "type": "exec",
+            "vars": {
+              "u": "5",
+              "stack": "1 → 2 → 3 → 4 → 5",
+              "scc_count": 0,
+              "phase": "继续访问 3、4、5, 栈里压入 1→2→3→4→5",
+              "concept": {
+                "kind": "tarjan_scc",
+                "title": "Tarjan 强连通分量",
+                "subtitle": "dfn 是访问顺序, low 是沿 DFS 搜索树和回头路能绕回的最早节点",
+                "nodes": [
+                  {
+                    "id": "1",
+                    "x": 0.14,
+                    "y": 0.5
+                  },
+                  {
+                    "id": "2",
+                    "x": 0.34,
+                    "y": 0.26
+                  },
+                  {
+                    "id": "3",
+                    "x": 0.56,
+                    "y": 0.26
+                  },
+                  {
+                    "id": "4",
+                    "x": 0.74,
+                    "y": 0.5
+                  },
+                  {
+                    "id": "5",
+                    "x": 0.48,
+                    "y": 0.72
+                  }
+                ],
+                "edges": [
+                  [
+                    "1",
+                    "2"
+                  ],
+                  [
+                    "2",
+                    "3"
+                  ],
+                  [
+                    "3",
+                    "4"
+                  ],
+                  [
+                    "4",
+                    "5"
+                  ],
+                  [
+                    "5",
+                    "2"
+                  ]
+                ],
+                "current": "5",
+                "stack": [
+                  "1",
+                  "2",
+                  "3",
+                  "4",
+                  "5"
+                ],
+                "dfn": {
+                  "1": 1,
+                  "2": 2,
+                  "3": 3,
+                  "4": 4,
+                  "5": 5
+                },
+                "low": {
+                  "1": 1,
+                  "2": 2,
+                  "3": 3,
+                  "4": 4,
+                  "5": 5
+                },
+                "activeEdges": [
+                  [
+                    "2",
+                    "3"
+                  ],
+                  [
+                    "3",
+                    "4"
+                  ],
+                  [
+                    "4",
+                    "5"
+                  ]
+                ],
+                "sccs": []
+              }
+            }
+          },
+          {
+            "step": 3,
+            "line": 10,
+            "type": "exec",
+            "vars": {
+              "u": "5",
+              "stack": "1 → 2 → 3 → 4 → 5",
+              "scc_count": 0,
+              "phase": "5 发现一条回头路指向还在栈中的 2, low[5] 更新为 dfn[2]=2",
+              "concept": {
+                "kind": "tarjan_scc",
+                "title": "Tarjan 强连通分量",
+                "subtitle": "dfn 是访问顺序, low 是沿 DFS 搜索树和回头路能绕回的最早节点",
+                "nodes": [
+                  {
+                    "id": "1",
+                    "x": 0.14,
+                    "y": 0.5
+                  },
+                  {
+                    "id": "2",
+                    "x": 0.34,
+                    "y": 0.26
+                  },
+                  {
+                    "id": "3",
+                    "x": 0.56,
+                    "y": 0.26
+                  },
+                  {
+                    "id": "4",
+                    "x": 0.74,
+                    "y": 0.5
+                  },
+                  {
+                    "id": "5",
+                    "x": 0.48,
+                    "y": 0.72
+                  }
+                ],
+                "edges": [
+                  [
+                    "1",
+                    "2"
+                  ],
+                  [
+                    "2",
+                    "3"
+                  ],
+                  [
+                    "3",
+                    "4"
+                  ],
+                  [
+                    "4",
+                    "5"
+                  ],
+                  [
+                    "5",
+                    "2"
+                  ]
+                ],
+                "current": "5",
+                "stack": [
+                  "1",
+                  "2",
+                  "3",
+                  "4",
+                  "5"
+                ],
+                "dfn": {
+                  "1": 1,
+                  "2": 2,
+                  "3": 3,
+                  "4": 4,
+                  "5": 5
+                },
+                "low": {
+                  "1": 1,
+                  "2": 2,
+                  "3": 3,
+                  "4": 4,
+                  "5": 2
+                },
+                "activeEdges": [
+                  [
+                    "5",
+                    "2"
+                  ]
+                ],
+                "sccs": []
+              }
+            }
+          },
+          {
+            "step": 4,
+            "line": 9,
+            "type": "exec",
+            "vars": {
+              "u": "2",
+              "stack": "1 → 2 → 3 → 4 → 5",
+              "scc_count": 0,
+              "phase": "low 值沿 DFS 搜索树回传给 4、3、2, 说明 2 到 5 都能绕回 2",
+              "concept": {
+                "kind": "tarjan_scc",
+                "title": "Tarjan 强连通分量",
+                "subtitle": "dfn 是访问顺序, low 是沿 DFS 搜索树和回头路能绕回的最早节点",
+                "nodes": [
+                  {
+                    "id": "1",
+                    "x": 0.14,
+                    "y": 0.5
+                  },
+                  {
+                    "id": "2",
+                    "x": 0.34,
+                    "y": 0.26
+                  },
+                  {
+                    "id": "3",
+                    "x": 0.56,
+                    "y": 0.26
+                  },
+                  {
+                    "id": "4",
+                    "x": 0.74,
+                    "y": 0.5
+                  },
+                  {
+                    "id": "5",
+                    "x": 0.48,
+                    "y": 0.72
+                  }
+                ],
+                "edges": [
+                  [
+                    "1",
+                    "2"
+                  ],
+                  [
+                    "2",
+                    "3"
+                  ],
+                  [
+                    "3",
+                    "4"
+                  ],
+                  [
+                    "4",
+                    "5"
+                  ],
+                  [
+                    "5",
+                    "2"
+                  ]
+                ],
+                "current": "2",
+                "stack": [
+                  "1",
+                  "2",
+                  "3",
+                  "4",
+                  "5"
+                ],
+                "dfn": {
+                  "1": 1,
+                  "2": 2,
+                  "3": 3,
+                  "4": 4,
+                  "5": 5
+                },
+                "low": {
+                  "1": 1,
+                  "2": 2,
+                  "3": 2,
+                  "4": 2,
+                  "5": 2
+                },
+                "activeEdges": [
+                  [
+                    "5",
+                    "2"
+                  ]
+                ],
+                "sccs": []
+              }
+            }
+          },
+          {
+            "step": 5,
+            "line": 11,
+            "type": "exec",
+            "vars": {
+              "u": "2",
+              "stack": "1",
+              "scc_count": 1,
+              "phase": "dfn[2] == low[2], 弹出 5、4、3、2, 得到 SCC {2,3,4,5}",
+              "concept": {
+                "kind": "tarjan_scc",
+                "title": "Tarjan 强连通分量",
+                "subtitle": "dfn 是访问顺序, low 是沿 DFS 搜索树和回头路能绕回的最早节点",
+                "nodes": [
+                  {
+                    "id": "1",
+                    "x": 0.14,
+                    "y": 0.5
+                  },
+                  {
+                    "id": "2",
+                    "x": 0.34,
+                    "y": 0.26
+                  },
+                  {
+                    "id": "3",
+                    "x": 0.56,
+                    "y": 0.26
+                  },
+                  {
+                    "id": "4",
+                    "x": 0.74,
+                    "y": 0.5
+                  },
+                  {
+                    "id": "5",
+                    "x": 0.48,
+                    "y": 0.72
+                  }
+                ],
+                "edges": [
+                  [
+                    "1",
+                    "2"
+                  ],
+                  [
+                    "2",
+                    "3"
+                  ],
+                  [
+                    "3",
+                    "4"
+                  ],
+                  [
+                    "4",
+                    "5"
+                  ],
+                  [
+                    "5",
+                    "2"
+                  ]
+                ],
+                "current": "2",
+                "stack": [
+                  "1"
+                ],
+                "dfn": {
+                  "1": 1,
+                  "2": 2,
+                  "3": 3,
+                  "4": 4,
+                  "5": 5
+                },
+                "low": {
+                  "1": 1,
+                  "2": 2,
+                  "3": 2,
+                  "4": 2,
+                  "5": 2
+                },
+                "activeEdges": [],
+                "sccs": [
+                  [
+                    "2",
+                    "3",
+                    "4",
+                    "5"
+                  ]
+                ]
+              }
+            }
+          },
+          {
+            "step": 6,
+            "line": 11,
+            "type": "exec",
+            "vars": {
+              "u": "1",
+              "stack": "空",
+              "scc_count": 2,
+              "phase": "回到 1, 1 没法回到更早节点, 自己形成单点 SCC {1}",
+              "concept": {
+                "kind": "tarjan_scc",
+                "title": "Tarjan 强连通分量",
+                "subtitle": "dfn 是访问顺序, low 是沿 DFS 搜索树和回头路能绕回的最早节点",
+                "nodes": [
+                  {
+                    "id": "1",
+                    "x": 0.14,
+                    "y": 0.5
+                  },
+                  {
+                    "id": "2",
+                    "x": 0.34,
+                    "y": 0.26
+                  },
+                  {
+                    "id": "3",
+                    "x": 0.56,
+                    "y": 0.26
+                  },
+                  {
+                    "id": "4",
+                    "x": 0.74,
+                    "y": 0.5
+                  },
+                  {
+                    "id": "5",
+                    "x": 0.48,
+                    "y": 0.72
+                  }
+                ],
+                "edges": [
+                  [
+                    "1",
+                    "2"
+                  ],
+                  [
+                    "2",
+                    "3"
+                  ],
+                  [
+                    "3",
+                    "4"
+                  ],
+                  [
+                    "4",
+                    "5"
+                  ],
+                  [
+                    "5",
+                    "2"
+                  ]
+                ],
+                "current": "1",
+                "stack": [],
+                "dfn": {
+                  "1": 1,
+                  "2": 2,
+                  "3": 3,
+                  "4": 4,
+                  "5": 5
+                },
+                "low": {
+                  "1": 1,
+                  "2": 2,
+                  "3": 2,
+                  "4": 2,
+                  "5": 2
+                },
+                "activeEdges": [],
+                "sccs": [
+                  [
+                    "2",
+                    "3",
+                    "4",
+                    "5"
+                  ],
+                  [
+                    "1"
+                  ]
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "trace": {
+        "title": "Tarjan强连通分量",
+        "source": [
+          "#include <stdio.h>",
+          "#include <string.h>",
+          "",
+          "#define MAXN 10005   /* 最大节点数 */",
+          "#define MAXM 100005  /* 最大边数 */",
+          "",
+          "/* 邻接表的边结构 */",
+          "typedef struct {",
+          "    int to;    /* 边的终点 */",
+          "    int next;  /* 同一起点的下一条边 */",
+          "} Edge;",
+          "",
+          "Edge edges[MAXM];    /* 边数组 */",
+          "int head[MAXN];      /* head[i]表示以i为起点的第一条边的编号 */",
+          "int edge_count = 0;  /* 边的计数器 */",
+          "",
+          "int dfn[MAXN];       /* 时间戳数组 */",
+          "int low[MAXN];       /* low 值数组 */",
+          "int stack[MAXN];     /* 栈 */",
+          "int in_stack[MAXN];  /* 标记节点是否在栈中 */",
+          "int top = -1;        /* 栈顶指针 */",
+          "int timestamp = 0;   /* 时间戳计数器 */",
+          "int scc_count = 0;   /* 强连通分量计数 */",
+          "int scc_id[MAXN];    /* 每个节点所属的强连通分量编号 */",
+          "",
+          "/* 添加一条从 u 到 v 的有向边 */",
+          "void add_edge(int u, int v) {",
+          "    edges[edge_count].to = v;",
+          "    edges[edge_count].next = head[u];",
+          "    head[u] = edge_count;",
+          "    edge_count++;",
+          "}",
+          "",
+          "/* Tarjan 算法核心 */",
+          "void tarjan(int u) {",
+          "    int i, v;",
+          "",
+          "    /* 第一步：给 u 打上时间戳，初始化 low 值 */",
+          "    dfn[u] = low[u] = ++timestamp;",
+          "",
+          "    /* 第二步：将 u 压入栈中，标记 u 在栈里 */",
+          "    stack[++top] = u;",
+          "    in_stack[u] = 1;",
+          "",
+          "    /* 第三步：遍历 u 的所有邻居 */",
+          "    for (i = head[u]; i != -1; i = edges[i].next) {",
+          "        v = edges[i].to;",
+          "",
+          "        if (dfn[v] == 0) {",
+          "            /* 如果 v 还没被访问过，递归访问 */",
+          "            tarjan(v);",
+          "            /* 回溯后，用 v 的 low 值更新 u 的 low 值 */",
+          "            if (low[v] < low[u]) {",
+          "                low[u] = low[v];",
+          "            }",
+          "        } else if (in_stack[v]) {",
+          "            /* 如果 v 已被访问且还在栈中（是 u 的祖先） */",
+          "            /* 说明发现了一条返祖边 */",
+          "            /* 不在栈中的 v 属于已完成 SCC，不能用于更新 low[u] */",
+          "            /* 易错点：栈中节点应取 min(low[u], dfn[v])，而非 min(low[u], low[v]) */",
+          "            if (dfn[v] < low[u]) {",
+          "                low[u] = dfn[v];",
+          "            }",
+          "        }",
+          "    }",
+          "",
+          "    /* 第四步：如果 u 是强连通分量的根 */",
+          "    if (dfn[u] == low[u]) {",
+          "        scc_count++;",
+          "        printf(\"强连通分量 #%d: \", scc_count);",
+          "        do {",
+          "            v = stack[top--];",
+          "            in_stack[v] = 0;",
+          "            scc_id[v] = scc_count;",
+          "            printf(\"%d \", v);",
+          "        } while (v != u);",
+          "        printf(\"\\n\");",
+          "    }",
+          "}",
+          "",
+          "int main(void) {",
+          "    int n, m, u, v;",
+          "",
+          "    /* 初始化 */",
+          "    memset(head, -1, sizeof(head));",
+          "    memset(dfn, 0, sizeof(dfn));",
+          "    memset(low, 0, sizeof(low));",
+          "    memset(in_stack, 0, sizeof(in_stack));",
+          "",
+          "    printf(\"请输入节点数和边数: \");",
+          "    scanf(\"%d %d\", &n, &m);",
+          "",
+          "    printf(\"请输入每条边(起点 终点):\\n\");",
+          "    for (int i = 0; i < m; i++) {",
+          "        scanf(\"%d %d\", &u, &v);",
+          "        add_edge(u, v);",
+          "    }",
+          "",
+          "    /* 对每个未访问的节点运行 Tarjan */",
+          "    for (int i = 1; i <= n; i++) {",
+          "        if (dfn[i] == 0) {",
+          "            tarjan(i);",
+          "        }",
+          "    }",
+          "",
+          "    printf(\"共找到 %d 个强连通分量\\n\", scc_count);",
+          "",
+          "    return 0;",
+          "}",
+          ""
+        ],
+        "important_vars": {
+          "i": "索引",
+          "head": "数据",
+          "dfn": "数据",
+          "low": "数据",
+          "in_stack": "数据",
+          "scc_id": "数据"
+        },
+        "steps": [
+          {
+            "step": 0,
+            "line": 81,
+            "type": "enter",
+            "func": "main",
+            "vars": {
+              "phase": "输入 5 个节点和 5 条有向边"
+            }
+          },
+          {
+            "step": 1,
+            "line": 35,
+            "type": "enter",
+            "func": "tarjan",
+            "vars": {
+              "u": 1,
+              "phase": "从节点 1 开始 DFS"
+            }
+          },
+          {
+            "step": 2,
+            "line": 39,
+            "type": "exec",
+            "func": "tarjan",
+            "vars": {
+              "u": 1,
+              "dfn": 1,
+              "low": 1,
+              "phase": "给节点 1 打时间戳并入栈"
+            }
+          },
+          {
+            "step": 3,
+            "line": 51,
+            "type": "exec",
+            "func": "tarjan",
+            "vars": {
+              "u": 2,
+              "stack": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "phase": "沿 1→2→3→4→5 深入"
+            }
+          },
+          {
+            "step": 4,
+            "line": 62,
+            "type": "exec",
+            "func": "tarjan",
+            "vars": {
+              "u": 5,
+              "v": 2,
+              "low": 2,
+              "phase": "5→2 是返祖边, low[5] 更新为 2"
+            }
+          },
+          {
+            "step": 5,
+            "line": 68,
+            "type": "exec",
+            "func": "tarjan",
+            "vars": {
+              "u": 2,
+              "scc": [
+                5,
+                4,
+                3,
+                2
+              ],
+              "phase": "节点 2 收口, 弹出一个强连通分量"
+            }
+          },
+          {
+            "step": 6,
+            "line": 68,
+            "type": "exec",
+            "func": "tarjan",
+            "vars": {
+              "u": 1,
+              "scc": [
+                1
+              ],
+              "phase": "节点 1 单独形成一个强连通分量"
+            }
+          },
+          {
+            "step": 7,
+            "line": 108,
+            "type": "exit",
+            "func": "main",
+            "vars": {
+              "_return": 0,
+              "phase": "共找到 2 个强连通分量"
+            }
+          }
+        ],
+        "program_output": [
+          {
+            "after_step": 7,
+            "text": "强连通分量 #1：5 4 3 2；强连通分量 #2：1；共找到 2 个强连通分量"
+          }
+        ],
+        "track_vars": {
+          "primary": [
+            "u",
+            "v",
+            "dfn",
+            "low",
+            "max_flow",
+            "path_flow",
+            "count",
+            "phase"
+          ],
+          "secondary": [
+            "stack",
+            "scc",
+            "path",
+            "S",
+            "T",
+            "cut_edges",
+            "match",
+            "_return"
+          ]
+        }
+      }
+    }
+  },
+  "02_EdmondsKarp最大流": {
+    "title": "Edmonds–Karp最大流",
+    "defaultMode": "concept",
+    "modeLabels": {
+      "concept": "理解动画",
+      "trace": "代码执行"
+    },
+    "modes": {
+      "concept": {
+        "title": "Edmonds–Karp最大流",
+        "source": [
+          "算法: Edmonds-Karp 最大流",
+          "输入: 源点 s, 汇点 t, 每条边的容量 capacity",
+          "输出: 从 s 到 t 的最大流量",
+          "",
+          "while 能在残量网络中 BFS 找到一条 s 到 t 的路:",
+          "    bottleneck = 这条路上最小剩余容量",
+          "    沿着路径增加 bottleneck 的流量",
+          "    同时更新反向边",
+          "当 BFS 找不到增广路时, 当前流量就是最大流",
+          "在最终残余图中从 s 出发做 BFS",
+          "能到达的点属于 S, 其余点属于 T",
+          "回到原图, S 指向 T 的边就是最小割"
+        ],
+        "important_vars": {
+          "maxFlow": "状态",
+          "bottleneck": "状态",
+          "minCut": "状态",
+          "phase": "状态"
+        },
+        "track_vars": {
+          "primary": [
+            "maxFlow",
+            "bottleneck",
+            "minCut",
+            "phase"
+          ],
+          "secondary": []
+        },
+        "var_classes": {
+          "maxFlow": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "bottleneck": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "minCut": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "phase": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "concept": {
+            "category": "secondary",
+            "type": "concept"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 8,
+            "text": "概念动画：最大流先找承载上限, 最后还能从残余图读出最小割瓶颈。"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 5,
+            "type": "exec",
+            "vars": {
+              "maxFlow": 0,
+              "bottleneck": 0,
+              "phase": "初始所有边 flow=0, BFS 从源点 S 开始找通往 T 的路",
+              "concept": {
+                "kind": "max_flow",
+                "title": "Edmonds-Karp 最大流",
+                "nodes": [
+                  {
+                    "id": "S",
+                    "x": 0.12,
+                    "y": 0.5
+                  },
+                  {
+                    "id": "A",
+                    "x": 0.38,
+                    "y": 0.28
+                  },
+                  {
+                    "id": "B",
+                    "x": 0.38,
+                    "y": 0.72
+                  },
+                  {
+                    "id": "C",
+                    "x": 0.66,
+                    "y": 0.5
+                  },
+                  {
+                    "id": "T",
+                    "x": 0.9,
+                    "y": 0.5
+                  }
+                ],
+                "edges": [
+                  {
+                    "from": "S",
+                    "to": "A",
+                    "capacity": 3,
+                    "flow": 0,
+                    "remaining": 3
+                  },
+                  {
+                    "from": "S",
+                    "to": "B",
+                    "capacity": 5,
+                    "flow": 0,
+                    "remaining": 5
+                  },
+                  {
+                    "from": "A",
+                    "to": "C",
+                    "capacity": 2,
+                    "flow": 0,
+                    "remaining": 2
+                  },
+                  {
+                    "from": "B",
+                    "to": "C",
+                    "capacity": 4,
+                    "flow": 0,
+                    "remaining": 4
+                  },
+                  {
+                    "from": "B",
+                    "to": "T",
+                    "capacity": 3,
+                    "flow": 0,
+                    "remaining": 3
+                  },
+                  {
+                    "from": "C",
+                    "to": "T",
+                    "capacity": 6,
+                    "flow": 0,
+                    "remaining": 6
+                  }
+                ],
+                "visited": [
+                  "S"
+                ],
+                "activePath": [],
+                "cutEdges": [],
+                "maxFlow": 0,
+                "bottleneck": 0,
+                "minCut": 0
+              }
+            }
+          },
+          {
+            "step": 1,
+            "line": 5,
+            "type": "exec",
+            "vars": {
+              "maxFlow": 0,
+              "bottleneck": 3,
+              "phase": "第一轮 BFS 找到 S-B-T, 因为它只有2条边",
+              "concept": {
+                "kind": "max_flow",
+                "title": "Edmonds-Karp 最大流",
+                "nodes": [
+                  {
+                    "id": "S",
+                    "x": 0.12,
+                    "y": 0.5
+                  },
+                  {
+                    "id": "A",
+                    "x": 0.38,
+                    "y": 0.28
+                  },
+                  {
+                    "id": "B",
+                    "x": 0.38,
+                    "y": 0.72
+                  },
+                  {
+                    "id": "C",
+                    "x": 0.66,
+                    "y": 0.5
+                  },
+                  {
+                    "id": "T",
+                    "x": 0.9,
+                    "y": 0.5
+                  }
+                ],
+                "edges": [
+                  {
+                    "from": "S",
+                    "to": "A",
+                    "capacity": 3,
+                    "flow": 0,
+                    "remaining": 3
+                  },
+                  {
+                    "from": "S",
+                    "to": "B",
+                    "capacity": 5,
+                    "flow": 0,
+                    "remaining": 5
+                  },
+                  {
+                    "from": "A",
+                    "to": "C",
+                    "capacity": 2,
+                    "flow": 0,
+                    "remaining": 2
+                  },
+                  {
+                    "from": "B",
+                    "to": "C",
+                    "capacity": 4,
+                    "flow": 0,
+                    "remaining": 4
+                  },
+                  {
+                    "from": "B",
+                    "to": "T",
+                    "capacity": 3,
+                    "flow": 0,
+                    "remaining": 3
+                  },
+                  {
+                    "from": "C",
+                    "to": "T",
+                    "capacity": 6,
+                    "flow": 0,
+                    "remaining": 6
+                  }
+                ],
+                "visited": [
+                  "S",
+                  "B",
+                  "T"
+                ],
+                "activePath": [
+                  [
+                    "S",
+                    "B"
+                  ],
+                  [
+                    "B",
+                    "T"
+                  ]
+                ],
+                "cutEdges": [],
+                "maxFlow": 0,
+                "bottleneck": 3,
+                "minCut": 0
+              }
+            }
+          },
+          {
+            "step": 2,
+            "line": 7,
+            "type": "exec",
+            "vars": {
+              "maxFlow": 3,
+              "bottleneck": 3,
+              "phase": "S-B-T 的瓶颈是 3, 先送水3, 累计最大流变成3",
+              "concept": {
+                "kind": "max_flow",
+                "title": "Edmonds-Karp 最大流",
+                "nodes": [
+                  {
+                    "id": "S",
+                    "x": 0.12,
+                    "y": 0.5
+                  },
+                  {
+                    "id": "A",
+                    "x": 0.38,
+                    "y": 0.28
+                  },
+                  {
+                    "id": "B",
+                    "x": 0.38,
+                    "y": 0.72
+                  },
+                  {
+                    "id": "C",
+                    "x": 0.66,
+                    "y": 0.5
+                  },
+                  {
+                    "id": "T",
+                    "x": 0.9,
+                    "y": 0.5
+                  }
+                ],
+                "edges": [
+                  {
+                    "from": "S",
+                    "to": "A",
+                    "capacity": 3,
+                    "flow": 0,
+                    "remaining": 3
+                  },
+                  {
+                    "from": "S",
+                    "to": "B",
+                    "capacity": 5,
+                    "flow": 3,
+                    "remaining": 2
+                  },
+                  {
+                    "from": "A",
+                    "to": "C",
+                    "capacity": 2,
+                    "flow": 0,
+                    "remaining": 2
+                  },
+                  {
+                    "from": "B",
+                    "to": "C",
+                    "capacity": 4,
+                    "flow": 0,
+                    "remaining": 4
+                  },
+                  {
+                    "from": "B",
+                    "to": "T",
+                    "capacity": 3,
+                    "flow": 3,
+                    "remaining": 0
+                  },
+                  {
+                    "from": "C",
+                    "to": "T",
+                    "capacity": 6,
+                    "flow": 0,
+                    "remaining": 6
+                  }
+                ],
+                "visited": [
+                  "S",
+                  "B",
+                  "T"
+                ],
+                "activePath": [
+                  [
+                    "S",
+                    "B"
+                  ],
+                  [
+                    "B",
+                    "T"
+                  ]
+                ],
+                "cutEdges": [],
+                "maxFlow": 3,
+                "bottleneck": 3,
+                "minCut": 0
+              }
+            }
+          },
+          {
+            "step": 3,
+            "line": 5,
+            "type": "exec",
+            "vars": {
+              "maxFlow": 3,
+              "bottleneck": 2,
+              "phase": "第二轮 BFS 找到 S-A-C-T, 继续把水送到 T",
+              "concept": {
+                "kind": "max_flow",
+                "title": "Edmonds-Karp 最大流",
+                "nodes": [
+                  {
+                    "id": "S",
+                    "x": 0.12,
+                    "y": 0.5
+                  },
+                  {
+                    "id": "A",
+                    "x": 0.38,
+                    "y": 0.28
+                  },
+                  {
+                    "id": "B",
+                    "x": 0.38,
+                    "y": 0.72
+                  },
+                  {
+                    "id": "C",
+                    "x": 0.66,
+                    "y": 0.5
+                  },
+                  {
+                    "id": "T",
+                    "x": 0.9,
+                    "y": 0.5
+                  }
+                ],
+                "edges": [
+                  {
+                    "from": "S",
+                    "to": "A",
+                    "capacity": 3,
+                    "flow": 0,
+                    "remaining": 3
+                  },
+                  {
+                    "from": "S",
+                    "to": "B",
+                    "capacity": 5,
+                    "flow": 3,
+                    "remaining": 2
+                  },
+                  {
+                    "from": "A",
+                    "to": "C",
+                    "capacity": 2,
+                    "flow": 0,
+                    "remaining": 2
+                  },
+                  {
+                    "from": "B",
+                    "to": "C",
+                    "capacity": 4,
+                    "flow": 0,
+                    "remaining": 4
+                  },
+                  {
+                    "from": "B",
+                    "to": "T",
+                    "capacity": 3,
+                    "flow": 3,
+                    "remaining": 0
+                  },
+                  {
+                    "from": "C",
+                    "to": "T",
+                    "capacity": 6,
+                    "flow": 0,
+                    "remaining": 6
+                  }
+                ],
+                "visited": [
+                  "S",
+                  "A",
+                  "C",
+                  "T"
+                ],
+                "activePath": [
+                  [
+                    "S",
+                    "A"
+                  ],
+                  [
+                    "A",
+                    "C"
+                  ],
+                  [
+                    "C",
+                    "T"
+                  ]
+                ],
+                "cutEdges": [],
+                "maxFlow": 3,
+                "bottleneck": 2,
+                "minCut": 0
+              }
+            }
+          },
+          {
+            "step": 4,
+            "line": 7,
+            "type": "exec",
+            "vars": {
+              "maxFlow": 5,
+              "bottleneck": 2,
+              "phase": "S-A-C-T 的瓶颈是 2, 累计最大流变成5",
+              "concept": {
+                "kind": "max_flow",
+                "title": "Edmonds-Karp 最大流",
+                "nodes": [
+                  {
+                    "id": "S",
+                    "x": 0.12,
+                    "y": 0.5
+                  },
+                  {
+                    "id": "A",
+                    "x": 0.38,
+                    "y": 0.28
+                  },
+                  {
+                    "id": "B",
+                    "x": 0.38,
+                    "y": 0.72
+                  },
+                  {
+                    "id": "C",
+                    "x": 0.66,
+                    "y": 0.5
+                  },
+                  {
+                    "id": "T",
+                    "x": 0.9,
+                    "y": 0.5
+                  }
+                ],
+                "edges": [
+                  {
+                    "from": "S",
+                    "to": "A",
+                    "capacity": 3,
+                    "flow": 2,
+                    "remaining": 1
+                  },
+                  {
+                    "from": "S",
+                    "to": "B",
+                    "capacity": 5,
+                    "flow": 3,
+                    "remaining": 2
+                  },
+                  {
+                    "from": "A",
+                    "to": "C",
+                    "capacity": 2,
+                    "flow": 2,
+                    "remaining": 0
+                  },
+                  {
+                    "from": "B",
+                    "to": "C",
+                    "capacity": 4,
+                    "flow": 0,
+                    "remaining": 4
+                  },
+                  {
+                    "from": "B",
+                    "to": "T",
+                    "capacity": 3,
+                    "flow": 3,
+                    "remaining": 0
+                  },
+                  {
+                    "from": "C",
+                    "to": "T",
+                    "capacity": 6,
+                    "flow": 2,
+                    "remaining": 4
+                  }
+                ],
+                "visited": [
+                  "S",
+                  "A",
+                  "C",
+                  "T"
+                ],
+                "activePath": [
+                  [
+                    "S",
+                    "A"
+                  ],
+                  [
+                    "A",
+                    "C"
+                  ],
+                  [
+                    "C",
+                    "T"
+                  ]
+                ],
+                "cutEdges": [],
+                "maxFlow": 5,
+                "bottleneck": 2,
+                "minCut": 0
+              }
+            }
+          },
+          {
+            "step": 5,
+            "line": 5,
+            "type": "exec",
+            "vars": {
+              "maxFlow": 5,
+              "bottleneck": 2,
+              "phase": "第三轮 BFS 找到 S-B-C-T, 利用 B 到 C 和 C 到 T 的余量",
+              "concept": {
+                "kind": "max_flow",
+                "title": "Edmonds-Karp 最大流",
+                "nodes": [
+                  {
+                    "id": "S",
+                    "x": 0.12,
+                    "y": 0.5
+                  },
+                  {
+                    "id": "A",
+                    "x": 0.38,
+                    "y": 0.28
+                  },
+                  {
+                    "id": "B",
+                    "x": 0.38,
+                    "y": 0.72
+                  },
+                  {
+                    "id": "C",
+                    "x": 0.66,
+                    "y": 0.5
+                  },
+                  {
+                    "id": "T",
+                    "x": 0.9,
+                    "y": 0.5
+                  }
+                ],
+                "edges": [
+                  {
+                    "from": "S",
+                    "to": "A",
+                    "capacity": 3,
+                    "flow": 2,
+                    "remaining": 1
+                  },
+                  {
+                    "from": "S",
+                    "to": "B",
+                    "capacity": 5,
+                    "flow": 3,
+                    "remaining": 2
+                  },
+                  {
+                    "from": "A",
+                    "to": "C",
+                    "capacity": 2,
+                    "flow": 2,
+                    "remaining": 0
+                  },
+                  {
+                    "from": "B",
+                    "to": "C",
+                    "capacity": 4,
+                    "flow": 0,
+                    "remaining": 4
+                  },
+                  {
+                    "from": "B",
+                    "to": "T",
+                    "capacity": 3,
+                    "flow": 3,
+                    "remaining": 0
+                  },
+                  {
+                    "from": "C",
+                    "to": "T",
+                    "capacity": 6,
+                    "flow": 2,
+                    "remaining": 4
+                  }
+                ],
+                "visited": [
+                  "S",
+                  "B",
+                  "C",
+                  "T"
+                ],
+                "activePath": [
+                  [
+                    "S",
+                    "B"
+                  ],
+                  [
+                    "B",
+                    "C"
+                  ],
+                  [
+                    "C",
+                    "T"
+                  ]
+                ],
+                "cutEdges": [],
+                "maxFlow": 5,
+                "bottleneck": 2,
+                "minCut": 0
+              }
+            }
+          },
+          {
+            "step": 6,
+            "line": 7,
+            "type": "exec",
+            "vars": {
+              "maxFlow": 7,
+              "bottleneck": 2,
+              "phase": "再送水2后, 从 S 出发已经没有通向 T 的增广路",
+              "concept": {
+                "kind": "max_flow",
+                "title": "Edmonds-Karp 最大流",
+                "nodes": [
+                  {
+                    "id": "S",
+                    "x": 0.12,
+                    "y": 0.5
+                  },
+                  {
+                    "id": "A",
+                    "x": 0.38,
+                    "y": 0.28
+                  },
+                  {
+                    "id": "B",
+                    "x": 0.38,
+                    "y": 0.72
+                  },
+                  {
+                    "id": "C",
+                    "x": 0.66,
+                    "y": 0.5
+                  },
+                  {
+                    "id": "T",
+                    "x": 0.9,
+                    "y": 0.5
+                  }
+                ],
+                "edges": [
+                  {
+                    "from": "S",
+                    "to": "A",
+                    "capacity": 3,
+                    "flow": 2,
+                    "remaining": 1
+                  },
+                  {
+                    "from": "S",
+                    "to": "B",
+                    "capacity": 5,
+                    "flow": 5,
+                    "remaining": 0
+                  },
+                  {
+                    "from": "A",
+                    "to": "C",
+                    "capacity": 2,
+                    "flow": 2,
+                    "remaining": 0
+                  },
+                  {
+                    "from": "B",
+                    "to": "C",
+                    "capacity": 4,
+                    "flow": 2,
+                    "remaining": 2
+                  },
+                  {
+                    "from": "B",
+                    "to": "T",
+                    "capacity": 3,
+                    "flow": 3,
+                    "remaining": 0
+                  },
+                  {
+                    "from": "C",
+                    "to": "T",
+                    "capacity": 6,
+                    "flow": 4,
+                    "remaining": 2
+                  }
+                ],
+                "visited": [
+                  "S",
+                  "B",
+                  "C",
+                  "T"
+                ],
+                "activePath": [
+                  [
+                    "S",
+                    "B"
+                  ],
+                  [
+                    "B",
+                    "C"
+                  ],
+                  [
+                    "C",
+                    "T"
+                  ]
+                ],
+                "cutEdges": [],
+                "maxFlow": 7,
+                "bottleneck": 2,
+                "minCut": 0
+              }
+            }
+          },
+          {
+            "step": 7,
+            "line": 10,
+            "type": "exec",
+            "vars": {
+              "maxFlow": 7,
+              "bottleneck": 0,
+              "phase": "最终残余图里 S 只能到达 A, 所以割边是 S-B 和 A-C, 最小割容量也是7",
+              "concept": {
+                "kind": "max_flow",
+                "title": "Edmonds-Karp 最大流",
+                "nodes": [
+                  {
+                    "id": "S",
+                    "x": 0.12,
+                    "y": 0.5
+                  },
+                  {
+                    "id": "A",
+                    "x": 0.38,
+                    "y": 0.28
+                  },
+                  {
+                    "id": "B",
+                    "x": 0.38,
+                    "y": 0.72
+                  },
+                  {
+                    "id": "C",
+                    "x": 0.66,
+                    "y": 0.5
+                  },
+                  {
+                    "id": "T",
+                    "x": 0.9,
+                    "y": 0.5
+                  }
+                ],
+                "edges": [
+                  {
+                    "from": "S",
+                    "to": "A",
+                    "capacity": 3,
+                    "flow": 2,
+                    "remaining": 1
+                  },
+                  {
+                    "from": "S",
+                    "to": "B",
+                    "capacity": 5,
+                    "flow": 5,
+                    "remaining": 0
+                  },
+                  {
+                    "from": "A",
+                    "to": "C",
+                    "capacity": 2,
+                    "flow": 2,
+                    "remaining": 0
+                  },
+                  {
+                    "from": "B",
+                    "to": "C",
+                    "capacity": 4,
+                    "flow": 2,
+                    "remaining": 2
+                  },
+                  {
+                    "from": "B",
+                    "to": "T",
+                    "capacity": 3,
+                    "flow": 3,
+                    "remaining": 0
+                  },
+                  {
+                    "from": "C",
+                    "to": "T",
+                    "capacity": 6,
+                    "flow": 4,
+                    "remaining": 2
+                  }
+                ],
+                "visited": [
+                  "S",
+                  "A"
+                ],
+                "activePath": [],
+                "cutEdges": [
+                  [
+                    "S",
+                    "B"
+                  ],
+                  [
+                    "A",
+                    "C"
+                  ]
+                ],
+                "maxFlow": 7,
+                "bottleneck": 0,
+                "minCut": 7
+              }
+            }
+          }
+        ]
+      },
+      "trace": {
+        "title": "Edmonds–Karp最大流",
+        "source": [
+          "#include <stdio.h>",
+          "#include <string.h>",
+          "#include <limits.h>",
+          "",
+          "#define MAXN 205    /* 最大节点数 */",
+          "#define INF 0x3f3f3f3f3f3f3f3fLL  /* 一个足够大的 long long 数 */",
+          "",
+          "long long capacity[MAXN][MAXN];  /* 容量矩阵 */",
+          "long long flow[MAXN][MAXN];      /* 流量矩阵 */",
+          "int prev_node[MAXN];       /* BFS 中记录增广路径上的前驱节点 */",
+          "int visited[MAXN];         /* BFS 中的访问标记 */",
+          "int queue[MAXN];           /* BFS 用的队列 */",
+          "",
+          "/* BFS 找增广路径 */",
+          "int bfs(int s, int t, int n) {",
+          "    int front = 0, rear = 0;",
+          "    int u, v;",
+          "",
+          "    /* 初始化 */",
+          "    memset(visited, 0, sizeof(visited));",
+          "    memset(prev_node, -1, sizeof(prev_node));",
+          "",
+          "    /* 将源点加入队列 */",
+          "    queue[rear++] = s;",
+          "    visited[s] = 1;",
+          "",
+          "    while (front < rear) {",
+          "        u = queue[front++];",
+          "",
+          "        /* 遍历 u 的所有邻居 */",
+          "        for (v = 0; v < n; v++) {",
+          "            /* 如果 v 未被访问，且残余容量大于 0 */",
+          "            if (!visited[v] && capacity[u][v] - flow[u][v] > 0) {",
+          "                visited[v] = 1;",
+          "                prev_node[v] = u;",
+          "                queue[rear++] = v;",
+          "",
+          "                /* 如果到达汇点，找到了增广路径 */",
+          "                if (v == t) {",
+          "                    return 1;",
+          "                }",
+          "            }",
+          "        }",
+          "    }",
+          "",
+          "    /* 没找到增广路径 */",
+          "    return 0;",
+          "}",
+          "",
+          "/* Edmonds-Karp 算法求最大流 */",
+          "long long edmonds_karp(int s, int t, int n) {",
+          "    long long max_flow = 0;",
+          "    int u, v;",
+          "    long long path_flow;",
+          "",
+          "    /* 只要还能找到增广路径，就继续 */",
+          "    while (bfs(s, t, n)) {",
+          "        /* 找到增广路径上的最小剩余容量（瓶颈） */",
+          "        path_flow = INF;",
+          "        for (v = t; v != s; v = prev_node[v]) {",
+          "            u = prev_node[v];",
+          "            if (capacity[u][v] - flow[u][v] < path_flow) {",
+          "                path_flow = capacity[u][v] - flow[u][v];",
+          "            }",
+          "        }",
+          "",
+          "        /* 更新路径上每条边的流量 */",
+          "        for (v = t; v != s; v = prev_node[v]) {",
+          "            u = prev_node[v];",
+          "            flow[u][v] += path_flow;  /* 正向边加流量 */",
+          "            flow[v][u] -= path_flow;  /* 反向边减流量（允许退水） */",
+          "        }",
+          "",
+          "        max_flow += path_flow;",
+          "    }",
+          "",
+          "    return max_flow;",
+          "}",
+          "",
+          "/*",
+          " * 在最大流已经求完之后，寻找最小割。",
+          " *",
+          " * 思路：",
+          " * 1. 在最终残余图中，从源点 s 出发做 BFS；",
+          " * 2. 能到达的点属于集合 S；",
+          " * 3. 不能到达的点属于集合 T；",
+          " * 4. 回到原图中，所有从 S 指向 T 的边，就是最小割边。",
+          " */",
+          "void find_min_cut(int s, int n) {",
+          "    int front = 0, rear = 0;",
+          "    int u, v;",
+          "    long long cut_capacity = 0;",
+          "",
+          "    memset(visited, 0, sizeof(visited));",
+          "",
+          "    /* 从源点 s 出发，在最终残余图中做 BFS */",
+          "    queue[rear++] = s;",
+          "    visited[s] = 1;",
+          "",
+          "    while (front < rear) {",
+          "        u = queue[front++];",
+          "",
+          "        for (v = 0; v < n; v++) {",
+          "            /*",
+          "             * 这里走的是残余图：",
+          "             * capacity[u][v] - flow[u][v] > 0",
+          "             * 表示 u 到 v 还有剩余容量，可以继续走。",
+          "             */",
+          "            if (!visited[v] && capacity[u][v] - flow[u][v] > 0) {",
+          "                visited[v] = 1;",
+          "                queue[rear++] = v;",
+          "            }",
+          "        }",
+          "    }",
+          "",
+          "    printf(\"集合 S 中的节点: \");",
+          "    for (u = 0; u < n; u++) {",
+          "        if (visited[u]) {",
+          "            printf(\"%d \", u);",
+          "        }",
+          "    }",
+          "    printf(\"\\n\");",
+          "",
+          "    printf(\"集合 T 中的节点: \");",
+          "    for (u = 0; u < n; u++) {",
+          "        if (!visited[u]) {",
+          "            printf(\"%d \", u);",
+          "        }",
+          "    }",
+          "    printf(\"\\n\");",
+          "",
+          "    printf(\"最小割边:\\n\");",
+          "",
+          "    /*",
+          "     * 回到原图中找割边：",
+          "     * u 在 S 中，v 在 T 中，并且原图里存在边 u→v。",
+          "     */",
+          "    for (u = 0; u < n; u++) {",
+          "        if (visited[u]) {  /* u 属于 S */",
+          "            for (v = 0; v < n; v++) {",
+          "                if (!visited[v] && capacity[u][v] > 0) {  /* v 属于 T */",
+          "                    printf(\"%d -> %d, 容量 = %lld\\n\", u, v, capacity[u][v]);",
+          "                    cut_capacity += capacity[u][v];",
+          "                }",
+          "            }",
+          "        }",
+          "    }",
+          "",
+          "    printf(\"最小割容量: %lld\\n\", cut_capacity);",
+          "}",
+          "",
+          "int main(void) {",
+          "    int n, m;",
+          "    int u, v;",
+          "    long long c;",
+          "",
+          "    /* 初始化 */",
+          "    memset(capacity, 0, sizeof(capacity));",
+          "    memset(flow, 0, sizeof(flow));",
+          "",
+          "    printf(\"请输入节点数和边数: \");",
+          "    scanf(\"%d %d\", &n, &m);",
+          "",
+          "    printf(\"请输入每条边(起点 终点 容量):\\n\");",
+          "    for (int i = 0; i < m; i++) {",
+          "        scanf(\"%d %d %lld\", &u, &v, &c);",
+          "        capacity[u][v] += c;  /* 教学代码把重边合并为一条总容量边 */",
+          "    }",
+          "",
+          "    /* 本例采用 0 到 n - 1 编号，源点为 0，汇点为 n - 1。 */",
+          "    long long ans = edmonds_karp(0, n - 1, n);",
+          "    printf(\"最大流: %lld\\n\", ans);",
+          "",
+          "    find_min_cut(0, n);",
+          "",
+          "    return 0;",
+          "}",
+          ""
+        ],
+        "important_vars": {
+          "i": "索引",
+          "prev_node": "数据",
+          "visited": "数据"
+        },
+        "steps": [
+          {
+            "step": 0,
+            "line": 152,
+            "type": "enter",
+            "func": "main",
+            "vars": {
+              "phase": "输入书稿中的 5 节点、6 条边网络"
+            }
+          },
+          {
+            "step": 1,
+            "line": 51,
+            "type": "enter",
+            "func": "edmonds_karp",
+            "vars": {
+              "max_flow": 0,
+              "phase": "在残余图中反复用 BFS 找增广路"
+            }
+          },
+          {
+            "step": 2,
+            "line": 57,
+            "type": "exec",
+            "func": "edmonds_karp",
+            "vars": {
+              "path": "s→B→t",
+              "path_flow": 3,
+              "phase": "第一轮 BFS 先找到边数更少的 s→B→t"
+            }
+          },
+          {
+            "step": 3,
+            "line": 74,
+            "type": "exec",
+            "func": "edmonds_karp",
+            "vars": {
+              "max_flow": 3,
+              "phase": "瓶颈 3, 累计最大流 3"
+            }
+          },
+          {
+            "step": 4,
+            "line": 57,
+            "type": "exec",
+            "func": "edmonds_karp",
+            "vars": {
+              "path": "s→A→C→t",
+              "path_flow": 2,
+              "phase": "第二轮增广 s→A→C→t"
+            }
+          },
+          {
+            "step": 5,
+            "line": 74,
+            "type": "exec",
+            "func": "edmonds_karp",
+            "vars": {
+              "max_flow": 5,
+              "phase": "瓶颈 2, 累计最大流 5"
+            }
+          },
+          {
+            "step": 6,
+            "line": 57,
+            "type": "exec",
+            "func": "edmonds_karp",
+            "vars": {
+              "path": "s→B→C→t",
+              "path_flow": 2,
+              "phase": "第三轮增广 s→B→C→t"
+            }
+          },
+          {
+            "step": 7,
+            "line": 74,
+            "type": "exec",
+            "func": "edmonds_karp",
+            "vars": {
+              "max_flow": 7,
+              "phase": "再送 2, 最大流达到 7"
+            }
+          },
+          {
+            "step": 8,
+            "line": 77,
+            "type": "exit",
+            "func": "edmonds_karp",
+            "vars": {
+              "_return": 7,
+              "max_flow": 7,
+              "phase": "BFS 再也找不到增广路"
+            }
+          },
+          {
+            "step": 9,
+            "line": 89,
+            "type": "enter",
+            "func": "find_min_cut",
+            "vars": {
+              "phase": "在最终残余图中从 s 再做一次 BFS"
+            }
+          },
+          {
+            "step": 10,
+            "line": 109,
+            "type": "exec",
+            "func": "find_min_cut",
+            "vars": {
+              "S": [
+                0,
+                1
+              ],
+              "T": [
+                2,
+                3,
+                4
+              ],
+              "phase": "可达集合 S={s,A}, 其余属于 T"
+            }
+          },
+          {
+            "step": 11,
+            "line": 143,
+            "type": "exec",
+            "func": "find_min_cut",
+            "vars": {
+              "cut_edges": [
+                "s→B(5)",
+                "A→C(2)"
+              ],
+              "cut_capacity": 7,
+              "phase": "回到原图统计 S→T 的割边"
+            }
+          },
+          {
+            "step": 12,
+            "line": 176,
+            "type": "exit",
+            "func": "main",
+            "vars": {
+              "_return": 0,
+              "phase": "最大流与最小割容量都等于 7"
+            }
+          }
+        ],
+        "program_output": [
+          {
+            "after_step": 9,
+            "text": "最大流：7"
+          },
+          {
+            "after_step": 13,
+            "text": "S={0,1}，T={2,3,4}；最小割边：0→2(5)、1→3(2)；最小割容量：7"
+          }
+        ],
+        "track_vars": {
+          "primary": [
+            "u",
+            "v",
+            "dfn",
+            "low",
+            "max_flow",
+            "path_flow",
+            "count",
+            "phase"
+          ],
+          "secondary": [
+            "stack",
+            "scc",
+            "path",
+            "S",
+            "T",
+            "cut_edges",
+            "match",
+            "_return"
+          ]
+        }
+      }
+    }
+  },
+  "03_匈牙利算法_二分匹配": {
+    "title": "匈牙利算法（二分匹配）",
+    "defaultMode": "concept",
+    "modeLabels": {
+      "concept": "理解动画",
+      "trace": "代码执行"
+    },
+    "modes": {
+      "concept": {
+        "title": "匈牙利算法（二分匹配）",
+        "source": [
+          "算法: 匈牙利算法",
+          "输入: 二分图",
+          "输出: 最大匹配",
+          "",
+          "对每个左侧节点 u:",
+          "    清空 used",
+          "    DFS 尝试找一个右侧节点 v",
+          "    如果 v 空着: 直接匹配",
+          "    如果 v 已匹配: 让原匹配对象尝试换人",
+          "    换人成功后, u 接管 v"
+        ],
+        "important_vars": {
+          "u": "状态",
+          "v": "状态",
+          "count": "状态",
+          "phase": "状态"
+        },
+        "track_vars": {
+          "primary": [
+            "u",
+            "v",
+            "count",
+            "phase"
+          ],
+          "secondary": []
+        },
+        "var_classes": {
+          "u": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "v": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "count": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "phase": {
+            "category": "primary",
+            "type": "scalar"
+          },
+          "concept": {
+            "category": "secondary",
+            "type": "concept"
+          }
+        },
+        "initial_data": {},
+        "program_output": [
+          {
+            "after_step": 6,
+            "text": "概念动画：匈牙利算法的精髓是“让一让”, 通过重新匹配腾出位置。"
+          }
+        ],
+        "steps": [
+          {
+            "step": 0,
+            "line": 5,
+            "type": "exec",
+            "vars": {
+              "u": 1,
+              "v": 1,
+              "count": 1,
+              "phase": "学生A只喜欢课程1, 课程1空着, 直接安排",
+              "concept": {
+                "kind": "hungarian_matching",
+                "title": "匈牙利算法",
+                "subtitle": "课程被占用时, 尝试让原来的学生换到别处",
+                "left": 3,
+                "right": 3,
+                "edges": [
+                  [
+                    0,
+                    0
+                  ],
+                  [
+                    1,
+                    1
+                  ],
+                  [
+                    1,
+                    2
+                  ],
+                  [
+                    2,
+                    1
+                  ]
+                ],
+                "match": [
+                  0,
+                  -1,
+                  -1
+                ],
+                "active": [
+                  0,
+                  0
+                ],
+                "used": [
+                  0
+                ],
+                "count": 1
+              }
+            }
+          },
+          {
+            "step": 1,
+            "line": 7,
+            "type": "exec",
+            "vars": {
+              "u": 2,
+              "v": 2,
+              "count": 2,
+              "phase": "学生B先拿到课程2, 当前已经安排2组",
+              "concept": {
+                "kind": "hungarian_matching",
+                "title": "匈牙利算法",
+                "subtitle": "课程被占用时, 尝试让原来的学生换到别处",
+                "left": 3,
+                "right": 3,
+                "edges": [
+                  [
+                    0,
+                    0
+                  ],
+                  [
+                    1,
+                    1
+                  ],
+                  [
+                    1,
+                    2
+                  ],
+                  [
+                    2,
+                    1
+                  ]
+                ],
+                "match": [
+                  0,
+                  1,
+                  -1
+                ],
+                "active": [
+                  1,
+                  1
+                ],
+                "used": [
+                  1
+                ],
+                "count": 2
+              }
+            }
+          },
+          {
+            "step": 2,
+            "line": 6,
+            "type": "exec",
+            "vars": {
+              "u": 3,
+              "v": 2,
+              "count": 2,
+              "phase": "学生C也想选课程2, 但课程2已经被学生B占用",
+              "concept": {
+                "kind": "hungarian_matching",
+                "title": "匈牙利算法",
+                "subtitle": "课程被占用时, 尝试让原来的学生换到别处",
+                "left": 3,
+                "right": 3,
+                "edges": [
+                  [
+                    0,
+                    0
+                  ],
+                  [
+                    1,
+                    1
+                  ],
+                  [
+                    1,
+                    2
+                  ],
+                  [
+                    2,
+                    1
+                  ]
+                ],
+                "match": [
+                  0,
+                  1,
+                  -1
+                ],
+                "active": [
+                  2,
+                  1
+                ],
+                "used": [
+                  1
+                ],
+                "count": 2
+              }
+            }
+          },
+          {
+            "step": 3,
+            "line": 8,
+            "type": "exec",
+            "vars": {
+              "u": 2,
+              "v": 3,
+              "count": 2,
+              "phase": "递归询问学生B: 你能不能让到课程3?",
+              "concept": {
+                "kind": "hungarian_matching",
+                "title": "匈牙利算法",
+                "subtitle": "课程被占用时, 尝试让原来的学生换到别处",
+                "left": 3,
+                "right": 3,
+                "edges": [
+                  [
+                    0,
+                    0
+                  ],
+                  [
+                    1,
+                    1
+                  ],
+                  [
+                    1,
+                    2
+                  ],
+                  [
+                    2,
+                    1
+                  ]
+                ],
+                "match": [
+                  0,
+                  1,
+                  -1
+                ],
+                "active": [
+                  1,
+                  2
+                ],
+                "used": [
+                  1,
+                  2
+                ],
+                "count": 2
+              }
+            }
+          },
+          {
+            "step": 4,
+            "line": 8,
+            "type": "exec",
+            "vars": {
+              "u": 3,
+              "v": 2,
+              "count": 3,
+              "phase": "学生B改选课程3, 课程2腾出来给学生C",
+              "concept": {
+                "kind": "hungarian_matching",
+                "title": "匈牙利算法",
+                "subtitle": "课程被占用时, 尝试让原来的学生换到别处",
+                "left": 3,
+                "right": 3,
+                "edges": [
+                  [
+                    0,
+                    0
+                  ],
+                  [
+                    1,
+                    1
+                  ],
+                  [
+                    1,
+                    2
+                  ],
+                  [
+                    2,
+                    1
+                  ]
+                ],
+                "match": [
+                  0,
+                  2,
+                  1
+                ],
+                "active": [
+                  2,
+                  1
+                ],
+                "used": [
+                  1,
+                  2
+                ],
+                "count": 3
+              }
+            }
+          },
+          {
+            "step": 5,
+            "line": 9,
+            "type": "exec",
+            "vars": {
+              "u": 3,
+              "v": 2,
+              "count": 3,
+              "phase": "三名学生都安排成功, 最大匹配数是3",
+              "concept": {
+                "kind": "hungarian_matching",
+                "title": "匈牙利算法",
+                "subtitle": "课程被占用时, 尝试让原来的学生换到别处",
+                "left": 3,
+                "right": 3,
+                "edges": [
+                  [
+                    0,
+                    0
+                  ],
+                  [
+                    1,
+                    1
+                  ],
+                  [
+                    1,
+                    2
+                  ],
+                  [
+                    2,
+                    1
+                  ]
+                ],
+                "match": [
+                  0,
+                  2,
+                  1
+                ],
+                "active": [
+                  2,
+                  1
+                ],
+                "used": [],
+                "count": 3
+              }
+            }
+          }
+        ]
+      },
+      "trace": {
+        "title": "匈牙利算法（二分匹配）",
+        "source": [
+          "#include <stdio.h>",
+          "#include <string.h>",
+          "",
+          "#define MAXN 505  /* 每组最大节点数 */",
+          "",
+          "int graph[MAXN][MAXN];  /* graph[u][v] = 1 表示学生 u 可以选课程 v */",
+          "int match[MAXN];        /* match[v] 表示课程 v 当前匹配到的学生编号 */",
+          "int used[MAXN];         /* 在一轮 DFS 中，课程 v 是否已经访问过 */",
+          "int n_left, n_right;    /* 左边学生数，右边课程数 */",
+          "",
+          "/* DFS：尝试为学生 u 找到一门课程 */",
+          "int dfs(int u) {",
+          "    int v;",
+          "",
+          "    for (v = 1; v <= n_right; v++) {",
+          "        if (graph[u][v] && !used[v]) {",
+          "            used[v] = 1;",
+          "",
+          "            /* 如果课程 v 空着，或者当前占用 v 的学生还能改到别的课 */",
+          "            if (match[v] == 0 || dfs(match[v])) {",
+          "                match[v] = u;",
+          "                return 1;",
+          "            }",
+          "        }",
+          "    }",
+          "",
+          "    return 0;",
+          "}",
+          "",
+          "/* 匈牙利算法求最大匹配 */",
+          "int hungarian(void) {",
+          "    int u, count = 0;",
+          "",
+          "    for (u = 1; u <= n_left; u++) {",
+          "        memset(used, 0, sizeof(used));",
+          "        if (dfs(u)) {",
+          "            count++;",
+          "        }",
+          "    }",
+          "",
+          "    return count;",
+          "}",
+          "",
+          "int main(void) {",
+          "    int m, u, v;",
+          "",
+          "    memset(graph, 0, sizeof(graph));",
+          "    memset(match, 0, sizeof(match));",
+          "",
+          "    printf(\"请输入学生数、课程数和可选关系数: \");",
+          "    scanf(\"%d %d %d\", &n_left, &n_right, &m);",
+          "",
+          "    printf(\"请输入每条可选关系(学生编号 课程编号):\\n\");",
+          "    for (int i = 0; i < m; i++) {",
+          "        scanf(\"%d %d\", &u, &v);",
+          "        graph[u][v] = 1;",
+          "    }",
+          "",
+          "    printf(\"最大匹配数: %d\\n\", hungarian());",
+          "",
+          "    /* 输出匹配结果 */",
+          "    printf(\"匹配方案:\\n\");",
+          "    for (v = 1; v <= n_right; v++) {",
+          "        if (match[v] != 0) {",
+          "            printf(\"  学生%d <-> 课程%d\\n\", match[v], v);",
+          "        }",
+          "    }",
+          "",
+          "    return 0;",
+          "}",
+          ""
+        ],
+        "important_vars": {
+          "i": "索引",
+          "graph": "数据",
+          "match": "数据",
+          "used": "数据"
+        },
+        "steps": [
+          {
+            "step": 0,
+            "line": 44,
+            "type": "enter",
+            "func": "main",
+            "vars": {
+              "phase": "输入 3 名学生、3 门课程和 4 条关系"
+            }
+          },
+          {
+            "step": 1,
+            "line": 31,
+            "type": "enter",
+            "func": "hungarian",
+            "vars": {
+              "count": 0,
+              "phase": "依次为每名学生寻找课程"
+            }
+          },
+          {
+            "step": 2,
+            "line": 12,
+            "type": "enter",
+            "func": "dfs",
+            "vars": {
+              "u": 1,
+              "phase": "学生 1 直接匹配课程 1"
+            }
+          },
+          {
+            "step": 3,
+            "line": 21,
+            "type": "exec",
+            "func": "dfs",
+            "vars": {
+              "u": 1,
+              "v": 1,
+              "match": "1↔1",
+              "phase": "课程 1 还空着, 匹配成功"
+            }
+          },
+          {
+            "step": 4,
+            "line": 21,
+            "type": "exec",
+            "func": "dfs",
+            "vars": {
+              "u": 2,
+              "v": 2,
+              "match": "2↔2",
+              "phase": "学生 2 先匹配课程 2"
+            }
+          },
+          {
+            "step": 5,
+            "line": 20,
+            "type": "exec",
+            "func": "dfs",
+            "vars": {
+              "u": 3,
+              "v": 2,
+              "phase": "学生 3 也想选课程 2, 递归请学生 2 让位"
+            }
+          },
+          {
+            "step": 6,
+            "line": 21,
+            "type": "exec",
+            "func": "dfs",
+            "vars": {
+              "u": 2,
+              "v": 3,
+              "match": "2↔3",
+              "phase": "学生 2 改选课程 3"
+            }
+          },
+          {
+            "step": 7,
+            "line": 21,
+            "type": "exec",
+            "func": "dfs",
+            "vars": {
+              "u": 3,
+              "v": 2,
+              "match": "3↔2",
+              "phase": "课程 2 腾出, 学生 3 匹配成功"
+            }
+          },
+          {
+            "step": 8,
+            "line": 41,
+            "type": "exit",
+            "func": "hungarian",
+            "vars": {
+              "_return": 3,
+              "count": 3,
+              "phase": "最大匹配数为 3"
+            }
+          },
+          {
+            "step": 9,
+            "line": 69,
+            "type": "exit",
+            "func": "main",
+            "vars": {
+              "_return": 0,
+              "phase": "输出完整匹配方案"
+            }
+          }
+        ],
+        "program_output": [
+          {
+            "after_step": 9,
+            "text": "最大匹配数：3；学生1↔课程1，学生3↔课程2，学生2↔课程3"
+          }
+        ],
+        "track_vars": {
+          "primary": [
+            "u",
+            "v",
+            "dfn",
+            "low",
+            "max_flow",
+            "path_flow",
+            "count",
+            "phase"
+          ],
+          "secondary": [
+            "stack",
+            "scc",
+            "path",
+            "S",
+            "T",
+            "cut_edges",
+            "match",
+            "_return"
+          ]
+        }
+      }
+    }
+  }
+};
+const firstKey = Object.keys(ALGOS)[0];
+const requestedKey = new URLSearchParams(location.search).get('algo');
+const savedAtOpen = DHLearning.load();
+let currentKey = ALGOS[requestedKey]
+  ? requestedKey
+  : (savedAtOpen.last && savedAtOpen.last.chapter === CHAPTER_NUM && ALGOS[savedAtOpen.last.algorithm]
+      ? savedAtOpen.last.algorithm
+      : firstKey);
+let currentMode = null;
+const engine = new TraceEngine('viz-canvas', 'code-body', 'var-grid', 'callstack');
+const tabsEl = document.getElementById('algo-tabs');
+const modeTabsEl = document.getElementById('mode-tabs');
+
+function has_modes(algo) {
+  return algo && algo.modes && typeof algo.modes === 'object';
+}
+
+function mode_label(rawAlgo, mode) {
+  const labels = rawAlgo.modeLabels || {};
+  if (labels[mode]) return labels[mode];
+  if (mode === 'concept') return '理解动画';
+  if (mode === 'trace') return '代码执行';
+  return mode;
+}
+
+function resolve_algo(rawAlgo) {
+  if (!has_modes(rawAlgo)) return rawAlgo;
+  const mode = currentMode || rawAlgo.defaultMode || Object.keys(rawAlgo.modes)[0];
+  return rawAlgo.modes[mode] || rawAlgo.modes[rawAlgo.defaultMode] || Object.values(rawAlgo.modes)[0];
+}
+
+function is_concept_algo(algo) {
+  if (!algo) return false;
+  const classes = algo.var_classes || {};
+  if (Object.values(classes).some(info => info && info.type === 'concept')) return true;
+  return (algo.steps || []).some(step => step.vars && step.vars.concept);
+}
+
+function update_tab_states() {
+  const completed = new Set(DHLearning.load().completedDemos);
+  tabsEl.querySelectorAll('.algo-tab').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.key === currentKey);
+    btn.classList.toggle('completed', completed.has(DHLearning.demoId(CHAPTER_NUM, btn.dataset.key)));
+    btn.setAttribute('aria-selected', String(btn.dataset.key === currentKey));
+  });
+}
+
+function update_chapter_progress() {
+  const state = DHLearning.load();
+  const completed = new Set(state.completedDemos);
+  const keys = Object.keys(ALGOS);
+  const done = keys.filter(key => completed.has(DHLearning.demoId(CHAPTER_NUM, key))).length;
+  document.getElementById('chapter-progress-text').textContent = `${done} / ${keys.length} 个演示完成`;
+  document.getElementById('chapter-progress-fill').style.width = `${keys.length ? done / keys.length * 100 : 0}%`;
+  update_tab_states();
+}
+
+function render_mode_tabs(rawAlgo) {
+  modeTabsEl.innerHTML = '';
+  if (!has_modes(rawAlgo)) {
+    modeTabsEl.classList.remove('visible');
+    currentMode = null;
+    return;
+  }
+  modeTabsEl.classList.add('visible');
+  const label = document.createElement('span');
+  label.className = 'mode-label';
+  label.textContent = '学习方式';
+  modeTabsEl.appendChild(label);
+  const activeMode = currentMode || rawAlgo.defaultMode || Object.keys(rawAlgo.modes)[0];
+  Object.keys(rawAlgo.modes).forEach(mode => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'mode-tab' + (mode === activeMode ? ' active' : '');
+    btn.textContent = mode_label(rawAlgo, mode);
+    btn.setAttribute('role', 'tab');
+    btn.setAttribute('aria-selected', String(mode === activeMode));
+    btn.addEventListener('click', () => {
+      if (currentMode === mode) return;
+      currentMode = mode;
+      load_current_algo(false);
+      if (matchMedia('(max-width: 900px)').matches) {
+        set_mobile_view(mode === 'trace' ? 'code' : 'animation');
+      }
+    });
+    modeTabsEl.appendChild(btn);
+  });
+}
+
+function load_current_algo(allowRestore = true) {
+  const rawAlgo = ALGOS[currentKey];
+  const beforeLoad = DHLearning.load().last;
+  if (has_modes(rawAlgo)) {
+    const savedMode = beforeLoad && beforeLoad.chapter === CHAPTER_NUM && beforeLoad.algorithm === currentKey
+      ? beforeLoad.mode
+      : null;
+    if (!currentMode) currentMode = savedMode && rawAlgo.modes[savedMode]
+      ? savedMode
+      : (rawAlgo.defaultMode || Object.keys(rawAlgo.modes)[0]);
+  } else {
+    currentMode = null;
+  }
+  render_mode_tabs(rawAlgo);
+  const activeAlgo = resolve_algo(rawAlgo);
+  document.body.classList.toggle('concept-mode', currentMode === 'concept' || is_concept_algo(activeAlgo));
+  engine.stop_play();
+  engine.load(activeAlgo);
+  try {
+    const currentUrl = new URL(location.href);
+    currentUrl.searchParams.set('algo', currentKey);
+    history.replaceState(null, '', currentUrl.href);
+  } catch (_) {
+    // file:// 预览环境可能限制 history API，不影响演示本身。
+  }
+  update_tab_states();
+
+  if (
+    allowRestore
+    && beforeLoad
+    && beforeLoad.chapter === CHAPTER_NUM
+    && beforeLoad.algorithm === currentKey
+    && beforeLoad.mode === currentMode
+    && beforeLoad.step > 0
+    && activeAlgo.steps.length
+  ) {
+    const restoreStep = Math.min(beforeLoad.step, activeAlgo.steps.length - 1);
+    requestAnimationFrame(() => engine.go_to_step(restoreStep));
+  }
+}
+
+Object.entries(ALGOS).forEach(([key, algo]) => {
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'algo-tab';
+  btn.dataset.key = key;
+  btn.textContent = algo.title;
+  btn.setAttribute('role', 'tab');
+  btn.setAttribute('aria-selected', String(key === currentKey));
+  btn.addEventListener('click', () => {
+    if (currentKey === key) return;
+    currentKey = key;
+    currentMode = has_modes(algo) ? (algo.defaultMode || Object.keys(algo.modes)[0]) : null;
+    load_current_algo(true);
+  });
+  tabsEl.appendChild(btn);
+});
+
+document.addEventListener('dh:stepchange', event => {
+  const detail = event.detail || {};
+  DHLearning.updateLast(CHAPTER_NUM, currentKey, currentMode, detail.currentStep);
+  if (detail.atEnd) DHLearning.markDemoComplete(CHAPTER_NUM, currentKey);
+  update_chapter_progress();
+});
+
+document.getElementById('btn-play').addEventListener('click', () => engine.playing ? engine.stop_play() : engine.start_play());
+document.getElementById('btn-step').addEventListener('click', () => { engine.stop_play(); engine.step_forward(); });
+document.getElementById('btn-reset').addEventListener('click', () => engine.reset());
+document.getElementById('btn-back').addEventListener('click', () => { engine.stop_play(); engine.step_backward(); });
+document.getElementById('btn-to-bp').addEventListener('click', () => { engine.stop_play(); engine.play_to_bp(); });
+
+const speedSlider = document.getElementById('speed-slider');
+const savedSpeed = localStorage.getItem('dh_speed');
+if (savedSpeed !== null) speedSlider.value = savedSpeed;
+speedSlider.setAttribute('aria-valuetext', `速度 ${speedSlider.value}`);
+speedSlider.addEventListener('input', () => {
+  localStorage.setItem('dh_speed', speedSlider.value);
+  speedSlider.setAttribute('aria-valuetext', `速度 ${speedSlider.value}`);
+  if (engine.playing) { clearTimeout(engine.playTimer); engine._play_loop(); }
+});
+speedSlider.addEventListener('keydown', event => {
+  if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+  event.preventDefault();
+  event.stopPropagation();
+  const direction = event.key === 'ArrowRight' ? 1 : -1;
+  speedSlider.value = String(Math.max(Number(speedSlider.min), Math.min(Number(speedSlider.max), Number(speedSlider.value) + direction)));
+  speedSlider.dispatchEvent(new Event('input', { bubbles: true }));
+});
+document.getElementById('font-dec').addEventListener('click', () => engine.font_dec());
+document.getElementById('font-inc').addEventListener('click', () => engine.font_inc());
+
+document.addEventListener('keydown', event => {
+  const target = event.target;
+  if (target && target.closest && target.closest('button,input,select,textarea,a,summary,[contenteditable="true"]')) return;
+  if (event.key === ' ') {
+    event.preventDefault();
+    engine.playing ? engine.stop_play() : engine.start_play();
+  } else if (event.key === 'ArrowRight') {
+    event.preventDefault();
+    engine.stop_play();
+    engine.step_forward();
+  } else if (event.key === 'ArrowLeft') {
+    event.preventDefault();
+    engine.stop_play();
+    engine.step_backward();
+  } else if (event.key.toLowerCase() === 'r' && !event.metaKey && !event.ctrlKey && !event.altKey) {
+    engine.reset();
+  }
+});
+
+function set_mobile_view(view) {
+  document.body.dataset.mobileView = view;
+  document.querySelectorAll('.mobile-view-switcher button').forEach(btn => {
+    const active = btn.dataset.mobileView === view;
+    btn.classList.toggle('active', active);
+    btn.setAttribute('aria-selected', String(active));
+  });
+  if (view === 'animation' && engine.currentStep >= 0) {
+    requestAnimationFrame(() => engine.go_to_step(engine.currentStep));
+  }
+}
+
+document.querySelectorAll('.mobile-view-switcher button').forEach(btn => {
+  btn.addEventListener('click', () => set_mobile_view(btn.dataset.mobileView));
+});
+
+DHLearning.visitChapter(CHAPTER_NUM);
+update_chapter_progress();
+load_current_algo(true);
+</script>
+</body>
+</html>

@@ -1,0 +1,400 @@
+{
+  "meta": {
+    "algo": "02_计数排序_稳定版",
+    "source_lines": [
+      "#include <stdio.h>",
+      "#include <stdlib.h>",
+      "/*",
+      " * 稳定版计数排序",
+      " * 算法多走一步：先累加 count 数组，得到每个值的“结束位置”",
+      " * 然后从后往前遍历原数组，把每个元素放到正确位置",
+      " */",
+      "int* counting_sort_stable(int arr[], int n, int k) {",
+      "    int *count = (int *)calloc(k + 1, sizeof(int));",
+      "    int *result = (int *)malloc(n * sizeof(int));",
+      "    if (!count || !result) {",
+      "        free(count);",
+      "        free(result);",
+      "        return NULL;",
+      "    }",
+      "    /* 唱票 */",
+      "    for (int i = 0; i < n; i++) {",
+      "        if (arr[i] < 0 || arr[i] > k) {",
+      "            free(count);",
+      "            free(result);",
+      "            return NULL;",
+      "        }",
+      "        count[arr[i]]++;",
+      "    }",
+      "    /* 累加：count[i] 变成“值 <= i 的元素总个数” */",
+      "    /* 即：值为 i 的元素在结果数组中的右开边界（最后一个值为 i 的元素落在下标 count[i] - 1 处） */",
+      "    for (int i = 1; i <= k; i++) {",
+      "        count[i] += count[i - 1];",
+      "    }",
+      "    /* 从后往前遍历（关键！这样才能保证稳定性） */",
+      "    /* 就像排队时，后来的人站到队伍末尾 */",
+      "    for (int i = n - 1; i >= 0; i--) {",
+      "        result[count[arr[i]] - 1] = arr[i];",
+      "        count[arr[i]]--;",
+      "    }",
+      "    free(count);",
+      "    return result;",
+      "}",
+      "// 测试：稳定版计数排序",
+      "int main(void) {",
+      "    // 用学生成绩演示稳定性：成绩相同的学生，排序后保持原顺序",
+      "    // 数组值代表分数，下标代表\"交卷先后\"（隐含在原数组顺序中）",
+      "    int scores[] = {2, 0, 1, 2, 1, 0, 2, 1, 0, 0};",
+      "    int n = sizeof(scores) / sizeof(scores[0]);",
+      "    printf(\"原始（按交卷顺序）：\");",
+      "    for (int i = 0; i < n; i++) printf(\"%d \", scores[i]);",
+      "    printf(\"\\n\");",
+      "    int *sorted = counting_sort_stable(scores, n, 2);",
+      "    if (sorted == NULL) {",
+      "        printf(\"排序失败：输入值必须在 0 到 2 之间。\\n\");",
+      "        return 1;",
+      "    }",
+      "    printf(\"稳定排序后：        \");",
+      "    for (int i = 0; i < n; i++) printf(\"%d \", sorted[i]);",
+      "    printf(\"\\n\");",
+      "    printf(\"说明：同为0分的学生，原顺序是下标1→5→8→9，排序后仍是这个顺序\\n\");",
+      "    free(sorted);",
+      "    return 0;",
+      "}"
+    ],
+    "track_vars": {
+      "primary": [
+        "arr",
+        "i",
+        "k",
+        "n"
+      ],
+      "secondary": [
+        "_return"
+      ]
+    },
+    "var_classes": {
+      "_return": {
+        "category": "secondary",
+        "type": "scalar"
+      },
+      "arr": {
+        "category": "primary",
+        "type": "array"
+      },
+      "i": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "k": {
+        "category": "primary",
+        "type": "scalar"
+      },
+      "n": {
+        "category": "primary",
+        "type": "scalar"
+      }
+    },
+    "viz_type": "array",
+    "initial_data": {
+      "scores": [
+        2,
+        0,
+        1,
+        2,
+        1,
+        0,
+        2,
+        1,
+        0,
+        0
+      ],
+      "arr": [
+        2,
+        0,
+        1,
+        2,
+        1,
+        0,
+        2,
+        1,
+        0,
+        0
+      ]
+    },
+    "program_output": [
+      {
+        "after_step": 1,
+        "text": "原始（按交卷顺序）：2 0 1 2 1 0 2 1 0 0"
+      },
+      {
+        "after_step": 25,
+        "text": "稳定排序后：        0 0 0 0 1 1 1 2 2 2 说明：同为0分的学生，原顺序是下标1→5→8→9，排序后仍是这个顺序"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step": 0,
+      "line": 40,
+      "type": "enter",
+      "func": "main",
+      "vars": {}
+    },
+    {
+      "step": 1,
+      "line": 48,
+      "type": "enter",
+      "func": "counting_sort_stable",
+      "vars": {
+        "arr": [
+          2,
+          0,
+          1,
+          2,
+          1,
+          0,
+          2,
+          1,
+          0,
+          0
+        ],
+        "n": 10,
+        "k": 2
+      }
+    },
+    {
+      "step": 2,
+      "line": 17,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0,
+        "n": 10
+      }
+    },
+    {
+      "step": 3,
+      "line": 17,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "n": 10
+      }
+    },
+    {
+      "step": 4,
+      "line": 17,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "n": 10
+      }
+    },
+    {
+      "step": 5,
+      "line": 17,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3,
+        "n": 10
+      }
+    },
+    {
+      "step": 6,
+      "line": 17,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 4,
+        "n": 10
+      }
+    },
+    {
+      "step": 7,
+      "line": 17,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 5,
+        "n": 10
+      }
+    },
+    {
+      "step": 8,
+      "line": 17,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 6,
+        "n": 10
+      }
+    },
+    {
+      "step": 9,
+      "line": 17,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 7,
+        "n": 10
+      }
+    },
+    {
+      "step": 10,
+      "line": 17,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 8,
+        "n": 10
+      }
+    },
+    {
+      "step": 11,
+      "line": 17,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 9,
+        "n": 10
+      }
+    },
+    {
+      "step": 12,
+      "line": 27,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1,
+        "k": 2
+      }
+    },
+    {
+      "step": 13,
+      "line": 27,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2,
+        "k": 2
+      }
+    },
+    {
+      "step": 14,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 9
+      }
+    },
+    {
+      "step": 15,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 8
+      }
+    },
+    {
+      "step": 16,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 7
+      }
+    },
+    {
+      "step": 17,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 6
+      }
+    },
+    {
+      "step": 18,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 5
+      }
+    },
+    {
+      "step": 19,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 4
+      }
+    },
+    {
+      "step": 20,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 3
+      }
+    },
+    {
+      "step": 21,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 2
+      }
+    },
+    {
+      "step": 22,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 1
+      }
+    },
+    {
+      "step": 23,
+      "line": 32,
+      "type": "cond",
+      "result": true,
+      "vars": {
+        "i": 0
+      }
+    },
+    {
+      "step": 24,
+      "line": 37,
+      "type": "exit",
+      "func": "counting_sort_stable",
+      "vars": {}
+    },
+    {
+      "step": 25,
+      "line": 58,
+      "type": "exec",
+      "vars": {
+        "_return": 0
+      }
+    },
+    {
+      "step": 26,
+      "line": 58,
+      "type": "exit",
+      "func": "main",
+      "vars": {}
+    }
+  ],
+  "total_steps": 27
+}
