@@ -1,11 +1,11 @@
-# 大话算法 v2 — 交互式演示网站原型
+# 大话算法 — 样例网站
 
-纯静态 HTML/CSS/JS，配合《大话算法》图书使用的算法执行轨迹可视化网站。
+《大话算法》配套的交互式样例网站，使用纯静态 HTML/CSS/JS 展示算法执行过程。
 
 ## 目录结构
 
 ```
-docs/
+样例网站/
 ├── index.html              # 学习地图首页（算法地图可视化）
 ├── chapters/               # 23 个章节页面（ch00.html ~ ch22.html）
 ├── js/
@@ -23,7 +23,7 @@ docs/
 ## 工作流程
 
 ```
-C 源文件（生成源代码/）
+C 源文件（随书源代码/）
     │
     ▼
 auto_instrument.py          # 1. 插桩 + 编译 + 运行
@@ -42,7 +42,7 @@ chapters/ch*.html           # 4. 可部署的静态页面
 
 ### 一键构建
 
-以下生成命令均在 `docs/` 目录执行，需要 Python 3 和 C 编译器（GCC 或 Clang）。生成脚本会从仓库根目录的 `生成源代码/` 读取示例，不依赖任何个人电脑路径。已提供可直接使用的静态页面，普通浏览无需构建。
+以下生成命令均在 `样例网站/` 目录执行，需要 Python 3 和 C 编译器（GCC 或 Clang）。生成脚本会从仓库根目录的 `随书源代码/` 读取示例，不依赖任何个人电脑路径。已提供可直接使用的静态页面，普通浏览无需构建。
 
 ```bash
 bash scripts/run_batch_traces.sh
@@ -52,7 +52,7 @@ bash scripts/run_batch_traces.sh
 
 ```bash
 # 第一步：从 C 源码生成执行轨迹 JSON
-python3 scripts/auto_instrument.py --batch <C源码目录> data/traces/
+python3 scripts/auto_instrument.py --batch ../随书源代码 data/traces/
 
 # 第二步：从轨迹 JSON 生成章节 HTML 页面
 python3 scripts/generate.py
@@ -60,7 +60,7 @@ python3 scripts/generate.py
 
 ### 本地预览
 
-在仓库根目录运行 `python3 -m http.server 8000 --directory docs`，然后访问 http://localhost:8000/ 。
+在仓库根目录运行 `python3 -m http.server 8000 --directory "样例网站"`，然后访问 http://localhost:8000/ 。
 
 ### 轨迹体检
 

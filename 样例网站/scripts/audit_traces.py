@@ -16,7 +16,7 @@ from pathlib import Path
 
 BASE = Path(__file__).resolve().parent.parent
 TRACE_DIR = BASE / "data" / "traces"
-SRC_DIR = BASE.parent / "生成源代码"
+SRC_DIR = BASE.parent / "随书源代码"
 
 
 def read_json(path: Path) -> dict:

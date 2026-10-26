@@ -9,8 +9,8 @@ import json, os, re, sys, subprocess
 from html import escape
 from pathlib import Path
 
-BASE = Path(__file__).parent.parent  # prototype 根目录
-SRC_DIR = BASE.parent / "生成源代码"
+BASE = Path(__file__).parent.parent  # 样例网站目录
+SRC_DIR = BASE.parent / "随书源代码"
 OUT_DIR = BASE / "chapters"
 TRACE_DIR = BASE / "data" / "traces"
 TEMPLATE = BASE / "templates" / "chapter.html"

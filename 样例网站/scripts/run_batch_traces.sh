@@ -1,12 +1,12 @@
 #!/bin/bash
 # 大话算法 — 批量生成轨迹JSON
 # 用法: bash scripts/run_batch_traces.sh
-# 从 prototype 根目录执行
+# 从 样例网站目录执行
 
 set -e
 cd "$(dirname "$0")"
 
-SRC_DIR="$(cd ../.. && pwd)/生成源代码"
+SRC_DIR="$(cd ../.. && pwd)/随书源代码"
 TRACE_DIR="../data/traces"
 BACKUP_DIR="../data/traces_backup_$(date +%Y%m%d_%H%M%S)"
 BACKUP_KEEP="${BACKUP_KEEP:-0}"
